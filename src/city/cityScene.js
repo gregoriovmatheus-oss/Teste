@@ -76,7 +76,8 @@ export class CityScene {
   _lights() {
     const sun = new THREE.DirectionalLight(new THREE.Color(1.0, 0.72, 0.48), 3.3);
     sun.castShadow = true;
-    sun.shadow.mapSize.set(4096, 4096);
+    const mobile = matchMedia('(pointer: coarse)').matches;
+    sun.shadow.mapSize.set(mobile ? 2048 : 4096, mobile ? 2048 : 4096);
     const c = sun.shadow.camera;
     c.left = -130; c.right = 130; c.top = 130; c.bottom = -130; c.near = 1; c.far = 1400;
     sun.shadow.bias = -0.0004;

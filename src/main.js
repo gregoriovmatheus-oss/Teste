@@ -39,8 +39,9 @@ renderer.outputColorSpace = THREE.LinearSRGBColorSpace; // the final pass does A
 renderer.autoClear = true;
 if ('transmissionResolutionScale' in renderer) renderer.transmissionResolutionScale = 0.5;
 
-const maxDPR = Math.min(window.devicePixelRatio || 1, params.has('hq') ? 2 : 1.5);
-let quality = params.has('q') ? parseFloat(params.get('q')) : maxDPR;
+export const isMobile = matchMedia('(pointer: coarse)').matches || Math.min(screen.width, screen.height) < 600;
+const maxDPR = Math.min(window.devicePixelRatio || 1, params.has('hq') ? 2 : (isMobile ? 1.0 : 1.5));
+let quality = params.has('q') ? parseFloat(params.get('q')) : (isMobile ? 0.75 : maxDPR);
 
 let space, city, director, post;
 const audio = new AudioEngine();
@@ -181,7 +182,7 @@ function render(now) {
     fpsAcc += dt; fpsN++; fpsTimer += dt;
     if (fpsTimer > 2.0) {
       const fps = fpsN / fpsAcc;
-      if (fps < 40 && quality > 0.6) { quality = Math.max(0.6, quality - 0.15); setSize(); }
+      if (fps < 40 && quality > 0.45) { quality = Math.max(0.45, quality - 0.15); setSize(); }
       else if (fps > 58 && quality < maxDPR) { quality = Math.min(maxDPR, quality + 0.1); setSize(); }
       fpsAcc = 0; fpsN = 0; fpsTimer = 0;
     }
