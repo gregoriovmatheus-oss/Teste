@@ -270,8 +270,8 @@ export class Rubble {
     this.cap = capacity;
     const geo = new THREE.DodecahedronGeometry(1, 0);
     this.mesh = new THREE.InstancedMesh(geo, material, capacity);
-    this.mesh.castShadow = true;
-    this.mesh.receiveShadow = true;
+    this.mesh.castShadow = false;
+    this.mesh.receiveShadow = false;
     this.mesh.frustumCulled = false;
     this.mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
     this.p = new Float32Array(capacity * 3);

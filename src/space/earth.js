@@ -7,8 +7,8 @@ import { RNG } from '../core/rng.js';
 // then sampled by the realtime shaders. Everything is generated — no textures.
 // ---------------------------------------------------------------------------
 
-const BAKE_W = 2048;
-const BAKE_H = 1024;
+const BAKE_W = 4096;
+const BAKE_H = 2048;
 
 const UV_TO_DIR = /* glsl */ `
 vec3 uvToDir(vec2 uv){
@@ -141,11 +141,20 @@ void main(){
   vec4 s=texture2D(tSurface,vUv);
   vec4 det=texture2D(tDetail,vUv);
   vec3 albedo=s.rgb;
+  // crisper coastlines up close: re-derive the land/ocean split from the height channel
+  {
+    float hc=s.a+fbm3(vObjN*140.0,3)*0.006;
+    float lm=smoothstep(0.497,0.509,hc);
+    vec3 sea=mix(vec3(0.015,0.11,0.16),vec3(0.003,0.018,0.055),smoothstep(0.5,0.42,hc));
+    albedo=mix(sea, albedo, mix(lm, 1.0, step(0.53,s.a)));
+    albedo=mix(albedo, s.rgb, step(0.86,abs(vObjN.y))); // keep polar ice from the bake
+  }
   float camD=length(cameraPosition-vPosW);
   float fine=fbm3(vObjN*260.0,3);
   albedo*=1.0+fine*0.35*smoothstep(0.6,0.05,camD);
   float h=s.a;
-  float land=smoothstep(0.5,0.508,h);
+  float coastN=fbm3(vObjN*140.0,3)*0.006;
+  float land=smoothstep(0.497,0.509,h+coastN);
   // bump from height field
   vec2 du=vec2(1.0/${BAKE_W}.0,0.0), dv=vec2(0.0,1.0/${BAKE_H}.0);
   float hx=texture2D(tSurface,vUv+du).a-texture2D(tSurface,vUv-du).a;

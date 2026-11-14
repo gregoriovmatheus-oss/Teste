@@ -74,7 +74,7 @@ export class CityScene {
   }
 
   _lights() {
-    const sun = new THREE.DirectionalLight(new THREE.Color(1.0, 0.74, 0.5), 3.9);
+    const sun = new THREE.DirectionalLight(new THREE.Color(1.0, 0.72, 0.48), 3.3);
     sun.castShadow = true;
     sun.shadow.mapSize.set(4096, 4096);
     const c = sun.shadow.camera;
@@ -252,7 +252,7 @@ export class CityScene {
     for (let z = 14; z < 260; z += rng.float(7, 11)) if (rng.chance(0.6)) placeCar(rng.sign() * 3.2, z, Math.PI / 2);
 
     const carColors = [
-      [0, 0, 0.04], [0, 0, 0.75], [0, 0, 0.5], [0, 0, 0.25], [0.6, 0.5, 0.25], [0.0, 0.7, 0.35], [0.58, 0.3, 0.15],
+      [0, 0, 0.04], [0, 0, 0.55], [0, 0, 0.42], [0, 0, 0.25], [0.6, 0.5, 0.25], [0.0, 0.7, 0.35], [0.58, 0.3, 0.15],
       [0.12, 0.9, 0.5], [0.08, 0.5, 0.35], [0.55, 0.15, 0.6],
     ];
     this.carBodies = [];
@@ -397,7 +397,7 @@ export class CityScene {
 
     // -------- water blobs from the fountain + puddle droplets ----------------------------
     this.blobMat = createWaterBlobMaterial(this.envMap);
-    const blobDef = { parts: [{ geo: new THREE.SphereGeometry(1, 40, 24), mat: '__blob' }], half: new THREE.Vector3(1, 1, 1) };
+    const blobDef = { parts: [{ geo: new THREE.SphereGeometry(1, 28, 18), mat: '__blob' }], half: new THREE.Vector3(1, 1, 1) };
     P.materials.__blob = this.blobMat;
     const blobs = [];
     for (let i = 0; i < 46; i++) {
@@ -409,6 +409,8 @@ export class CityScene {
       blobs.push({ x: SHOT_A_SPOT.x + Math.cos(a) * r, z: SHOT_A_SPOT.z + Math.sin(a) * r * 0.65, s: Math.pow(rng.float(), 2.5) * 0.07 + 0.008, y: 0.0, kind: 'drop' });
     }
     const blobProp = new P.InstancedProp(blobDef, blobs.length, S, { castShadow: false, receiveShadow: false });
+    this.blobMesh = blobProp.meshes[0];
+    this.blobMesh.frustumCulled = true;
     this.blobBodies = [];
     blobs.forEach((bl, i) => {
       const b = ph.add(new Body({
@@ -436,7 +438,7 @@ export class CityScene {
       const def = { parts: [{ geo: d.geo, mat: d.mat, color: d.color }], half: new THREE.Vector3() };
       d.geo.computeBoundingBox();
       d.geo.boundingBox.getSize(def.half).multiplyScalar(0.5);
-      const prop = new P.InstancedProp(def, n, S, { castShadow: key !== 'leaf' && key !== 'paper', receiveShadow: true });
+      const prop = new P.InstancedProp(def, n, S, { castShadow: key === 'can', receiveShadow: key !== 'pebble' });
       for (let i = 0; i < n; i++) {
         const [x, z] = place(i);
         const s = o.size();
@@ -575,6 +577,7 @@ export class CityScene {
       }
     }
     this.physics.writeAll();
+    this.blobMesh.computeBoundingSphere();
     this.blobMat.userData.uniforms.uTime.value = t;
     this.fountain.waterMat.userData.uniforms.uTime.value = t;
     const lifted = tOff !== null ? smooth(tOff, tOff + 6, t) : 0;
@@ -625,8 +628,8 @@ export class CityScene {
           const sh = 0.16 + Math.random() * 0.12;
           this.smoke.emit({
             x: pl.x + (Math.random() - 0.5) * pl.size * 0.2, y: 1 + Math.random(), z: pl.z + (Math.random() - 0.5) * pl.size * 0.2,
-            vx: 0.8 + Math.random() * 0.6, vy: 2.5 + Math.random() * 2.5, vz: 0.4 + (Math.random() - 0.5) * 0.6,
-            r: sh * 1.05, g: sh, b: sh * 0.95, a: 0.55, life: 9 + Math.random() * 5, s0: pl.size * 0.35, s1: pl.size * 2.2,
+            vx: 0.6 + Math.random() * 0.5, vy: 4 + Math.random() * 3, vz: 0.3 + (Math.random() - 0.5) * 0.5,
+            r: sh * 1.25, g: sh * 1.15, b: sh * 1.05, a: 0.38, life: 9 + Math.random() * 5, s0: pl.size * 0.3, s1: pl.size * 1.6,
             type: 1, drag: 0.1, gf: 0, rv: (Math.random() - 0.5) * 0.3, fadeIn: 0.8,
           });
           if (pl.fire && Math.random() < 0.8) {

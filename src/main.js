@@ -37,6 +37,7 @@ renderer.shadowMap.type = THREE.PCFShadowMap;
 renderer.toneMapping = THREE.NoToneMapping;
 renderer.outputColorSpace = THREE.LinearSRGBColorSpace; // the final pass does ACES + sRGB itself
 renderer.autoClear = true;
+if ('transmissionResolutionScale' in renderer) renderer.transmissionResolutionScale = 0.5;
 
 const maxDPR = Math.min(window.devicePixelRatio || 1, params.has('hq') ? 2 : 1.5);
 let quality = params.has('q') ? parseFloat(params.get('q')) : maxDPR;

@@ -92,7 +92,7 @@ export class SpaceScene {
 
   update(t, state) {
     const cd = this.camera.position.length();
-    this.earth.atmoMat.uniforms.uIntensity.value = 0.4 + 0.6 * THREE.MathUtils.smoothstep(cd, 1.05, 1.4);
+    this.earth.atmoMat.uniforms.uIntensity.value = 0.22 + 0.78 * THREE.MathUtils.smoothstep(cd, 1.06, 1.5);
     this.earth.update(t, state.earth);
     this.stars.update(t, this.camera, state.starFade ?? 1);
   }

@@ -135,7 +135,7 @@ export function busParts() {
 
 // People (stylised silhouettes) -------------------------------------------
 function limb(r, len, from, dir) {
-  const g = new THREE.CapsuleGeometry(r, len, 4, 8);
+  const g = new THREE.CapsuleGeometry(r, len, 2, 7);
   const d = new THREE.Vector3(...dir).normalize();
   const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), d);
   g.applyQuaternion(q);
@@ -147,11 +147,11 @@ function limb(r, len, from, dir) {
 export function personParts(pose = 'stand') {
   const parts = [];
   // torso & hips
-  const torso = new THREE.CapsuleGeometry(0.16, 0.42, 4, 10);
+  const torso = new THREE.CapsuleGeometry(0.16, 0.42, 3, 9);
   torso.scale(1, 1, 0.65);
   torso.translate(0, 1.2, 0);
   parts.push(torso);
-  const head = new THREE.SphereGeometry(0.11, 14, 10);
+  const head = new THREE.SphereGeometry(0.11, 10, 7);
   head.scale(0.9, 1.08, 0.95);
   head.translate(0, 1.66, 0.01);
   parts.push(head);

@@ -155,7 +155,7 @@ export class Director {
     if (t > T.ON - 1) es.fieldColor.setRGB(1.0, 0.5, 0.22);
     // expanding (off) / collapsing (on) shell
     if (t >= T.OFF && t < T.OFF + 1.5) { const u = seg(t, T.OFF, T.OFF + 1.5); es.shell = (1 - u) * 0.7; es.shellR = 1.0 + easeOut(u) * 2.8; }
-    else if (t >= T.ON - 0.7 && t < T.ON + 0.2) { const u = seg(t, T.ON - 0.7, T.ON + 0.2); es.shell = Math.sin(u * Math.PI) * 1.4; es.shellR = 3.6 - easeIn(u) * 2.6; }
+    else if (t >= T.ON - 0.7 && t < T.ON + 0.2) { const u = seg(t, T.ON - 0.7, T.ON + 0.2); es.shell = Math.sin(u * Math.PI) * 0.6; es.shellR = 3.6 - easeIn(u) * 2.6; }
     else es.shell = 0;
     if (t >= T.OFF && t < T.OFF + 2.4) { es.pulse = easeOut(seg(t, T.OFF, T.OFF + 2.4)) * 3.14; es.pulseColor = 0; }
     else if (t >= T.ON && t < T.ON + 1.6) { es.pulse = easeOut(seg(t, T.ON, T.ON + 1.6)) * 3.14; es.pulseColor = 1; }
@@ -181,7 +181,7 @@ export class Director {
     p.sunDir.copy(e.sunDir);
     p.sunColor.setRGB(1, 0.9, 0.8);
     p.fogDensity = 0;
-    p.god = 0.9; p.godColor.setRGB(1.0, 0.85, 0.7);
+    p.god = 0.5; p.godColor.setRGB(1.0, 0.85, 0.7);
     p.bloom = 0.5; p.bloomRadius = 0.45; p.bloomThreshold = 1.0; p.clampHDR = 40;
     p.exposure = 1.0; p.flare = 1.0; p.saturation = 1.08; p.contrast = 1.06; p.tint.setRGB(1, 1, 1);
     p.vignette = 0.5; p.grain = 0.03; p.ca = 1.2;
@@ -206,7 +206,7 @@ export class Director {
       p.dof = 0;
       if (t < 1.6) { p.fade = 1 - easeInOut(seg(t, 0, 1.6)); p.fadeColor.setRGB(0, 0, 0); }
       // gravity-off flash
-      p.flash = Math.exp(-Math.max(0, t - T.OFF) * 6) * (t >= T.OFF ? 0.5 : 0);
+      p.flash = Math.exp(-Math.max(0, t - T.OFF) * 10) * (t >= T.OFF ? 0.4 : 0);
       p.desat = (t >= T.OFF ? Math.exp(-(t - T.OFF) * 1.5) * 0.6 : 0);
       if (t >= T.OFF && t < T.OFF + 1.2) {
         const u2 = seg(t, T.OFF, T.OFF + 1.2);
@@ -243,7 +243,7 @@ export class Director {
       const k = easeInOut(u);
       const dir = new THREE.Vector3().copy(cityW).normalize();
       dir.lerp(endDir, smoother(seg(u, 0.05, 1.0))).normalize();
-      const dist = lerp(1.035, 3.7, Math.pow(k, 1.4));
+      const dist = lerp(1.05, 3.7, Math.pow(k, 1.4));
       cam.position.copy(dir).multiplyScalar(dist);
       // aim: horizon early → planet centre late
       const tangent = new THREE.Vector3().crossVectors(cityW, new THREE.Vector3(0, 1, 0)).normalize().negate();
@@ -259,7 +259,7 @@ export class Director {
         this._debrisAnchor = new THREE.Matrix4();
         const c0 = new THREE.PerspectiveCamera();
         const cityW0 = e.cityWorld(new THREE.Vector3());
-        c0.position.copy(cityW0).multiplyScalar(1.035);
+        c0.position.copy(cityW0).multiplyScalar(1.05);
         const tangent0 = new THREE.Vector3().crossVectors(cityW0, new THREE.Vector3(0, 1, 0)).normalize().negate();
         c0.lookAt(cityW0.clone().multiplyScalar(0.98).addScaledVector(tangent0, 0.45));
         c0.updateMatrixWorld();
@@ -267,7 +267,7 @@ export class Director {
       }
       S.updateDebris(t - T.SPACE2, this._debrisAnchor, 1 - smooth(T.SPACE2 + 3.5, T.SPACE2 + 5, t));
       p.fade = 1 - smooth(T.SPACE2, T.SPACE2 + 0.7, t); p.fadeColor.setRGB(0.92, 0.95, 1.0);
-      p.flash = t >= T.ON ? Math.exp(-(t - T.ON) * 5) * 0.6 : 0;
+      p.flash = t >= T.ON ? Math.exp(-(t - T.ON) * 14) * 0.3 : 0;
       p.desat = t >= T.ON ? Math.exp(-(t - T.ON) * 2) * 0.4 : 0;
       if (t >= T.ON && t < T.ON + 1.0) { const u2 = seg(t, T.ON, T.ON + 1.0); p.shockUv.set(0.5, 0.5); p.shockR = 1.2 - easeOut(u2) * 1.2; p.shockAmp = (1 - u2) * 0.035; }
       p.motion = 0.6;
@@ -348,7 +348,7 @@ export class Director {
       pos.copy(v3(31, 10.5, 5.5)).lerp(v3(23, 7.5, 2.5), k);
       look.copy(v3(-14, 5.5, -26)).lerp(v3(-12, 2.0, -28), easeInOut(u));
       fov = 46; focus = 34; dof = 0.3;
-      p.flash = Math.exp(-(t - T.CITY_BACK) * 4) * 0.7;
+      p.flash = Math.exp(-(t - T.CITY_BACK) * 6) * 0.35;
       p.fade = 0;
     } else {
       shot = 'F-aftermath';

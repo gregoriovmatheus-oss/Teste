@@ -29,7 +29,8 @@ canvas#gl { position: fixed; inset: 0; display: block; }
 #hud .lbl { font-size: 10px; letter-spacing: .22em; color: rgba(243,239,232,.6); }
 #hud .val { font-size: 13px; letter-spacing: .08em; color: var(--fg); }
 #hud .val.small { font-size: 11px; margin-top: 6px; color: rgba(243,239,232,.85); }
-#hud .hud-right { width: min(280px, 46vw); text-align: right; }
+#hud .hud-right { width: min(330px, 56vw); text-align: right; }
+#hud .val { white-space: nowrap; }
 #hud .row { display: flex; justify-content: space-between; gap: 10px; margin-top: 8px; align-items: baseline; }
 #hud .meter { height: 2px; background: rgba(255,255,255,.15); margin-top: 6px; overflow: hidden; }
 #hud .meter > div { height: 100%; background: var(--accent); transform-origin: left; transition: background .4s; }
