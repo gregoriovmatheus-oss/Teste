@@ -10,6 +10,8 @@
     #f12-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
     #f12-veil { position: absolute; inset: 0; opacity: 0;
       background: radial-gradient(ellipse at 50% 45%, rgba(250, 251, 252, 0.98) 0%, rgba(236, 241, 246, 0.94) 55%, rgba(220, 228, 236, 0.88) 100%); }
+    #f12-scrim { position: absolute; left: 0; right: 0; top: 200px; height: 620px;
+      background: linear-gradient(180deg, rgba(8, 12, 20, 0) 0%, rgba(8, 12, 20, 0.55) 30%, rgba(8, 12, 20, 0.55) 70%, rgba(8, 12, 20, 0) 100%); }
     .f12-txt { position: absolute; left: 120px; right: 180px; text-align: center; font-family: "EB Garamond", serif;
       font-weight: 400; color: #ffffff; line-height: 1.08;
       text-shadow: 0 4px 24px rgba(4, 10, 20, 0.85), 0 1px 4px rgba(4, 10, 20, 0.7); }
@@ -24,6 +26,7 @@
   </style>
   <div id="root" data-composition-id="f12" data-width="1080" data-height="1920">
     <canvas id="f12-canvas" width="1080" height="1920"></canvas>
+    <div id="f12-scrim" data-layout-ignore></div>
     <div id="f12-veil" data-layout-ignore></div>
     <div id="f12-l1" class="f12-txt clip" data-start="0.1" data-duration="3.65">O frio quase não machuca.</div>
     <div id="f12-l2" class="f12-txt clip" data-start="1.6" data-duration="2.15">O <span class="amb">calor</span> voltando… talvez sim.</div>
