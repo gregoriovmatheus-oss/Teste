@@ -10,10 +10,11 @@ hud: "O CALOR VOLTA EM" + contador serifado de 5,00 s em câmera lenta (5,00 →
 
 ## Frame 1 — Gancho
 - duration: 3s
-- scene: Cidade-maquete ensolarada vista do alto. Um pulso azul varre a tela, tudo congela no lugar e o HUD acende em 5,00.
+- scene: Começa no espaço com a Terra estilizada, já em movimento no frame 0. Uma onda azul-gelo contorna a atmosfera do planeta inteiro. Zoom contínuo e rápido até a América do Sul, depois o Brasil, atravessando as nuvens até a cidade-maquete vista do alto. Na chegada tudo congela e o HUD acende em 5,00.
+- camera: dolly-in sem corte, do espaço até a cidade (0–2,5 s); blocos `cinematic-zoom` e `parallax-zoom`
+- reads: Terra e onda azul (0-1s); título "E se o ar do mundo congelasse por 5 s?" (1-3s); Brasil identificável no meio do zoom
 - voiceover: "Por cinco segundos… o ar do planeta inteiro vai a menos 273 graus."
-- reads: título "E se o ar do mundo congelasse por 5 s?" com "5 s" em azul-gelo (0-3s)
-- sound: buzina e vento cortados de vez; um grave subindo
+- sound: whoosh do zoom atravessando as nuvens; buzina da cidade cortada de vez no congelamento; um grave subindo
 
 ## Frame 2 — Silêncio
 - duration: 4s
@@ -88,6 +89,6 @@ hud: "O CALOR VOLTA EM" + contador serifado de 5,00 s em câmera lenta (5,00 →
 
 ## Frame 12 — Revelação e pergunta
 - duration: 5s
-- scene: Volta ao plano do gancho: a mesma cidade, agora normal. Texto final em serifa: "O frio quase não machuca. O calor voltando, talvez sim." Depois, "Você lembraria de soltar o ar?" e "Comenta 👇".
+- scene: Zoom-out da cidade, agora normal, até a Terra no espaço, fechando o loop com o gancho. Texto final em serifa: "O frio quase não machuca. O calor voltando, talvez sim." Depois, "Você lembraria de soltar o ar?" e "Comenta 👇".
 - voiceover: "O frio quase não te machuca. O calor voltando… talvez sim. Você lembraria de soltar o ar? Comenta."
 - sound: a trilha resolve; buzina distante volta, fechando o loop com o gancho
