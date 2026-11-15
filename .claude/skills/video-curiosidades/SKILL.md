@@ -23,7 +23,26 @@ Esta skill fixa as decisões que o usuário já tomou, para não perguntar de no
 
 O usuário pode mudar qualquer padrão. A mudança vale para aquele vídeo; se ele disser que é permanente, atualize esta tabela.
 
-**Ainda não decidido pelo usuário:** o estilo visual (2D flat ou 3D realista). Pergunte uma vez, na primeira rodada, junto com o tema. Se ele não responder, use 2D vetorial com cores saturadas e formas simples.
+## Estilo visual (decidido)
+
+O vídeo alterna entre **2D flat** e **3D estilizado**. Nunca usa 3D realista.
+
+- **2D flat:** formas vetoriais simples, cores saturadas, fundo chapado ou com grão leve. Serve para dados, mapas, comparações e diagramas.
+- **3D estilizado:** segue a gramática dos vídeos virais de curiosidade, sem copiar nenhum criador:
+  - **Visual de brinquedo:** massinha ou miniatura, material fosco (roughness ≥ 0,45), cantos arredondados, paleta pastel ou saturada, sombra de contato macia.
+  - **Iluminação:** luz principal quente, contorno frio e bloom só nos pontos mais claros.
+  - **Câmera:** zoom-in constante, mergulho dentro do objeto (corpo, planeta, célula), vistas explodidas e diorama isométrico com tilt-shift.
+  - **Personagens:** simples e estilizados, sem rosto realista.
+- **Quando usar cada um:** 3D nos momentos de impacto (gancho, mergulho, consequências). 2D quando o número ou a comparação são o centro da cena.
+- **Mistura:** o 3D é o palco no centro. Rótulos, setas, números e legendas ficam por cima em 2D HTML, nunca inclinados em 3D.
+- **Transições entre 2D e 3D:** blocos `transitions-3d`, `cinematic-zoom`, `whip-pan` e `parallax-zoom` do `hyperframes-registry`.
+
+**Implementação do 3D no HyperFrames:**
+- **Padrão:** Three.js desenhado só no evento `hf-seek`, sem `requestAnimationFrame` e com aleatoriedade por seed. Ver `hyperframes/references/runtimes.md` e `references/types/3d.md`, e o template Three.js em `hyperframes-registry/references/templates.md`.
+- **Não existe bloco pronto de massinha nem de diorama.** A cena 3D é feita à mão.
+- **Path tracing** (`--example path-traced-3d`) dá a melhor luz de massinha, mas é cerca de 75× mais lento e precisa de GPU. Só use se o usuário pedir.
+- **Conferência:** `npx hyperframes snapshot --at 4,0,4 --no-end`. Os dois quadros em 4 s precisam sair idênticos.
+- **Blocos úteis:** `camera-shake`, `grain-overlay`, `ui-3d-reveal`, `caption-editorial-emphasis`.
 
 ## Fluxo
 
