@@ -124,7 +124,7 @@
 
         const cam = new THREE.PerspectiveCamera(35, K.W / K.H, 0.05, 100);
         const camC = new THREE.PerspectiveCamera(35, K.W / K.H, 0.05, 100);
-        camC.setViewOffset(K.W, K.H, -190, 0, K.W, K.H); // subject to the right, thermometer on the left
+        camC.setViewOffset(K.W, K.H, -210, 0, K.W, K.H); // subject to the right, thermometer on the left
         const T1 = 1.33, T2 = 2.8;
 
         function render(t) {
@@ -149,7 +149,7 @@
             const p = ease.outCubic(range(t, T2, 5.4));
             const ang = lerp(0.2, 0.05, p), r = lerp(3.0, 2.5, p);
             camC.position.set(Math.sin(ang) * r, 1.5, Math.cos(ang) * r);
-            camC.lookAt(0, 1.38, 0);
+            camC.lookAt(0, 1.54, 0);
             c = camC;
           }
           renderer.render(scene, c);

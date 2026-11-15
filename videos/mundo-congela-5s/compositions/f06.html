@@ -152,7 +152,7 @@
           do { x = (rnd() * 2 - 1) * 0.24; z = (rnd() * 2 - 1) * 0.28; q = (x / TR.x) ** 2 + (z / TR.z) ** 2; } while (q > 0.62);
           const y0 = TC.y + TR.y * Math.sqrt(1 - q);
           const m = new THREE.Mesh(bubGeo, bubMat); m.castShadow = false; sB.add(m);
-          bubbles.push({ m, x: x + TC.x, z: z + TC.z, y0, P: 0.75 + rnd() * 0.6, ph: rnd(), r: 0.016 + rnd() * 0.02, sw: rnd() * 6.28 });
+          bubbles.push({ m, x: x + TC.x, z: z + TC.z, y0, P: 0.75 + rnd() * 0.6, ph: rnd(), r: 0.012 + rnd() * 0.014, sw: rnd() * 6.28 });
         }
         const camB = new THREE.PerspectiveCamera(35, K.W / K.H, 0.02, 100);
 

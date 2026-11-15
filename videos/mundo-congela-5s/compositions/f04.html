@@ -1,25 +1,205 @@
 <template>
   <style>
-      @font-face { font-family: "EB Garamond"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-400-normal.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
-      @font-face { font-family: "EB Garamond"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-ext-400-normal.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
-      @font-face { font-family: "EB Garamond"; font-style: italic; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-400-italic.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
-      @font-face { font-family: "EB Garamond"; font-style: italic; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-ext-400-italic.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
-      @font-face { font-family: "Montserrat"; font-style: normal; font-weight: 600; font-display: block; src: url("assets/fonts/montserrat-latin-600-normal.woff2") format("woff2"); }
-      @font-face { font-family: "Anton"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/fonts/anton-latin-400-normal.woff2") format("woff2"); }
-    #root { position: absolute; inset: 0; background: #26303d; overflow: hidden; }
-    #f04-title { position: absolute; left: 200px; right: 200px; top: 720px; text-align: center;
-      font-family: "Montserrat", sans-serif; font-weight: 600; font-size: 28px; letter-spacing: 0.3em;
-      color: #8D96A2; text-transform: uppercase; }
+    @font-face { font-family: "Montserrat"; font-style: normal; font-weight: 600; font-display: block; src: url("assets/fonts/montserrat-latin-600-normal.woff2") format("woff2"); }
+    @font-face { font-family: "Anton"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/fonts/anton-latin-400-normal.woff2") format("woff2"); }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #c3d3e1; }
+    #f04-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+    #f04-ruler { position: absolute; left: 56px; top: 660px; width: 120px; height: 360px; opacity: 0; }
+    #f04-ruler .bar { position: absolute; left: 0; top: 0; width: 6px; height: 360px; background: #ffffff; border-radius: 3px;
+      box-shadow: 0 0 10px rgba(4, 10, 20, 0.45); }
+    #f04-ruler .fill { position: absolute; left: 0; top: 0; width: 6px; height: 360px; background: #8fcbf2; border-radius: 3px;
+      transform-origin: 50% 0; transform: scaleY(0); }
+    #f04-ruler .tick { position: absolute; left: 0; height: 3px; background: #ffffff; box-shadow: 0 0 6px rgba(4, 10, 20, 0.45); }
+    #f04-ruler .tl { position: absolute; left: 34px; font-family: "Montserrat", sans-serif; font-weight: 600; font-size: 22px;
+      color: #ffffff; text-shadow: 0 1px 6px rgba(4, 10, 20, 0.8); transform: translateY(-50%); }
+    #f04-mark { position: absolute; left: -8px; top: 0; width: 0; height: 0;
+      border-top: 14px solid transparent; border-bottom: 14px solid transparent; border-left: 24px solid #e8b24a;
+      transform: translate(-16px, -14px); filter: drop-shadow(0 1px 4px rgba(4, 10, 20, 0.6)); }
+    #f04-count { position: absolute; left: 190px; top: 650px; opacity: 0; white-space: nowrap;
+      font-family: "Anton", sans-serif; font-size: 120px; line-height: 1; color: #ffffff; letter-spacing: 0.01em;
+      text-shadow: 0 4px 20px rgba(4, 10, 20, 0.55); font-variant-numeric: tabular-nums; }
+    #f04-count .u { font-size: 64px; margin-left: 10px; color: #8fcbf2; }
+    #f04-sub { position: absolute; left: 196px; top: 790px; opacity: 0; font-family: "Montserrat", sans-serif; font-weight: 600;
+      font-size: 26px; letter-spacing: 0.22em; color: #ffffff; text-shadow: 0 1px 8px rgba(4, 10, 20, 0.75); }
   </style>
   <div id="root" data-composition-id="f04" data-width="1080" data-height="1920">
-    <div id="f04-title" class="clip" data-start="0" data-duration="6.53">F4 aviões e pássaros, 122 m</div>
+    <canvas id="f04-canvas" width="1080" height="1920"></canvas>
+    <div id="f04-ruler" class="clip" data-start="2.95" data-duration="3.58">
+      <div class="bar"></div>
+      <div class="fill" id="f04-fill"></div>
+      <div class="tick" style="top: 0px; width: 30px"></div>
+      <div class="tick" style="top: 59px; width: 18px"></div>
+      <div class="tick" style="top: 118px; width: 30px"></div>
+      <div class="tick" style="top: 177px; width: 18px"></div>
+      <div class="tick" style="top: 236px; width: 30px"></div>
+      <div class="tick" style="top: 295px; width: 18px"></div>
+      <div class="tick" style="top: 354px; width: 30px"></div>
+      <div class="tl" style="top: 0px">0</div>
+      <div class="tl" style="top: 118px">40</div>
+      <div class="tl" style="top: 236px">80</div>
+      <div class="tl" style="top: 354px">120</div>
+      <div id="f04-mark"></div>
+    </div>
+    <div id="f04-count" class="clip" data-start="2.95" data-duration="3.58"><span id="f04-num">0</span><span class="u">m</span></div>
+    <div id="f04-sub" class="clip" data-start="3.1" data-duration="3.43">QUEDA EM <span id="f04-sec">0,0</span> s</div>
   </div>
   <script>
     (function () {
+      /* ---------- 2D ruler + counter (GSAP) ---------- */
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f04-title", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" }, 0.1);
+      const T0 = 3.06, T1 = 5.66;             // "Em cinco segundos" → "metros"
+      const PX_PER_M = 360 / 122;
+      const num = document.getElementById("f04-num"), sec = document.getElementById("f04-sec");
+      const st = { v: 0 };
+      const paint = () => {
+        const v = st.v;
+        num.textContent = String(Math.round(v * 122));
+        sec.textContent = (v === 0 ? 0 : Math.sqrt(v) * 5).toFixed(1).replace(".", ",");
+        document.getElementById("f04-mark").style.top = (v * 122 * PX_PER_M).toFixed(1) + "px";
+        document.getElementById("f04-fill").style.transform = "scaleY(" + v.toFixed(4) + ")";
+      };
+      paint();
+      tl.fromTo(["#f04-ruler", "#f04-count"], { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" }, 2.95);
+      tl.fromTo("#f04-sub", { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" }, 3.1);
+      // free fall: d = ½·g·t², so the counter accelerates (power2.in); 5 s → 122 m
+      tl.fromTo(st, { v: 0 }, { v: 1, duration: T1 - T0, ease: "power2.in", onUpdate: paint }, T0);
+      tl.fromTo("#f04-count", { color: "#ffffff" }, { color: "#e8b24a", duration: 0.15, ease: "power2.out" }, T1);
+      tl.fromTo("#f04-count", { scale: 1 }, { scale: 1.12, duration: 0.12, ease: "power2.out", transformOrigin: "0% 50%" }, T1);
+      tl.to("#f04-count", { scale: 1, duration: 0.3, ease: "power2.inOut" }, T1 + 0.13);
+      tl.set({}, {}, 6.53);
       window.__timelines = window.__timelines || {};
       window.__timelines["f04"] = tl;
+
+      /* ---------- 3D (Three.js via kit) ---------- */
+      window.__hf = window.__hf || {};
+      window.__hf.buildReady = window.__hf.buildReady || {};
+      window.__hf.buildReady["f04"] = import("./assets/lib/kit.js").then(async (K) => {
+        const { THREE, PALETTE, ease, range, lerp, clamp, mulberry32 } = K;
+        const canvas = document.getElementById("f04-canvas");
+        const renderer = K.createRenderer(canvas);
+        const M = K.maqueteMaterial;
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xc3d3e1);
+        scene.fog = new THREE.Fog(0xc3d3e1, 160, 720);
+        const lights = K.addMaqueteLights(scene, { intensity: 1, target: [150, 0, 0], shadowSize: 220 });
+        const cam = new THREE.PerspectiveCamera(35, K.W / K.H, 0.5, 3000);
+
+        // frozen city far below
+        const city = K.buildCityGrid({ seed: 18, cols: 9, rows: 7, maxH: 30, cars: false });
+        city.group.position.x = 150;
+        scene.add(city.group);
+        K.setFrost(city.group, 1);
+
+        /* ---- plane (nose along +x) ---- */
+        const plane = new THREE.Group();
+        const white = M(0xe9edf1, { roughness: 0.6 }), grey = M(0x8d96a2, { roughness: 0.6 }), red = M(PALETTE.accent, { roughness: 0.7 });
+        const fus = new THREE.Mesh(new THREE.CylinderGeometry(1.6, 1.5, 20, 16), white);
+        fus.rotation.z = Math.PI / 2; plane.add(fus);
+        const nose = new THREE.Mesh(new THREE.SphereGeometry(1.6, 16, 10, 0, Math.PI * 2, 0, Math.PI / 2), white);
+        nose.rotation.z = -Math.PI / 2; nose.scale.set(1, 1.6, 1); nose.position.x = 10; plane.add(nose);
+        const tailc = new THREE.Mesh(new THREE.ConeGeometry(1.5, 5, 16), white);
+        tailc.rotation.z = Math.PI / 2; tailc.position.set(-12.4, 0.4, 0); plane.add(tailc);
+        const stripe = new THREE.Mesh(new THREE.CylinderGeometry(1.62, 1.52, 16, 16, 1, true, -0.5, 1.0), red);
+        stripe.rotation.z = Math.PI / 2; stripe.position.y = 0.0; plane.add(stripe);
+        const bx = (mat, sx, sy, sz, x, y, z, ry = 0) => {
+          const m = new THREE.Mesh(new THREE.BoxGeometry(sx, sy, sz), mat); m.position.set(x, y, z); m.rotation.y = ry; plane.add(m); return m;
+        };
+        bx(white, 5, 0.35, 26, 0.5, -0.6, 0, 0);                        // wing
+        bx(white, 2.4, 0.25, 9, -11.5, 0.6, 0);                         // stabilizer
+        const fin = bx(red, 4, 5, 0.3, -11.8, 3.0, 0); fin.rotation.z = -0.35; // tail fin
+        const glowMat = new THREE.MeshBasicMaterial({ color: 0xffb04a, transparent: true, opacity: 1 });
+        const engines = [];
+        [-5.5, 5.5].forEach((z) => {
+          const e = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.7, 3.4, 16), grey);
+          e.rotation.z = Math.PI / 2; e.position.set(1.5, -1.5, z); plane.add(e);
+          const g = new THREE.Mesh(new THREE.CircleGeometry(0.62, 20), glowMat);
+          g.rotation.y = -Math.PI / 2; g.position.set(-0.25, -1.5, z); plane.add(g);
+          engines.push(g);
+        });
+        plane.traverse((o) => { if (o.isMesh) { o.castShadow = true; } });
+        scene.add(plane);
+
+        const X0 = 0, Y0 = 262, VX = 46;
+        const fallP = (t) => { const f = Math.max(0, t - 0.9); return 0.5 * 9.8 * f * f; };
+        const planeAt = (t, out) => out.set(X0 + VX * t, Y0 - fallP(t), 0);
+
+        /* ---- flock (stylized V-wing birds) ---- */
+        const birdMat = M(0x2f3640, { roughness: 0.7 }); birdMat.userData.frostMax = 0;
+        const bodyG = new THREE.ConeGeometry(0.18, 1.0, 6); bodyG.rotateZ(-Math.PI / 2);
+        const wingG = new THREE.BufferGeometry();
+        wingG.setAttribute("position", new THREE.Float32BufferAttribute([0.25, 0, 0, -0.3, 0, 0, -0.1, 0, 1.2], 3));
+        wingG.computeVertexNormals();
+        const rb = mulberry32(404);
+        const birds = [];
+        for (let i = 0; i < 22; i++) {
+          const g = new THREE.Group();
+          const body = new THREE.Mesh(bodyG, birdMat); g.add(body);
+          const wl = new THREE.Mesh(wingG, new THREE.MeshStandardMaterial({ color: 0x2f3640, roughness: 0.7, side: THREE.DoubleSide }));
+          const wr = wl.clone(); wr.scale.z = -1;
+          g.add(wl, wr);
+          const s = 1.5 + rb() * 0.6;
+          g.scale.setScalar(s);
+          scene.add(g);
+          birds.push({ g, wl, wr, dx: -34 + rb() * 30, dy: 12 + rb() * 12, dz: 26 + rb() * 22, ph: rb() * 6.28,
+            f0: 1.5 + rb() * 0.35, tum: rb() * 2 - 1 });
+        }
+        const P = new THREE.Vector3();
+        function drawWorld(t) {
+          planeAt(t, P);
+          plane.position.copy(P);
+          plane.rotation.z = -ease.inOutCubic(range(t, 0.9, 2.3)) * 0.42;   // nose down
+          const glow = 1 - ease.inQuad(range(t, 0.25, 0.9));                 // turbines die (turbina at 0.23)
+          glowMat.opacity = glow; engines.forEach((e) => (e.visible = glow > 0.01));
+          birds.forEach((b) => {
+            const f = Math.max(0, t - b.f0);
+            b.g.position.set(P.x + b.dx, Y0 + b.dy - 0.5 * 9.8 * f * f, b.dz);
+            const flap = Math.sin(b.ph + t * (f > 0 ? 22 : 13)) * (f > 0 ? 0.9 : 0.6);
+            b.wl.rotation.x = -flap; b.wr.rotation.x = flap;
+            b.g.rotation.z = -Math.min(1, f * 0.8) * (0.6 + 0.3 * b.tum);
+            b.g.rotation.x = b.tum * f * 0.6;
+          });
+        }
+
+        /* ---- shots (local seconds) ---- */
+        const look = new THREE.Vector3();
+        function shot(t) {
+          planeAt(t, P);
+          if (t < 1.8) {          // A: plane, turbines die, nose drops ("perdem sustentação")
+            const p = ease.inOutSine(t / 1.8);
+            cam.position.set(P.x - lerp(18, 8, p), P.y + lerp(10, 4, p), lerp(82, 70, p));
+            look.set(P.x + 2, P.y - lerp(1, 4, p), 0);
+          } else if (t < 3.0) {   // B: cut to the flock, wings beating at nothing, dropping ("Os pássaros também")
+            const p = ease.inOutSine(range(t, 1.8, 3.0));
+            const cx = P.x - 19, cy = Y0 + 18 - 0.5 * 9.8 * Math.pow(Math.max(0, t - 1.6), 2) * 0.8;
+            cam.position.set(cx - lerp(10, 4, p), cy + lerp(6, 3, p), lerp(68, 60, p));
+            look.set(cx, cy - 2, 34);
+          } else if (t < 4.8) {   // C1: wide side view, camera lags so they visibly sink; ruler counts
+            const p = range(t, 3.0, 4.8);
+            const cy = Y0 - 0.55 * fallP(t) - 10;
+            cam.position.set(P.x - 30, cy + 6, 150);
+            look.set(P.x - 4, cy - lerp(18, 26, p), 10);
+          } else {                // C2: cut high above, looking down the gap to the frozen city ("122 metros")
+            const p = ease.outCubic(range(t, 4.8, 6.53));
+            cam.position.set(P.x - lerp(60, 50, p), P.y + lerp(70, 60, p), lerp(130, 115, p));
+            look.set(P.x + 5, P.y - lerp(40, 55, p), 0);
+          }
+          cam.lookAt(look);
+        }
+        function render(t) {
+          drawWorld(t);
+          shot(t);
+          renderer.render(scene, cam);
+        }
+        drawWorld(0); shot(0);
+        await renderer.compileAsync(scene, cam);
+        // kit.sceneStart() returns 0 for this host at render time, so fall back to the host's data-start
+        const kOff = K.sceneStart(canvas);
+        const hostEl = document.querySelector('[data-composition-src="compositions/f04.html"][data-start]');
+        const off = kOff || (hostEl ? parseFloat(hostEl.getAttribute("data-start")) : 18.07) || 18.07;
+        await K.bindSeek(canvas, (t) => render(Math.max(0, t + kOff - off)));
+        const gl = renderer.getContext();
+        gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4));
+      });
     })();
   </script>
 </template>

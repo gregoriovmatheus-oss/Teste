@@ -1,25 +1,158 @@
 <template>
   <style>
-      @font-face { font-family: "EB Garamond"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-400-normal.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
-      @font-face { font-family: "EB Garamond"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-ext-400-normal.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
-      @font-face { font-family: "EB Garamond"; font-style: italic; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-400-italic.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
-      @font-face { font-family: "EB Garamond"; font-style: italic; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-ext-400-italic.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
-      @font-face { font-family: "Montserrat"; font-style: normal; font-weight: 600; font-display: block; src: url("assets/fonts/montserrat-latin-600-normal.woff2") format("woff2"); }
-      @font-face { font-family: "Anton"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/fonts/anton-latin-400-normal.woff2") format("woff2"); }
-    #root { position: absolute; inset: 0; background: #26303d; overflow: hidden; }
-    #f09-title { position: absolute; left: 200px; right: 200px; top: 720px; text-align: center;
-      font-family: "Montserrat", sans-serif; font-weight: 600; font-size: 28px; letter-spacing: 0.3em;
-      color: #8D96A2; text-transform: uppercase; }
+    @font-face { font-family: "Montserrat"; font-style: normal; font-weight: 600; font-display: block; src: url("assets/fonts/montserrat-latin-600-normal.woff2") format("woff2"); unicode-range: U+0000-00FF, U+2000-206F, U+2212; }
+    @font-face { font-family: "Montserrat"; font-style: normal; font-weight: 600; font-display: block; src: url("assets/fonts/montserrat-latin-ext-600-normal.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+20A0-20C0, U+2C60-2C7F, U+A720-A7FF; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #141b25; }
+    #f09-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+    #f09-scale { position: absolute; left: 0; top: 0; width: 1px; height: 1px; }
+    #f09-scale-in { position: absolute; left: 0; top: 0; }
+    #f09-bracket { position: absolute; left: 0; top: -34px; width: 26px; height: 68px; border: 4px solid #eef2f6; border-left: none; border-radius: 0 6px 6px 0; }
+    #f09-lead { position: absolute; left: 26px; top: -2px; width: 46px; height: 4px; background: #eef2f6; }
+    #f09-txt { position: absolute; left: 82px; top: -38px; padding: 12px 24px; border-radius: 14px; background: rgba(11, 16, 24, 0.82);
+      border: 2px solid rgba(143, 203, 242, 0.55); font-family: "Montserrat", sans-serif; font-weight: 600; font-size: 40px; color: #ffffff; white-space: nowrap; }
+    .f09-ice { color: #8fcbf2; }
   </style>
   <div id="root" data-composition-id="f09" data-width="1080" data-height="1920">
-    <div id="f09-title" class="clip" data-start="0" data-duration="3.67">F9 oceano ferve e congela</div>
+    <canvas id="f09-canvas" width="1080" height="1920"></canvas>
+    <div id="f09-scale" class="clip" data-start="2.45" data-duration="1.22">
+      <div id="f09-scale-in">
+        <div id="f09-bracket"></div>
+        <div id="f09-lead"></div>
+        <div id="f09-txt">gelo: <span class="f09-ice">~1 mm</span></div>
+      </div>
+    </div>
   </div>
   <script>
     (function () {
+      /* ---------- 2D layers (GSAP) ---------- */
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f09-title", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" }, 0.1);
+      tl.fromTo("#f09-scale-in", { opacity: 0, x: 20 }, { opacity: 1, x: 0, duration: 0.25, ease: "power3.out" }, 2.5);
+      tl.set({}, {}, 3.67);
       window.__timelines = window.__timelines || {};
       window.__timelines["f09"] = tl;
+
+      /* ---------- 3D (Three.js via kit) ---------- */
+      window.__hf = window.__hf || {};
+      window.__hf.buildReady = window.__hf.buildReady || {};
+      window.__hf.buildReady["f09"] = import("./assets/lib/kit.js").then(async (K) => {
+        const { THREE, PALETTE, ease, range, lerp, clamp, mulberry32 } = K;
+        const canvas = document.getElementById("f09-canvas");
+        const renderer = K.createRenderer(canvas);
+        const M = K.maqueteMaterial;
+        const scaleEl = document.getElementById("f09-scale");
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x141b25);
+        const L = K.addMaqueteLights(scene, { shadowSize: 3 });
+        L.key.shadow.normalBias = 0.02; L.key.shadow.mapSize.set(1024, 1024);
+
+        const WX = 3, WZ = 2, WD = 1.4;
+        // water block, light at the top, dark in the deep
+        const wGeo = new THREE.BoxGeometry(WX, WD, WZ, 1, 10, 1);
+        wGeo.translate(0, -WD / 2, 0);
+        { const p = wGeo.attributes.position, col = new Float32Array(p.count * 3);
+          const top = new THREE.Color(0x4f93bd), deep = new THREE.Color(0x10263a), c = new THREE.Color();
+          for (let i = 0; i < p.count; i++) { c.copy(deep).lerp(top, Math.pow(1 + p.getY(i) / WD, 1.6)); col.set([c.r, c.g, c.b], i * 3); }
+          wGeo.setAttribute("color", new THREE.BufferAttribute(col, 3)); }
+        const water = new THREE.Mesh(wGeo, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.55 }));
+        water.receiveShadow = true; scene.add(water);
+        const edges = new THREE.LineSegments(new THREE.EdgesGeometry(wGeo), new THREE.LineBasicMaterial({ color: PALETTE.ice, transparent: true, opacity: 0.35 }));
+        scene.add(edges);
+        const sand = new THREE.Mesh(new THREE.BoxGeometry(WX, 0.14, WZ), M(0x8a8577, { roughness: 0.95 }));
+        sand.position.y = -WD - 0.07; scene.add(sand);
+        const base = new THREE.Mesh(new THREE.BoxGeometry(WX + 0.2, 0.1, WZ + 0.2), M(0x3d4450, { roughness: 0.9 }));
+        base.position.y = -WD - 0.19; base.receiveShadow = true; scene.add(base);
+        // a few rocks on the floor
+        const rnd = mulberry32(909);
+        const rockMat = M(0x6f7782, { roughness: 0.9 });
+        for (let i = 0; i < 7; i++) {
+          const r = new THREE.Mesh(new THREE.DodecahedronGeometry(0.06 + rnd() * 0.08, 0), rockMat);
+          r.position.set((rnd() - 0.5) * 2.4, -WD + 0.03, (rnd() - 0.5) * 1.4); scene.add(r);
+        }
+        // surface (low-poly, static ripples)
+        const sGeo = new THREE.PlaneGeometry(WX, WZ, 30, 20);
+        sGeo.rotateX(-Math.PI / 2);
+        { const p = sGeo.attributes.position;
+          for (let i = 0; i < p.count; i++) { const x = p.getX(i), z = p.getZ(i);
+            const edge = Math.abs(x) > WX / 2 - 0.01 || Math.abs(z) > WZ / 2 - 0.01;
+            p.setY(i, edge ? 0 : 0.012 * Math.sin(x * 7 + z * 3) + 0.008 * Math.sin(z * 9 - x * 2)); }
+          sGeo.computeVertexNormals(); }
+        const surf = new THREE.Mesh(sGeo, new THREE.MeshStandardMaterial({ color: 0x5c9fc7, roughness: 0.5, flatShading: true }));
+        surf.position.y = 0.002; surf.receiveShadow = true; scene.add(surf);
+
+        // boiling: bubble domes on the surface (seeded)
+        const bubMat = new THREE.MeshStandardMaterial({ color: 0xdcebf5, roughness: 0.5, transparent: true, opacity: 0.85 });
+        const bubGeo = new THREE.SphereGeometry(1, 14, 10);
+        const bubbles = [];
+        for (let i = 0; i < 70; i++) {
+          const m = new THREE.Mesh(bubGeo, bubMat); scene.add(m);
+          bubbles.push({ m, x: (rnd() - 0.5) * (WX - 0.15), z: (rnd() - 0.5) * (WZ - 0.12), P: 0.45 + rnd() * 0.45, ph: rnd(), r: 0.025 + rnd() * 0.04 });
+        }
+        // freezing: thin hex ice tiles spreading over the surface
+        const iceMat = new THREE.MeshStandardMaterial({ color: PALETTE.frost, roughness: 0.55, transparent: true, opacity: 0.88 });
+        const hex = new THREE.CylinderGeometry(0.125, 0.125, 0.022, 6);
+        const tiles = [];
+        for (let row = 0; row < 12; row++) {
+          for (let col = 0; col < 14; col++) {
+            const x = -WX / 2 + 0.11 + col * 0.215 + (row % 2) * 0.107, z = -WZ / 2 + 0.1 + row * 0.165;
+            if (x > WX / 2 - 0.08 || z > WZ / 2 - 0.05) continue;
+            const m = new THREE.Mesh(hex, iceMat); m.position.set(x, 0.022, z); m.rotation.y = rnd() * 0.5; m.receiveShadow = true; scene.add(m);
+            const d = Math.hypot(x + 1.3, z + 0.8) / 2.6; // spreads from the back-left corner
+            tiles.push({ m, t0: 1.0 + d * 1.25 + rnd() * 0.25 });
+          }
+        }
+
+        const cam = new THREE.PerspectiveCamera(35, K.W / K.H, 0.05, 100);
+        const T_BOIL = 0.2, T_CUT = 2.45;
+        const ICE_PT = new THREE.Vector3(0.25, 0.012, WZ / 2), proj = new THREE.Vector3();
+
+        function render(t) {
+          for (const b of bubbles) {
+            const age = t - T_BOIL - b.ph * b.P;
+            if (age < 0) { b.m.visible = false; continue; }
+            const a = (age % b.P) / b.P;
+            const g = a < 0.8 ? ease.outQuad(a / 0.8) : 1 - (a - 0.8) / 0.2;
+            b.m.visible = g > 0.03;
+            b.m.position.set(b.x, -0.3 * b.r + 0.4 * b.r * a, b.z);
+            b.m.scale.set(b.r * g, b.r * g * 0.8, b.r * g);
+          }
+          for (const s of tiles) {
+            const k = ease.outBack(range(t, s.t0, s.t0 + 0.28));
+            s.m.visible = k > 0.01;
+            s.m.scale.set(k, 1, k);
+          }
+          let showScale = false;
+          if (t < T_CUT) {
+            const p = ease.inOutSine(clamp(t / T_CUT));
+            const ang = lerp(0.62, 0.42, p), r = lerp(6.4, 5.4, p);
+            cam.position.set(Math.sin(ang) * r, lerp(3.0, 2.5, p), Math.cos(ang) * r);
+            cam.lookAt(0, -0.25, 0);
+          } else {
+            const p = ease.outCubic(range(t, T_CUT, 3.67));
+            cam.position.set(lerp(-0.4, -0.3, p), lerp(0.55, 0.48, p), WZ / 2 + lerp(2.3, 1.95, p));
+            cam.lookAt(0.12, 0.02, WZ / 2 - 0.1);
+            showScale = true;
+          }
+          renderer.render(scene, cam);
+          if (showScale) {
+            cam.updateMatrixWorld();
+            proj.copy(ICE_PT).project(cam);
+            const x = (proj.x * 0.5 + 0.5) * K.W, y = (-proj.y * 0.5 + 0.5) * K.H;
+            scaleEl.style.transform = "translate(" + Math.round(clamp(x, 300, 560)) + "px," + Math.round(clamp(y, 640, 1010)) + "px)";
+          }
+        }
+
+        await renderer.compileAsync(scene, cam);
+        render(3);
+        const host = document.querySelector('[data-composition-id="f09"][data-start]');
+        const T0 = host ? parseFloat(host.getAttribute("data-start")) || 0 : 46.2;
+        let last = null;
+        const draw = (g) => { const t = clamp(g - T0, 0, 3.67); if (t === last) return; last = t; render(t); };
+        window.addEventListener("hf-seek", (e) => draw(e.detail.time));
+        draw(T0);
+        const gl = renderer.getContext();
+        gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4));
+      });
     })();
   </script>
 </template>
