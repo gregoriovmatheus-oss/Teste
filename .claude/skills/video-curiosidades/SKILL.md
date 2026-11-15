@@ -53,7 +53,7 @@ O vídeo alterna entre **2D flat** e **3D estilizado**. Nunca usa 3D fotorrealis
 3. **Cenas:** `python3 scripts/cenas.py "<1ª palavra>" ... --criar` gera a tabela, `index.html` e as `fNN.html` a partir de `modelos/`. Depois `python3 scripts/gera-hud-legendas.py` (status do HUD = linha `- status:` de cada Frame do STORYBOARD).
 4. **Montagem:** um único agente de build, partindo dos blocos em `assets/lib/blocks/` (globe, city, particles, shockwave, counter, tiles, primitives, kinetic). Leia o cabeçalho do bloco, não a cena antiga.
 5. **Prévia:** `bash scripts/previa.sh` e mostre `renders/previa-folha.jpg` ao usuário antes do render de entrega.
-6. **Entrega:** `render-rapido.sh` (hoje em `videos/mundo-congela-5s/`; vai para o template).
+6. **Entrega:** `./render-rapido.sh` (já vem no template).
 
 **Lições:**
 - Plano grátis da ElevenLabs: sem API de música e sem vozes da biblioteca. Use voz premade e trilha como efeito longo em loop.
