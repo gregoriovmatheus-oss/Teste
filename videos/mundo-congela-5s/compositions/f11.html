@@ -6,20 +6,193 @@
       @font-face { font-family: "EB Garamond"; font-style: italic; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-ext-400-italic.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
       @font-face { font-family: "Montserrat"; font-style: normal; font-weight: 600; font-display: block; src: url("assets/fonts/montserrat-latin-600-normal.woff2") format("woff2"); }
       @font-face { font-family: "Anton"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/fonts/anton-latin-400-normal.woff2") format("woff2"); }
-    #root { position: absolute; inset: 0; background: #26303d; overflow: hidden; }
-    #f11-title { position: absolute; left: 200px; right: 200px; top: 720px; text-align: center;
-      font-family: "Montserrat", sans-serif; font-weight: 600; font-size: 28px; letter-spacing: 0.3em;
-      color: #8D96A2; text-transform: uppercase; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #c9d3dc; }
+    #f11-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+    #f11-flash { position: absolute; inset: 0; opacity: 0; background: #ffffff; }
+    #f11-hitflash { position: absolute; inset: 0; opacity: 0;
+      background: radial-gradient(ellipse at 50% 55%, rgba(255, 246, 228, 1) 0%, rgba(255, 236, 200, 0.85) 45%, rgba(232, 178, 74, 0.5) 100%); }
+    #f11-badge { position: absolute; left: 140px; right: 180px; top: 250px; text-align: center; }
+    #f11-badge-in { display: inline-block; font-family: "Montserrat", sans-serif; font-weight: 600; font-size: 30px;
+      letter-spacing: 0.06em; color: #e8b24a; padding: 14px 26px; border: 3px solid #e8b24a; border-radius: 10px;
+      background: rgba(11, 16, 24, 0.72); }
+    #f11-badge-in b { font-weight: 600; color: #ffffff; letter-spacing: 0.14em; }
   </style>
   <div id="root" data-composition-id="f11" data-width="1080" data-height="1920">
-    <div id="f11-title" class="clip" data-start="0" data-duration="5.14">F11 estrondo (HIPÓTESE)</div>
+    <canvas id="f11-canvas" width="1080" height="1920"></canvas>
+    <div id="f11-flash" data-layout-ignore></div>
+    <div id="f11-hitflash" data-layout-ignore></div>
+    <div id="f11-badge" class="clip" data-start="0" data-duration="5.14">
+      <span id="f11-badge-in"><b>HIPÓTESE</b> · cálculo, não observação</span>
+    </div>
   </div>
   <script>
     (function () {
+      const T_GAS = 1.9;   // "vira gás"
+      const T_HIT = 3.27;  // "Um estrondo" (55.8 s)
+      /* ---------- 2D layers (GSAP) ---------- */
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f11-title", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" }, 0.1);
+      tl.fromTo("#f11-badge-in", { opacity: 1 }, { opacity: 1, duration: 0.01 }, 0);
+      tl.fromTo("#f11-flash", { opacity: 0 }, { opacity: 0.55, duration: 0.08, ease: "power2.out" }, T_GAS + 0.4);
+      tl.to("#f11-flash", { opacity: 0, duration: 0.45, ease: "power2.in" }, T_GAS + 0.48);
+      tl.fromTo("#f11-hitflash", { opacity: 0 }, { opacity: 1, duration: 0.05, ease: "none" }, T_HIT - 0.05);
+      tl.to("#f11-hitflash", { opacity: 0, duration: 0.55, ease: "power2.out" }, T_HIT + 0.05);
+      tl.set({}, {}, 5.14);
       window.__timelines = window.__timelines || {};
       window.__timelines["f11"] = tl;
+
+      /* ---------- 3D (Three.js via kit) ---------- */
+      window.__hf = window.__hf || {};
+      window.__hf.buildReady = window.__hf.buildReady || {};
+      window.__hf.buildReady["f11"] = import("./assets/lib/kit.js").then(async (K) => {
+        const { THREE, PALETTE, ease, range, lerp, clamp, mulberry32 } = K;
+        const canvas = document.getElementById("f11-canvas");
+        const renderer = K.createRenderer(canvas);
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xd9cdb8);
+        scene.fog = new THREE.Fog(0xd9cdb8, 260, 620);
+        const lights = K.addMaqueteLights(scene, { intensity: 1, shadowSize: 220 });
+        lights.key.color.set(0xffc98a);
+        lights.key.intensity = 3.0;
+        const city = K.buildCityGrid({ seed: 7, cols: 8, rows: 11, maxH: 38 });
+        city.ground.visible = false;
+        scene.add(city.group);
+        K.setFrost(city.group, 0.45);
+
+        const BW = city.size.w + 20, BD = city.size.d + 20, ZE = BD / 2;
+        const board = new THREE.Mesh(new THREE.BoxGeometry(BW, 7, BD), K.maqueteMaterial(0x5d646e, { roughness: 0.9 }));
+        board.position.y = -3.5;
+        board.receiveShadow = true;
+        scene.add(board);
+        const snowGeo = new THREE.BoxGeometry(BW, 1.0, BD);
+        snowGeo.translate(0, 0.5, 0);
+        const snow = new THREE.Mesh(snowGeo, new THREE.MeshStandardMaterial({ color: 0xf6f9fc, roughness: 0.92, emissive: 0x8fcbf2, emissiveIntensity: 0.06 }));
+        snow.receiveShadow = true;
+        scene.add(snow);
+
+        /* gas puffs (snow -> gas), precomputed */
+        const rnd = mulberry32(1101);
+        const NG = 260;
+        const gasMat = new THREE.MeshStandardMaterial({ color: 0xf4f8fb, roughness: 0.95, transparent: true, opacity: 0.55, depthWrite: false, flatShading: true });
+        const gas = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 1), gasMat, NG);
+        gas.frustumCulled = false;
+        const G = [];
+        for (let i = 0; i < NG; i++) {
+          G.push({ x: (rnd() - 0.5) * 70, z: ZE - rnd() * 120, s: T_GAS + rnd() * 0.75, v: 3 + rnd() * 6, r: 1.2 + rnd() * 2.4 });
+        }
+        scene.add(gas);
+
+        /* shockwave: ground ring + translucent dust wall */
+        const SPEED = 210;
+        const ring = new THREE.Mesh(new THREE.RingGeometry(0.86, 1, 96, 1),
+          new THREE.MeshBasicMaterial({ color: 0xfff1d6, transparent: true, opacity: 0.9, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending }));
+        ring.rotation.x = -Math.PI / 2;
+        ring.position.y = 1.2;
+        scene.add(ring);
+        const wallGeo = new THREE.CylinderGeometry(1, 1, 1, 96, 1, true);
+        wallGeo.translate(0, 0.5, 0);
+        const wall = new THREE.Mesh(wallGeo, new THREE.MeshBasicMaterial({ color: 0xf2e4cc, transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthWrite: false }));
+        scene.add(wall);
+
+        /* window shards: spawned when the ring reaches each building */
+        const shardsPer = 14;
+        const blds = city.buildings.filter((b) => b.scale.y > 8);
+        const NS = blds.length * shardsPer;
+        const shardMat = new THREE.MeshStandardMaterial({ color: 0xbfe3f8, roughness: 0.5, metalness: 0.1, emissive: 0x8fcbf2, emissiveIntensity: 0.45, flatShading: true });
+        const shards = new THREE.InstancedMesh(new THREE.TetrahedronGeometry(1, 0), shardMat, NS);
+        shards.frustumCulled = false;
+        const S = [];
+        const rs = mulberry32(2202);
+        blds.forEach((b) => {
+          const bx = b.position.x, bz = b.position.z;
+          const dist = Math.hypot(bx, bz);
+          const dx = dist > 0.01 ? bx / dist : 1, dz = dist > 0.01 ? bz / dist : 0;
+          for (let k = 0; k < shardsPer; k++) {
+            const sp = 14 + rs() * 26;
+            S.push({
+              t0: T_HIT + dist / SPEED,
+              p: [bx + dx * b.scale.x * 0.5 + (rs() - 0.5) * b.scale.x, 0.6 + b.scale.y * (0.2 + rs() * 0.75), bz + dz * b.scale.z * 0.5 + (rs() - 0.5) * b.scale.z],
+              v: [dx * sp + (rs() - 0.5) * 10, 4 + rs() * 12, dz * sp + (rs() - 0.5) * 10],
+              s: 0.55 + rs() * 0.8, w: [rs() * 9, rs() * 9],
+            });
+          }
+        });
+        scene.add(shards);
+        const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), e3 = new THREE.Euler(), vs = new THREE.Vector3(), vp = new THREE.Vector3();
+
+        /* seeded camera shake */
+        const rsh = mulberry32(3303);
+        const SH = Array.from({ length: 4 }, () => ({ f: 18 + rsh() * 22, ph: rsh() * 6.28, a: 0.5 + rsh() * 0.5 }));
+        const shake = (t, k) => SH.reduce((acc, s, i) => acc + Math.sin(t * s.f * (1 + 0.13 * k) + s.ph + k * 1.7 + i) * s.a, 0) / 2.5;
+
+        const cam = new THREE.PerspectiveCamera(35, K.W / K.H, 0.5, 3000);
+        const T_B = 1.3;
+
+        function render(t) {
+          // snow -> gas
+          const sub = ease.inCubic(range(t, T_GAS, T_GAS + 0.9));
+          snow.scale.y = Math.max(0.001, 1 - sub);
+          snow.visible = sub < 0.999;
+          for (let i = 0; i < NG; i++) {
+            const g = G[i], a = t - g.s;
+            let sc = 0;
+            if (a > 0) sc = g.r * (0.4 + Math.min(1, a * 2.2)) * (1 - range(a, 0.7, 1.5));
+            vp.set(g.x, 1 + a * g.v, g.z);
+            m4.compose(vp, q.identity(), vs.set(sc, sc * 0.8, sc));
+            gas.setMatrixAt(i, m4);
+          }
+          gas.instanceMatrix.needsUpdate = true;
+          gas.visible = t > T_GAS && t < T_HIT;
+
+          // shockwave
+          const age = t - T_HIT;
+          const R = Math.max(0.01, age * SPEED);
+          ring.visible = wall.visible = age > 0;
+          ring.scale.set(R, R, 1);
+          ring.material.opacity = 0.95 * (1 - range(age, 0.6, 1.8));
+          wall.scale.set(R, lerp(26, 8, range(age, 0, 1.6)), R);
+          wall.material.opacity = 0.38 * (1 - range(age, 0.4, 1.8));
+
+          for (let i = 0; i < NS; i++) {
+            const s = S[i], a = t - s.t0;
+            if (a <= 0) { m4.makeScale(0, 0, 0); shards.setMatrixAt(i, m4); continue; }
+            let y = s.p[1] + s.v[1] * a - 15 * a * a;
+            if (y < 1.2) y = 1.2;
+            vp.set(s.p[0] + s.v[0] * a, y, s.p[2] + s.v[2] * a);
+            e3.set(s.w[0] * a, s.w[1] * a, 0);
+            m4.compose(vp, q.setFromEuler(e3), vs.set(s.s, s.s * 0.35, s.s * 1.3));
+            shards.setMatrixAt(i, m4);
+          }
+          shards.instanceMatrix.needsUpdate = true;
+
+          // cameras
+          cam.up.set(0, 1, 0);
+          if (t < T_B) {
+            // "Pelas contas": slow push over the white city
+            const p = ease.inOutSine(clamp(t / T_B));
+            cam.position.set(lerp(-40, -20, p), lerp(150, 128, p), ZE * 0.2 + lerp(150, 130, p));
+            cam.lookAt(0, 0, lerp(10, 20, p));
+          } else if (t < T_HIT) {
+            // low at the avenue edge: the white layer flashes into gas
+            const p = ease.outCubic(range(t, T_B, T_HIT));
+            cam.position.set(lerp(6, 3, p), lerp(4.2, 7.5, p), ZE + lerp(22, 30, p));
+            cam.lookAt(0, lerp(4.4, 9, p), ZE - 60);
+          } else {
+            // "Um estrondo no planeta inteiro": wide aerial, ring sweeps, camera rises; seeded shake
+            const p = ease.outCubic(range(t, T_HIT, 5.14));
+            const amp = 3.2 * Math.exp(-age * 2.4);
+            cam.position.set(lerp(-60, -90, p) + shake(t, 0) * amp, lerp(110, 260, p) + shake(t, 1) * amp, lerp(230, 330, p) + shake(t, 2) * amp);
+            cam.lookAt(shake(t, 3) * amp * 0.8, 0, lerp(30, 10, p));
+          }
+          renderer.toneMappingExposure = 1.08;
+          renderer.render(scene, cam);
+        }
+
+        await renderer.compileAsync(scene, cam);
+        await K.bindSeek(canvas, render);
+        const gl = renderer.getContext();
+        gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4));
+      });
     })();
   </script>
 </template>

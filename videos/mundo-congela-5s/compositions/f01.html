@@ -5,10 +5,10 @@
     #root { position: absolute; inset: 0; overflow: hidden; background: #0b1018; }
     #f01-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
     #f01-veil { position: absolute; inset: 0; opacity: 0;
-      background: radial-gradient(ellipse at 50% 45%, rgba(246, 249, 252, 0.98) 0%, rgba(232, 238, 244, 0.92) 55%, rgba(214, 222, 231, 0.85) 100%); }
+      background: radial-gradient(ellipse at 50% 45%, rgba(255, 255, 255, 1) 0%, rgba(246, 250, 253, 0.95) 55%, rgba(232, 240, 247, 0.9) 100%); }
     #f01-tint { position: absolute; inset: 0; opacity: 0; background: rgba(176, 214, 242, 0.28); mix-blend-mode: screen; }
     #f01-frost { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; opacity: 0; }
-    #f01-title { position: absolute; left: 190px; right: 190px; top: 622px; text-align: center; }
+    #f01-title { position: absolute; left: 192px; right: 192px; top: 345px; text-align: center; }
     #f01-title-in { display: block; font-family: "EB Garamond", serif; font-weight: 400; font-size: 90px; line-height: 1.04;
       color: #ffffff; letter-spacing: -0.005em;
       text-shadow: 0 4px 26px rgba(4, 10, 20, 0.75), 0 1px 4px rgba(4, 10, 20, 0.6); }
@@ -19,7 +19,7 @@
     <div id="f01-veil" data-layout-ignore></div>
     <canvas id="f01-frost" width="1080" height="1920" data-layout-ignore></canvas>
     <div id="f01-tint" data-layout-ignore></div>
-    <div id="f01-title" class="clip" data-start="0.8" data-duration="4.5">
+    <div id="f01-title" class="clip" data-start="0.8" data-duration="1.65">
       <span id="f01-title-in">E se o ar do mundo congelasse por <span class="ice">5&nbsp;s</span>?</span>
     </div>
   </div>
@@ -29,8 +29,9 @@
       const tl = gsap.timeline({ paused: true });
       tl.fromTo("#f01-title-in", { opacity: 0, y: 24, filter: "blur(10px)" },
         { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.45, ease: "power3.out" }, 0.8);
-      tl.fromTo("#f01-veil", { opacity: 0 }, { opacity: 1, duration: 0.22, ease: "power2.in" }, 2.42);
-      tl.to("#f01-veil", { opacity: 0, duration: 0.4, ease: "power2.out" }, 2.66);
+      tl.to("#f01-title-in", { opacity: 0, y: -16, filter: "blur(6px)", duration: 0.2, ease: "power2.in" }, 2.2);
+      tl.fromTo("#f01-veil", { opacity: 0 }, { opacity: 0.95, duration: 0.08, ease: "power2.in" }, 2.28);
+      tl.to("#f01-veil", { opacity: 0, duration: 0.2, ease: "power2.out" }, 2.37);
       tl.fromTo("#f01-tint", { opacity: 0 }, { opacity: 0.6, duration: 0.3, ease: "power2.out" }, 4.6);
       tl.fromTo("#f01-frost", { opacity: 0 }, { opacity: 0.95, duration: 0.45, ease: "power2.out" }, 4.6);
       tl.set({}, {}, 5.3);
@@ -154,7 +155,7 @@
         earth.add(marker);
 
         // low-poly clouds, denser over the destination
-        const cloudMat = new THREE.MeshStandardMaterial({ color: 0xf4f7fa, roughness: 0.95, flatShading: true });
+        const cloudMat = new THREE.MeshStandardMaterial({ color: 0xf6f9fc, emissive: 0xc8d4e0, emissiveIntensity: 0.55, roughness: 0.95, flatShading: true });
         const puff = new THREE.IcosahedronGeometry(1, 1);
         const rndC = mulberry32(23);
         const addPuff = (lon, lat, r, s) => {
@@ -169,9 +170,9 @@
           const lat = (rndC() * 2 - 1) * 70, lon = rndC() * 360 - 180;
           addPuff(lon, lat, 1.018 + rndC() * 0.006, 0.006 + rndC() * 0.016);
         }
-        for (let i = 0; i < 90; i++) { // cloud deck the camera dives through
-          const a = rndC() * Math.PI * 2, d = Math.sqrt(rndC()) * 1.6;
-          addPuff(TGT.lon + Math.cos(a) * d + 0.25, TGT.lat + Math.sin(a) * d, 1.02 + rndC() * 0.025, 0.003 + rndC() * 0.006);
+        for (let i = 0; i < 60; i++) { // thin cloud deck the camera dives through (~2.0-2.3 s); the coast shows between puffs
+          const a = rndC() * Math.PI * 2, d = 0.15 + Math.sqrt(rndC()) * 3.0;
+          addPuff(TGT.lon + Math.cos(a) * d, TGT.lat + Math.sin(a) * d, 1.06 + rndC() * 0.08, 0.004 + rndC() * 0.01);
         }
 
         // atmosphere glow + ice wave (shader)
@@ -214,7 +215,7 @@
         const fogBase = new THREE.Color(0x9aa3ae), fogIce = new THREE.Color(0xd7e6f2);
 
         /* ===== timing (local seconds) ===== */
-        const T_CUT = 2.62;   // earth -> city, hidden under the cloud veil
+        const T_CUT = 2.36;   // earth -> city, hidden under the cloud veil
         const T_FREEZE = 4.6;
 
         function renderEarth(t) {
@@ -225,8 +226,9 @@
           // rotate the globe so the target turns to face the camera
           const q = ease.outCubic(clamp(t / 2.3));
           earth.rotation.order = "XYZ";
-          earth.rotation.y = -lerp(TGT.lon + 85, TGT.lon, q) * D2R;
-          earth.rotation.x = lerp(12, TGT.lat, q) * D2R;
+          earth.rotation.y = -lerp(TGT.lon + 14, TGT.lon, q) * D2R;
+          earth.rotation.x = lerp(-12, TGT.lat, q) * D2R;
+          marker.visible = alt > 0.3;
           earthCam.position.set(0, 0, 1 + alt);
           earthCam.up.set(0, 1, 0);
           earthCam.lookAt(0, -Math.min(0.25, alt * 0.06), 0);

@@ -1,25 +1,179 @@
 <template>
   <style>
-      @font-face { font-family: "EB Garamond"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-400-normal.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
-      @font-face { font-family: "EB Garamond"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-ext-400-normal.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
-      @font-face { font-family: "EB Garamond"; font-style: italic; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-400-italic.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
-      @font-face { font-family: "EB Garamond"; font-style: italic; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-ext-400-italic.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
-      @font-face { font-family: "Montserrat"; font-style: normal; font-weight: 600; font-display: block; src: url("assets/fonts/montserrat-latin-600-normal.woff2") format("woff2"); }
-      @font-face { font-family: "Anton"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/fonts/anton-latin-400-normal.woff2") format("woff2"); }
-    #root { position: absolute; inset: 0; background: #26303d; overflow: hidden; }
-    #f07-title { position: absolute; left: 200px; right: 200px; top: 720px; text-align: center;
-      font-family: "Montserrat", sans-serif; font-weight: 600; font-size: 28px; letter-spacing: 0.3em;
-      color: #8D96A2; text-transform: uppercase; }
+    @font-face { font-family: "Montserrat"; font-style: normal; font-weight: 600; font-display: block; src: url("assets/fonts/montserrat-latin-600-normal.woff2") format("woff2"); unicode-range: U+0000-00FF, U+2000-206F, U+2212; }
+    @font-face { font-family: "Montserrat"; font-style: normal; font-weight: 600; font-display: block; src: url("assets/fonts/montserrat-latin-ext-600-normal.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+20A0-20C0, U+2C60-2C7F, U+A720-A7FF; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #141b25; }
+    #f07-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+    #f07-alert { position: absolute; left: 80px; right: 150px; top: 1218px; text-align: center; }
+    #f07-alert-in { display: inline-block; padding: 16px 30px 18px; border-radius: 14px; background: rgba(216, 67, 47, 0.94);
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.85), 0 10px 40px rgba(216, 67, 47, 0.55);
+      font-family: "Montserrat", sans-serif; font-weight: 600; color: #ffffff; white-space: nowrap; }
+    #f07-alert-top { display: flex; align-items: center; justify-content: center; gap: 16px; font-size: 40px; letter-spacing: 0.04em; }
+    #f07-alert-sub { display: block; font-size: 28px; letter-spacing: 0.16em; margin-top: 4px; opacity: 0; }
+    #f07-tag { position: absolute; left: 80px; right: 150px; top: 1218px; text-align: center; }
+    #f07-tag-in { display: inline-block; padding: 14px 28px; border-radius: 14px; background: rgba(11, 16, 24, 0.8);
+      border: 2px solid rgba(143, 203, 242, 0.5); font-family: "Montserrat", sans-serif; font-weight: 600; font-size: 38px; color: #ffffff; }
+    .f07-ice { color: #8fcbf2; }
   </style>
   <div id="root" data-composition-id="f07" data-width="1080" data-height="1920">
-    <div id="f07-title" class="clip" data-start="0" data-duration="4.13">F7 solte o ar</div>
+    <canvas id="f07-canvas" width="1080" height="1920"></canvas>
+    <div id="f07-tag" class="clip" data-start="0" data-duration="2.0">
+      <span id="f07-tag-in">regra nº 1: <span class="f07-ice">solte o ar</span></span>
+    </div>
+    <div id="f07-alert" class="clip" data-start="2.06" data-duration="2.07">
+      <span id="f07-alert-in">
+        <span id="f07-alert-top">
+          <svg width="46" height="42" viewBox="0 0 46 42" aria-hidden="true"><path d="M23 3 L44 39 L2 39 Z" fill="none" stroke="#fff" stroke-width="4" stroke-linejoin="round"/><rect x="21" y="14" width="4" height="13" rx="2" fill="#fff"/><circle cx="23" cy="32.5" r="2.6" fill="#fff"/></svg>
+          PRENDER A RESPIRAÇÃO
+        </span>
+        <span id="f07-alert-sub">RASGA O PULMÃO</span>
+      </span>
+    </div>
   </div>
   <script>
     (function () {
+      /* ---------- 2D layers (GSAP) ---------- */
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f07-title", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" }, 0.1);
+      tl.fromTo("#f07-tag-in", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, 0);
+      tl.to("#f07-tag-in", { opacity: 0, duration: 0.2, ease: "power2.in" }, 1.8);
+      tl.fromTo("#f07-alert-in", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.22, ease: "back.out(2)" }, 2.06);
+      // blink (finite, absolute times)
+      for (let k = 0; k < 4; k++) {
+        const t0 = 2.5 + k * 0.42;
+        tl.to("#f07-alert-in", { opacity: 0.35, duration: 0.1, ease: "none" }, t0);
+        tl.to("#f07-alert-in", { opacity: 1, duration: 0.1, ease: "none" }, t0 + 0.14);
+      }
+      tl.fromTo("#f07-alert-sub", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.2, ease: "power2.out" }, 3.13);
+      tl.set({}, {}, 4.13);
       window.__timelines = window.__timelines || {};
       window.__timelines["f07"] = tl;
+
+      /* ---------- 3D (Three.js via kit) ---------- */
+      window.__hf = window.__hf || {};
+      window.__hf.buildReady = window.__hf.buildReady || {};
+      window.__hf.buildReady["f07"] = import("./assets/lib/kit.js").then(async (K) => {
+        const { THREE, PALETTE, ease, range, lerp, clamp, mulberry32 } = K;
+        const canvas = document.getElementById("f07-canvas");
+        const renderer = K.createRenderer(canvas);
+        const M = K.maqueteMaterial;
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x141b25);
+        const L = K.addMaqueteLights(scene, { shadowSize: 3, target: [0, 1, 0] });
+        L.key.shadow.normalBias = 0.02; L.key.shadow.mapSize.set(1024, 1024);
+
+        // pedestal
+        const ped = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.38, 0.8, 40), M(0x3d4450, { roughness: 0.9 }));
+        ped.position.y = 0.42; ped.receiveShadow = true; scene.add(ped);
+        const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 0.05, 40), M(PALETTE.coldGrey, { roughness: 0.7 }));
+        cap.position.y = 0.845; cap.receiveShadow = true; scene.add(cap);
+
+        // glass bust (stylized, see-through)
+        const shellMat = new THREE.MeshStandardMaterial({ color: 0xdfe6ee, roughness: 0.5, transparent: true, opacity: 0.22, depthWrite: false });
+        const bust = new THREE.Group(); scene.add(bust);
+        const addS = (geo, x, y, z, rz = 0, sx = 1, sy = 1, sz = 1) => {
+          const m = new THREE.Mesh(geo, shellMat); m.position.set(x, y, z); m.rotation.z = rz; m.scale.set(sx, sy, sz); bust.add(m); return m;
+        };
+        const head = addS(new THREE.SphereGeometry(0.115, 28, 18), 0, 1.67, 0, 0, 1, 1.08, 1);
+        addS(new THREE.CylinderGeometry(0.048, 0.055, 0.12, 14), 0, 1.55, 0);
+        const chest = addS(new THREE.CapsuleGeometry(0.16, 0.34, 8, 20), 0, 1.24, 0, 0, 1.22, 1, 0.72);
+        addS(new THREE.CapsuleGeometry(0.14, 0.04, 6, 20), 0, 0.96, 0, 0, 1.15, 1, 0.8);
+        for (const s of [-1, 1]) addS(new THREE.CapsuleGeometry(0.048, 0.27, 4, 12), s * 0.283, 1.268, 0, s * 0.35);
+        // nose bump so the face direction reads
+        addS(new THREE.ConeGeometry(0.02, 0.05, 10), 0, 1.66, 0.12).rotation.x = Math.PI / 2;
+
+        // lungs
+        const lungMat = M(0xd9938c, { roughness: 0.7 });
+        lungMat.emissive = new THREE.Color(0x000000);
+        const lobeGeo = new THREE.IcosahedronGeometry(1, 3);
+        { // flatten the inner face a little: lung silhouette
+          const p = lobeGeo.attributes.position; const v = new THREE.Vector3();
+          for (let i = 0; i < p.count; i++) { v.fromBufferAttribute(p, i); if (v.x < 0) v.x *= 0.55; v.y *= 1 + 0.15 * Math.max(0, -v.y); p.setXYZ(i, v.x, v.y, v.z); }
+          lobeGeo.computeVertexNormals();
+        }
+        const lobes = [];
+        for (const s of [-1, 1]) {
+          const m = new THREE.Mesh(lobeGeo, lungMat); m.castShadow = true;
+          m.position.set(s * 0.1, 1.26, 0); m.rotation.y = s < 0 ? Math.PI : 0;
+          scene.add(m); lobes.push(m);
+        }
+        const airMat = M(0xe9d6cf, { roughness: 0.7 });
+        const trachea = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.022, 0.18, 14), airMat);
+        trachea.position.set(0, 1.5, 0); scene.add(trachea);
+        for (const s of [-1, 1]) {
+          const b = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.017, 0.12, 12), airMat);
+          b.position.set(s * 0.045, 1.385, 0); b.rotation.z = s * 0.9; scene.add(b);
+        }
+
+        // exhaled air puffs (seeded)
+        const rnd = mulberry32(707);
+        const puffMat = new THREE.MeshStandardMaterial({ color: PALETTE.frost, roughness: 0.6, transparent: true, opacity: 0.8, depthWrite: false });
+        const puffGeo = new THREE.IcosahedronGeometry(1, 2);
+        const puffs = [];
+        for (let i = 0; i < 26; i++) {
+          const m = new THREE.Mesh(puffGeo, puffMat); scene.add(m);
+          puffs.push({ m, te: 1.13 + i * 0.035, dx: (rnd() - 0.5) * 0.35, dy: (rnd() - 0.3) * 0.25, sp: 0.55 + rnd() * 0.35, r: 0.018 + rnd() * 0.02 });
+        }
+        const MOUTH = new THREE.Vector3(0, 1.625, 0.11);
+
+        const cam = new THREE.PerspectiveCamera(35, K.W / K.H, 0.05, 100);
+        const T_EXH = 1.13, T_CUT = 2.06;
+
+        function lungScale(t) {
+          if (t < T_EXH) return 1.12 + 0.02 * Math.sin(t * 5);
+          if (t < T_CUT) return lerp(1.12, 0.84, ease.outCubic(range(t, T_EXH, 2.0)));
+          return lerp(0.95, 1.42, ease.inOutSine(range(t, T_CUT, 3.9)));
+        }
+        function render(t) {
+          const s = lungScale(t);
+          const shake = t > 3.13 ? 0.004 * Math.sin(t * 61) * range(t, 3.13, 3.4) : 0;
+          lobes.forEach((m, i) => {
+            m.scale.set(0.105 * s, 0.19 * (0.9 + 0.1 * s), 0.085 * s);
+            m.position.x = (i ? 1 : -1) * (0.1 + 0.02 * (s - 1)) + shake;
+          });
+          chest.scale.set(1.22 * (0.97 + 0.03 * s), 1, 0.72 * (0.93 + 0.07 * s));
+          // strain: red glow while holding
+          const strain = range(t, 2.9, 3.6) * (t >= T_CUT ? 1 : 0);
+          const blink = strain > 0 ? 0.65 + 0.35 * Math.cos((t - 2.9) * 15) : 0;
+          lungMat.emissive.setRGB(0.55 * strain * blink, 0.05 * strain * blink, 0.02 * strain * blink);
+          lungMat.color.copy(lungMat.userData.baseColor).lerp(new THREE.Color(PALETTE.accent), 0.5 * strain);
+          // exhale puffs
+          for (const p of puffs) {
+            const a = (t - p.te) / 0.95;
+            if (a <= 0 || a >= 1 || t >= T_CUT) { p.m.visible = false; continue; }
+            p.m.visible = true;
+            const d = ease.outQuad(a) * p.sp;
+            p.m.position.set(MOUTH.x + p.dx * d + 0.25 * d, MOUTH.y + p.dy * d + 0.05 * d, MOUTH.z + d);
+            p.m.scale.setScalar(p.r * (1 + 3 * a) * (a > 0.75 ? (1 - a) / 0.25 : 1));
+          }
+          head.rotation.x = t >= T_EXH && t < T_CUT ? -0.12 * Math.sin(Math.PI * range(t, T_EXH, 2.0)) : 0;
+          if (t < T_CUT) {
+            // shot A: bust 3/4, slow push, a nudge in on "solte o ar"
+            const p = ease.inOutSine(clamp(t / T_CUT));
+            const ang = lerp(0.55, 0.38, p), r = lerp(4.3, 3.6, p);
+            cam.position.set(Math.sin(ang) * r, 1.45, Math.cos(ang) * r);
+            cam.lookAt(0, 1.33, 0);
+          } else {
+            // shot B: low and close on the lungs, pushing in
+            const p = ease.outCubic(range(t, T_CUT, 4.13));
+            const ang = lerp(-0.35, -0.12, p), r = lerp(2.7, 2.1, p);
+            cam.position.set(Math.sin(ang) * r + shake * 4, lerp(1.1, 1.18, p), Math.cos(ang) * r);
+            cam.lookAt(0, 1.2, 0);
+          }
+          renderer.render(scene, cam);
+        }
+
+        await renderer.compileAsync(scene, cam);
+        render(1.5);
+        const host = document.querySelector('[data-composition-id="f07"][data-start]');
+        const T0 = host ? parseFloat(host.getAttribute("data-start")) || 0 : 36.67;
+        let last = null;
+        const draw = (g) => { const t = clamp(g - T0, 0, 4.13); if (t === last) return; last = t; render(t); };
+        window.addEventListener("hf-seek", (e) => draw(e.detail.time));
+        draw(T0);
+        const gl = renderer.getContext();
+        gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4));
+      });
     })();
   </script>
 </template>

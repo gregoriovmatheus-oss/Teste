@@ -1,25 +1,171 @@
 <template>
   <style>
-      @font-face { font-family: "EB Garamond"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-400-normal.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
-      @font-face { font-family: "EB Garamond"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-ext-400-normal.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
-      @font-face { font-family: "EB Garamond"; font-style: italic; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-400-italic.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
-      @font-face { font-family: "EB Garamond"; font-style: italic; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-ext-400-italic.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
-      @font-face { font-family: "Montserrat"; font-style: normal; font-weight: 600; font-display: block; src: url("assets/fonts/montserrat-latin-600-normal.woff2") format("woff2"); }
-      @font-face { font-family: "Anton"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/fonts/anton-latin-400-normal.woff2") format("woff2"); }
-    #root { position: absolute; inset: 0; background: #26303d; overflow: hidden; }
-    #f08-title { position: absolute; left: 200px; right: 200px; top: 720px; text-align: center;
-      font-family: "Montserrat", sans-serif; font-weight: 600; font-size: 28px; letter-spacing: 0.3em;
-      color: #8D96A2; text-transform: uppercase; }
+    @font-face { font-family: "Montserrat"; font-style: normal; font-weight: 600; font-display: block; src: url("assets/fonts/montserrat-latin-600-normal.woff2") format("woff2"); unicode-range: U+0000-00FF, U+2000-206F, U+2212; }
+    @font-face { font-family: "Montserrat"; font-style: normal; font-weight: 600; font-display: block; src: url("assets/fonts/montserrat-latin-ext-600-normal.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+20A0-20C0, U+2C60-2C7F, U+A720-A7FF; }
+    @font-face { font-family: "Anton"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/fonts/anton-latin-400-normal.woff2") format("woff2"); }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0b1018; }
+    #f08-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+    #f08-vac { position: absolute; left: 80px; right: 150px; top: 1218px; text-align: center; }
+    #f08-vac-in { display: inline-block; padding: 16px 30px; border-radius: 14px; background: rgba(11, 16, 24, 0.8);
+      border: 2px solid rgba(143, 203, 242, 0.5); font-family: "Montserrat", sans-serif; font-weight: 600; font-size: 42px; color: #ffffff; }
+    .f08-ice { color: #8fcbf2; }
+    #f08-thermo { position: absolute; left: 70px; top: 668px; width: 420px; height: 360px; }
+    #f08-thermo-in { position: absolute; inset: 0; }
+    #f08-panel { position: absolute; left: 0; top: 0; width: 420px; height: 360px; border-radius: 20px; background: rgba(11, 16, 24, 0.72);
+      border: 2px solid rgba(238, 242, 246, 0.18); }
+    #f08-tube { position: absolute; left: 44px; top: 30px; width: 40px; height: 240px; border-radius: 20px;
+      border: 3px solid rgba(238, 242, 246, 0.85); overflow: hidden; background: rgba(238, 242, 246, 0.06); }
+    #f08-fill { position: absolute; left: 6px; right: 6px; bottom: 0; height: 80%; border-radius: 12px;
+      background: linear-gradient(#e8b24a, #e8743a); }
+    #f08-bulb { position: absolute; left: 30px; top: 252px; width: 68px; height: 68px; border-radius: 50%;
+      border: 3px solid rgba(238, 242, 246, 0.85); background: radial-gradient(circle at 40% 40%, #f0a050, #e8743a 70%); }
+    #f08-ticks { position: absolute; left: 92px; top: 40px; width: 18px; height: 220px;
+      background: repeating-linear-gradient(to bottom, rgba(238, 242, 246, 0.6) 0 2px, transparent 2px 22px); }
+    #f08-read { position: absolute; left: 128px; top: 64px; font-family: "Anton", sans-serif; font-size: 112px; line-height: 1;
+      color: #ffffff; white-space: nowrap; }
+    #f08-num { display: inline-block; }
+    #f08-unit { font-size: 48px; margin-left: 6px; color: #eef2f6; }
+    #f08-delta { position: absolute; left: 132px; top: 210px; font-family: "Montserrat", sans-serif; font-weight: 600; font-size: 40px;
+      color: #8fcbf2; white-space: nowrap; }
   </style>
   <div id="root" data-composition-id="f08" data-width="1080" data-height="1920">
-    <div id="f08-title" class="clip" data-start="0" data-duration="5.4">F8 você não congela, −0,02 °C</div>
+    <canvas id="f08-canvas" width="1080" height="1920"></canvas>
+    <div id="f08-vac" class="clip" data-start="1.33" data-duration="4.07">
+      <span id="f08-vac-in">vácuo = <span class="f08-ice">isolante</span></span>
+    </div>
+    <div id="f08-thermo" class="clip" data-start="2.7" data-duration="2.7">
+      <div id="f08-thermo-in">
+        <div id="f08-panel"></div>
+        <div id="f08-tube"><div id="f08-fill"></div></div>
+        <div id="f08-bulb"></div>
+        <div id="f08-ticks"></div>
+        <div id="f08-read"><span id="f08-num">37,00</span><span id="f08-unit">°C</span></div>
+        <div id="f08-delta">−0,02 °C</div>
+      </div>
+    </div>
   </div>
   <script>
     (function () {
+      /* ---------- 2D layers (GSAP) ---------- */
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f08-title", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" }, 0.1);
+      tl.fromTo("#f08-vac-in", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, 1.33);
+      tl.fromTo("#f08-thermo-in", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.3, ease: "power3.out" }, 2.7);
+      for (const tk of [2.8, 4.2]) {
+        tl.fromTo("#f08-num", { scale: 1 }, { scale: 1.12, duration: 0.08, ease: "power2.out", immediateRender: false }, tk);
+        tl.to("#f08-num", { scale: 1, duration: 0.25, ease: "power2.inOut" }, tk + 0.08);
+      }
+      tl.fromTo("#f08-delta", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.25, ease: "power2.out" }, 4.2);
+      tl.set({}, {}, 5.4);
       window.__timelines = window.__timelines || {};
       window.__timelines["f08"] = tl;
+
+      /* ---------- 3D (Three.js via kit) ---------- */
+      window.__hf = window.__hf || {};
+      window.__hf.buildReady = window.__hf.buildReady || {};
+      window.__hf.buildReady["f08"] = import("./assets/lib/kit.js").then(async (K) => {
+        const { THREE, PALETTE, ease, range, lerp, clamp } = K;
+        const canvas = document.getElementById("f08-canvas");
+        const renderer = K.createRenderer(canvas);
+        const M = K.maqueteMaterial;
+        const numEl = document.getElementById("f08-num");
+        const fillEl = document.getElementById("f08-fill");
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0b1018);
+        const L = K.addMaqueteLights(scene, { shadowSize: 3, intensity: 0.7 });
+        L.key.shadow.normalBias = 0.02; L.key.shadow.mapSize.set(1024, 1024);
+        const plinth = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.6, 0.16, 48), M(0x2c323c, { roughness: 0.9 }));
+        plinth.position.y = -0.08; plinth.receiveShadow = true; scene.add(plinth);
+        const domeEdge = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.SphereGeometry(1.33, 16, 6, 0, Math.PI * 2, 0, Math.PI / 2), 1),
+          new THREE.LineBasicMaterial({ color: PALETTE.ice, transparent: true, opacity: 0.2 }));
+        domeEdge.scale.y = 1.55; scene.add(domeEdge);
+        const dome = new THREE.Mesh(new THREE.SphereGeometry(1.32, 48, 24, 0, Math.PI * 2, 0, Math.PI / 2),
+          new THREE.MeshStandardMaterial({ color: PALETTE.ice, roughness: 0.5, transparent: true, opacity: 0.07, depthWrite: false, side: THREE.DoubleSide }));
+        dome.scale.y = 1.55; scene.add(dome);
+
+        // thermal-camera body: warm core -> cool edge (fresnel)
+        const thermal = new THREE.ShaderMaterial({
+          uniforms: { uCool: { value: 0 } },
+          vertexShader: `varying vec3 vN; varying vec3 vV;
+            void main(){ vec4 mv = modelViewMatrix * vec4(position,1.0); vN = normalize(normalMatrix * normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix * mv; }`,
+          fragmentShader: `uniform float uCool; varying vec3 vN; varying vec3 vV;
+            void main(){ float f = 1.0 - clamp(dot(normalize(vN), normalize(vV)), 0.0, 1.0);
+              vec3 core = vec3(1.0, 0.86, 0.45), hot = vec3(0.95, 0.47, 0.16), cool = vec3(0.56, 0.80, 0.95);
+              vec3 c = mix(core, hot, smoothstep(0.05, 0.5, f));
+              c = mix(c, cool, smoothstep(0.62 - 0.1 * uCool, 0.95, f));
+              gl_FragColor = vec4(c, 1.0); }`,
+        });
+        const hullMat = new THREE.MeshBasicMaterial({ color: PALETTE.ice, side: THREE.BackSide });
+        const person = new THREE.Group(); scene.add(person);
+        const add = (geo, x, y, z, rx = 0, rz = 0, sx = 1, sy = 1, sz = 1) => {
+          const m = new THREE.Mesh(geo, thermal); m.position.set(x, y, z); m.rotation.set(rx, 0, rz); m.scale.set(sx, sy, sz);
+          const h = new THREE.Mesh(geo, hullMat); h.scale.setScalar(1.06); m.add(h);
+          person.add(m); return m;
+        };
+        const head = add(new THREE.SphereGeometry(0.115, 28, 18), 0, 1.67, 0, 0, 0, 1, 1.08, 1);
+        add(new THREE.CylinderGeometry(0.048, 0.055, 0.12, 14), 0, 1.55, 0);
+        add(new THREE.CapsuleGeometry(0.16, 0.34, 8, 20), 0, 1.24, 0, 0, 0, 1.22, 1, 0.72);
+        add(new THREE.CapsuleGeometry(0.14, 0.1, 6, 20), 0, 0.94, 0, 0, 0, 1.15, 1, 0.8);
+        const arm = new THREE.CapsuleGeometry(0.048, 0.27, 4, 12), fore = new THREE.CapsuleGeometry(0.042, 0.25, 4, 12);
+        const thigh = new THREE.CapsuleGeometry(0.07, 0.38, 4, 14), shin = new THREE.CapsuleGeometry(0.058, 0.32, 4, 14);
+        for (const s of [-1, 1]) {
+          add(arm, s * 0.283, 1.268, 0, 0, s * 0.35);
+          add(fore, s * 0.379, 0.932, 0.02, -0.1, s * 0.2);
+          add(thigh, s * 0.114, 0.66, 0, 0, s * 0.06);
+          add(shin, s * 0.135, 0.202, 0, 0, s * 0.03);
+        }
+        // soft warm glow on the plinth under the body
+        const gc = document.createElement("canvas"); gc.width = gc.height = 128;
+        { const g = gc.getContext("2d"); const gr = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+          gr.addColorStop(0, "rgba(232,140,60,0.45)"); gr.addColorStop(1, "rgba(232,140,60,0)"); g.fillStyle = gr; g.fillRect(0, 0, 128, 128); }
+        const glow = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 1.2),
+          new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(gc), transparent: true, depthWrite: false }));
+        glow.rotation.x = -Math.PI / 2; glow.position.y = 0.004; scene.add(glow);
+
+        const cam = new THREE.PerspectiveCamera(35, K.W / K.H, 0.05, 100);
+        const camC = new THREE.PerspectiveCamera(35, K.W / K.H, 0.05, 100);
+        camC.setViewOffset(K.W, K.H, -190, 0, K.W, K.H); // subject to the right, thermometer on the left
+        const T1 = 1.33, T2 = 2.8;
+
+        function render(t) {
+          thermal.uniforms.uCool.value = range(t, T2, 4.4);
+          head.rotation.y = 0.1 * Math.sin(t * 0.9);
+          // thermometer: 37,00 -> 36,99 (tick 2.8) -> 36,98 (tick 4.2)
+          const v = t >= 4.2 ? "36,98" : t >= 2.8 ? "36,99" : "37,00";
+          if (numEl.textContent !== v) numEl.textContent = v;
+          fillEl.style.height = (t >= 4.2 ? 72 : t >= 2.8 ? 76 : 80) + "%";
+          let c = cam;
+          if (t < T1) {
+            const p = ease.inOutSine(clamp(t / T1));
+            const ang = lerp(-0.5, -0.3, p), r = lerp(5.2, 4.8, p);
+            cam.position.set(Math.sin(ang) * r, 1.3, Math.cos(ang) * r);
+            cam.lookAt(0, 1.18, 0);
+          } else if (t < T2) {
+            const p = ease.outCubic(range(t, T1, T2));
+            const ang = lerp(0.5, 0.35, p), r = lerp(8.2, 7.4, p);
+            cam.position.set(Math.sin(ang) * r, lerp(3.2, 2.8, p), Math.cos(ang) * r);
+            cam.lookAt(0, 1.05, 0);
+          } else {
+            const p = ease.outCubic(range(t, T2, 5.4));
+            const ang = lerp(0.2, 0.05, p), r = lerp(3.0, 2.5, p);
+            camC.position.set(Math.sin(ang) * r, 1.5, Math.cos(ang) * r);
+            camC.lookAt(0, 1.38, 0);
+            c = camC;
+          }
+          renderer.render(scene, c);
+        }
+
+        await renderer.compileAsync(scene, cam);
+        render(3);
+        const host = document.querySelector('[data-composition-id="f08"][data-start]');
+        const T0 = host ? parseFloat(host.getAttribute("data-start")) || 0 : 40.8;
+        let last = null;
+        const draw = (g) => { const t = clamp(g - T0, 0, 5.4); if (t === last) return; last = t; render(t); };
+        window.addEventListener("hf-seek", (e) => draw(e.detail.time));
+        draw(T0);
+        const gl = renderer.getContext();
+        gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4));
+      });
     })();
   </script>
 </template>

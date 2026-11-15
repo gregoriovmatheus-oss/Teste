@@ -6,20 +6,231 @@
       @font-face { font-family: "EB Garamond"; font-style: italic; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-ext-400-italic.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
       @font-face { font-family: "Montserrat"; font-style: normal; font-weight: 600; font-display: block; src: url("assets/fonts/montserrat-latin-600-normal.woff2") format("woff2"); }
       @font-face { font-family: "Anton"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/fonts/anton-latin-400-normal.woff2") format("woff2"); }
-    #root { position: absolute; inset: 0; background: #26303d; overflow: hidden; }
-    #f12-title { position: absolute; left: 200px; right: 200px; top: 720px; text-align: center;
-      font-family: "Montserrat", sans-serif; font-weight: 600; font-size: 28px; letter-spacing: 0.3em;
-      color: #8D96A2; text-transform: uppercase; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0b1018; }
+    #f12-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+    #f12-veil { position: absolute; inset: 0; opacity: 0;
+      background: radial-gradient(ellipse at 50% 45%, rgba(250, 251, 252, 0.98) 0%, rgba(236, 241, 246, 0.94) 55%, rgba(220, 228, 236, 0.88) 100%); }
+    .f12-txt { position: absolute; left: 110px; right: 160px; text-align: center; font-family: "EB Garamond", serif;
+      font-weight: 400; color: #ffffff; line-height: 1.08;
+      text-shadow: 0 4px 24px rgba(4, 10, 20, 0.85), 0 1px 4px rgba(4, 10, 20, 0.7); }
+    #f12-l1 { top: 320px; font-size: 68px; }
+    #f12-l2 { top: 490px; font-size: 68px; font-style: italic; }
+    #f12-l2 .amb { color: #e8b24a; }
+    #f12-q { top: 320px; font-size: 92px; }
+    #f12-cta { position: absolute; left: 140px; right: 180px; top: 560px; text-align: center; }
+    #f12-cta-in { display: inline-flex; align-items: center; gap: 16px; font-family: "Montserrat", sans-serif; font-weight: 600;
+      font-size: 44px; letter-spacing: 0.08em; color: #0b1018; background: #e8b24a; padding: 14px 30px; border-radius: 40px; }
+    #f12-cta-in svg { width: 36px; height: 40px; }
   </style>
   <div id="root" data-composition-id="f12" data-width="1080" data-height="1920">
-    <div id="f12-title" class="clip" data-start="0" data-duration="6.83">F12 revelação e pergunta</div>
+    <canvas id="f12-canvas" width="1080" height="1920"></canvas>
+    <div id="f12-veil" data-layout-ignore></div>
+    <div id="f12-l1" class="f12-txt clip" data-start="0.1" data-duration="3.65">O frio quase não machuca.</div>
+    <div id="f12-l2" class="f12-txt clip" data-start="1.6" data-duration="2.15">O <span class="amb">calor</span> voltando… talvez sim.</div>
+    <div id="f12-q" class="f12-txt clip" data-start="3.75" data-duration="3.08">Você lembraria de soltar o ar?</div>
+    <div id="f12-cta" class="clip" data-start="4.95" data-duration="1.88">
+      <span id="f12-cta-in">COMENTA
+        <svg viewBox="0 0 36 40"><path d="M18 3 V33 M6 22 L18 35 L30 22" stroke="#0b1018" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none" /></svg>
+      </span>
+    </div>
   </div>
   <script>
     (function () {
+      /* ---------- 2D layers (GSAP) ---------- */
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f12-title", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" }, 0.1);
+      tl.fromTo("#f12-l1", { opacity: 0, y: 20, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.45, ease: "power3.out" }, 0.1);
+      tl.fromTo("#f12-l2", { opacity: 0, y: 20, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.45, ease: "power3.out" }, 1.66);
+      tl.to(["#f12-l1", "#f12-l2"], { opacity: 0, y: -14, duration: 0.3, ease: "power2.in" }, 3.4);
+      tl.fromTo("#f12-q", { opacity: 0, scale: 0.94 }, { opacity: 1, scale: 1, duration: 0.5, ease: "power3.out" }, 3.8);
+      tl.fromTo("#f12-cta-in", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4, ease: "back.out(2)" }, 4.95);
+      tl.fromTo("#f12-veil", { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.in" }, 2.2);
+      tl.to("#f12-veil", { opacity: 0, duration: 0.45, ease: "power2.out" }, 2.45);
+      tl.set({}, {}, 6.83);
       window.__timelines = window.__timelines || {};
       window.__timelines["f12"] = tl;
+
+      /* ---------- 3D (Three.js via kit) ---------- */
+      window.__hf = window.__hf || {};
+      window.__hf.buildReady = window.__hf.buildReady || {};
+      window.__hf.buildReady["f12"] = import("./assets/lib/kit.js").then(async (K) => {
+        const { THREE, PALETTE, ease, range, lerp, clamp, mulberry32 } = K;
+        const canvas = document.getElementById("f12-canvas");
+        const renderer = K.createRenderer(canvas);
+        const D2R = Math.PI / 180;
+
+        /* ===== Earth scene (from f01) ===== */
+        const earthScene = new THREE.Scene();
+        earthScene.background = new THREE.Color(PALETTE.night);
+        const earthCam = new THREE.PerspectiveCamera(35, K.W / K.H, 0.001, 200);
+        earthScene.add(new THREE.HemisphereLight(0xcfe0f0, 0x101820, 0.35));
+        const sun = new THREE.DirectionalLight(0xffe4c4, 3.0);
+        sun.position.set(-4, 3, 5);
+        const rimE = new THREE.DirectionalLight(0x8fcbf2, 1.6);
+        rimE.position.set(5, 1, -3);
+        earthScene.add(sun, rimE);
+
+        // coarse continents [lon, lat]
+        const LAND = {
+          sam: [[-77,8.5],[-72,12],[-62,10.7],[-57,6],[-51,4],[-50,0],[-44,-2.5],[-35,-5],[-35,-9],[-39,-13],[-39,-18],[-41,-22],[-48,-26],[-53,-34],[-58,-35],[-57,-38],[-62,-39],[-65,-42],[-65,-47],[-69,-51],[-68,-55],[-72,-54],[-75,-48],[-73,-40],[-71,-30],[-70,-18],[-76,-14],[-81,-6],[-80,-1],[-77,4]],
+          nam: [[-168,66],[-162,70],[-140,70],[-125,70],[-95,72],[-80,73],[-62,60],[-56,52],[-66,45],[-70,42],[-76,35],[-81,31],[-80,25],[-83,29],[-90,30],[-97,27],[-97,21],[-92,18],[-87,21],[-88,16],[-83,10],[-77,8],[-80,8],[-86,12],[-92,14],[-105,20],[-110,24],[-117,32],[-123,38],[-124,46],[-130,55],[-140,60],[-152,58],[-165,60]],
+          grl: [[-55,60],[-45,60],[-20,70],[-20,82],[-60,82],[-73,78],[-55,70]],
+          afr: [[-17,21],[-17,14],[-12,7],[-8,4.5],[0,5],[8,4],[9,0],[12,-5],[13,-12],[12,-17],[15,-27],[18,-34],[25,-34],[32,-29],[35,-24],[40,-15],[40,-10],[39,-5],[42,0],[51,11],[43,12],[37,21],[33,31],[20,32],[10,37],[-6,36],[-10,30],[-14,26]],
+          mad: [[44,-25],[47,-25],[50,-15],[49,-12],[44,-17]],
+          eur: [[-10,36],[-9,43],[-1,46],[-5,48],[2,51],[8,54],[10,57],[5,62],[15,69],[25,71],[40,68],[60,70],[80,73],[105,78],[140,72],[180,68],[180,62],[160,60],[155,52],[140,50],[135,43],[129,35],[122,31],[121,25],[110,20],[108,12],[104,9],[100,13],[98,8],[103,1],[98,17],[94,16],[90,22],[80,15],[77,8],[72,20],[66,25],[57,25],[59,22],[52,16],[43,13],[35,28],[34,31],[36,36],[27,36],[23,38],[19,40],[12,44],[16,38],[10,44],[3,43],[-4,37]],
+          uk: [[-5,50],[1,51],[-2,57],[-5,58],[-6,55]],
+          aus: [[114,-22],[122,-18],[130,-12],[137,-12],[142,-11],[146,-19],[153,-26],[150,-37],[141,-38],[131,-31],[116,-35],[114,-26]],
+        };
+        const BRAZIL = [[-60,5],[-51,4],[-50,0],[-44,-2.5],[-35,-5],[-35,-9],[-39,-13],[-39,-18],[-41,-22],[-48,-26],[-53,-33.7],[-57,-30],[-54,-26],[-58,-22],[-58,-16],[-60,-14],[-65,-10],[-73,-9],[-70,-4],[-69,1],[-64,2]];
+        const inPoly = (x, y, p) => {
+          let c = false;
+          for (let i = 0, j = p.length - 1; i < p.length; j = i++) {
+            const [xi, yi] = p[i], [xj, yj] = p[j];
+            if ((yi > y) !== (yj > y) && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) c = !c;
+          }
+          return c;
+        };
+        const geo = new THREE.IcosahedronGeometry(1, 96); // non-indexed, ~190k faces
+        const pos = geo.attributes.position;
+        const cols = new Float32Array(pos.count * 3);
+        const cOcean = new THREE.Color(0x2b4a66), cOcean2 = new THREE.Color(0x325574);
+        const cLand = new THREE.Color(0x6f8578), cLand2 = new THREE.Color(0x768b7e);
+        const cBr = new THREE.Color(0xd8c48e), cIce = new THREE.Color(PALETTE.frost);
+        const rndE = mulberry32(11);
+        const v = new THREE.Vector3(), cen = new THREE.Vector3();
+        for (let f = 0; f < pos.count; f += 3) {
+          cen.set(0, 0, 0);
+          for (let k = 0; k < 3; k++) cen.add(v.fromBufferAttribute(pos, f + k));
+          cen.normalize();
+          const lat = Math.asin(cen.y) / D2R, lon = Math.atan2(cen.x, cen.z) / D2R;
+          let col, h = 1;
+          const j = rndE();
+          if (lat < -68 || lat > 80) { col = cIce; h = 1.001; }
+          else if (inPoly(lon, lat, BRAZIL)) { col = cBr; h = 1.0015; }
+          else if (Object.values(LAND).some((p) => inPoly(lon, lat, p))) { col = j < 0.5 ? cLand : cLand2; h = 1.0012; }
+          else col = j < 0.5 ? cOcean : cOcean2;
+          for (let k = 0; k < 3; k++) {
+            v.fromBufferAttribute(pos, f + k).multiplyScalar(h);
+            pos.setXYZ(f + k, v.x, v.y, v.z);
+            cols.set([col.r, col.g, col.b], (f + k) * 3);
+          }
+        }
+        geo.setAttribute("color", new THREE.BufferAttribute(cols, 3));
+        geo.computeVertexNormals();
+        const earth = new THREE.Group();
+        earth.add(new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ vertexColors: true, flatShading: true, roughness: 0.85 })));
+        earthScene.add(earth);
+
+        // destination marker: São Paulo-ish (lon -46.6, lat -23.5)
+        const TGT = { lon: -46.6, lat: -23.5 };
+        const ll = (lon, lat, r) => new THREE.Vector3(
+          r * Math.cos(lat * D2R) * Math.sin(lon * D2R), r * Math.sin(lat * D2R), r * Math.cos(lat * D2R) * Math.cos(lon * D2R));
+        const marker = new THREE.Mesh(new THREE.SphereGeometry(0.008, 12, 8), new THREE.MeshBasicMaterial({ color: PALETTE.accent }));
+        marker.position.copy(ll(TGT.lon, TGT.lat, 1.002));
+        earth.add(marker);
+
+        // low-poly clouds, denser over the destination
+        const cloudMat = new THREE.MeshStandardMaterial({ color: 0xf6f9fc, emissive: 0xc8d4e0, emissiveIntensity: 0.55, roughness: 0.95, flatShading: true });
+        const puff = new THREE.IcosahedronGeometry(1, 1);
+        const rndC = mulberry32(23);
+        const addPuff = (lon, lat, r, s) => {
+          const m = new THREE.Mesh(puff, cloudMat);
+          const p = ll(lon, lat, r);
+          m.position.copy(p);
+          m.lookAt(p.clone().multiplyScalar(2));
+          m.scale.set(s * (1 + rndC()), s * (0.7 + rndC() * 0.6), s * 0.35);
+          earth.add(m);
+        };
+        for (let i = 0; i < 260; i++) {
+          const lat = (rndC() * 2 - 1) * 70, lon = rndC() * 360 - 180;
+          addPuff(lon, lat, 1.018 + rndC() * 0.006, 0.006 + rndC() * 0.016);
+        }
+        for (let i = 0; i < 60; i++) { // thin cloud deck the camera dives through (~2.0-2.3 s); the coast shows between puffs
+          const a = rndC() * Math.PI * 2, d = 0.15 + Math.sqrt(rndC()) * 3.0;
+          addPuff(TGT.lon + Math.cos(a) * d, TGT.lat + Math.sin(a) * d, 1.06 + rndC() * 0.08, 0.004 + rndC() * 0.01);
+        }
+
+        // atmosphere glow + ice wave (shader)
+        const atmoMat = new THREE.ShaderMaterial({
+          transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+          uniforms: { uWave: { value: 0 }, uDir: { value: new THREE.Vector3(0.6, 0.75, 0.25).normalize() }, uFade: { value: 1 } },
+          vertexShader: `varying vec3 vN; varying vec3 vV; varying vec3 vP;
+            void main(){ vP = position; vec4 mv = modelViewMatrix * vec4(position,1.0);
+              vN = normalize(normalMatrix * normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix * mv; }`,
+          fragmentShader: `uniform float uWave; uniform vec3 uDir; uniform float uFade; varying vec3 vN; varying vec3 vV; varying vec3 vP;
+            void main(){ float fr = pow(clamp(1.0 - dot(vN, vV), 0.0, 1.0), 2.6);
+              float d = dot(normalize(vP), uDir) - uWave; float band = exp(-d*d/0.012);
+              vec3 ice = vec3(0.56, 0.80, 0.95);
+              vec3 col = ice * (fr * 0.85 + band * (0.35 + 1.2 * fr));
+              gl_FragColor = vec4(col * uFade, 1.0); }`,
+        });
+        const atmo = new THREE.Mesh(new THREE.SphereGeometry(1.045, 96, 64), atmoMat);
+        earthScene.add(atmo);
+
+        // stars
+        const rndS = mulberry32(5);
+        const sp = new Float32Array(1500 * 3);
+        for (let i = 0; i < 1500; i++) {
+          const u = rndS() * 2 - 1, th = rndS() * Math.PI * 2, r = 60;
+          sp.set([r * Math.sqrt(1 - u * u) * Math.cos(th), r * u, r * Math.sqrt(1 - u * u) * Math.sin(th)], i * 3);
+        }
+        const sg = new THREE.BufferGeometry();
+        sg.setAttribute("position", new THREE.BufferAttribute(sp, 3));
+        earthScene.add(new THREE.Points(sg, new THREE.PointsMaterial({ color: 0xc9d6e4, size: 1.6, sizeAttenuation: false })));
+        marker.visible = false;
+        atmoMat.uniforms.uWave.value = -3; // no ice wave: the world is normal again
+
+        /* ===== City scene: normal, warm daylight ===== */
+        const cityScene = new THREE.Scene();
+        cityScene.background = new THREE.Color(0xc9d6e2);
+        cityScene.fog = new THREE.Fog(0xc9d6e2, 280, 620);
+        const lights = K.addMaqueteLights(cityScene, { intensity: 1.05, shadowSize: 200 });
+        lights.key.color.set(0xffdcae);
+        const city = K.buildCityGrid({ seed: 7, cols: 8, rows: 11, maxH: 38 });
+        cityScene.add(city.group);
+        const cityCam = new THREE.PerspectiveCamera(35, K.W / K.H, 0.5, 3000);
+        const carBase = city.cars.map((c) => c.position.z);
+        const ZE = city.size.d / 2;
+
+        /* ===== timing (local seconds) ===== */
+        const T_CUT = 2.45;
+        const SAM = { lon: -58, lat: -16 };
+
+        function renderCity(t) {
+          // continuous rise: avenue level -> high aerial
+          const p = ease.inQuad(clamp(t / T_CUT));
+          const h = 6 * Math.pow(70, p);           // 6 -> 420, exponential
+          cityCam.position.set(lerp(4, 0, p), h, lerp(ZE - 20, 30, p) + h * 0.12);
+          cityCam.up.set(0, 1, 0);
+          cityCam.lookAt(0, lerp(5, 0, p), lerp(ZE - 90, 0, p));
+          city.cars.forEach((c, i) => { c.position.z = carBase[i] + c.userData.dir * 12 * t; });
+          renderer.toneMappingExposure = 1.06;
+          renderer.render(cityScene, cityCam);
+        }
+
+        function renderEarth(t) {
+          // continuous dolly out, South America facing
+          const a = t - T_CUT;
+          const alt = 0.1 * Math.exp(0.86 * a);     // 0.1 -> ~4.4 at the end
+          const q = ease.outCubic(clamp(a / 4.3));
+          earth.rotation.order = "XYZ";
+          earth.rotation.y = -lerp(TGT.lon, SAM.lon, q) * D2R;
+          earth.rotation.x = lerp(TGT.lat, SAM.lat, q) * D2R;
+          earthCam.position.set(0, 0, 1 + alt);
+          earthCam.up.set(0, 1, 0);
+          earthCam.lookAt(0, lerp(0, 0.32, ease.inOutSine(clamp(a / 3.5))), 0);
+          renderer.toneMappingExposure = 1.05;
+          renderer.render(earthScene, earthCam);
+        }
+
+        function render(t) { if (t < T_CUT) renderCity(t); else renderEarth(t); }
+
+        await renderer.compileAsync(earthScene, earthCam);
+        await renderer.compileAsync(cityScene, cityCam);
+        renderEarth(5);
+        await K.bindSeek(canvas, render);
+        const gl = renderer.getContext();
+        gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4));
+      });
     })();
   </script>
 </template>

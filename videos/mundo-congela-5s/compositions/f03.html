@@ -1,25 +1,196 @@
 <template>
   <style>
-      @font-face { font-family: "EB Garamond"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-400-normal.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
-      @font-face { font-family: "EB Garamond"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-ext-400-normal.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
-      @font-face { font-family: "EB Garamond"; font-style: italic; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-400-italic.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
-      @font-face { font-family: "EB Garamond"; font-style: italic; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-ext-400-italic.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
-      @font-face { font-family: "Montserrat"; font-style: normal; font-weight: 600; font-display: block; src: url("assets/fonts/montserrat-latin-600-normal.woff2") format("woff2"); }
-      @font-face { font-family: "Anton"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/fonts/anton-latin-400-normal.woff2") format("woff2"); }
-    #root { position: absolute; inset: 0; background: #26303d; overflow: hidden; }
-    #f03-title { position: absolute; left: 200px; right: 200px; top: 720px; text-align: center;
-      font-family: "Montserrat", sans-serif; font-weight: 600; font-size: 28px; letter-spacing: 0.3em;
-      color: #8D96A2; text-transform: uppercase; }
+    @font-face { font-family: "Montserrat"; font-style: normal; font-weight: 600; font-display: block; src: url("assets/fonts/montserrat-latin-600-normal.woff2") format("woff2"); }
+    @font-face { font-family: "Anton"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/fonts/anton-latin-400-normal.woff2") format("woff2"); }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #121b26; }
+    #f03-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+    .f03-tag { position: absolute; left: 0; top: 0; opacity: 0; white-space: nowrap;
+      font-family: "Montserrat", sans-serif; font-weight: 600; font-size: 34px; letter-spacing: 0.06em; color: #ffffff;
+      padding: 10px 18px; border-radius: 10px; background: rgba(11, 16, 24, 0.62); border: 2px solid rgba(143, 203, 242, 0.75);
+      text-shadow: 0 1px 6px rgba(4, 10, 20, 0.6); }
+    .f03-tag b { font-family: "Anton", sans-serif; font-weight: 400; font-size: 46px; letter-spacing: 0.02em; margin-right: 12px; }
+    #f03-n2 b { color: #8fcbf2; }
+    #f03-o2 b { color: #ff7a63; }
+    .f03-in { display: block; }
   </style>
   <div id="root" data-composition-id="f03" data-width="1080" data-height="1920">
-    <div id="f03-title" class="clip" data-start="0" data-duration="4.6">F3 o ar congela e cai</div>
+    <canvas id="f03-canvas" width="1080" height="1920"></canvas>
+    <div id="f03-n2" class="f03-tag clip" data-start="1.5" data-duration="1.75"><span class="f03-in" id="f03-n2-in"><b>N₂</b>−210 °C</span></div>
+    <div id="f03-o2" class="f03-tag clip" data-start="1.75" data-duration="1.5"><span class="f03-in" id="f03-o2-in"><b>O₂</b>−218 °C</span></div>
   </div>
   <script>
     (function () {
+      /* ---------- 2D layers (GSAP): opacity/scale on the inner span; position comes from the 3D projection ---------- */
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f03-title", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" }, 0.1);
+      tl.fromTo("#f03-n2", { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" }, 1.5);
+      tl.fromTo("#f03-n2-in", { scale: 0.85 }, { scale: 1, duration: 0.3, ease: "back.out(2)" }, 1.5);
+      tl.fromTo("#f03-o2", { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" }, 1.75);
+      tl.fromTo("#f03-o2-in", { scale: 0.85 }, { scale: 1, duration: 0.3, ease: "back.out(2)" }, 1.75);
+      tl.to(["#f03-n2", "#f03-o2"], { opacity: 0, duration: 0.2, ease: "power2.in" }, 3.0);
+      tl.set({}, {}, 4.6);
       window.__timelines = window.__timelines || {};
       window.__timelines["f03"] = tl;
+
+      /* ---------- 3D (Three.js via kit) ---------- */
+      window.__hf = window.__hf || {};
+      window.__hf.buildReady = window.__hf.buildReady || {};
+      window.__hf.buildReady["f03"] = import("./assets/lib/kit.js").then(async (K) => {
+        const { THREE, PALETTE, ease, range, lerp, clamp, mulberry32 } = K;
+        const canvas = document.getElementById("f03-canvas");
+        const renderer = K.createRenderer(canvas);
+        renderer.shadowMap.enabled = false;
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x121b26);
+        scene.fog = new THREE.Fog(0x121b26, 14, 52);
+        const lights = K.addMaqueteLights(scene, { intensity: 1.15 });
+        lights.key.castShadow = false;
+        const cam = new THREE.PerspectiveCamera(35, K.W / K.H, 0.1, 300);
+
+        /* ---- molecules: N2 (78%) and O2 (21%) as fused sphere pairs ---- */
+        const N = 340;
+        const BOX = { x: 14, y: 22, z0: -34, z1: 12 };
+        const TE_F = 1.2 + 0.2;                  // effective time when motion has fully stopped
+        const te = (t) => (t < 1.2 ? t : 1.2 + 0.2 * (1 - Math.exp(-(t - 1.2) / 0.07)));
+        const rnd = mulberry32(2026);
+        const mols = [];
+        const colN = new THREE.Color(0xa9bdd2), colO = new THREE.Color(PALETTE.accent), frost = new THREE.Color(0xeaf4fb);
+        for (let i = 0; i < N; i++) {
+          let pf;
+          for (;;) { // frozen positions, keeping a clear tunnel in front of the hero pair
+            pf = new THREE.Vector3((rnd() * 2 - 1) * BOX.x, (rnd() * 2 - 1) * BOX.y, lerp(BOX.z0, BOX.z1, rnd()));
+            if (!(Math.abs(pf.x) < 3.4 && Math.abs(pf.y) < 3 && pf.z > 4)) break;
+          }
+          const dir = new THREE.Vector3(rnd() * 2 - 1, rnd() * 2 - 1, rnd() * 2 - 1).normalize();
+          mols.push({
+            pf, v: dir.multiplyScalar(7 + rnd() * 7), o2: rnd() < 0.22,
+            ax: new THREE.Vector3(rnd() * 2 - 1, rnd() * 2 - 1, rnd() * 2 - 1).normalize(), w: 4 + rnd() * 8, a0: rnd() * 6.28,
+            fall0: 2.56 + rnd() * 0.5, g: 5 + rnd() * 3, sway: rnd() * 6.28, ph: rnd() * 6.28, fr: 9 + rnd() * 9, hero: 0,
+          });
+        }
+        // hero pair, frozen right in front of the camera (B shot)
+        const HN = new THREE.Vector3(-0.95, 1.05, 7), HO = new THREE.Vector3(0.85, 0.3, 7.4);
+        mols.push({ pf: HN, v: new THREE.Vector3(9, -4, 2), o2: false, ax: new THREE.Vector3(0.3, 0.2, 1).normalize(), w: 6, a0: 0.4,
+          fall0: 3.1, g: 6, sway: 0, ph: 1, fr: 11, hero: 1 });
+        mols.push({ pf: HO, v: new THREE.Vector3(-8, 5, -3), o2: true, ax: new THREE.Vector3(-0.2, 1, 0.3).normalize(), w: 5, a0: 1.1,
+          fall0: 3.15, g: 6, sway: 2, ph: 2.5, fr: 13, hero: 2 });
+        const NM = mols.length;
+        const R = 0.42, BOND = 0.36;
+        const atoms = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(R, 2),
+          new THREE.MeshStandardMaterial({ roughness: 0.5, metalness: 0, flatShading: true }), NM * 2);
+        atoms.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+        scene.add(atoms);
+        const col = new THREE.Color();
+        for (let i = 0; i < NM; i++) { col.copy(mols[i].o2 ? colO : colN); atoms.setColorAt(2 * i, col); atoms.setColorAt(2 * i + 1, col); }
+
+        // glitter points (additive, one per molecule)
+        const gPos = new Float32Array(NM * 3), gB = new Float32Array(NM);
+        const gGeo = new THREE.BufferGeometry();
+        gGeo.setAttribute("position", new THREE.BufferAttribute(gPos, 3));
+        gGeo.setAttribute("aB", new THREE.BufferAttribute(gB, 1));
+        const gMat = new THREE.ShaderMaterial({
+          transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+          vertexShader: `attribute float aB; varying float vB;
+            void main(){ vB = aB; vec4 mv = modelViewMatrix * vec4(position,1.0); gl_Position = projectionMatrix * mv;
+              gl_PointSize = (14.0 + 70.0 * aB) * (10.0 / max(1.0, -mv.z)); }`,
+          fragmentShader: `varying float vB;
+            void main(){ vec2 d = gl_PointCoord - 0.5; float r = length(d);
+              float star = max(0.0, 1.0 - abs(d.x) * 14.0) * max(0.0, 1.0 - abs(d.y) * 2.2) + max(0.0, 1.0 - abs(d.y) * 14.0) * max(0.0, 1.0 - abs(d.x) * 2.2);
+              float core = exp(-r * r * 60.0);
+              float a = (core + star * 0.8) * vB; if (a < 0.003) discard;
+              gl_FragColor = vec4(vec3(0.85, 0.94, 1.0) * a, 1.0); }`,
+        });
+        scene.add(new THREE.Points(gGeo, gMat));
+
+        const wrap = (x, a, b) => { const w = b - a; return a + ((((x - a) % w) + w) % w); };
+        const P = new THREE.Vector3(), Q = new THREE.Quaternion(), OFF = new THREE.Vector3(), S = new THREE.Vector3(1, 1, 1), mtx = new THREE.Matrix4();
+        const heroPos = [new THREE.Vector3(), new THREE.Vector3()];
+        function molPos(m, t, out) {
+          const dt = te(t) - TE_F;
+          out.copy(m.pf).addScaledVector(m.v, dt);
+          if (!m.hero) {
+            out.x = wrap(out.x, -BOX.x, BOX.x); out.y = wrap(out.y, -BOX.y, BOX.y); out.z = wrap(out.z, BOX.z0, BOX.z1);
+          }
+          const f = Math.max(0, t - m.fall0);
+          out.y -= 0.5 * m.g * f * f;
+          out.x += Math.sin(m.sway + f * 2.2) * 0.35 * Math.min(1, f);
+          return out;
+        }
+        function drawMolecules(t) {
+          const frz = ease.outCubic(range(t, 1.22, 1.6));    // frost tint after the stop
+          for (let i = 0; i < NM; i++) {
+            const m = mols[i];
+            molPos(m, t, P);
+            const f = Math.max(0, t - m.fall0);
+            Q.setFromAxisAngle(m.ax, m.a0 + m.w * te(t) + f * 1.5);
+            OFF.set(BOND, 0, 0).applyQuaternion(Q);
+            mtx.compose(P.clone().add(OFF), Q, S); atoms.setMatrixAt(2 * i, mtx);
+            mtx.compose(P.clone().sub(OFF), Q, S); atoms.setMatrixAt(2 * i + 1, mtx);
+            const snow = range(t, 3.1, 3.8);
+            col.copy(m.o2 ? colO : colN).lerp(frost, frz * lerp(m.o2 ? 0.35 : 0.55, 0.85, snow));
+            atoms.setColorAt(2 * i, col); atoms.setColorAt(2 * i + 1, col);
+            gPos[3 * i] = P.x + OFF.x * 0.6; gPos[3 * i + 1] = P.y + R * 0.7; gPos[3 * i + 2] = P.z + R;
+            const tw = Math.pow(Math.max(0, Math.sin(m.ph + t * m.fr)), 14);
+            gB[i] = frz * (0.15 + 0.85 * tw) * (1 + range(t, 2.5, 3.6) * 1.2);
+            if (m.hero) heroPos[m.hero - 1].copy(P);
+          }
+          atoms.instanceMatrix.needsUpdate = true;
+          atoms.instanceColor.needsUpdate = true;
+          gGeo.attributes.position.needsUpdate = true;
+          gGeo.attributes.aB.needsUpdate = true;
+        }
+
+        /* ---- 2D tags follow the hero molecules, clamped to the free band (below HUD, above caption) ---- */
+        const tagN = document.getElementById("f03-n2"), tagO = document.getElementById("f03-o2");
+        const V = new THREE.Vector3();
+        function place(el, p, side) {
+          V.copy(p).project(cam);
+          const sx = (V.x * 0.5 + 0.5) * 1080, sy = (-V.y * 0.5 + 0.5) * 1920;
+          const w = el.offsetWidth || 300, h = el.offsetHeight || 70;
+          let x = side < 0 ? sx - w - 230 : sx + 230;
+          let y = sy - h / 2;
+          x = clamp(x, 40, 1080 - 150 - w);
+          y = clamp(y, 650, 1030 - h);
+          el.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)`;
+        }
+
+        /* ---- shots (local seconds) ---- */
+        const look = new THREE.Vector3();
+        function shot(t) {
+          if (t < 1.15) {        // A: macro, molecules racing ("O ar não some")
+            const p = t / 1.15;
+            cam.position.set(lerp(1.5, 0.6, p), lerp(-0.6, 0, p), lerp(26, 22, p));
+            look.set(0, 0, 0);
+            cam.up.set(Math.sin(lerp(0.06, 0.02, p)), 1, 0);
+          } else if (t < 3.1) {   // B: cut close to the hero pair; they stop on "congela", labels, then drop
+            const p = ease.inOutSine(range(t, 1.15, 3.1));
+            cam.position.set(lerp(0.9, -0.2, p), lerp(0.5, 0.2, p), lerp(18.5, 17.2, p));
+            look.set(lerp(0.2, -0.1, p), lerp(0.5, 0.35, p), 7);
+            cam.up.set(0, 1, 0);
+          } else {                // C: wide, tilting down with the glittering drizzle ("Como neve")
+            const p = ease.outCubic(range(t, 3.1, 4.6));
+            cam.position.set(lerp(-2, -3.5, p), lerp(2, -4, p), lerp(34, 38, p));
+            look.set(0, lerp(-6, -13, p), -6);
+            cam.up.set(0, 1, 0);
+          }
+          cam.lookAt(look);
+          cam.updateMatrixWorld();
+        }
+        function render(t) {
+          shot(t);
+          drawMolecules(t);
+          renderer.render(scene, cam);
+          if (t >= 1.4 && t < 3.3) { place(tagN, heroPos[0], 1); place(tagO, heroPos[1], -1); }
+        }
+        shot(2); drawMolecules(2); place(tagN, heroPos[0], 1); place(tagO, heroPos[1], -1);
+        await renderer.compileAsync(scene, cam);
+        // kit.sceneStart() returns 0 for this host at render time, so fall back to the host's data-start
+        const kOff = K.sceneStart(canvas);
+        const hostEl = document.querySelector('[data-composition-src="compositions/f03.html"][data-start]');
+        const off = kOff || (hostEl ? parseFloat(hostEl.getAttribute("data-start")) : 13.47) || 13.47;
+        await K.bindSeek(canvas, (t) => render(Math.max(0, t + kOff - off)));
+        const gl = renderer.getContext();
+        gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4));
+      });
     })();
   </script>
 </template>

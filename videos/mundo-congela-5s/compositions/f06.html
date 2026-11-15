@@ -1,25 +1,215 @@
 <template>
   <style>
-      @font-face { font-family: "EB Garamond"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-400-normal.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
-      @font-face { font-family: "EB Garamond"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-ext-400-normal.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
-      @font-face { font-family: "EB Garamond"; font-style: italic; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-400-italic.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
-      @font-face { font-family: "EB Garamond"; font-style: italic; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-ext-400-italic.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
-      @font-face { font-family: "Montserrat"; font-style: normal; font-weight: 600; font-display: block; src: url("assets/fonts/montserrat-latin-600-normal.woff2") format("woff2"); }
-      @font-face { font-family: "Anton"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/fonts/anton-latin-400-normal.woff2") format("woff2"); }
-    #root { position: absolute; inset: 0; background: #26303d; overflow: hidden; }
-    #f06-title { position: absolute; left: 200px; right: 200px; top: 720px; text-align: center;
-      font-family: "Montserrat", sans-serif; font-weight: 600; font-size: 28px; letter-spacing: 0.3em;
-      color: #8D96A2; text-transform: uppercase; }
+    @font-face { font-family: "Montserrat"; font-style: normal; font-weight: 600; font-display: block; src: url("assets/fonts/montserrat-latin-600-normal.woff2") format("woff2"); unicode-range: U+0000-00FF, U+2000-206F, U+2212; }
+    @font-face { font-family: "Montserrat"; font-style: normal; font-weight: 600; font-display: block; src: url("assets/fonts/montserrat-latin-ext-600-normal.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+20A0-20C0, U+2C60-2C7F, U+A720-A7FF; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #141b25; }
+    #f06-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+    .f06-tag { position: absolute; left: 80px; right: 150px; text-align: center; }
+    .f06-pill { display: inline-block; padding: 18px 30px; border-radius: 14px; background: rgba(11, 16, 24, 0.8);
+      border: 2px solid rgba(143, 203, 242, 0.5); font-family: "Montserrat", sans-serif; font-weight: 600; font-size: 42px;
+      line-height: 1.15; color: #ffffff; white-space: nowrap; }
+    .f06-ice { color: #8fcbf2; }
+    .f06-amb { display: inline-block; color: #e8b24a; }
   </style>
   <div id="root" data-composition-id="f06" data-width="1080" data-height="1920">
-    <div id="f06-title" class="clip" data-start="0" data-duration="5.87">F6 você no vácuo, saliva ferve</div>
+    <canvas id="f06-canvas" width="1080" height="1920"></canvas>
+    <div id="f06-vac" class="f06-tag clip" data-start="1.75" data-duration="0.62" style="top: 668px">
+      <span id="f06-vac-in" class="f06-pill">vácuo · <span class="f06-ice">~0 kPa</span></span>
+    </div>
+    <div id="f06-label" class="f06-tag clip" data-start="2.7" data-duration="3.17" style="top: 668px">
+      <span id="f06-label-in" class="f06-pill"><span class="f06-ice">6,3 kPa</span>: a água ferve a <span id="f06-37" class="f06-amb">37&nbsp;°C</span></span>
+    </div>
   </div>
   <script>
     (function () {
+      /* ---------- 2D layers (GSAP) ---------- */
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f06-title", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" }, 0.1);
+      tl.fromTo("#f06-vac-in", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.25, ease: "power3.out" }, 1.75);
+      tl.fromTo("#f06-label-in", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out" }, 2.7);
+      tl.fromTo("#f06-37", { scale: 1 }, { scale: 1.22, duration: 0.18, ease: "power2.out" }, 4.4);
+      tl.to("#f06-37", { scale: 1, duration: 0.3, ease: "power2.inOut" }, 4.6);
+      tl.set({}, {}, 5.87);
       window.__timelines = window.__timelines || {};
       window.__timelines["f06"] = tl;
+
+      /* ---------- 3D (Three.js via kit) ---------- */
+      window.__hf = window.__hf || {};
+      window.__hf.buildReady = window.__hf.buildReady || {};
+      window.__hf.buildReady["f06"] = import("./assets/lib/kit.js").then(async (K) => {
+        const { THREE, PALETTE, ease, range, lerp, clamp, mulberry32 } = K;
+        const canvas = document.getElementById("f06-canvas");
+        const renderer = K.createRenderer(canvas);
+        const M = K.maqueteMaterial;
+
+        const lightsFor = (scene) => {
+          const l = K.addMaqueteLights(scene, { shadowSize: 3 });
+          l.key.shadow.normalBias = 0.02;
+          l.key.shadow.mapSize.set(1024, 1024);
+          return l;
+        };
+        const blobTex = (() => {
+          const c = document.createElement("canvas"); c.width = c.height = 128;
+          const g = c.getContext("2d"); const gr = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+          gr.addColorStop(0, "rgba(0,0,0,0.55)"); gr.addColorStop(1, "rgba(0,0,0,0)");
+          g.fillStyle = gr; g.fillRect(0, 0, 128, 128);
+          return new THREE.CanvasTexture(c);
+        })();
+        const blob = (r) => {
+          const m = new THREE.Mesh(new THREE.PlaneGeometry(r * 2, r * 2),
+            new THREE.MeshBasicMaterial({ map: blobTex, transparent: true, depthWrite: false }));
+          m.rotation.x = -Math.PI / 2; return m;
+        };
+        function buildPerson(mat) {
+          const g = new THREE.Group();
+          const add = (geo, x, y, z, rx = 0, rz = 0, sx = 1, sy = 1, sz = 1) => {
+            const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.rotation.set(rx, 0, rz);
+            m.scale.set(sx, sy, sz); m.castShadow = true; m.receiveShadow = true; g.add(m); return m;
+          };
+          const head = add(new THREE.SphereGeometry(0.115, 24, 16), 0, 1.67, 0, 0, 0, 1, 1.08, 1);
+          add(new THREE.CylinderGeometry(0.048, 0.055, 0.12, 12), 0, 1.55, 0);
+          add(new THREE.CapsuleGeometry(0.16, 0.34, 6, 16), 0, 1.24, 0, 0, 0, 1.22, 1, 0.72);
+          add(new THREE.CapsuleGeometry(0.14, 0.1, 6, 16), 0, 0.94, 0, 0, 0, 1.15, 1, 0.8);
+          const arm = new THREE.CapsuleGeometry(0.048, 0.27, 4, 10), fore = new THREE.CapsuleGeometry(0.042, 0.25, 4, 10);
+          const thigh = new THREE.CapsuleGeometry(0.07, 0.38, 4, 12), shin = new THREE.CapsuleGeometry(0.058, 0.32, 4, 12);
+          for (const s of [-1, 1]) {
+            add(arm, s * 0.283, 1.268, 0, 0, s * 0.35);
+            add(fore, s * 0.379, 0.932, 0.02, -0.1, s * 0.2);
+            add(thigh, s * 0.114, 0.66, 0, 0, s * 0.06);
+            add(shin, s * 0.135, 0.202, 0, 0, s * 0.03);
+          }
+          return { group: g, head };
+        }
+
+        /* ===== Scene A: you, under a vacuum bell ===== */
+        const sA = new THREE.Scene();
+        sA.background = new THREE.Color(0x141b25);
+        lightsFor(sA);
+        const plinth = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.6, 0.16, 48), M(0x3d4450, { roughness: 0.9 }));
+        plinth.position.y = -0.08; plinth.receiveShadow = true; sA.add(plinth);
+        const ring = new THREE.Mesh(new THREE.TorusGeometry(1.32, 0.03, 8, 64), M(PALETTE.coldGrey, { roughness: 0.6 }));
+        ring.rotation.x = -Math.PI / 2; ring.position.y = 0.02; sA.add(ring);
+        const person = buildPerson(M(0xc9ced6, { roughness: 0.75 }));
+        sA.add(person.group);
+        const shA = blob(0.5); shA.position.y = 0.005; sA.add(shA);
+        const dome = new THREE.Mesh(new THREE.SphereGeometry(1.32, 48, 24, 0, Math.PI * 2, 0, Math.PI / 2),
+          new THREE.MeshStandardMaterial({ color: PALETTE.ice, roughness: 0.5, transparent: true, opacity: 0.1, depthWrite: false, side: THREE.DoubleSide }));
+        dome.scale.y = 1.55; sA.add(dome);
+        const domeEdge = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.SphereGeometry(1.33, 16, 6, 0, Math.PI * 2, 0, Math.PI / 2), 1),
+          new THREE.LineBasicMaterial({ color: PALETTE.ice, transparent: true, opacity: 0.18 }));
+        domeEdge.scale.y = 1.55; sA.add(domeEdge);
+        const camA = new THREE.PerspectiveCamera(35, K.W / K.H, 0.05, 100);
+
+        /* ===== Scene B: exploded mouth diorama ===== */
+        const sB = new THREE.Scene();
+        sB.background = new THREE.Color(0x18202b);
+        lightsFor(sB);
+        const base = new THREE.Mesh(new THREE.CylinderGeometry(0.95, 1.02, 0.12, 48), M(0x3d4450, { roughness: 0.9 }));
+        base.position.y = -0.06; base.receiveShadow = true; sB.add(base);
+        const gumMat = M(0xc99592, { roughness: 0.75 });
+        const skinMat = M(0xd8b9a8, { roughness: 0.8 });
+        const toothMat = M(0xeef2f6, { roughness: 0.55 });
+        const tongueMat = M(0xd88c86, { roughness: 0.7 });
+        const R = 0.42;
+        function jaw(sign) {
+          const g = new THREE.Group();
+          const arc = new THREE.Mesh(new THREE.TorusGeometry(R, 0.1, 10, 32, Math.PI), gumMat);
+          arc.rotation.x = -Math.PI / 2; arc.scale.z = 0.8; arc.castShadow = arc.receiveShadow = true; g.add(arc);
+          const floor = new THREE.Mesh(new THREE.CylinderGeometry(R, R, 0.06, 32, 1, false, Math.PI / 2, Math.PI), skinMat);
+          floor.position.y = -0.05 * sign; floor.receiveShadow = true; g.add(floor);
+          const tg = new THREE.BoxGeometry(0.075, 0.09, 0.06);
+          for (let i = 0; i < 14; i++) {
+            const a = 0.14 + (i / 13) * (Math.PI - 0.28);
+            const tooth = new THREE.Mesh(tg, toothMat);
+            tooth.position.set(R * Math.cos(a), sign * 0.11, -R * Math.sin(a));
+            tooth.rotation.y = a + Math.PI / 2;
+            tooth.castShadow = true; g.add(tooth);
+          }
+          return g;
+        }
+        const lower = jaw(1); lower.position.y = 0.12; sB.add(lower);
+        const upper = jaw(-1); sB.add(upper);
+        const palate = new THREE.Mesh(new THREE.SphereGeometry(R * 0.9, 24, 12, Math.PI / 2, Math.PI, 0, Math.PI / 2), skinMat);
+        palate.scale.set(1, 0.35, 1); upper.add(palate);
+        const tongue = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 20), tongueMat);
+        const TC = new THREE.Vector3(0, 0.16, -0.1), TR = new THREE.Vector3(0.3, 0.11, 0.34);
+        tongue.position.copy(TC); tongue.scale.copy(TR); tongue.castShadow = tongue.receiveShadow = true; sB.add(tongue);
+        const shB = blob(0.75); shB.position.y = 0.002; sB.add(shB);
+        // dashed guides of the exploded view
+        const guideMat = new THREE.LineDashedMaterial({ color: PALETTE.ice, dashSize: 0.03, gapSize: 0.025, transparent: true, opacity: 0.6 });
+        const guides = [];
+        for (const a of [0.2, Math.PI / 2, Math.PI - 0.2]) {
+          const gg = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 1, 0)]);
+          const ln = new THREE.Line(gg, guideMat); ln.computeLineDistances();
+          ln.position.set(R * Math.cos(a), 0.25, -R * Math.sin(a)); sB.add(ln); guides.push(ln);
+        }
+        // bubbles rising from the tongue (precomputed, seeded)
+        const rnd = mulberry32(606);
+        const bubMat = new THREE.MeshStandardMaterial({ color: PALETTE.frost, roughness: 0.5, transparent: true, opacity: 0.85 });
+        const bubGeo = new THREE.SphereGeometry(1, 14, 10);
+        const bubbles = [];
+        for (let i = 0; i < 46; i++) {
+          let x, z, q;
+          do { x = (rnd() * 2 - 1) * 0.24; z = (rnd() * 2 - 1) * 0.28; q = (x / TR.x) ** 2 + (z / TR.z) ** 2; } while (q > 0.62);
+          const y0 = TC.y + TR.y * Math.sqrt(1 - q);
+          const m = new THREE.Mesh(bubGeo, bubMat); m.castShadow = false; sB.add(m);
+          bubbles.push({ m, x: x + TC.x, z: z + TC.z, y0, P: 0.75 + rnd() * 0.6, ph: rnd(), r: 0.016 + rnd() * 0.02, sw: rnd() * 6.28 });
+        }
+        const camB = new THREE.PerspectiveCamera(35, K.W / K.H, 0.02, 100);
+
+        /* ===== timing (local s) ===== */
+        const T_CUT = 2.4, T_BOIL = 2.5, T_CUT2 = 4.1;
+
+        function renderA(t) {
+          const p = ease.inOutCubic(clamp(t / T_CUT));
+          camA.position.set(lerp(2.5, 0.75, p), lerp(1.55, 1.64, p), lerp(5.0, 2.0, p));
+          camA.lookAt(0, lerp(1.25, 1.6, p), 0);
+          person.group.rotation.y = lerp(0.35, 0.15, p);
+          person.head.rotation.x = -0.08 * Math.sin(t * 1.3);
+          renderer.render(sA, camA);
+        }
+        function renderB(t) {
+          // explode the upper jaw open
+          const ex = ease.outCubic(range(t, T_CUT, T_CUT + 0.7));
+          upper.position.y = lerp(0.42, 0.74, ex);
+          guides.forEach((g) => { g.scale.y = Math.max(0.001, upper.position.y - 0.36); g.visible = ex > 0.05; });
+          // boiling saliva
+          for (const b of bubbles) {
+            const age = t - T_BOIL - b.ph * b.P;
+            if (age < 0) { b.m.visible = false; continue; }
+            const a = (age % b.P) / b.P;
+            const grow = Math.min(1, a * 4) * (a > 0.88 ? (1 - a) / 0.12 : 1);
+            b.m.visible = grow > 0.02;
+            b.m.position.set(b.x + 0.012 * Math.sin(b.sw + a * 9), b.y0 + a * a * 0.42, b.z);
+            b.m.scale.setScalar(b.r * (0.4 + 0.9 * a) * grow);
+          }
+          if (t < T_CUT2) {
+            const p = ease.outCubic(range(t, T_CUT, T_CUT2));
+            const ang = lerp(0.55, 0.15, p), r = lerp(2.9, 2.45, p);
+            camB.position.set(Math.sin(ang) * r, lerp(1.7, 1.45, p), Math.cos(ang) * r);
+            camB.lookAt(0, 0.62, -0.1);
+          } else {
+            const p = ease.outQuad(range(t, T_CUT2, 5.87));
+            const ang = lerp(-0.2, -0.38, p), r = lerp(1.6, 1.35, p);
+            camB.position.set(Math.sin(ang) * r, lerp(0.95, 0.85, p), Math.cos(ang) * r);
+            camB.lookAt(0, 0.5, -0.1);
+          }
+          renderer.render(sB, camB);
+        }
+        function render(t) { if (t < T_CUT) renderA(t); else renderB(t); }
+
+        await renderer.compileAsync(sA, camA);
+        await renderer.compileAsync(sB, camB);
+        renderB(3);
+        // local time = global time - this scene's host start (looked up by id; kit.sceneStart misses the host here)
+        const host = document.querySelector('[data-composition-id="f06"][data-start]');
+        const T0 = host ? parseFloat(host.getAttribute("data-start")) || 0 : 30.8;
+        let last = null;
+        const draw = (g) => { const t = clamp(g - T0, 0, 5.87); if (t === last) return; last = t; render(t); };
+        window.addEventListener("hf-seek", (e) => draw(e.detail.time));
+        draw(T0);
+        const gl = renderer.getContext();
+        gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4));
+      });
     })();
   </script>
 </template>

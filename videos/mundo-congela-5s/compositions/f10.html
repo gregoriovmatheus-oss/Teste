@@ -6,20 +6,123 @@
       @font-face { font-family: "EB Garamond"; font-style: italic; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-ext-400-italic.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
       @font-face { font-family: "Montserrat"; font-style: normal; font-weight: 600; font-display: block; src: url("assets/fonts/montserrat-latin-600-normal.woff2") format("woff2"); }
       @font-face { font-family: "Anton"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/fonts/anton-latin-400-normal.woff2") format("woff2"); }
-    #root { position: absolute; inset: 0; background: #26303d; overflow: hidden; }
-    #f10-title { position: absolute; left: 200px; right: 200px; top: 720px; text-align: center;
-      font-family: "Montserrat", sans-serif; font-weight: 600; font-size: 28px; letter-spacing: 0.3em;
-      color: #8D96A2; text-transform: uppercase; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #c9d3dc; }
+    #f10-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+    #f10-warm { position: absolute; inset: 0; opacity: 0;
+      background: linear-gradient(180deg, rgba(232, 178, 74, 0.38) 0%, rgba(232, 178, 74, 0.12) 40%, rgba(232, 178, 74, 0) 70%);
+      mix-blend-mode: soft-light; }
+    #f10-vig { position: absolute; inset: 0; opacity: 0;
+      background: radial-gradient(ellipse at 50% 55%, rgba(8, 12, 20, 0) 45%, rgba(8, 12, 20, 0.62) 100%); }
+    #f10-label { position: absolute; left: 140px; right: 180px; top: 730px; text-align: center; }
+    #f10-label-in { display: inline-block; font-family: "Montserrat", sans-serif; font-weight: 600; font-size: 44px;
+      color: #ffffff; padding: 14px 28px; border-radius: 10px; background: rgba(11, 16, 24, 0.62);
+      text-shadow: 0 2px 10px rgba(4, 10, 20, 0.6); }
+    #f10-label-in .ice { color: #8fcbf2; }
+    #f10-ptr { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; opacity: 0; overflow: visible; }
   </style>
   <div id="root" data-composition-id="f10" data-width="1080" data-height="1920">
-    <div id="f10-title" class="clip" data-start="0" data-duration="2.66">F10 o calor volta</div>
+    <canvas id="f10-canvas" width="1080" height="1920"></canvas>
+    <div id="f10-warm" data-layout-ignore></div>
+    <div id="f10-vig" data-layout-ignore></div>
+    <svg id="f10-ptr" viewBox="0 0 1080 1920" data-layout-ignore>
+      <line id="f10-ptr-line" x1="540" y1="830" x2="540" y2="930" stroke="#ffffff" stroke-width="4" stroke-linecap="round" />
+      <path id="f10-ptr-brk" d="M 470 930 L 470 960 M 610 930 L 610 960" stroke="#8fcbf2" stroke-width="5" stroke-linecap="round" fill="none" />
+    </svg>
+    <div id="f10-label" class="clip" data-start="1.1" data-duration="1.56">
+      <span id="f10-label-in"><span class="ice">13&nbsp;cm</span> de neve de ar</span>
+    </div>
   </div>
   <script>
     (function () {
+      /* ---------- 2D layers (GSAP) ---------- */
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f10-title", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" }, 0.1);
+      tl.fromTo("#f10-warm", { opacity: 0 }, { opacity: 1, duration: 0.9, ease: "power2.out" }, 0.05);
+      tl.fromTo("#f10-vig", { opacity: 0.15 }, { opacity: 1, duration: 2.5, ease: "power1.in" }, 0.1);
+      tl.fromTo("#f10-label-in", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out" }, 1.15);
+      tl.fromTo("#f10-ptr", { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" }, 1.25);
+      tl.set({}, {}, 2.66);
       window.__timelines = window.__timelines || {};
       window.__timelines["f10"] = tl;
+
+      /* ---------- 3D (Three.js via kit) ---------- */
+      window.__hf = window.__hf || {};
+      window.__hf.buildReady = window.__hf.buildReady || {};
+      window.__hf.buildReady["f10"] = import("./assets/lib/kit.js").then(async (K) => {
+        const { THREE, PALETTE, ease, range, lerp, clamp } = K;
+        const canvas = document.getElementById("f10-canvas");
+        const renderer = K.createRenderer(canvas);
+
+        const scene = new THREE.Scene();
+        const bgIce = new THREE.Color(0xd2dfea), bgWarm = new THREE.Color(0xd9cdb8);
+        scene.background = bgIce.clone();
+        scene.fog = new THREE.Fog(0xd2dfea, 240, 520);
+        const lights = K.addMaqueteLights(scene, { intensity: 1, shadowSize: 190 });
+        const city = K.buildCityGrid({ seed: 7, cols: 8, rows: 11, maxH: 38 });
+        city.ground.visible = false;
+        scene.add(city.group);
+        K.setFrost(city.group, 0.75);
+
+        // maquete board + 13 cm "air snow" slab (exaggerated thickness for the model scale)
+        const BW = city.size.w + 20, BD = city.size.d + 20, ZE = BD / 2;
+        const board = new THREE.Mesh(new THREE.BoxGeometry(BW, 7, BD), K.maqueteMaterial(0x5d646e, { roughness: 0.9 }));
+        board.position.y = -3.5;
+        board.receiveShadow = true;
+        scene.add(board);
+        const snowGeo = new THREE.BoxGeometry(BW, 1.0, BD);
+        snowGeo.translate(0, 0.5, 0);
+        const snowMat = new THREE.MeshStandardMaterial({ color: 0xf6f9fc, roughness: 0.92, emissive: 0x8fcbf2, emissiveIntensity: 0.06 });
+        const snow = new THREE.Mesh(snowGeo, snowMat);
+        snow.receiveShadow = true;
+        scene.add(snow);
+
+        const cam = new THREE.PerspectiveCamera(35, K.W / K.H, 0.5, 2000);
+        const T_CUT = 1.06; // "E é aqui que mora o perigo"
+        const keyIce = new THREE.Color(0xdbeeff), keyWarm = new THREE.Color(0xffc98a);
+        const ptrLine = document.getElementById("f10-ptr-line");
+        const ptrBrk = document.getElementById("f10-ptr-brk");
+        const pv = new THREE.Vector3();
+
+        function render(t) {
+          const heat = ease.inOutSine(range(t, 0.0, 1.6));
+          lights.key.color.copy(keyIce).lerp(keyWarm, heat);
+          lights.key.intensity = lerp(2.0, 3.0, heat);
+          scene.background.copy(bgIce).lerp(bgWarm, heat * 0.6);
+          scene.fog.color.copy(scene.background);
+          K.setFrost(city.group, lerp(0.75, 0.45, heat));
+          renderer.toneMappingExposure = 1.08;
+          if (t < T_CUT) {
+            // descending aerial over the snow-covered city
+            const p = ease.inOutSine(clamp(t / T_CUT));
+            const h = lerp(230, 120, p), ang = lerp(0.25, 0.05, p);
+            cam.position.set(Math.sin(ang) * 30, h, ZE * 0.25 + lerp(40, 90, p));
+            cam.up.set(0, 1, 0);
+            cam.lookAt(0, 0, lerp(0, 30, p));
+          } else {
+            // down at the avenue: edge of the model, the white layer in cross-section
+            const p = ease.outCubic(range(t, T_CUT, 2.66));
+            cam.position.set(lerp(9, 6, p), lerp(6.5, 4.2, p), ZE + lerp(34, 22, p));
+            cam.up.set(0, 1, 0);
+            cam.lookAt(0, lerp(5.5, 4.4, p), ZE - 60);
+            // pointer from the label to the snow band edge
+            pv.set(0, 0.5, ZE).project(cam);
+            const sy = (1 - pv.y) * 0.5 * K.H, sx = (pv.x + 1) * 0.5 * K.W;
+            pv.set(0, 1.0, ZE).project(cam);
+            const syTop = (1 - pv.y) * 0.5 * K.H;
+            pv.set(0, 0.0, ZE).project(cam);
+            const syBot = (1 - pv.y) * 0.5 * K.H;
+            ptrLine.setAttribute("x1", sx); ptrLine.setAttribute("y1", 835);
+            ptrLine.setAttribute("x2", sx); ptrLine.setAttribute("y2", Math.max(840, syTop - 10));
+            ptrBrk.setAttribute("d", `M ${sx - 70} ${syTop} L ${sx - 82} ${syTop} L ${sx - 82} ${syBot} L ${sx - 70} ${syBot} M ${sx + 70} ${syTop} L ${sx + 82} ${syTop} L ${sx + 82} ${syBot} L ${sx + 70} ${syBot}`);
+            void sy;
+          }
+          renderer.render(scene, cam);
+        }
+
+        await renderer.compileAsync(scene, cam);
+        await K.bindSeek(canvas, render);
+        const gl = renderer.getContext();
+        gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4));
+      });
     })();
   </script>
 </template>
