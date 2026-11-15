@@ -230,12 +230,7 @@
         await renderer.compileAsync(earthScene, earthCam);
         await renderer.compileAsync(cityScene, cityCam);
         renderEarth(5);
-        const host = document.querySelector('[data-composition-id="f12"][data-start]');
-        const START = host ? parseFloat(host.getAttribute("data-start")) || 57.67 : 57.67;
-        let lastT = null;
-        const seek = (g) => { const t = Math.max(0, g - START); if (t === lastT) return; lastT = t; render(t); };
-        window.addEventListener("hf-seek", (e) => seek(e.detail.time));
-        render(0);
+        await K.bindSeek(canvas, render);
         const gl = renderer.getContext();
         gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4));
       });

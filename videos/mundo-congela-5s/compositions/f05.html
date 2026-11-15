@@ -260,11 +260,7 @@
         await renderer.compileAsync(fire, fireCam);
         renderCity(3);
         await renderer.compileAsync(cityS, cityCam);
-        // kit.sceneStart() returns 0 for this host at render time, so fall back to the host's data-start
-        const kOff = K.sceneStart(canvas);
-        const hostEl = document.querySelector('[data-composition-src="compositions/f05.html"][data-start]');
-        const off = kOff || (hostEl ? parseFloat(hostEl.getAttribute("data-start")) : 24.6) || 24.6;
-        await K.bindSeek(canvas, (t) => render(Math.max(0, t + kOff - off)));
+        await K.bindSeek(canvas, render);
         const gl = renderer.getContext();
         gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4));
       });

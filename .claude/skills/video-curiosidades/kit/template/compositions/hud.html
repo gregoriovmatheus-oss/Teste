@@ -1,0 +1,43 @@
+<template>
+  <!-- Gerado por scripts/gera-hud-legendas.py (ref R01). Não edite à mão. -->
+  <style>
+    #root { position: absolute; inset: 0; pointer-events: none; }
+    #hud-box { position: absolute; left: 140px; right: 140px; top: 290px; height: 312px; text-align: center;
+      color: #fff; text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55); }
+    #hud-scrim { position: absolute; left: -60px; right: -60px; top: -40px; bottom: -30px;
+      background: radial-gradient(ellipse at 50% 50%, rgba(6, 12, 22, 0.74) 0%, rgba(6, 12, 22, 0.6) 45%, rgba(6, 12, 22, 0) 74%); }
+    #hud-label { position: absolute; left: 0; right: 0; top: 0; font-family: "Montserrat", sans-serif; font-weight: 600;
+      font-size: 30px; letter-spacing: 0.3em; color: #FFFFFF; }
+    #hud-num { position: absolute; left: 0; right: 0; top: 34px; font-family: "EB Garamond", serif; font-size: 150px;
+      line-height: 1; font-variant-numeric: tabular-nums; color: #FFFFFF; }
+    #hud-unit { font-size: 54px; margin-left: 10px; }
+    #hud-l2 { position: absolute; left: 0; right: 0; top: 196px; font-family: "Montserrat", sans-serif; font-weight: 600;
+      font-size: 30px; letter-spacing: 0.3em; color: #8FCBF2; }
+    .hud-status { position: absolute; left: 0; right: 0; top: 252px; font-family: "Montserrat", sans-serif; font-weight: 600;
+      font-size: 32px; letter-spacing: 0.3em; color: #E8B24A; }
+  </style>
+  <div id="root" data-composition-id="hud" data-width="1080" data-height="1920">
+    <div id="hud-box" class="clip" data-start="0" data-duration="5.5">
+      <div id="hud-scrim" data-layout-ignore></div>
+      <div id="hud-label">O CALOR VOLTA EM</div>
+      <div id="hud-num"><span id="hud-count">5,00</span><span id="hud-unit">s</span></div>
+      <div id="hud-l2">AR −273 °C</div>
+
+    </div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo("#hud-box > *:not(.hud-status)", { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" }, 0);
+      const el = document.getElementById("hud-count");
+      const c = { v: 5 };
+      const fmt = (v) => v.toFixed(2).replace(".", ",").replace("-", "−");
+      tl.fromTo(c, { v: 5 }, { v: 0, duration: 5.0, ease: "none", onUpdate: () => { el.textContent = fmt(c.v); } }, 0);
+      tl.fromTo("#hud-num", { color: "#FFFFFF" }, { color: "#E8B24A", duration: 0.2, ease: "none" }, 5.0);
+
+      tl.set({}, {}, 5.5);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["hud"] = tl;
+    })();
+  </script>
+</template>

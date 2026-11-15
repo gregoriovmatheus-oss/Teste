@@ -165,12 +165,7 @@
 
         await renderer.compileAsync(scene, cam);
         render(1.5);
-        const host = document.querySelector('[data-composition-id="f07"][data-start]');
-        const T0 = host ? parseFloat(host.getAttribute("data-start")) || 0 : 36.67;
-        let last = null;
-        const draw = (g) => { const t = clamp(g - T0, 0, 4.13); if (t === last) return; last = t; render(t); };
-        window.addEventListener("hf-seek", (e) => draw(e.detail.time));
-        draw(T0);
+        await K.bindSeek(canvas, render);
         const gl = renderer.getContext();
         gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4));
       });

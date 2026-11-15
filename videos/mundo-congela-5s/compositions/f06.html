@@ -200,13 +200,7 @@
         await renderer.compileAsync(sA, camA);
         await renderer.compileAsync(sB, camB);
         renderB(3);
-        // local time = global time - this scene's host start (looked up by id; kit.sceneStart misses the host here)
-        const host = document.querySelector('[data-composition-id="f06"][data-start]');
-        const T0 = host ? parseFloat(host.getAttribute("data-start")) || 0 : 30.8;
-        let last = null;
-        const draw = (g) => { const t = clamp(g - T0, 0, 5.87); if (t === last) return; last = t; render(t); };
-        window.addEventListener("hf-seek", (e) => draw(e.detail.time));
-        draw(T0);
+        await K.bindSeek(canvas, render);
         const gl = renderer.getContext();
         gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4));
       });

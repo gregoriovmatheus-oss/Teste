@@ -44,9 +44,11 @@
  *   setFrost(object3d, amount 0..1, {tint=PALETTE.frost}) lerps every maqueteMaterial toward frost/ice
  *                                            (per material cap: material.userData.frostMax, default 0.85)
  *   bindSeek(el, render, {warm=[]}) -> Promise   wires window "hf-seek" to render(localTime);
- *                                            localTime = global time - the scene host's data-start.
+ *                                            localTime = global time - sceneStart(el), clamped to
+ *                                            [0, host data-duration]; unchanged t skips the draw.
  *                                            warm: stages to compileAsync before the first frame.
  *   sceneStart(el) -> seconds                start of the host that contains el (sum of ancestor data-start)
+ *   sceneDuration(el) -> seconds             data-duration of the nearest host
  *
  * Rules: no requestAnimationFrame, no Date.now, no Math.random. render(t) must be a pure function of t.
  */
@@ -297,29 +299,44 @@ export function setFrost(object3d, amount, { tint = PALETTE.frost } = {}) {
 }
 
 /* ---------- seek ---------- */
+// Once mounted, the runtime renames a host's data-composition-src to data-composition-file and
+// its data-duration to data-hf-authored-duration (the old check for data-composition-src made
+// sceneStart return 0 after F1). A host is any ancestor with data-start plus a composition id/src/file.
+const isHost = (n) => !!n.hasAttribute && n.hasAttribute("data-start") &&
+  (n.hasAttribute("data-composition-id") || n.hasAttribute("data-composition-src") || n.hasAttribute("data-composition-file"));
+const hostDuration = (n) => parseFloat(n.getAttribute("data-duration") ?? n.getAttribute("data-hf-authored-duration"));
+
 export function sceneStart(el) {
   let s = 0;
-  for (let n = el; n; n = n.parentElement) {
-    if (n.hasAttribute && n.hasAttribute("data-composition-src") && n.hasAttribute("data-start")) {
-      s += parseFloat(n.getAttribute("data-start")) || 0;
-    }
-  }
+  for (let n = el; n; n = n.parentElement) if (isHost(n)) s += parseFloat(n.getAttribute("data-start")) || 0;
   return s;
+}
+
+// duration of the nearest host (Infinity if none)
+export function sceneDuration(el) {
+  for (let n = el; n; n = n.parentElement) {
+    if (isHost(n)) return hostDuration(n) || Infinity;
+  }
+  return Infinity;
 }
 
 export async function bindSeek(el, render, { warm = [] } = {}) {
   for (const st of warm) {
     if (st.renderer.compileAsync) await st.renderer.compileAsync(st.scene, st.camera);
   }
+  const start = sceneStart(el);
+  const dur = sceneDuration(el);
   let last = null;
+  // local time clamped to the scene window: outside it the host is hidden, so the frame
+  // is frozen and the (expensive) WebGL draw is skipped instead of re-rendered every seek.
   const draw = (globalT) => {
-    const t = Math.max(0, globalT - sceneStart(el));
+    const t = clamp(globalT - start, 0, dur);
     if (t === last) return;
     last = t;
     render(t);
   };
   window.addEventListener("hf-seek", (e) => draw(e.detail.time));
-  draw(0);
+  draw(start);
   // read one pixel back so the first (slow) GPU frame finishes inside setup
   for (const st of warm) {
     const gl = st.renderer.getContext();

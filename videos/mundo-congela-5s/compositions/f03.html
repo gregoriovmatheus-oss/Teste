@@ -183,11 +183,7 @@
         }
         shot(2); drawMolecules(2); place(tagN, heroPos[0], 1); place(tagO, heroPos[1], -1);
         await renderer.compileAsync(scene, cam);
-        // kit.sceneStart() returns 0 for this host at render time, so fall back to the host's data-start
-        const kOff = K.sceneStart(canvas);
-        const hostEl = document.querySelector('[data-composition-src="compositions/f03.html"][data-start]');
-        const off = kOff || (hostEl ? parseFloat(hostEl.getAttribute("data-start")) : 13.47) || 13.47;
-        await K.bindSeek(canvas, (t) => render(Math.max(0, t + kOff - off)));
+        await K.bindSeek(canvas, render);
         const gl = renderer.getContext();
         gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4));
       });
