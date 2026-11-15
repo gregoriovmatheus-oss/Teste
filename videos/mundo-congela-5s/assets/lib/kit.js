@@ -284,16 +284,16 @@ export function buildCityGrid({
 
 const _frostA = new THREE.Color();
 const _frostB = new THREE.Color();
+const _ice = new THREE.Color(PALETTE.ice);
 export function setFrost(object3d, amount, { tint = PALETTE.frost } = {}) {
   const a = clamp(amount);
   _frostB.set(tint);
-  const ice = new THREE.Color(PALETTE.ice);
   object3d.traverse((o) => {
     const m = o.material;
     if (!m || !m.userData || !m.userData.maquete) return;
     _frostA.copy(m.userData.baseColor).lerp(_frostB, a * (m.userData.frostMax ?? 0.85));
     m.color.copy(_frostA);
-    if (m.emissive) m.emissive.copy(ice).multiplyScalar(0.12 * a);
+    if (m.emissive) m.emissive.copy(_ice).multiplyScalar(0.12 * a);
     m.roughness = lerp(m.userData.baseRough, 0.55, a);
   });
 }
