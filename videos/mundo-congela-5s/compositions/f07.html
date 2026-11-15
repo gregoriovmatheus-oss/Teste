@@ -4,7 +4,7 @@
     @font-face { font-family: "Montserrat"; font-style: normal; font-weight: 600; font-display: block; src: url("assets/fonts/montserrat-latin-ext-600-normal.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+20A0-20C0, U+2C60-2C7F, U+A720-A7FF; }
     #root { position: absolute; inset: 0; overflow: hidden; background: #141b25; }
     #f07-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
-    #f07-alert { position: absolute; left: 80px; right: 150px; top: 1218px; text-align: center; }
+    #f07-alert { position: absolute; left: 80px; right: 150px; top: 650px; text-align: center; }
     #f07-alert-in { display: inline-block; padding: 16px 30px 18px; border-radius: 14px; background: rgba(216, 67, 47, 0.94);
       box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.85), 0 10px 40px rgba(216, 67, 47, 0.55);
       font-family: "Montserrat", sans-serif; font-weight: 600; color: #ffffff; white-space: nowrap; }
@@ -43,7 +43,7 @@
         tl.to("#f07-alert-in", { opacity: 0.35, duration: 0.1, ease: "none" }, t0);
         tl.to("#f07-alert-in", { opacity: 1, duration: 0.1, ease: "none" }, t0 + 0.14);
       }
-      tl.fromTo("#f07-alert-sub", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.2, ease: "power2.out" }, 3.13);
+      tl.fromTo("#f07-alert-sub", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.2, ease: "power2.out" }, 2.72);
       tl.set({}, {}, 4.13);
       window.__timelines = window.__timelines || {};
       window.__timelines["f07"] = tl;

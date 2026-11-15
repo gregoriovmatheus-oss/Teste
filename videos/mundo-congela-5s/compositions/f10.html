@@ -64,8 +64,8 @@
 
         // maquete board + 13 cm "air snow" slab (exaggerated thickness for the model scale)
         const BW = city.size.w + 20, BD = city.size.d + 20, ZE = BD / 2;
-        const board = new THREE.Mesh(new THREE.BoxGeometry(BW, 7, BD), K.maqueteMaterial(0x5d646e, { roughness: 0.9 }));
-        board.position.y = -3.5;
+        const board = new THREE.Mesh(new THREE.BoxGeometry(BW, 2.5, BD), K.maqueteMaterial(0x5d646e, { roughness: 0.9 }));
+        board.position.y = -1.25;
         board.receiveShadow = true;
         scene.add(board);
         const snowGeo = new THREE.BoxGeometry(BW, 1.0, BD);
@@ -102,13 +102,14 @@
             const p = ease.outCubic(range(t, T_CUT, 2.66));
             cam.position.set(lerp(9, 6, p), lerp(6.5, 4.2, p), ZE + lerp(34, 22, p));
             cam.up.set(0, 1, 0);
-            cam.lookAt(0, lerp(5.5, 4.4, p), ZE - 60);
+            cam.lookAt(cam.position.x, lerp(-7, -8.8, p), ZE - 60);
             // pointer from the label to the snow band edge
-            pv.set(0, 0.5, ZE).project(cam);
+            const ex = cam.position.x;
+            pv.set(ex, 0.5, ZE).project(cam);
             const sy = (1 - pv.y) * 0.5 * K.H, sx = (pv.x + 1) * 0.5 * K.W;
-            pv.set(0, 1.0, ZE).project(cam);
+            pv.set(ex, 1.0, ZE).project(cam);
             const syTop = (1 - pv.y) * 0.5 * K.H;
-            pv.set(0, 0.0, ZE).project(cam);
+            pv.set(ex, 0.0, ZE).project(cam);
             const syBot = (1 - pv.y) * 0.5 * K.H;
             ptrLine.setAttribute("x1", sx); ptrLine.setAttribute("y1", 835);
             ptrLine.setAttribute("x2", sx); ptrLine.setAttribute("y2", Math.max(840, syTop - 10));
@@ -119,7 +120,12 @@
         }
 
         await renderer.compileAsync(scene, cam);
-        await K.bindSeek(canvas, render);
+        const host = document.querySelector('[data-composition-id="f10"][data-start]');
+        const START = host ? parseFloat(host.getAttribute("data-start")) || 49.87 : 49.87;
+        let lastT = null;
+        const seek = (g) => { const t = Math.max(0, g - START); if (t === lastT) return; lastT = t; render(t); };
+        window.addEventListener("hf-seek", (e) => seek(e.detail.time));
+        render(0);
         const gl = renderer.getContext();
         gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4));
       });

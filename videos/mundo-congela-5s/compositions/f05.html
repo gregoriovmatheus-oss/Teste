@@ -1,25 +1,273 @@
 <template>
   <style>
-      @font-face { font-family: "EB Garamond"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-400-normal.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
-      @font-face { font-family: "EB Garamond"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-ext-400-normal.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
-      @font-face { font-family: "EB Garamond"; font-style: italic; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-400-italic.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
-      @font-face { font-family: "EB Garamond"; font-style: italic; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-ext-400-italic.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
-      @font-face { font-family: "Montserrat"; font-style: normal; font-weight: 600; font-display: block; src: url("assets/fonts/montserrat-latin-600-normal.woff2") format("woff2"); }
-      @font-face { font-family: "Anton"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/fonts/anton-latin-400-normal.woff2") format("woff2"); }
-    #root { position: absolute; inset: 0; background: #26303d; overflow: hidden; }
-    #f05-title { position: absolute; left: 200px; right: 200px; top: 720px; text-align: center;
-      font-family: "Montserrat", sans-serif; font-weight: 600; font-size: 28px; letter-spacing: 0.3em;
-      color: #8D96A2; text-transform: uppercase; }
+    @font-face { font-family: "Montserrat"; font-style: normal; font-weight: 600; font-display: block; src: url("assets/fonts/montserrat-latin-600-normal.woff2") format("woff2"); }
+    @font-face { font-family: "Anton"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/fonts/anton-latin-400-normal.woff2") format("woff2"); }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #1d2733; }
+    #f05-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+    #f05-o2 { position: absolute; left: 90px; top: 690px; opacity: 0; white-space: nowrap;
+      font-family: "Montserrat", sans-serif; font-weight: 600; font-size: 34px; letter-spacing: 0.16em; color: #ffffff;
+      padding: 12px 20px; border-radius: 10px; background: rgba(11, 16, 24, 0.6); border: 2px solid rgba(216, 67, 47, 0.9);
+      text-shadow: 0 1px 6px rgba(4, 10, 20, 0.6); }
+    #f05-o2 b { font-family: "Anton", sans-serif; font-weight: 400; font-size: 48px; letter-spacing: 0.02em; color: #ff7a63; margin-right: 8px; }
+    #f05-arrows { position: absolute; inset: 0; opacity: 0; pointer-events: none; }
+    .f05-arr { position: absolute; left: 0; top: 0; height: 0; transform-origin: 0 0; opacity: 0; }
+    .f05-arr .shaft { position: absolute; left: 0; top: -5px; height: 10px; border-radius: 5px; background: #e8b24a;
+      box-shadow: 0 0 10px rgba(4, 10, 20, 0.55); }
+    .f05-arr .head { position: absolute; top: -20px; width: 0; height: 0;
+      border-top: 20px solid transparent; border-bottom: 20px solid transparent; border-left: 34px solid #e8b24a;
+      filter: drop-shadow(0 0 6px rgba(4, 10, 20, 0.5)); }
+    #f05-inertia { position: absolute; left: 0; top: 0; opacity: 0; white-space: nowrap;
+      font-family: "Montserrat", sans-serif; font-weight: 600; font-size: 32px; letter-spacing: 0.22em; color: #ffffff;
+      padding: 10px 18px; border-radius: 10px; background: rgba(11, 16, 24, 0.6); border: 2px solid rgba(232, 178, 74, 0.9); }
   </style>
   <div id="root" data-composition-id="f05" data-width="1080" data-height="1920">
-    <div id="f05-title" class="clip" data-start="0" data-duration="6.2">F5 o fogo apaga, os carros seguem</div>
+    <canvas id="f05-canvas" width="1080" height="1920"></canvas>
+    <div id="f05-o2" class="clip" data-start="1.6" data-duration="1.25"><b>SEM O₂</b>SEM FOGO</div>
+    <div id="f05-arrows" class="clip" data-start="3.0" data-duration="3.2" data-layout-ignore>
+      <div class="f05-arr" id="f05-a0"><div class="shaft"></div><div class="head"></div></div>
+      <div class="f05-arr" id="f05-a1"><div class="shaft"></div><div class="head"></div></div>
+      <div class="f05-arr" id="f05-a2"><div class="shaft"></div><div class="head"></div></div>
+      <div class="f05-arr" id="f05-a3"><div class="shaft"></div><div class="head"></div></div>
+      <div id="f05-inertia">INÉRCIA</div>
+    </div>
   </div>
   <script>
     (function () {
+      /* ---------- 2D layers (GSAP) ---------- */
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f05-title", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" }, 0.1);
+      tl.fromTo("#f05-o2", { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out" }, 1.6);
+      tl.to("#f05-o2", { opacity: 0, duration: 0.15, ease: "power2.in" }, 2.7);
+      tl.fromTo("#f05-arrows", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" }, 3.0);
+      tl.set({}, {}, 6.2);
       window.__timelines = window.__timelines || {};
       window.__timelines["f05"] = tl;
+
+      /* ---------- 3D (Three.js via kit) ---------- */
+      window.__hf = window.__hf || {};
+      window.__hf.buildReady = window.__hf.buildReady || {};
+      window.__hf.buildReady["f05"] = import("./assets/lib/kit.js").then(async (K) => {
+        const { THREE, PALETTE, ease, range, lerp, clamp, mulberry32 } = K;
+        const canvas = document.getElementById("f05-canvas");
+        const renderer = K.createRenderer(canvas);
+        const M = K.maqueteMaterial;
+        const T_FIRE = 1.72, T_EXH = 2.25;      // fogo.mp3 at local 1.7; "apaga" at 2.2
+
+        /* ===== campfire scene ===== */
+        const fire = new THREE.Scene();
+        fire.background = new THREE.Color(0x1d2733);
+        fire.fog = new THREE.Fog(0x1d2733, 6, 18);
+        const fl = K.addMaqueteLights(fire, { intensity: 0.55, shadowSize: 4 });
+        fl.key.position.set(-6, 10, 5); fl.key.shadow.camera.far = 40;
+        const fireCam = new THREE.PerspectiveCamera(35, K.W / K.H, 0.05, 100);
+        const snowGround = M(0xd5dee8, { roughness: 0.9 });
+        const g0 = new THREE.Mesh(new THREE.CircleGeometry(20, 48), snowGround);
+        g0.rotation.x = -Math.PI / 2; g0.receiveShadow = true; fire.add(g0);
+        const stoneMat = M(0x8d96a2, { roughness: 0.85 }), logMat = M(0x6b4f3a, { roughness: 0.85 });
+        const stoneG = new THREE.DodecahedronGeometry(0.13, 0);
+        for (let i = 0; i < 12; i++) {
+          const a = (i / 12) * Math.PI * 2, s = new THREE.Mesh(stoneG, stoneMat);
+          s.position.set(Math.cos(a) * 0.55, 0.08, Math.sin(a) * 0.55); s.rotation.set(i, i * 2, 0);
+          s.scale.set(1, 0.7, 1); s.castShadow = s.receiveShadow = true; fire.add(s);
+        }
+        const logG = new THREE.CylinderGeometry(0.07, 0.08, 0.85, 8);
+        [0, 1.2, 2.4].forEach((a) => {
+          const l = new THREE.Mesh(logG, logMat);
+          l.rotation.set(Math.PI / 2 - 0.35, a, 0, "YXZ"); l.position.set(0, 0.16, 0);
+          l.castShadow = true; fire.add(l);
+        });
+        const flames = [];
+        const fcols = [0xd8432f, 0xe8b24a, 0xffe08a];
+        const rf = mulberry32(9);
+        for (let i = 0; i < 7; i++) {
+          const layer = i % 3;
+          const c = new THREE.Mesh(new THREE.ConeGeometry(0.13 - layer * 0.03, 0.75 - layer * 0.15, 7),
+            new THREE.MeshBasicMaterial({ color: fcols[layer], transparent: true, opacity: 0.95 }));
+          c.geometry.translate(0, (0.7 - layer * 0.15) / 2, 0);
+          const a = rf() * 6.28, r = layer === 2 ? 0 : 0.08 + rf() * 0.1;
+          c.position.set(Math.cos(a) * r, 0.18, Math.sin(a) * r);
+          fire.add(c);
+          flames.push({ c, ph: rf() * 6.28, f1: 13 + rf() * 9, f2: 23 + rf() * 9, base: 0.8 + rf() * 0.5 });
+        }
+        const fireLight = new THREE.PointLight(0xffa64a, 6, 6, 1.6);
+        fireLight.position.set(0, 0.6, 0); fire.add(fireLight);
+        const smokeMat = M(0xc9d0d8, { roughness: 0.9 });
+        const smoke = [];
+        for (let i = 0; i < 6; i++) {
+          const s = new THREE.Mesh(new THREE.IcosahedronGeometry(0.05 + i * 0.01, 1), smokeMat);
+          fire.add(s); smoke.push(s);
+        }
+
+        /* ===== city scene (avenue at x = 0, along z) ===== */
+        const cityS = new THREE.Scene();
+        cityS.background = new THREE.Color(0xc9d7e4);
+        cityS.fog = new THREE.Fog(0xc9d7e4, 90, 260);
+        const cl = K.addMaqueteLights(cityS, { intensity: 1, shadowSize: 90 });
+        const city = K.buildCityGrid({ seed: 12, cols: 6, rows: 9, maxH: 24, cars: false });
+        cityS.add(city.group);
+        K.setFrost(city.group, 1);
+        const cityCam = new THREE.PerspectiveCamera(35, K.W / K.H, 0.1, 1000);
+
+        const wheelG = new THREE.CylinderGeometry(0.36, 0.36, 0.3, 14); wheelG.rotateZ(Math.PI / 2);
+        const tyre = M(0x22272e, { roughness: 0.9 }); tyre.userData.frostMax = 0.3;
+        const glassM = M(0x3d4450, { roughness: 0.55 }); glassM.userData.frostMax = 0.5;
+        const tailM = new THREE.MeshBasicMaterial({ color: 0x8a2a20 });
+        function makeCar(color) {
+          const g = new THREE.Group();
+          const body = M(color, { roughness: 0.6 }); body.userData.frostMax = 0.45;
+          const b = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.75, 4.4), body); b.position.y = 0.72; g.add(b);
+          const c = new THREE.Mesh(new THREE.BoxGeometry(1.72, 0.62, 2.2), glassM); c.position.set(0, 1.4, -0.25); g.add(c);
+          const roof = new THREE.Mesh(new THREE.BoxGeometry(1.76, 0.1, 2.0), body); roof.position.set(0, 1.74, -0.25); g.add(roof);
+          [-0.7, 0.7].forEach((x) => { const tlm = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.16, 0.05), tailM); tlm.position.set(x, 0.85, -2.21); g.add(tlm); });
+          const pipe = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.3, 10), M(0x5b636e, { roughness: 0.5 }));
+          pipe.rotation.x = Math.PI / 2; pipe.position.set(0.6, 0.35, -2.3); g.add(pipe);
+          const wheels = [];
+          [[-1.0, 1.4], [1.0, 1.4], [-1.0, -1.4], [1.0, -1.4]].forEach(([x, z]) => {
+            const w = new THREE.Mesh(wheelG, tyre); w.position.set(x, 0.36, z); g.add(w); wheels.push(w);
+          });
+          g.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+          cityS.add(g);
+          return { g, wheels };
+        }
+        const V = 11;
+        const carDefs = [
+          { x: -2.2, z0: -40, dir: 1, col: PALETTE.accent },   // hero (exhaust flame)
+          { x: -2.2, z0: -20, dir: 1, col: 0xeef2f6 },
+          { x: -2.2, z0: -64, dir: 1, col: 0x3d4450 },
+          { x: -2.2, z0: 6, dir: 1, col: 0xb8c0ca },
+          { x: 2.2, z0: 30, dir: -1, col: 0x8d96a2 },
+          { x: 2.2, z0: 52, dir: -1, col: PALETTE.amber },
+          { x: 2.2, z0: 8, dir: -1, col: 0xeef2f6 },
+          { x: 2.2, z0: 78, dir: -1, col: 0x3d4450 },
+        ];
+        const cars = carDefs.map((d) => Object.assign(makeCar(d.col), d));
+        const hero = cars[0];
+        const exFlame = new THREE.Group();
+        const ef1 = new THREE.Mesh(new THREE.ConeGeometry(0.14, 0.7, 8), new THREE.MeshBasicMaterial({ color: 0xe8b24a, transparent: true, opacity: 0.95 }));
+        const ef2 = new THREE.Mesh(new THREE.ConeGeometry(0.07, 0.42, 8), new THREE.MeshBasicMaterial({ color: 0xfff0b0 }));
+        [ef1, ef2].forEach((m) => { m.geometry.translate(0, 0.35, 0); m.rotation.x = -Math.PI / 2; exFlame.add(m); });
+        exFlame.position.set(0.6, 0.35, -2.45);
+        hero.g.add(exFlame);
+        const exLight = new THREE.PointLight(0xffa64a, 3, 4, 1.6);
+        exLight.position.set(0.6, 0.5, -2.9); hero.g.add(exLight);
+
+        const carZ = (c, t) => c.z0 + c.dir * V * t;
+        function drawCars(t) {
+          cars.forEach((c) => {
+            c.g.position.set(c.x, 0, carZ(c, t));
+            c.g.rotation.y = c.dir > 0 ? 0 : Math.PI;
+            const ang = (V * t) / 0.36;
+            c.wheels.forEach((w) => (w.rotation.x = ang));
+          });
+          const ex = 1 - ease.inQuad(range(t, T_EXH, T_EXH + 0.16));
+          const fk = 1 + 0.18 * Math.sin(t * 31) + 0.1 * Math.sin(t * 53 + 1);
+          exFlame.scale.set(ex, ex, ex * fk + 0.0001);
+          exFlame.visible = ex > 0.01;
+          exLight.intensity = 3 * ex;
+        }
+
+        /* ---- inertia arrows (2D, projected from the cars) ---- */
+        const arrowEls = [0, 1, 2, 3].map((i) => document.getElementById("f05-a" + i));
+        const arrowCars = cars;
+        const tag = document.getElementById("f05-inertia");
+        const A = new THREE.Vector3(), B = new THREE.Vector3();
+        const toScr = (v) => { v.project(cityCam); return [(v.x * 0.5 + 0.5) * 1080, (-v.y * 0.5 + 0.5) * 1920, v.z]; };
+        function drawArrows(t) {
+          let tagDone = false, used = 0;
+          arrowEls.forEach((el) => (el.style.opacity = "0"));
+          arrowCars.forEach((c) => {
+            if (used >= arrowEls.length) return;
+            const el = arrowEls[used];
+            const z = carZ(c, t);
+            A.set(c.x, 2.6, z + c.dir * 1.0);
+            const [ax, ay, az] = toScr(A);
+            const inBand = (x, y) => x > 40 && x < 930 && y > 650 && y < 1030;
+            let bx = 0, by = 0, bz = 2, ok = false;
+            for (let Lm = 8; Lm >= 3 && !ok; Lm -= 1) {   // shorten the arrow until its tip stays in the free band
+              B.set(c.x, 2.6, z + c.dir * Lm);
+              [bx, by, bz] = toScr(B);
+              ok = az < 1 && bz < 1 && inBand(ax, ay) && inBand(bx, by) && Math.hypot(bx - ax, by - ay) > 60;
+            }
+            const dx = bx - ax, dy = by - ay, len = Math.hypot(dx, dy);
+            if (!ok) return;
+            used++;
+            el.style.opacity = "1";
+            const L = Math.min(len, 260);
+            el.style.transform = `translate(${ax.toFixed(1)}px, ${ay.toFixed(1)}px) rotate(${Math.atan2(dy, dx).toFixed(4)}rad)`;
+            el.firstChild.style.width = Math.max(0, L - 30).toFixed(1) + "px";
+            el.lastChild.style.left = Math.max(0, L - 34).toFixed(1) + "px";
+            if (!tagDone) {
+              tagDone = true;
+              const w = tag.offsetWidth || 200, h = tag.offsetHeight || 56;
+              const tx = clamp(Math.min(ax, bx) - 10, 40, 1080 - 150 - w);
+              const ty = clamp(Math.min(ay, by) - h - 34, 650, 1030 - h);
+              tag.style.transform = `translate(${tx.toFixed(1)}px, ${ty.toFixed(1)}px)`;
+              tag.style.opacity = "1";
+            }
+          });
+          if (!tagDone) tag.style.opacity = "0";
+        }
+
+        /* ---- shots (local seconds) ---- */
+        const look = new THREE.Vector3();
+        function renderFire(t) {
+          const p = ease.inOutSine(clamp(t / 2.0));
+          fireCam.position.set(lerp(0.6, 0.3, p), lerp(1.9, 1.5, p), lerp(5.6, 4.4, p));
+          fireCam.lookAt(0, lerp(0.5, 0.42, p), 0);
+          const out = 1 - ease.inQuad(range(t, T_FIRE, T_FIRE + 0.2));
+          flames.forEach((f) => {
+            const fk = 1 + 0.16 * Math.sin(f.ph + t * f.f1) + 0.09 * Math.sin(f.ph * 2 + t * f.f2);
+            f.c.scale.set(out * (0.9 + 0.1 * fk), f.base * fk * out + 0.0001, out * (0.9 + 0.1 * fk));
+            f.c.rotation.z = 0.06 * Math.sin(f.ph + t * 7);
+            f.c.visible = out > 0.01;
+          });
+          fireLight.intensity = 6 * out;
+          const sp = range(t, T_FIRE + 0.05, T_FIRE + 0.3); // puff of smoke that stops dead in the frozen air
+          smoke.forEach((s, i) => {
+            const k = ease.outCubic(range(sp, i * 0.08, 1));
+            s.visible = sp > 0;
+            s.position.set(Math.sin(i * 2.1) * 0.06, 0.25 + k * (0.15 + i * 0.07), Math.cos(i * 1.7) * 0.06);
+          });
+          renderer.toneMappingExposure = 1.05;
+          renderer.render(fire, fireCam);
+        }
+        function renderCity(t) {
+          drawCars(t);
+          const hz = carZ(hero, t);
+          if (t < 2.85) {            // B: behind the hero car, exhaust flame snuffs on "apaga"
+            const p = ease.inOutSine(range(t, 2.0, 2.85));
+            cityCam.position.set(lerp(-0.2, -0.6, p), lerp(1.9, 1.6, p), hz - lerp(10.5, 9.0, p));
+            look.set(-2.0, 0.7, hz - 1.5);
+          } else if (t < 4.55) {     // C: high angle on the avenue, cars still rolling, inertia arrows
+            const p = ease.inOutSine(range(t, 2.85, 4.55));
+            cityCam.position.set(lerp(9, 6, p), lerp(62, 54, p), hz + lerp(-34, -28, p));
+            look.set(-0.5, 0, hz + lerp(1, 3, p));
+          } else {                   // D: lower, tracking alongside ("Congelado não é parado")
+            const p = ease.inOutSine(range(t, 4.55, 6.2));
+            cityCam.position.set(4.6, lerp(13, 10.5, p), hz + lerp(-8, -4.5, p));
+            look.set(-2.4, 0.6, hz + 2.5);
+          }
+          const fov = t >= 4.55 ? 50 : 35;
+          if (cityCam.fov !== fov) { cityCam.fov = fov; cityCam.updateProjectionMatrix(); }
+          cityCam.lookAt(look);
+          cityCam.updateMatrixWorld();
+          renderer.toneMappingExposure = 1.05;
+          renderer.render(cityS, cityCam);
+          if (t >= 2.85) drawArrows(t);
+        }
+        function render(t) {
+          if (t < 2.0) renderFire(t); else renderCity(t);
+        }
+        await renderer.compileAsync(fire, fireCam);
+        renderCity(3);
+        await renderer.compileAsync(cityS, cityCam);
+        // kit.sceneStart() returns 0 for this host at render time, so fall back to the host's data-start
+        const kOff = K.sceneStart(canvas);
+        const hostEl = document.querySelector('[data-composition-src="compositions/f05.html"][data-start]');
+        const off = kOff || (hostEl ? parseFloat(hostEl.getAttribute("data-start")) : 24.6) || 24.6;
+        await K.bindSeek(canvas, (t) => render(Math.max(0, t + kOff - off)));
+        const gl = renderer.getContext();
+        gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4));
+      });
     })();
   </script>
 </template>

@@ -10,7 +10,7 @@
     #f04-ruler .fill { position: absolute; left: 0; top: 0; width: 6px; height: 360px; background: #8fcbf2; border-radius: 3px;
       transform-origin: 50% 0; transform: scaleY(0); }
     #f04-ruler .tick { position: absolute; left: 0; height: 3px; background: #ffffff; box-shadow: 0 0 6px rgba(4, 10, 20, 0.45); }
-    #f04-ruler .tl { position: absolute; left: 34px; font-family: "Montserrat", sans-serif; font-weight: 600; font-size: 22px;
+    #f04-ruler .tl { position: absolute; left: 34px; font-family: "Montserrat", sans-serif; font-weight: 600; font-size: 28px;
       color: #ffffff; text-shadow: 0 1px 6px rgba(4, 10, 20, 0.8); transform: translateY(-50%); }
     #f04-mark { position: absolute; left: -8px; top: 0; width: 0; height: 0;
       border-top: 14px solid transparent; border-bottom: 14px solid transparent; border-left: 24px solid #e8b24a;
@@ -181,7 +181,7 @@
           } else {                // C2: cut high above, looking down the gap to the frozen city ("122 metros")
             const p = ease.outCubic(range(t, 4.8, 6.53));
             cam.position.set(P.x - lerp(60, 50, p), P.y + lerp(70, 60, p), lerp(130, 115, p));
-            look.set(P.x + 5, P.y - lerp(12, 18, p), 0);
+            look.set(P.x - 16, P.y + 3, 10);
           }
           cam.lookAt(look);
         }

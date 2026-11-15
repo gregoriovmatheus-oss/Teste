@@ -10,7 +10,7 @@
     #f12-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
     #f12-veil { position: absolute; inset: 0; opacity: 0;
       background: radial-gradient(ellipse at 50% 45%, rgba(250, 251, 252, 0.98) 0%, rgba(236, 241, 246, 0.94) 55%, rgba(220, 228, 236, 0.88) 100%); }
-    .f12-txt { position: absolute; left: 110px; right: 160px; text-align: center; font-family: "EB Garamond", serif;
+    .f12-txt { position: absolute; left: 120px; right: 180px; text-align: center; font-family: "EB Garamond", serif;
       font-weight: 400; color: #ffffff; line-height: 1.08;
       text-shadow: 0 4px 24px rgba(4, 10, 20, 0.85), 0 1px 4px rgba(4, 10, 20, 0.7); }
     #f12-l1 { top: 320px; font-size: 68px; }
@@ -210,14 +210,14 @@
         function renderEarth(t) {
           // continuous dolly out, South America facing
           const a = t - T_CUT;
-          const alt = 0.1 * Math.exp(0.86 * a);     // 0.1 -> ~4.4 at the end
+          const alt = 0.6 * Math.exp(0.484 * a);    // 0.6 -> ~5 at the end
           const q = ease.outCubic(clamp(a / 4.3));
           earth.rotation.order = "XYZ";
           earth.rotation.y = -lerp(TGT.lon, SAM.lon, q) * D2R;
           earth.rotation.x = lerp(TGT.lat, SAM.lat, q) * D2R;
           earthCam.position.set(0, 0, 1 + alt);
           earthCam.up.set(0, 1, 0);
-          earthCam.lookAt(0, lerp(0, 0.32, ease.inOutSine(clamp(a / 3.5))), 0);
+          earthCam.lookAt(0, lerp(0, 0.6, ease.inOutSine(clamp(a / 3.5))), 0);
           renderer.toneMappingExposure = 1.05;
           renderer.render(earthScene, earthCam);
         }
@@ -227,7 +227,12 @@
         await renderer.compileAsync(earthScene, earthCam);
         await renderer.compileAsync(cityScene, cityCam);
         renderEarth(5);
-        await K.bindSeek(canvas, render);
+        const host = document.querySelector('[data-composition-id="f12"][data-start]');
+        const START = host ? parseFloat(host.getAttribute("data-start")) || 57.67 : 57.67;
+        let lastT = null;
+        const seek = (g) => { const t = Math.max(0, g - START); if (t === lastT) return; lastT = t; render(t); };
+        window.addEventListener("hf-seek", (e) => seek(e.detail.time));
+        render(0);
         const gl = renderer.getContext();
         gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4));
       });
