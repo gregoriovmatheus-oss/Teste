@@ -14,7 +14,7 @@ O arquivo de destino é `.claude/skills/video-curiosidades/referencias/REFERENCI
 
 - **`/ref` com imagens, link ou texto:** adiciona uma referência.
 - **`/ref` sozinho:** lista as referências, uma linha por ID, sem abrir nenhuma imagem.
-- **`/ref remover R03`:** apaga o cartão e as imagens, e refaz o "Padrão atual".
+- **`/ref remover R03`:** apaga o cartão, as imagens, a linha da tabela e o preset em `presets.js`.
 
 ## Passos para adicionar
 
@@ -36,9 +36,8 @@ O arquivo de destino é `.claude/skills/video-curiosidades/referencias/REFERENCI
    - paleta em hex.
 
    Para as fontes, indique o equivalente no Google Fonts. Para a posição y, converta da altura do print para 1920 e ignore a interface do app.
-4. **Padrão atual.** Junte o que for novo na seção "Padrão atual", que tem no máximo 20 linhas.
-   - Não repita o que já está lá.
-   - Se a nova referência conflitar com algo que já está lá, mantenha as duas opções com a condição de uso de cada uma (por exemplo, "tom sério → X; tom popular → Y").
+4. **Padrão atual.** Em "Padrão atual" (no máximo 20 linhas), adicione uma linha na tabela "Escolha por tema": `tema/tom | Rnn | preset e blocos`. Só mude as regras curtas abaixo da tabela se a ref trouxer algo que valha para todas. Não copie o cartão para lá.
+4b. **Preset do kit.** Adicione `"Rnn"` em `.claude/skills/video-curiosidades/kit/template/assets/lib/presets.js`, copiando a estrutura de uma ref parecida (`modo` 3d ou 2d, `fundo`, `fontes`, `paleta`, `legenda`, `hud`, `titulo`, `blocos`). O trecho entre `PRESETS:INICIO` e `PRESETS:FIM` é JSON puro. Fontes: só as de `kit/template/assets/fonts/` (se precisar de outra, baixe o woff2 do Fontsource e registre em `kit/scripts/comum.py`). Confira com `node -e "import('<caminho>/presets.js').then(m=>console.log(Object.keys(m.PRESETS)))"`.
 5. **Conflito com o estilo decidido.** Se a referência conflitar com o "Estilo visual" de `video-curiosidades`, ajuste o texto da skill para incluir a referência, sem apagar o que já estava decidido.
 6. **Commit e push.** Faça commit e push no branch de trabalho e no `main`.
 7. **Resposta no chat.** No máximo 4 linhas: o ID e o que virou padrão. Não repita o cartão.

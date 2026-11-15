@@ -25,7 +25,7 @@ O usuário pode mudar qualquer padrão. A mudança vale para aquele vídeo; se e
 
 ## Estilo visual (decidido)
 
-**Referências do usuário:** leia só a seção "Padrão atual" de `referencias/REFERENCIAS.md`. Ela vale mais que esta seção. Nunca abra as imagens da pasta. Para adicionar referências, o comando é `/ref`.
+**Referências do usuário:** leia só a seção "Padrão atual" de `referencias/REFERENCIAS.md`. Ela vale mais que esta seção. Escolha a ref pelo tema na tabela "Escolha por tema" e comece com `novo-video.sh <slug> --ref Rnn`. Nunca abra as imagens da pasta. Para adicionar referências, o comando é `/ref`.
 
 O vídeo alterna entre **2D flat** e **3D estilizado**. Nunca usa 3D fotorrealista. O 3D com cara de maquete de arquitetura, limpo e com pouco detalhe, é permitido (ver R01).
 
@@ -46,6 +46,23 @@ O vídeo alterna entre **2D flat** e **3D estilizado**. Nunca usa 3D fotorrealis
 - **Conferência:** `npx hyperframes snapshot --at 4,0,4 --no-end`. Os dois quadros em 4 s precisam sair idênticos.
 - **Blocos úteis:** `camera-shake`, `grain-overlay`, `ui-3d-reveal`, `caption-editorial-emphasis`.
 
+## Kit rápido (`kit/`)
+
+1. **Projeto:** `bash .claude/skills/video-curiosidades/kit/scripts/novo-video.sh <slug> --ref Rnn` cria `videos/<slug>/` com libs, fontes, presets e `scripts/`.
+2. **Áudio:** `python3 scripts/audio.py --dry-run`, depois sem a flag (`--alvo <s>` ajusta a duração com atempo; `--so-tempo` reajusta sem gastar). Efeitos vêm de `video.json` → `sfx`.
+3. **Cenas:** `python3 scripts/cenas.py "<1ª palavra>" ... --criar` gera a tabela, `index.html` e as `fNN.html` a partir de `modelos/`. Depois `python3 scripts/gera-hud-legendas.py` (status do HUD = linha `- status:` de cada Frame do STORYBOARD).
+4. **Montagem:** um único agente de build, partindo dos blocos em `assets/lib/blocks/` (globe, city, particles, shockwave, counter, tiles, primitives, kinetic). Leia o cabeçalho do bloco, não a cena antiga.
+5. **Prévia:** `bash scripts/previa.sh` e mostre `renders/previa-folha.jpg` ao usuário antes do render de entrega.
+6. **Entrega:** `render-rapido.sh` (hoje em `videos/mundo-congela-5s/`; vai para o template).
+
+**Lições:**
+- Plano grátis da ElevenLabs: sem API de música e sem vozes da biblioteca. Use voz premade e trilha como efeito longo em loop.
+- Tempo local da cena: use `K.bindSeek(canvas, render)`. O `sceneStart` antigo dava 0 depois da 1ª cena (o host perde `data-composition-src` ao ser embutido).
+- Legenda sobre cena clara perde contraste: mantenha a faixa escura do preset ou escureça a cena atrás.
+- Título da cena não pode cruzar a legenda (y 1045–1215) nem o HUD (y 290–620): título em y 640–1000, ou só antes do HUD aparecer.
+- Globo: ordem XYZ, `rotation.y = -lon`, `rotation.x = +lat` (`globe.aim`). Abaixo de alt 0,3 a câmera entra nas nuvens: corte ali.
+- WebGL por software é lento: prefira renderizar na máquina do usuário com GPU, se houver.
+
 ## Fluxo
 
 1. **Briefing (1 rodada no máximo).** Pergunte só o que não está nos padrões: tema, estilo visual se ainda não houver, e algum dado obrigatório. Se o pedido já trouxer tudo, pule. Não carregue `brainstorming` nem `grilling` para este formato.
@@ -55,7 +72,7 @@ O vídeo alterna entre **2D flat** e **3D estilizado**. Nunca usa 3D fotorrealis
    - `STORYBOARD.md`: no formato de `hyperframes/references/storyboard-format.md`, com `format: 1080x1920`.
    - No chat, mostre só uma tabela resumida: `tempo | visual | fala` com no máximo uma linha por cena.
 4. **Aprovação.** Espere o usuário aprovar o roteiro antes de gerar áudio, porque cada geração gasta créditos da ElevenLabs.
-5. **Áudio.** Narração com `text-to-speech`. Trilha com `music` e efeitos com `sound-effects`, só depois que a narração estiver aprovada, para que a duração já esteja fechada.
+5. **Áudio.** Narração com `text-to-speech`. Trilha (efeito longo em loop: o plano grátis não tem `music`) e efeitos com `sound-effects`, só depois que a narração estiver aprovada, para que a duração já esteja fechada.
 6. **Montagem.** Siga `hyperframes` (contrato de render e fluxo de trabalho) e `hyperframes/references/types/vertical.md`. Antes de criar à mão qualquer efeito, título ou transição com nome, procure no `hyperframes-registry`. A mixagem segue `media-use`.
 7. **Legendas.** Use o tempo de cada palavra. Se transcrever com o HyperFrames, passe sempre `--model small --language pt`. O padrão `small.en` **traduz para o inglês**.
 8. **Revisão e render.** Rode `npx hyperframes check --json` e o snapshot de revisão, abra o preview e só renderize quando o usuário aprovar ou pedir o arquivo. Aplique `verification-before-completion` antes de dizer que está pronto.

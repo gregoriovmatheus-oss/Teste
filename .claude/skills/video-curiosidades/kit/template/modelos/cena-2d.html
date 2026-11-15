@@ -1,5 +1,5 @@
-<!-- Modelo de cena 2D flat (R02): HTML/SVG + GSAP, sem Three. cenas.py --criar troca os marcadores de id e duração.
-     Formas chapadas, cabeça redonda, roupas lisas; fundo escuro dessaturado com pontos de luz amarela. -->
+<!-- Modelo de cena 2D flat (R02, R06, R07): HTML/SVG + GSAP, sem Three. cenas.py --criar troca os marcadores de id e duração.
+     GSAP sobrescreve o atributo transform: anime um <g> interno, nunca o que tem translate(). Formas chapadas, cabeça redonda, roupas lisas; fundo escuro dessaturado com pontos de luz amarela. -->
 <template>
   <style>
     #root { position: absolute; inset: 0; overflow: hidden; background: #3b423f; }
@@ -22,9 +22,9 @@
       </g>
       <rect x="0" y="1420" width="1080" height="500" fill="#2a2f2d" />
       <g id="__ID__-pessoas">
-        <g transform="translate(300 1300)"><circle cx="0" cy="-150" r="52" fill="#e8a86b" /><rect x="-70" y="-95" width="140" height="210" rx="60" fill="#8d3b34" /></g>
-        <g transform="translate(540 1310)"><circle cx="0" cy="-150" r="52" fill="#e8a86b" /><rect x="-70" y="-95" width="140" height="210" rx="60" fill="#4a5a78" /></g>
-        <g transform="translate(780 1300)"><circle cx="0" cy="-150" r="52" fill="#e8a86b" /><rect x="-70" y="-95" width="140" height="210" rx="60" fill="#6b5442" /></g>
+        <g transform="translate(300 1300)"><g class="p"><circle cx="0" cy="-150" r="52" fill="#e8a86b" /><rect x="-70" y="-95" width="140" height="210" rx="60" fill="#8d3b34" /></g></g>
+        <g transform="translate(540 1310)"><g class="p"><circle cx="0" cy="-150" r="52" fill="#e8a86b" /><rect x="-70" y="-95" width="140" height="210" rx="60" fill="#4a5a78" /></g></g>
+        <g transform="translate(780 1300)"><g class="p"><circle cx="0" cy="-150" r="52" fill="#e8a86b" /><rect x="-70" y="-95" width="140" height="210" rx="60" fill="#6b5442" /></g></g>
       </g>
     </svg>
     <div id="__ID__-titulo" class="clip" data-start="0.2" data-duration="2.4">
@@ -34,7 +34,7 @@
   <script>
     (function () {
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#__ID__-pessoas > g", { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35, stagger: 0.12, ease: "back.out(1.6)" }, 0);
+      tl.fromTo("#__ID__-pessoas .p", { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35, stagger: 0.12, ease: "back.out(1.6)" }, 0);
       tl.fromTo("#__ID__-predio", { scale: 1 }, { scale: 1.06, transformOrigin: "50% 60%", duration: __DUR__, ease: "none" }, 0);
       tl.fromTo("#__ID__-titulo-in", { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.25, ease: "back.out(2)" }, 0.2);
       tl.to("#__ID__-titulo-in", { opacity: 0, duration: 0.15, ease: "power2.in" }, 2.45);

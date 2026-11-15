@@ -9,6 +9,8 @@
  *   (5.6 = Terra inteira, 2.5 = continente, 0.3 = país, 0.06 = cidade). A altitude é
  *   interpolada em escala log: zoom exponencial, em movimento desde o frame 0 (dolly-in ou out).
  *   lon/lat usam ease outCubic. olhar = deslocamento y do ponto de mira (para subir a Terra no quadro).
+ *   Abaixo de alt ~0.3 a câmera entra na camada de nuvens (tela branca): corte para a cidade sob um véu
+ *   branco nesse ponto, como em f01 (corte em 2,36 s).
  * Orientação: aim(lon, lat) usa ordem XYZ, rotation.y = -lon, rotation.x = +lat. Assim o ponto
  *   (lon, lat) fica de frente para a câmera em +z. Não troque a ordem nem os sinais.
  */

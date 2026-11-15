@@ -6,30 +6,24 @@ Servem só como estilo. Nunca use nos vídeos personagens, marcas, logotipos, ce
 
 ## Padrão atual
 
-- **Gancho (frame 0):** a pergunta inteira na tela em serifa grande, branca e centralizada, com a palavra-chave em azul-gelo. Ao fundo, cena 3D com a câmera já em movimento. (R01)
-- **HUD fixo de tensão:** fica no topo, entre y 280 e 600, durante o mesmo trecho. São três camadas:
-  - um rótulo em caixa alta com letras espaçadas;
-  - um número grande em serifa (contador ou cronômetro), com a unidade pequena ao lado;
-  - uma linha de status em âmbar, que muda a cada cena. (R01)
-- **Legenda:**
-  - Tom sério ou cinematográfico: serifa itálica branca com sombra suave, 1 ou 2 linhas, centralizada em y ≈ 1100–1200. (R01)
-  - Tom popular ou humor: sans condensada em caixa alta e negrito, branca com contorno ou sombra preta, na mesma altura. (R02)
-- **3D:** cara de maquete de arquitetura, com geometria limpa e pouco detalhe, sem textura fotográfica. Paleta dessaturada, com um único elemento de cor forte (no R01, o vermelho). Efeitos (geada, rachaduras) aplicados por cena, como transformação do mesmo cenário. (R01)
-- **2D flat:** personagens simples de cabeça redonda e roupas lisas, fundo escuro e dessaturado, com pontos de luz amarela. (R02)
-- **Fontes (Google Fonts):**
-  - Serifa: `EB Garamond` (ou `Cormorant Garamond`).
-  - Caixa alta espaçada: `Montserrat` 600, letter-spacing 0,3em.
-  - Legenda popular: `Anton`.
-- **Cores-base:**
+**Escolha por tema.** A ref escolhida vira o preset do kit (`novo-video.sh <slug> --ref Rnn`, `assets/lib/presets.js`).
 
-  | Uso | Hex |
-  | --- | --- |
-  | Texto | `#FFFFFF` |
-  | Azul-gelo (destaque) | `#8FCBF2` |
-  | Âmbar (status) | `#E8B24A` |
-  | Cinza-frio (fundo) | `#8D96A2` |
-  | Geada | `#EEF2F6` |
-  | Acento | `#D8432F` |
+| Tema / tom | Ref | Preset e blocos |
+| --- | --- | --- |
+| Catástrofe, física, "e se" (sério) | R01 | 3D maquete + HUD; globe, city, particles, shockwave |
+| Sociedade, economia, humor (popular) | R02 | 2D flat, legenda Anton; counter |
+| Tech, IA, ideias abstratas | R03 | 3D; primitives |
+| Geografia, lugares, comparar países | R04 | 3D diorama; tiles, city |
+| Corpo humano, cotidiano, reação | R05 | 3D cartoon simplificado |
+| Trabalho, dinheiro, tutorial | R06 | 2D flat roxo; counter |
+| Gancho, listas, números | R07 | tipografia; kinetic (camada sobre qualquer ref) |
+| Química, biologia, medicina | R08 | 3D vidro (1 a 3 objetos); particles |
+
+- **Gancho no frame 0:** pergunta inteira na tela, palavra-chave na cor de destaque, câmera já em movimento.
+- **Legenda em y ≈ 1045–1215:** sério → serifa itálica com sombra suave; popular → Anton caixa alta com sombra preta dura.
+- **3D** sempre estilizado (maquete, massinha, toy), fosco, um só elemento de cor forte. Vidro só em poucos objetos.
+- **Números** em destaque na cor da ref. Fontes só as do kit: EB Garamond, Montserrat 600, Anton.
+- Precisa de mais detalhe? Leia só o cartão da ref escolhida.
 
 ## Cartões
 
