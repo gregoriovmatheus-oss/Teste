@@ -12,7 +12,7 @@ Cada pasta mantém o arquivo de licença do projeto de origem.
 | caveman, cavecrew, caveman-compress, caveman-stats, megacave, ultracave | JuliusBrussee/caveman | MIT |
 | brainstorming, writing-plans, executing-plans, subagent-driven-development, test-driven-development, systematic-debugging e outras (15 no total) | obra/superpowers | MIT |
 | task-observer | rebelytics/one-skill-to-rule-them-all | CC BY 4.0 (Eoghan Henn / rebelytics.com) |
-| omni-*, cli-*, config-codex-cli, ponytail | diegosouzapw/OmniRoute | MIT |
+| ponytail | diegosouzapw/OmniRoute (original: DietrichGebert/ponytail) | MIT |
 | headroom | chopratejas/headroom | Apache-2.0 |
 | agents, dubbing, music, onboarding, realtime, setup-api-key, sound-effects, speech-engine, speech-to-text, text-to-speech, voice-changer, voice-isolator | elevenlabs/skills | MIT |
 | prompt-master | nidhinjs/prompt-master | MIT |

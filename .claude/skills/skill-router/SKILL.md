@@ -12,7 +12,7 @@ Este é o mapa das skills instaladas em `.claude/skills/`. Consulte-o para decid
 - **Pergunta simples, edição trivial ou consulta rápida:** não carregue skill nenhuma, só responda.
 - **Tarefa com várias etapas:** aplique as skills constantes e no máximo uma ou duas situacionais.
 - **Nunca encadeie skills de processo só por encadear.** Cada skill carregada custa contexto e tempo. Na dúvida entre duas, use a tabela de desempate abaixo e escolha uma.
-- Este router substitui a regra do `using-superpowers` de "invocar uma skill antes de qualquer resposta". Use `using-superpowers` só se o usuário pedir.
+- `using-superpowers` e `task-observer` estão desligadas do disparo automático para poupar tokens. Só rodam se o usuário chamar.
 
 ## 1. Constantes: valem o tempo todo, no tipo de trabalho certo
 
@@ -24,7 +24,6 @@ Não precisam de pedido. Aplique sempre que a condição bater.
 | `systematic-debugging` | Qualquer bug, teste falhando ou comportamento inesperado, antes de propor correção. |
 | `test-driven-development` | Ao implementar feature ou correção em código que tem (ou deveria ter) testes. |
 | `ponytail` | Ao escrever, revisar ou projetar código: a solução mais simples que funciona, reaproveitando o que já existe. |
-| `task-observer` | Em trabalho longo, com várias etapas, ou quando o usuário corrige a mesma coisa repetidas vezes. Fora disso, não. |
 
 ## 2. Frequentes: situações que aparecem a toda hora
 
@@ -80,18 +79,13 @@ Ignore estas até o assunto surgir de fato.
 - `caveman-compress`: comprimir um CLAUDE.md ou arquivo de memória.
 - `caveman-stats`: ver o uso de tokens da sessão.
 
-**OmniRoute.** Só se o projeto usa um servidor OmniRoute.
-- `omni-*`: API REST e configuração, por assunto (auth, providers, cache, routing, compression...).
-- `cli-*`: as mesmas operações pela linha de comando.
-- `config-codex-cli`: apontar o Codex CLI para o OmniRoute.
-- Fora de projetos com OmniRoute, nunca use estas.
-
 ## 4. Só quando o usuário chama
 
 Estas skills não disparam sozinhas: só rodam se o usuário digitar o comando.
 - `/chief-of-staff`: objetivo de longo prazo, coordenado com subagentes e uma wiki.
 - `/megacave` e `/ultracave`: níveis extremos de compressão do caveman.
 - `/using-superpowers`: modo "skill antes de tudo" do superpowers.
+- `/task-observer`: observa uma sessão longa e anota oportunidades de melhorar ou criar skills.
 
 ## Desempate entre skills parecidas
 
@@ -100,8 +94,7 @@ Estas skills não disparam sozinhas: só rodam se o usuário digitar o comando.
 | `brainstorming` ou `grilling` | Criar algo novo: `brainstorming`. Testar um plano que já existe: `grilling`. Nunca as duas em sequência sem pedido. |
 | `executing-plans` ou `subagent-driven-development` | Há ferramenta de subagente: `subagent-driven-development`. Não há: `executing-plans`. |
 | `skill-creator` ou `writing-skills` | `skill-creator`, a menos que o usuário peça a abordagem TDD. |
-| `find-skills`, `omni-github-skills` ou `cli-skill-collector` | `find-skills`. As outras duas só dentro do OmniRoute. |
-| `headroom`, `caveman-compress` ou `omni-compression` | Código de app: `headroom`. Arquivo de memória: `caveman-compress`. Proxy OmniRoute: `omni-compression`. |
+| `headroom` ou `caveman-compress` | Código de app: `headroom`. Arquivo de memória: `caveman-compress`. |
 | `onboarding` ou `setup-api-key` (ElevenLabs) | Primeira vez: `onboarding`. A chave já existe ou falhou: `setup-api-key`. |
 | `reverse-any-video` ou `style-sampling` | Copiar um vídeo específico: `reverse-any-video`. Copiar um estilo com outro tema: `style-sampling`. |
 | `caveman` ou `cavecrew` | Responder curto ao usuário: `caveman`. Delegar trabalho a subagentes: `cavecrew`. |
