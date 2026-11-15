@@ -1,0 +1,146 @@
+<template>
+  <style>
+      @font-face { font-family: "EB Garamond"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-400-normal.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+      @font-face { font-family: "EB Garamond"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-ext-400-normal.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+      @font-face { font-family: "EB Garamond"; font-style: italic; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-400-italic.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+      @font-face { font-family: "EB Garamond"; font-style: italic; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-ext-400-italic.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+      @font-face { font-family: "Montserrat"; font-style: normal; font-weight: 600; font-display: block; src: url("assets/fonts/montserrat-latin-600-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Anton"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/fonts/anton-latin-400-normal.woff2") format("woff2"); }
+    #root { position: absolute; inset: 0; pointer-events: none; }
+    .cap { position: absolute; left: 130px; right: 310px; top: 1045px; height: 150px; display: flex; align-items: center;
+      justify-content: center; text-align: center; overflow: visible; }
+    .cap-t { display: block; font-family: "EB Garamond", serif; font-style: italic; font-weight: 400; font-size: 64px;
+      line-height: 1.05; color: #fff; text-shadow: 0 3px 18px rgba(0, 0, 0, 0.6), 0 1px 3px rgba(0, 0, 0, 0.5); }
+    .cap-t .num { color: #8FCBF2; }
+  </style>
+  <div id="root" data-composition-id="captions" data-width="1080" data-height="1920">
+    <div id="cap-000" class="clip cap" data-start="0.15" data-duration="1.2"><span class="cap-t">Por <span class="num">5</span> segundos…</span></div>
+    <div id="cap-001" class="clip cap" data-start="1.35" data-duration="0.833"><span class="cap-t">o ar do planeta</span></div>
+    <div id="cap-002" class="clip cap" data-start="2.183" data-duration="0.534"><span class="cap-t">inteiro vai</span></div>
+    <div id="cap-003" class="clip cap" data-start="2.717" data-duration="2.533"><span class="cap-t">a <span class="num">−273</span> graus.</span></div>
+    <div id="cap-004" class="clip cap" data-start="5.25" data-duration="1.1"><span class="cap-t"><span class="num">Zero</span> absoluto.</span></div>
+    <div id="cap-005" class="clip cap" data-start="6.35" data-duration="0.767"><span class="cap-t">E depois volta</span></div>
+    <div id="cap-006" class="clip cap" data-start="7.117" data-duration="0.833"><span class="cap-t">ao normal.</span></div>
+    <div id="cap-007" class="clip cap" data-start="7.95" data-duration="1.8"><span class="cap-t">Primeiro: silêncio.</span></div>
+    <div id="cap-008" class="clip cap" data-start="9.75" data-duration="0.567"><span class="cap-t">Sem ar,</span></div>
+    <div id="cap-009" class="clip cap" data-start="10.317" data-duration="1.166"><span class="cap-t">o som não viaja.</span></div>
+    <div id="cap-010" class="clip cap" data-start="11.483" data-duration="0.734"><span class="cap-t">Você só escuta</span></div>
+    <div id="cap-011" class="clip cap" data-start="12.217" data-duration="1.2"><span class="cap-t">o próprio coração.</span></div>
+    <div id="cap-012" class="clip cap" data-start="13.417" data-duration="1.066"><span class="cap-t">O ar não some.</span></div>
+    <div id="cap-013" class="clip cap" data-start="14.483" data-duration="1.5"><span class="cap-t">Ele congela no lugar…</span></div>
+    <div id="cap-014" class="clip cap" data-start="15.983" data-duration="1.1"><span class="cap-t">e começa a cair.</span></div>
+    <div id="cap-015" class="clip cap" data-start="17.083" data-duration="0.934"><span class="cap-t">Como neve.</span></div>
+    <div id="cap-016" class="clip cap" data-start="18.017" data-duration="1.8"><span class="cap-t">Os aviões perdem sustentação.</span></div>
+    <div id="cap-017" class="clip cap" data-start="19.817" data-duration="1.266"><span class="cap-t">Os pássaros também.</span></div>
+    <div id="cap-018" class="clip cap" data-start="21.083" data-duration="1.234"><span class="cap-t">Em <span class="num">5</span> segundos,</span></div>
+    <div id="cap-019" class="clip cap" data-start="22.317" data-duration="2.233"><span class="cap-t">despencam <span class="num">122</span> metros.</span></div>
+    <div id="cap-020" class="clip cap" data-start="24.55" data-duration="1.667"><span class="cap-t">Fogo precisa de oxigênio.</span></div>
+    <div id="cap-021" class="clip cap" data-start="26.217" data-duration="1.2"><span class="cap-t">Todo motor apaga.</span></div>
+    <div id="cap-022" class="clip cap" data-start="27.417" data-duration="0.733"><span class="cap-t">Mas os carros</span></div>
+    <div id="cap-023" class="clip cap" data-start="28.15" data-duration="1.0"><span class="cap-t">continuam andando.</span></div>
+    <div id="cap-024" class="clip cap" data-start="29.15" data-duration="1.6"><span class="cap-t">Congelado não é parado.</span></div>
+    <div id="cap-025" class="clip cap" data-start="30.75" data-duration="0.8"><span class="cap-t">E você?</span></div>
+    <div id="cap-026" class="clip cap" data-start="31.55" data-duration="0.767"><span class="cap-t">Na prática,</span></div>
+    <div id="cap-027" class="clip cap" data-start="32.317" data-duration="0.966"><span class="cap-t">está no vácuo.</span></div>
+    <div id="cap-028" class="clip cap" data-start="33.283" data-duration="0.934"><span class="cap-t">A saliva ferve</span></div>
+    <div id="cap-029" class="clip cap" data-start="34.217" data-duration="0.766"><span class="cap-t">na sua língua…</span></div>
+    <div id="cap-030" class="clip cap" data-start="34.983" data-duration="1.634"><span class="cap-t">a <span class="num">37</span> graus.</span></div>
+    <div id="cap-031" class="clip cap" data-start="36.617" data-duration="1.133"><span class="cap-t">Regra número <span class="num">1</span>:</span></div>
+    <div id="cap-032" class="clip cap" data-start="37.75" data-duration="0.933"><span class="cap-t">solte o ar.</span></div>
+    <div id="cap-033" class="clip cap" data-start="38.683" data-duration="1.367"><span class="cap-t">Prender a respiração rasga</span></div>
+    <div id="cap-034" class="clip cap" data-start="40.05" data-duration="0.7"><span class="cap-t">o pulmão.</span></div>
+    <div id="cap-035" class="clip cap" data-start="40.75" data-duration="1.333"><span class="cap-t">Mas você não congela.</span></div>
+    <div id="cap-036" class="clip cap" data-start="42.083" data-duration="1.467"><span class="cap-t">O vácuo isola.</span></div>
+    <div id="cap-037" class="clip cap" data-start="43.55" data-duration="1.133"><span class="cap-t">Seu corpo esfria só</span></div>
+    <div id="cap-038" class="clip cap" data-start="44.683" data-duration="1.467"><span class="cap-t"><span class="num">2</span> centésimos de grau.</span></div>
+    <div id="cap-039" class="clip cap" data-start="46.15" data-duration="1.133"><span class="cap-t">O oceano ferve e</span></div>
+    <div id="cap-040" class="clip cap" data-start="47.283" data-duration="1.334"><span class="cap-t">congela ao mesmo tempo.</span></div>
+    <div id="cap-041" class="clip cap" data-start="48.617" data-duration="1.2"><span class="cap-t">Só na superfície.</span></div>
+    <div id="cap-042" class="clip cap" data-start="49.817" data-duration="1.066"><span class="cap-t">Aí o calor volta.</span></div>
+    <div id="cap-043" class="clip cap" data-start="50.883" data-duration="0.534"><span class="cap-t">E é aqui</span></div>
+    <div id="cap-044" class="clip cap" data-start="51.417" data-duration="1.066"><span class="cap-t">que mora o perigo.</span></div>
+    <div id="cap-045" class="clip cap" data-start="52.483" data-duration="0.834"><span class="cap-t">Pelas contas,</span></div>
+    <div id="cap-046" class="clip cap" data-start="53.317" data-duration="0.633"><span class="cap-t">a neve de ar</span></div>
+    <div id="cap-047" class="clip cap" data-start="53.95" data-duration="0.9"><span class="cap-t">no chão vira gás</span></div>
+    <div id="cap-048" class="clip cap" data-start="54.85" data-duration="0.9"><span class="cap-t">de uma vez só.</span></div>
+    <div id="cap-049" class="clip cap" data-start="55.75" data-duration="0.7"><span class="cap-t">Um estrondo</span></div>
+    <div id="cap-050" class="clip cap" data-start="56.45" data-duration="1.167"><span class="cap-t">no planeta inteiro.</span></div>
+    <div id="cap-051" class="clip cap" data-start="57.617" data-duration="0.866"><span class="cap-t">O frio quase não</span></div>
+    <div id="cap-052" class="clip cap" data-start="58.483" data-duration="0.8"><span class="cap-t">te machuca.</span></div>
+    <div id="cap-053" class="clip cap" data-start="59.283" data-duration="1.234"><span class="cap-t">O calor voltando…</span></div>
+    <div id="cap-054" class="clip cap" data-start="60.517" data-duration="0.9"><span class="cap-t">talvez sim.</span></div>
+    <div id="cap-055" class="clip cap" data-start="61.417" data-duration="1.0"><span class="cap-t">Você lembraria de soltar</span></div>
+    <div id="cap-056" class="clip cap" data-start="62.417" data-duration="0.533"><span class="cap-t">o ar?</span></div>
+    <div id="cap-057" class="clip cap" data-start="62.95" data-duration="1.05"><span class="cap-t">Comenta.</span></div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      function cap(sel, s, e) {
+        tl.fromTo(sel, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.12, ease: "power2.out" }, s);
+        tl.to(sel, { opacity: 0, duration: 0.1, ease: "power2.in" }, Math.max(s + 0.13, e - 0.1));
+        tl.set(sel, { opacity: 0, visibility: "hidden" }, e);
+      }
+      cap("#cap-000 .cap-t", 0.15, 1.35);
+      cap("#cap-001 .cap-t", 1.35, 2.183);
+      cap("#cap-002 .cap-t", 2.183, 2.717);
+      cap("#cap-003 .cap-t", 2.717, 5.25);
+      cap("#cap-004 .cap-t", 5.25, 6.35);
+      cap("#cap-005 .cap-t", 6.35, 7.117);
+      cap("#cap-006 .cap-t", 7.117, 7.95);
+      cap("#cap-007 .cap-t", 7.95, 9.75);
+      cap("#cap-008 .cap-t", 9.75, 10.317);
+      cap("#cap-009 .cap-t", 10.317, 11.483);
+      cap("#cap-010 .cap-t", 11.483, 12.217);
+      cap("#cap-011 .cap-t", 12.217, 13.417);
+      cap("#cap-012 .cap-t", 13.417, 14.483);
+      cap("#cap-013 .cap-t", 14.483, 15.983);
+      cap("#cap-014 .cap-t", 15.983, 17.083);
+      cap("#cap-015 .cap-t", 17.083, 18.017);
+      cap("#cap-016 .cap-t", 18.017, 19.817);
+      cap("#cap-017 .cap-t", 19.817, 21.083);
+      cap("#cap-018 .cap-t", 21.083, 22.317);
+      cap("#cap-019 .cap-t", 22.317, 24.55);
+      cap("#cap-020 .cap-t", 24.55, 26.217);
+      cap("#cap-021 .cap-t", 26.217, 27.417);
+      cap("#cap-022 .cap-t", 27.417, 28.15);
+      cap("#cap-023 .cap-t", 28.15, 29.15);
+      cap("#cap-024 .cap-t", 29.15, 30.75);
+      cap("#cap-025 .cap-t", 30.75, 31.55);
+      cap("#cap-026 .cap-t", 31.55, 32.317);
+      cap("#cap-027 .cap-t", 32.317, 33.283);
+      cap("#cap-028 .cap-t", 33.283, 34.217);
+      cap("#cap-029 .cap-t", 34.217, 34.983);
+      cap("#cap-030 .cap-t", 34.983, 36.617);
+      cap("#cap-031 .cap-t", 36.617, 37.75);
+      cap("#cap-032 .cap-t", 37.75, 38.683);
+      cap("#cap-033 .cap-t", 38.683, 40.05);
+      cap("#cap-034 .cap-t", 40.05, 40.75);
+      cap("#cap-035 .cap-t", 40.75, 42.083);
+      cap("#cap-036 .cap-t", 42.083, 43.55);
+      cap("#cap-037 .cap-t", 43.55, 44.683);
+      cap("#cap-038 .cap-t", 44.683, 46.15);
+      cap("#cap-039 .cap-t", 46.15, 47.283);
+      cap("#cap-040 .cap-t", 47.283, 48.617);
+      cap("#cap-041 .cap-t", 48.617, 49.817);
+      cap("#cap-042 .cap-t", 49.817, 50.883);
+      cap("#cap-043 .cap-t", 50.883, 51.417);
+      cap("#cap-044 .cap-t", 51.417, 52.483);
+      cap("#cap-045 .cap-t", 52.483, 53.317);
+      cap("#cap-046 .cap-t", 53.317, 53.95);
+      cap("#cap-047 .cap-t", 53.95, 54.85);
+      cap("#cap-048 .cap-t", 54.85, 55.75);
+      cap("#cap-049 .cap-t", 55.75, 56.45);
+      cap("#cap-050 .cap-t", 56.45, 57.617);
+      cap("#cap-051 .cap-t", 57.617, 58.483);
+      cap("#cap-052 .cap-t", 58.483, 59.283);
+      cap("#cap-053 .cap-t", 59.283, 60.517);
+      cap("#cap-054 .cap-t", 60.517, 61.417);
+      cap("#cap-055 .cap-t", 61.417, 62.417);
+      cap("#cap-056 .cap-t", 62.417, 62.95);
+      cap("#cap-057 .cap-t", 62.95, 64.0);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["captions"] = tl;
+    })();
+  </script>
+</template>

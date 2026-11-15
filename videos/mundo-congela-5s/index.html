@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="assets/lib/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "EB Garamond"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-400-normal.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+      @font-face { font-family: "EB Garamond"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-ext-400-normal.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+      @font-face { font-family: "EB Garamond"; font-style: italic; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-400-italic.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+      @font-face { font-family: "EB Garamond"; font-style: italic; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-ext-400-italic.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+      @font-face { font-family: "Montserrat"; font-style: normal; font-weight: 600; font-display: block; src: url("assets/fonts/montserrat-latin-600-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Anton"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/fonts/anton-latin-400-normal.woff2") format("woff2"); }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: #0b1018; }
+      #root { position: relative; width: 100%; height: 100%; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="64.5" data-width="1080" data-height="1920">
+      <div id="f01" data-composition-id="f01" data-composition-src="compositions/f01.html" data-start="0" data-duration="5.3" data-track-index="1" data-track-kind="graphics" data-width="1080" data-height="1920" style="z-index: 1"></div>
+      <div id="f02" data-composition-id="f02" data-composition-src="compositions/f02.html" data-start="5.3" data-duration="8.17" data-track-index="1" data-track-kind="graphics" data-width="1080" data-height="1920" style="z-index: 1"></div>
+      <div id="f03" data-composition-id="f03" data-composition-src="compositions/f03.html" data-start="13.47" data-duration="4.6" data-track-index="1" data-track-kind="graphics" data-width="1080" data-height="1920" style="z-index: 1"></div>
+      <div id="f04" data-composition-id="f04" data-composition-src="compositions/f04.html" data-start="18.07" data-duration="6.53" data-track-index="1" data-track-kind="graphics" data-width="1080" data-height="1920" style="z-index: 1"></div>
+      <div id="f05" data-composition-id="f05" data-composition-src="compositions/f05.html" data-start="24.6" data-duration="6.2" data-track-index="1" data-track-kind="graphics" data-width="1080" data-height="1920" style="z-index: 1"></div>
+      <div id="f06" data-composition-id="f06" data-composition-src="compositions/f06.html" data-start="30.8" data-duration="5.87" data-track-index="1" data-track-kind="graphics" data-width="1080" data-height="1920" style="z-index: 1"></div>
+      <div id="f07" data-composition-id="f07" data-composition-src="compositions/f07.html" data-start="36.67" data-duration="4.13" data-track-index="1" data-track-kind="graphics" data-width="1080" data-height="1920" style="z-index: 1"></div>
+      <div id="f08" data-composition-id="f08" data-composition-src="compositions/f08.html" data-start="40.8" data-duration="5.4" data-track-index="1" data-track-kind="graphics" data-width="1080" data-height="1920" style="z-index: 1"></div>
+      <div id="f09" data-composition-id="f09" data-composition-src="compositions/f09.html" data-start="46.2" data-duration="3.67" data-track-index="1" data-track-kind="graphics" data-width="1080" data-height="1920" style="z-index: 1"></div>
+      <div id="f10" data-composition-id="f10" data-composition-src="compositions/f10.html" data-start="49.87" data-duration="2.66" data-track-index="1" data-track-kind="graphics" data-width="1080" data-height="1920" style="z-index: 1"></div>
+      <div id="f11" data-composition-id="f11" data-composition-src="compositions/f11.html" data-start="52.53" data-duration="5.14" data-track-index="1" data-track-kind="graphics" data-width="1080" data-height="1920" style="z-index: 1"></div>
+      <div id="f12" data-composition-id="f12" data-composition-src="compositions/f12.html" data-start="57.67" data-duration="6.83" data-track-index="1" data-track-kind="graphics" data-width="1080" data-height="1920" style="z-index: 1"></div>
+      <div id="hud" data-composition-id="hud" data-composition-src="compositions/hud.html" data-start="2.6" data-duration="49.93" data-track-index="2" data-track-kind="graphics" data-width="1080" data-height="1920" style="z-index: 2"></div>
+      <div id="captions" data-composition-id="captions" data-composition-src="compositions/captions.html" data-start="0" data-duration="64.5" data-track-index="3" data-track-kind="captions" data-width="1080" data-height="1920" style="z-index: 3"></div>
+      <audio id="narracao" class="clip" src="assets/audio/narracao-60s.mp3" data-start="0" data-duration="63.58" data-track-index="10" data-volume="1"></audio>
+      <audio id="drone-1" class="clip" src="assets/audio/drone.mp3" data-start="0" data-duration="20.0" data-track-index="11" data-volume="0.25" data-automation='{"version": 1, "lanes": [{"target": "volume", "points": [{"t": 0, "v": 1}, {"t": 5.2, "v": 1}, {"t": 5.5, "v": 0.4}, {"t": 13.2, "v": 0.4}, {"t": 13.6, "v": 1}, {"t": 20, "v": 1}]}]}'></audio>
+      <audio id="drone-2" class="clip" src="assets/audio/drone.mp3" data-start="20" data-duration="20.0" data-track-index="11" data-volume="0.25"></audio>
+      <audio id="drone-3" class="clip" src="assets/audio/drone.mp3" data-start="40" data-duration="20.0" data-track-index="11" data-volume="0.25"></audio>
+      <audio id="drone-4" class="clip" src="assets/audio/drone.mp3" data-start="60" data-duration="4.5" data-track-index="11" data-volume="0.25" data-fade-out="1.2"></audio>
+      <audio id="sfx-whoosh" class="clip" src="assets/audio/whoosh.mp3" data-start="0.3" data-duration="2.507" data-track-index="12" data-volume="0.7"></audio>
+      <audio id="sfx-cidade" class="clip" src="assets/audio/cidade.mp3" data-start="2.4" data-duration="3.03" data-track-index="13" data-volume="0.7"></audio>
+      <audio id="sfx-congela" class="clip" src="assets/audio/congela.mp3" data-start="4.6" data-duration="1.515" data-track-index="12" data-volume="0.7"></audio>
+      <audio id="sfx-coracao-1" class="clip" src="assets/audio/coracao.mp3" data-start="8.8" data-duration="4.048" data-track-index="13" data-volume="0.7"></audio>
+      <audio id="sfx-coracao-2" class="clip" src="assets/audio/coracao.mp3" data-start="11.5" data-duration="4.048" data-track-index="12" data-volume="0.7"></audio>
+      <audio id="sfx-cristais" class="clip" src="assets/audio/cristais.mp3" data-start="14.6" data-duration="3.03" data-track-index="13" data-volume="0.7"></audio>
+      <audio id="sfx-turbina" class="clip" src="assets/audio/turbina.mp3" data-start="18.3" data-duration="3.03" data-track-index="12" data-volume="0.7"></audio>
+      <audio id="sfx-fogo" class="clip" src="assets/audio/fogo.mp3" data-start="26.3" data-duration="1.044" data-track-index="13" data-volume="0.7"></audio>
+      <audio id="sfx-bolhas" class="clip" src="assets/audio/bolhas.mp3" data-start="33.3" data-duration="3.03" data-track-index="12" data-volume="0.7"></audio>
+      <audio id="sfx-expira" class="clip" src="assets/audio/expira.mp3" data-start="37.8" data-duration="2.037" data-track-index="13" data-volume="0.7"></audio>
+      <audio id="sfx-tique-1" class="clip" src="assets/audio/tique.mp3" data-start="43.6" data-duration="1.044" data-track-index="12" data-volume="0.7"></audio>
+      <audio id="sfx-tique-2" class="clip" src="assets/audio/tique.mp3" data-start="45.0" data-duration="1.044" data-track-index="13" data-volume="0.7"></audio>
+      <audio id="sfx-mar" class="clip" src="assets/audio/mar.mp3" data-start="46.4" data-duration="3.03" data-track-index="12" data-volume="0.7"></audio>
+      <audio id="sfx-riser" class="clip" src="assets/audio/riser.mp3" data-start="49.9" data-duration="4.048" data-track-index="13" data-volume="0.7"></audio>
+      <audio id="sfx-boom" class="clip" src="assets/audio/boom.mp3" data-start="55.8" data-duration="4.048" data-track-index="12" data-volume="0.7"></audio>
+      <audio id="sfx-resolve" class="clip" src="assets/audio/resolve.mp3" data-start="57.8" data-duration="4.048" data-track-index="13" data-volume="0.7"></audio>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      tl.set({}, {}, 64.5);
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

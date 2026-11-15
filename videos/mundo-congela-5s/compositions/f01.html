@@ -1,0 +1,271 @@
+<template>
+  <style>
+    @font-face { font-family: "EB Garamond"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-400-normal.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+    @font-face { font-family: "EB Garamond"; font-style: normal; font-weight: 400; font-display: block; src: url("assets/fonts/eb-garamond-latin-ext-400-normal.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0b1018; }
+    #f01-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+    #f01-veil { position: absolute; inset: 0; opacity: 0;
+      background: radial-gradient(ellipse at 50% 45%, rgba(246, 249, 252, 0.98) 0%, rgba(232, 238, 244, 0.92) 55%, rgba(214, 222, 231, 0.85) 100%); }
+    #f01-tint { position: absolute; inset: 0; opacity: 0; background: rgba(176, 214, 242, 0.28); mix-blend-mode: screen; }
+    #f01-frost { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; opacity: 0; }
+    #f01-title { position: absolute; left: 190px; right: 190px; top: 622px; text-align: center; }
+    #f01-title-in { display: block; font-family: "EB Garamond", serif; font-weight: 400; font-size: 90px; line-height: 1.04;
+      color: #ffffff; letter-spacing: -0.005em;
+      text-shadow: 0 4px 26px rgba(4, 10, 20, 0.75), 0 1px 4px rgba(4, 10, 20, 0.6); }
+    #f01-title-in .ice { color: #8fcbf2; }
+  </style>
+  <div id="root" data-composition-id="f01" data-width="1080" data-height="1920">
+    <canvas id="f01-canvas" width="1080" height="1920"></canvas>
+    <div id="f01-veil" data-layout-ignore></div>
+    <canvas id="f01-frost" width="1080" height="1920" data-layout-ignore></canvas>
+    <div id="f01-tint" data-layout-ignore></div>
+    <div id="f01-title" class="clip" data-start="0.8" data-duration="4.5">
+      <span id="f01-title-in">E se o ar do mundo congelasse por <span class="ice">5&nbsp;s</span>?</span>
+    </div>
+  </div>
+  <script>
+    (function () {
+      /* ---------- 2D layers (GSAP) ---------- */
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo("#f01-title-in", { opacity: 0, y: 24, filter: "blur(10px)" },
+        { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.45, ease: "power3.out" }, 0.8);
+      tl.fromTo("#f01-veil", { opacity: 0 }, { opacity: 1, duration: 0.22, ease: "power2.in" }, 2.42);
+      tl.to("#f01-veil", { opacity: 0, duration: 0.4, ease: "power2.out" }, 2.66);
+      tl.fromTo("#f01-tint", { opacity: 0 }, { opacity: 0.6, duration: 0.3, ease: "power2.out" }, 4.6);
+      tl.fromTo("#f01-frost", { opacity: 0 }, { opacity: 0.95, duration: 0.45, ease: "power2.out" }, 4.6);
+      tl.set({}, {}, 5.3);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["f01"] = tl;
+
+      /* ---------- frost overlay: seeded crystals, drawn once ---------- */
+      (function drawFrost() {
+        let a = 4242 >>> 0;
+        const rnd = () => { a = (a + 0x6d2b79f5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1);
+          t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+        const c = document.getElementById("f01-frost").getContext("2d");
+        const g = c.createRadialGradient(540, 960, 380, 540, 960, 1150);
+        g.addColorStop(0, "rgba(238,242,246,0)");
+        g.addColorStop(0.45, "rgba(238,242,246,0)");
+        g.addColorStop(1, "rgba(238,242,246,0.55)");
+        c.fillStyle = g; c.fillRect(0, 0, 1080, 1920);
+        c.lineCap = "round";
+        function branch(x, y, ang, len, depth) {
+          if (depth <= 0 || len < 4) return;
+          const x2 = x + Math.cos(ang) * len, y2 = y + Math.sin(ang) * len;
+          c.strokeStyle = "rgba(240,247,252," + (0.25 + 0.12 * depth) + ")";
+          c.lineWidth = Math.max(0.6, depth * 0.7);
+          c.beginPath(); c.moveTo(x, y); c.lineTo(x2, y2); c.stroke();
+          const n = 2 + Math.floor(rnd() * 2);
+          for (let i = 0; i < n; i++) {
+            const tt = 0.3 + rnd() * 0.6;
+            branch(x + (x2 - x) * tt, y + (y2 - y) * tt, ang + (rnd() < 0.5 ? -1 : 1) * (0.5 + rnd() * 0.5), len * 0.5, depth - 1);
+          }
+          branch(x2, y2, ang + (rnd() - 0.5) * 0.4, len * 0.7, depth - 1);
+        }
+        for (let i = 0; i < 70; i++) {
+          // seeds along the frame edges, growing inward
+          const side = Math.floor(rnd() * 4);
+          let x, y, ang;
+          if (side === 0) { x = rnd() * 1080; y = 0; ang = Math.PI / 2; }
+          else if (side === 1) { x = rnd() * 1080; y = 1920; ang = -Math.PI / 2; }
+          else if (side === 2) { x = 0; y = rnd() * 1920; ang = 0; }
+          else { x = 1080; y = rnd() * 1920; ang = Math.PI; }
+          branch(x, y, ang + (rnd() - 0.5) * 1.2, 70 + rnd() * 110, 5);
+        }
+      })();
+
+      /* ---------- 3D (Three.js via kit) ---------- */
+      window.__hf = window.__hf || {};
+      window.__hf.buildReady = window.__hf.buildReady || {};
+      window.__hf.buildReady["f01"] = import("./assets/lib/kit.js").then(async (K) => {
+        const { THREE, PALETTE, ease, range, lerp, clamp, mulberry32 } = K;
+        const canvas = document.getElementById("f01-canvas");
+        const renderer = K.createRenderer(canvas);
+        const D2R = Math.PI / 180;
+
+        /* ===== Earth scene ===== */
+        const earthScene = new THREE.Scene();
+        earthScene.background = new THREE.Color(PALETTE.night);
+        const earthCam = new THREE.PerspectiveCamera(35, K.W / K.H, 0.001, 200);
+        earthScene.add(new THREE.HemisphereLight(0xcfe0f0, 0x101820, 0.35));
+        const sun = new THREE.DirectionalLight(0xffe4c4, 3.0);
+        sun.position.set(-4, 3, 5);
+        const rimE = new THREE.DirectionalLight(0x8fcbf2, 1.6);
+        rimE.position.set(5, 1, -3);
+        earthScene.add(sun, rimE);
+
+        // coarse continents [lon, lat]
+        const LAND = {
+          sam: [[-77,8.5],[-72,12],[-62,10.7],[-57,6],[-51,4],[-50,0],[-44,-2.5],[-35,-5],[-35,-9],[-39,-13],[-39,-18],[-41,-22],[-48,-26],[-53,-34],[-58,-35],[-57,-38],[-62,-39],[-65,-42],[-65,-47],[-69,-51],[-68,-55],[-72,-54],[-75,-48],[-73,-40],[-71,-30],[-70,-18],[-76,-14],[-81,-6],[-80,-1],[-77,4]],
+          nam: [[-168,66],[-162,70],[-140,70],[-125,70],[-95,72],[-80,73],[-62,60],[-56,52],[-66,45],[-70,42],[-76,35],[-81,31],[-80,25],[-83,29],[-90,30],[-97,27],[-97,21],[-92,18],[-87,21],[-88,16],[-83,10],[-77,8],[-80,8],[-86,12],[-92,14],[-105,20],[-110,24],[-117,32],[-123,38],[-124,46],[-130,55],[-140,60],[-152,58],[-165,60]],
+          grl: [[-55,60],[-45,60],[-20,70],[-20,82],[-60,82],[-73,78],[-55,70]],
+          afr: [[-17,21],[-17,14],[-12,7],[-8,4.5],[0,5],[8,4],[9,0],[12,-5],[13,-12],[12,-17],[15,-27],[18,-34],[25,-34],[32,-29],[35,-24],[40,-15],[40,-10],[39,-5],[42,0],[51,11],[43,12],[37,21],[33,31],[20,32],[10,37],[-6,36],[-10,30],[-14,26]],
+          mad: [[44,-25],[47,-25],[50,-15],[49,-12],[44,-17]],
+          eur: [[-10,36],[-9,43],[-1,46],[-5,48],[2,51],[8,54],[10,57],[5,62],[15,69],[25,71],[40,68],[60,70],[80,73],[105,78],[140,72],[180,68],[180,62],[160,60],[155,52],[140,50],[135,43],[129,35],[122,31],[121,25],[110,20],[108,12],[104,9],[100,13],[98,8],[103,1],[98,17],[94,16],[90,22],[80,15],[77,8],[72,20],[66,25],[57,25],[59,22],[52,16],[43,13],[35,28],[34,31],[36,36],[27,36],[23,38],[19,40],[12,44],[16,38],[10,44],[3,43],[-4,37]],
+          uk: [[-5,50],[1,51],[-2,57],[-5,58],[-6,55]],
+          aus: [[114,-22],[122,-18],[130,-12],[137,-12],[142,-11],[146,-19],[153,-26],[150,-37],[141,-38],[131,-31],[116,-35],[114,-26]],
+        };
+        const BRAZIL = [[-60,5],[-51,4],[-50,0],[-44,-2.5],[-35,-5],[-35,-9],[-39,-13],[-39,-18],[-41,-22],[-48,-26],[-53,-33.7],[-57,-30],[-54,-26],[-58,-22],[-58,-16],[-60,-14],[-65,-10],[-73,-9],[-70,-4],[-69,1],[-64,2]];
+        const inPoly = (x, y, p) => {
+          let c = false;
+          for (let i = 0, j = p.length - 1; i < p.length; j = i++) {
+            const [xi, yi] = p[i], [xj, yj] = p[j];
+            if ((yi > y) !== (yj > y) && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) c = !c;
+          }
+          return c;
+        };
+        const geo = new THREE.IcosahedronGeometry(1, 96); // non-indexed, ~190k faces
+        const pos = geo.attributes.position;
+        const cols = new Float32Array(pos.count * 3);
+        const cOcean = new THREE.Color(0x2b4a66), cOcean2 = new THREE.Color(0x325574);
+        const cLand = new THREE.Color(0x6f8578), cLand2 = new THREE.Color(0x768b7e);
+        const cBr = new THREE.Color(0xd8c48e), cIce = new THREE.Color(PALETTE.frost);
+        const rndE = mulberry32(11);
+        const v = new THREE.Vector3(), cen = new THREE.Vector3();
+        for (let f = 0; f < pos.count; f += 3) {
+          cen.set(0, 0, 0);
+          for (let k = 0; k < 3; k++) cen.add(v.fromBufferAttribute(pos, f + k));
+          cen.normalize();
+          const lat = Math.asin(cen.y) / D2R, lon = Math.atan2(cen.x, cen.z) / D2R;
+          let col, h = 1;
+          const j = rndE();
+          if (lat < -68 || lat > 80) { col = cIce; h = 1.001; }
+          else if (inPoly(lon, lat, BRAZIL)) { col = cBr; h = 1.0015; }
+          else if (Object.values(LAND).some((p) => inPoly(lon, lat, p))) { col = j < 0.5 ? cLand : cLand2; h = 1.0012; }
+          else col = j < 0.5 ? cOcean : cOcean2;
+          for (let k = 0; k < 3; k++) {
+            v.fromBufferAttribute(pos, f + k).multiplyScalar(h);
+            pos.setXYZ(f + k, v.x, v.y, v.z);
+            cols.set([col.r, col.g, col.b], (f + k) * 3);
+          }
+        }
+        geo.setAttribute("color", new THREE.BufferAttribute(cols, 3));
+        geo.computeVertexNormals();
+        const earth = new THREE.Group();
+        earth.add(new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ vertexColors: true, flatShading: true, roughness: 0.85 })));
+        earthScene.add(earth);
+
+        // destination marker: São Paulo-ish (lon -46.6, lat -23.5)
+        const TGT = { lon: -46.6, lat: -23.5 };
+        const ll = (lon, lat, r) => new THREE.Vector3(
+          r * Math.cos(lat * D2R) * Math.sin(lon * D2R), r * Math.sin(lat * D2R), r * Math.cos(lat * D2R) * Math.cos(lon * D2R));
+        const marker = new THREE.Mesh(new THREE.SphereGeometry(0.008, 12, 8), new THREE.MeshBasicMaterial({ color: PALETTE.accent }));
+        marker.position.copy(ll(TGT.lon, TGT.lat, 1.002));
+        earth.add(marker);
+
+        // low-poly clouds, denser over the destination
+        const cloudMat = new THREE.MeshStandardMaterial({ color: 0xf4f7fa, roughness: 0.95, flatShading: true });
+        const puff = new THREE.IcosahedronGeometry(1, 1);
+        const rndC = mulberry32(23);
+        const addPuff = (lon, lat, r, s) => {
+          const m = new THREE.Mesh(puff, cloudMat);
+          const p = ll(lon, lat, r);
+          m.position.copy(p);
+          m.lookAt(p.clone().multiplyScalar(2));
+          m.scale.set(s * (1 + rndC()), s * (0.7 + rndC() * 0.6), s * 0.35);
+          earth.add(m);
+        };
+        for (let i = 0; i < 260; i++) {
+          const lat = (rndC() * 2 - 1) * 70, lon = rndC() * 360 - 180;
+          addPuff(lon, lat, 1.018 + rndC() * 0.006, 0.006 + rndC() * 0.016);
+        }
+        for (let i = 0; i < 90; i++) { // cloud deck the camera dives through
+          const a = rndC() * Math.PI * 2, d = Math.sqrt(rndC()) * 1.6;
+          addPuff(TGT.lon + Math.cos(a) * d + 0.25, TGT.lat + Math.sin(a) * d, 1.02 + rndC() * 0.025, 0.003 + rndC() * 0.006);
+        }
+
+        // atmosphere glow + ice wave (shader)
+        const atmoMat = new THREE.ShaderMaterial({
+          transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+          uniforms: { uWave: { value: 0 }, uDir: { value: new THREE.Vector3(0.6, 0.75, 0.25).normalize() }, uFade: { value: 1 } },
+          vertexShader: `varying vec3 vN; varying vec3 vV; varying vec3 vP;
+            void main(){ vP = position; vec4 mv = modelViewMatrix * vec4(position,1.0);
+              vN = normalize(normalMatrix * normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix * mv; }`,
+          fragmentShader: `uniform float uWave; uniform vec3 uDir; uniform float uFade; varying vec3 vN; varying vec3 vV; varying vec3 vP;
+            void main(){ float fr = pow(clamp(1.0 - dot(vN, vV), 0.0, 1.0), 2.6);
+              float d = dot(normalize(vP), uDir) - uWave; float band = exp(-d*d/0.012);
+              vec3 ice = vec3(0.56, 0.80, 0.95);
+              vec3 col = ice * (fr * 0.85 + band * (0.35 + 1.2 * fr));
+              gl_FragColor = vec4(col * uFade, 1.0); }`,
+        });
+        const atmo = new THREE.Mesh(new THREE.SphereGeometry(1.045, 96, 64), atmoMat);
+        earthScene.add(atmo);
+
+        // stars
+        const rndS = mulberry32(5);
+        const sp = new Float32Array(1500 * 3);
+        for (let i = 0; i < 1500; i++) {
+          const u = rndS() * 2 - 1, th = rndS() * Math.PI * 2, r = 60;
+          sp.set([r * Math.sqrt(1 - u * u) * Math.cos(th), r * u, r * Math.sqrt(1 - u * u) * Math.sin(th)], i * 3);
+        }
+        const sg = new THREE.BufferGeometry();
+        sg.setAttribute("position", new THREE.BufferAttribute(sp, 3));
+        earthScene.add(new THREE.Points(sg, new THREE.PointsMaterial({ color: 0xc9d6e4, size: 1.6, sizeAttenuation: false })));
+
+        /* ===== City scene ===== */
+        const cityScene = new THREE.Scene();
+        cityScene.background = new THREE.Color(0x9aa3ae);
+        cityScene.fog = new THREE.Fog(0x9aa3ae, 260, 520);
+        const lights = K.addMaqueteLights(cityScene, { intensity: 1, shadowSize: 190 });
+        const city = K.buildCityGrid({ seed: 7, cols: 8, rows: 11, maxH: 38 });
+        cityScene.add(city.group);
+        const cityCam = new THREE.PerspectiveCamera(35, K.W / K.H, 1, 2000);
+        const carBase = city.cars.map((c) => c.position.z);
+        const fogBase = new THREE.Color(0x9aa3ae), fogIce = new THREE.Color(0xd7e6f2);
+
+        /* ===== timing (local seconds) ===== */
+        const T_CUT = 2.62;   // earth -> city, hidden under the cloud veil
+        const T_FREEZE = 4.6;
+
+        function renderEarth(t) {
+          // continuous dolly: altitude falls exponentially, already moving at frame 0
+          // log-altitude curve: ~2.5 at 1 s (whole South America), ~0.3 at 2.1 s (Brazil), clouds at ~2.5 s
+          const tt = Math.min(t, 2.7);
+          const alt = 5.6 * Math.exp(-(0.795 * tt + 0.135 * tt * tt * tt + 0.0006 * Math.pow(tt, 8)));
+          // rotate the globe so the target turns to face the camera
+          const q = ease.outCubic(clamp(t / 2.3));
+          earth.rotation.order = "XYZ";
+          earth.rotation.y = -lerp(TGT.lon + 85, TGT.lon, q) * D2R;
+          earth.rotation.x = lerp(12, TGT.lat, q) * D2R;
+          earthCam.position.set(0, 0, 1 + alt);
+          earthCam.up.set(0, 1, 0);
+          earthCam.lookAt(0, -Math.min(0.25, alt * 0.06), 0);
+          atmoMat.uniforms.uWave.value = lerp(-0.75, 1.3, ease.outQuad(clamp(t / 1.5)));
+          atmoMat.uniforms.uFade.value = 1 - range(t, 1.9, 2.5);
+          renderer.toneMappingExposure = 1.05;
+          renderer.render(earthScene, earthCam);
+        }
+
+        function renderCity(t) {
+          const p = clamp((t - T_CUT) / (5.3 - T_CUT));
+          const h = lerp(300, 175, ease.outCubic(p));
+          const ang = lerp(-0.35, 0.05, p);
+          cityCam.position.set(Math.sin(ang) * 18, h, Math.cos(ang) * 18 + 10);
+          cityCam.up.set(Math.sin(ang), 0, -Math.cos(ang));
+          cityCam.lookAt(0, 0, 0);
+          const moveT = Math.min(t, T_FREEZE);
+          city.cars.forEach((c, i) => { c.position.z = carBase[i] + c.userData.dir * 14 * moveT; });
+          const fz = ease.outCubic(range(t, T_FREEZE, T_FREEZE + 0.35));
+          K.setFrost(city.group, fz);
+          cityScene.fog.color.copy(fogBase).lerp(fogIce, fz);
+          cityScene.background.copy(cityScene.fog.color);
+          lights.key.color.set(0xffe2bf).lerp(new THREE.Color(0xdbeeff), fz);
+          lights.key.intensity = lerp(2.6, 2.1, fz);
+          renderer.toneMappingExposure = lerp(1.05, 1.12, fz);
+          renderer.render(cityScene, cityCam);
+        }
+
+        function render(t) {
+          if (t < T_CUT) renderEarth(t); else renderCity(t);
+        }
+
+        await renderer.compileAsync(earthScene, earthCam);
+        await renderer.compileAsync(cityScene, cityCam);
+        renderCity(3);
+        await K.bindSeek(canvas, render);
+        const gl = renderer.getContext();
+        gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4));
+      });
+    })();
+  </script>
+</template>
