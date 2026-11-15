@@ -94,6 +94,7 @@ Estas skills não disparam sozinhas: só rodam se o usuário digitar o comando.
 - `/megacave` e `/ultracave`: níveis extremos de compressão do caveman.
 - `/using-superpowers`: modo "skill antes de tudo" do superpowers.
 - `/task-observer`: observa uma sessão longa e anota oportunidades de melhorar ou criar skills.
+- `/ref`: guarda prints ou links de vídeos como padrão visual em `video-curiosidades/referencias/REFERENCIAS.md`.
 
 ## Desempate entre skills parecidas
 

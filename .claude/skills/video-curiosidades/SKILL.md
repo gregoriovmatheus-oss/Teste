@@ -25,7 +25,9 @@ O usuário pode mudar qualquer padrão. A mudança vale para aquele vídeo; se e
 
 ## Estilo visual (decidido)
 
-O vídeo alterna entre **2D flat** e **3D estilizado**. Nunca usa 3D realista.
+**Referências do usuário:** leia só a seção "Padrão atual" de `referencias/REFERENCIAS.md`. Ela vale mais que esta seção. Nunca abra as imagens da pasta. Para adicionar referências, o comando é `/ref`.
+
+O vídeo alterna entre **2D flat** e **3D estilizado**. Nunca usa 3D fotorrealista. O 3D com cara de maquete de arquitetura, limpo e com pouco detalhe, é permitido (ver R01).
 
 - **2D flat:** formas vetoriais simples, cores saturadas, fundo chapado ou com grão leve. Serve para dados, mapas, comparações e diagramas.
 - **3D estilizado:** segue a gramática dos vídeos virais de curiosidade, sem copiar nenhum criador:
