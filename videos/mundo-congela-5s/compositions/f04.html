@@ -140,8 +140,8 @@
           const s = 1.5 + rb() * 0.6;
           g.scale.setScalar(s);
           scene.add(g);
-          birds.push({ g, wl, wr, dx: -34 + rb() * 30, dy: 12 + rb() * 12, dz: 26 + rb() * 22, ph: rb() * 6.28,
-            f0: 1.5 + rb() * 0.35, tum: rb() * 2 - 1 });
+          birds.push({ g, wl, wr, dx: -30 + rb() * 34, dy: 5 + rb() * 9, dz: 20 + rb() * 24, ph: rb() * 6.28,
+            f0: 1.25 + rb() * 0.35, tum: rb() * 2 - 1 });
         }
         const P = new THREE.Vector3();
         function drawWorld(t) {
@@ -170,18 +170,18 @@
             look.set(P.x + 2, P.y - lerp(1, 4, p), 0);
           } else if (t < 3.0) {   // B: cut to the flock, wings beating at nothing, dropping ("Os pássaros também")
             const p = ease.inOutSine(range(t, 1.8, 3.0));
-            const cx = P.x - 19, cy = Y0 + 18 - 0.5 * 9.8 * Math.pow(Math.max(0, t - 1.6), 2) * 0.8;
-            cam.position.set(cx - lerp(10, 4, p), cy + lerp(6, 3, p), lerp(68, 60, p));
-            look.set(cx, cy - 2, 34);
+            const cx = P.x - 13, cy = Y0 + 10 - 0.5 * 9.8 * Math.pow(Math.max(0, t - 1.4), 2);
+            cam.position.set(cx - lerp(12, 6, p), cy + lerp(8, 4, p), lerp(100, 92, p));
+            look.set(cx, cy - 1, 30);
           } else if (t < 4.8) {   // C1: wide side view, camera lags so they visibly sink; ruler counts
             const p = range(t, 3.0, 4.8);
-            const cy = Y0 - 0.55 * fallP(t) - 10;
-            cam.position.set(P.x - 30, cy + 6, 150);
-            look.set(P.x - 4, cy - lerp(18, 26, p), 10);
+            const ly = P.y - lerp(9, 1, p);
+            cam.position.set(P.x - 34, ly + 8, 200);
+            look.set(P.x - 6, ly, 10);
           } else {                // C2: cut high above, looking down the gap to the frozen city ("122 metros")
             const p = ease.outCubic(range(t, 4.8, 6.53));
             cam.position.set(P.x - lerp(60, 50, p), P.y + lerp(70, 60, p), lerp(130, 115, p));
-            look.set(P.x + 5, P.y - lerp(40, 55, p), 0);
+            look.set(P.x + 5, P.y - lerp(12, 18, p), 0);
           }
           cam.lookAt(look);
         }
