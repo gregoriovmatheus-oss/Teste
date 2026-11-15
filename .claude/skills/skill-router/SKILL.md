@@ -40,20 +40,21 @@ Não precisam de pedido. Aplique sempre que a condição bater.
 | Implementação terminada, decidir como integrar (merge, PR, limpeza) | `finishing-a-development-branch` |
 | Antes de fazer merge ou ao concluir uma feature grande | `requesting-code-review` |
 | Recebeu feedback de code review | `receiving-code-review` |
-| Usuário pede respostas curtas ("caveman", "seja breve", "menos tokens") | `caveman` |
+| Respostas curtas. É o padrão deste projeto (ver `CLAUDE.md`), sem precisar pedir. | `caveman` |
+| Vídeo, animação, roteiro ou storyboard no formato de curiosidades (9:16, PT-BR) | `video-curiosidades` |
 
 ## 3. De vez em quando: só quando o domínio aparece
 
 Ignore estas até o assunto surgir de fato.
 
-**Vídeo (HyperFrames).** Comece sempre por `hyperframes`.
+**Vídeo (HyperFrames).** Vídeo de curiosidades no formato do usuário: comece por `video-curiosidades`, que chama as outras na ordem certa. Qualquer outro vídeo: comece por `hyperframes`.
 - `hyperframes-cli`: scaffold, preview, render e timeline pela linha de comando.
 - `hyperframes-registry`: antes de construir à mão qualquer efeito, transição ou título que tenha nome.
 - `media-use`: música, voz, imagens, ícones ou color grading para o vídeo.
 - `figma`: o usuário cola um link do Figma.
 - `slideshow`: apresentação ao vivo, não vídeo renderizado.
 - `reverse-any-video`: recriar um vídeo específico.
-- `style-sampling`: novo episódio num estilo já conhecido.
+- `style-sampling`: novo episódio num estilo já conhecido. É pago (HyperFrames Pro) e só sai em inglês ou chinês, então não serve para vídeo em português.
 - `remotion-to-hyperframes`: portar Remotion, Lottie, Motion Canvas ou similares.
 
 **Voz e áudio (ElevenLabs).**
@@ -78,6 +79,13 @@ Ignore estas até o assunto surgir de fato.
 - `headroom`: reduzir tokens dentro de um app Python ou TypeScript que chama LLM.
 - `caveman-compress`: comprimir um CLAUDE.md ou arquivo de memória.
 - `caveman-stats`: ver o uso de tokens da sessão.
+- `claude-mem:handoff`: conversa longa demais. Gera um `HANDOFF.md` para continuar numa sessão nova depois do `/clear`.
+- `claude-mem:smart-explore`: entender a estrutura de código sem ler arquivos inteiros.
+
+**Plugin claude-mem.** Só estas três valem no dia a dia:
+- `claude-mem:mem-search`: "já resolvemos isso antes?", "como fizemos X da outra vez?".
+- `claude-mem:handoff` e `claude-mem:smart-explore`, descritas acima.
+- Ignore as demais (`version-bump`, `ccs-align`, `cloud-sync`, `screenpipe`, `oh-my-issues`, relatórios e afins), a menos que o usuário peça pelo nome. Para planejar e executar, prefira as skills do superpowers (ver desempate).
 
 ## 4. Só quando o usuário chama
 
@@ -91,6 +99,10 @@ Estas skills não disparam sozinhas: só rodam se o usuário digitar o comando.
 
 | Dúvida | Escolha |
 | --- | --- |
+| `brainstorming` ou `video-curiosidades` | Vídeo no formato de curiosidades: `video-curiosidades`, que já traz os padrões. Não rode `brainstorming` antes. |
+| `writing-plans` ou `claude-mem:make-plan` | `writing-plans`. |
+| `subagent-driven-development` ou `claude-mem:do` | `subagent-driven-development`. |
+| `/compact` ou `claude-mem:handoff` | Mesmo assunto, conversa longa: `/compact`. Vai pausar ou trocar de sessão: `handoff`. |
 | `brainstorming` ou `grilling` | Criar algo novo: `brainstorming`. Testar um plano que já existe: `grilling`. Nunca as duas em sequência sem pedido. |
 | `executing-plans` ou `subagent-driven-development` | Há ferramenta de subagente: `subagent-driven-development`. Não há: `executing-plans`. |
 | `skill-creator` ou `writing-skills` | `skill-creator`, a menos que o usuário peça a abordagem TDD. |
@@ -110,6 +122,10 @@ Estas skills não disparam sozinhas: só rodam se o usuário digitar o comando.
 7. `requesting-code-review`, depois `finishing-a-development-branch`.
 
 Pule as etapas que a tarefa não precisa: uma correção de uma linha vai direto para o passo 4.
+
+## Fluxo típico de um vídeo
+
+Siga `video-curiosidades`: briefing curto, pesquisa por subagente, `SCRIPT.md` e `STORYBOARD.md` em arquivo, aprovação, áudio da ElevenLabs, montagem no HyperFrames, legendas, revisão e render.
 
 ## Manutenção
 
