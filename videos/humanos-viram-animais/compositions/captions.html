@@ -1,17 +1,17 @@
 <template>
-  <!-- Gerado por scripts/gera-hud-legendas.py (ref R05). Não edite à mão. -->
+  <!-- Gerado por scripts/gera-hud-legendas.py (ref R09). Não edite à mão. -->
   <style>
     #root { position: absolute; inset: 0; pointer-events: none; }
-    .cap { position: absolute; left: 130px; right: 310px; top: 1045px; height: 170px; display: flex; align-items: center;
+    .cap { position: absolute; left: 130px; right: 310px; top: 1045px; height: 150px; display: flex; align-items: center;
       justify-content: center; text-align: center; overflow: visible; }
-    .cap-t { display: block; font-family: "Anton", sans-serif; font-style: normal; font-weight: 400; font-size: 80px;
-      line-height: 1.04; color: #FFFFFF; text-transform: uppercase; text-shadow: 5px 5px 0 #000, 0 0 2px #000; -webkit-text-stroke: 3px #000; paint-order: stroke fill;
+    .cap-t { display: block; font-family: "EB Garamond", serif; font-style: italic; font-weight: 400; font-size: 70px;
+      line-height: 1.04; color: #FFFFFF; text-transform: none; text-shadow: 0 0 2px rgba(0,0,0,0.9), 0 0 2px rgba(0,0,0,0.9), 0 2px 12px rgba(0,0,0,0.65), 0 4px 28px rgba(0,0,0,0.45); 
  }
-    #cap-faixa { position: absolute; left: 40px; right: 220px; top: 1005px; height: 250px; background: none; }
-    .cap-t .num { color: #F2B53A; }
+    #cap-faixa { position: absolute; left: 40px; right: 220px; top: 1005px; height: 230px; background: radial-gradient(ellipse at 50% 50%, rgba(6,12,22,0.5) 0%, rgba(6,12,22,0.3) 50%, rgba(6,12,22,0) 76%); }
+    .cap-t .num { color: #FFF4D6; }
   </style>
   <div id="root" data-composition-id="captions" data-width="1080" data-height="1920">
-
+    <div id="cap-faixa" data-layout-ignore></div>
     <div id="cap-000" class="clip cap" data-start="0.15" data-duration="0.083"><span class="cap-t">E se,</span></div>
     <div id="cap-001" class="clip cap" data-start="0.233" data-duration="1.012"><span class="cap-t">neste exato segundo,</span></div>
     <div id="cap-002" class="clip cap" data-start="1.245" data-duration="0.871"><span class="cap-t">todos os humanos</span></div>

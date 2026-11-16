@@ -1,6 +1,6 @@
 {
   "slug": "humanos-viram-animais",
-  "ref": "R05",
+  "ref": "R09",
   "duracao": 101.34,
   "duracao_fixa": null,
   "narracao": {
@@ -123,23 +123,8 @@
     "ocultar": []
   },
   "trilha": {
-    "arquivo": "assets/audio/drone.mp3",
-    "volume": 0.25,
-    "loop": 20
+    "arquivo": "assets/audio/trilha.mp3",
+    "volume": 0.12
   },
-  "sfx": [
-    {
-      "nome": "whoosh",
-      "prompt": "fast cinematic whoosh through clouds",
-      "duracao": 2.5,
-      "em": null,
-      "volume": 0.7
-    },
-    {
-      "nome": "drone",
-      "prompt": "low dark cinematic drone, rising tension, seamless loop",
-      "duracao": 20,
-      "em": null
-    }
-  ]
+  "sfx": []
 }

@@ -537,6 +537,75 @@ export const PRESETS = /* PRESETS:INICIO */ {
       "primitives"
     ],
     "nota": "Vidro (transmission) só em 1 a 3 objetos: é pesado sem GPU."
+  },
+  "R09": {
+    "nome": "anime cel-shaded (personagens, histórias)",
+    "modo": "3d",
+    "fundo": "#3A7BD5",
+    "fontes": [
+      "EB Garamond",
+      "Anton",
+      "Montserrat"
+    ],
+    "paleta": {
+      "texto": "#FFFFFF",
+      "destaque": "#FF5A5F",
+      "fundo": "#3A7BD5",
+      "ceu_alto": "#3A7BD5",
+      "ceu_baixo": "#FFC88A",
+      "contorno": "#1A1A2E",
+      "brilho": "#FFF4D6"
+    },
+    "legenda": {
+      "fonte": "\"EB Garamond\", serif",
+      "estilo": "italic",
+      "peso": 400,
+      "tamanho": 70,
+      "caixa": "none",
+      "cor": "#FFFFFF",
+      "numero": "#FFF4D6",
+      "y": 1045,
+      "altura": 150,
+      "sombra": "0 0 2px rgba(0,0,0,0.9), 0 0 2px rgba(0,0,0,0.9), 0 2px 12px rgba(0,0,0,0.65), 0 4px 28px rgba(0,0,0,0.45)",
+      "contorno": "",
+      "faixa": "radial-gradient(ellipse at 50% 50%, rgba(6,12,22,0.5) 0%, rgba(6,12,22,0.3) 50%, rgba(6,12,22,0) 76%)"
+    },
+    "hud": {
+      "ativo": false,
+      "topo": 290,
+      "rotulo": {
+        "fonte": "\"Montserrat\", sans-serif",
+        "peso": 600,
+        "tamanho": 30,
+        "espaco": "0.2em",
+        "cor": "#FFFFFF"
+      },
+      "numero": {
+        "fonte": "\"Anton\", sans-serif",
+        "tamanho": 150,
+        "cor": "#FFFFFF",
+        "cor_fim": "#FF5A5F"
+      },
+      "linha2": {
+        "cor": "#FFF4D6"
+      },
+      "status": {
+        "tamanho": 32,
+        "cor": "#FF5A5F"
+      }
+    },
+    "titulo": {
+      "fonte": "\"Anton\", sans-serif",
+      "tamanho": 110,
+      "caixa": "uppercase",
+      "topo": 330
+    },
+    "blocos": [
+      "toy",
+      "animals",
+      "globe"
+    ],
+    "nota": "MeshToonMaterial de 3 tons + contorno por casco invertido (toy.js/animals.js). Legenda igual à R01."
   }
 } /* PRESETS:FIM */;
 
