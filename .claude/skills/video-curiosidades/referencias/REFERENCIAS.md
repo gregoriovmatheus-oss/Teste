@@ -18,6 +18,7 @@ Servem só como estilo. Nunca use nos vídeos personagens, marcas, logotipos, ce
 | Trabalho, dinheiro, tutorial | R06 | 2D flat roxo; counter |
 | Gancho, listas, números | R07 | tipografia; kinetic (camada sobre qualquer ref) |
 | Química, biologia, medicina | R08 | 3D vidro (1 a 3 objetos); particles |
+| Animais, personagens, histórias, emoção | R09 | anime cel-shaded (toon + contorno); legenda R01 |
 
 - **Gancho no frame 0:** pergunta inteira na tela, palavra-chave na cor de destaque, câmera já em movimento.
 - **Legenda em y ≈ 1045–1215:** sério → serifa itálica com sombra suave; popular → Anton caixa alta com sombra preta dura.
@@ -161,3 +162,24 @@ Arquivo: `R08-ciencia-vidro.jpg`. Sem dados de engajamento.
 
 - **Uso:** química, biologia, medicina, física de partículas.
 - **Limite:** vidro com `transmission` é pesado sem placa de vídeo. Use em 1 a 3 objetos e bloom só nas moléculas.
+
+### R09: anime cel-shaded (personagens, histórias)
+
+Sem imagem: veio de um prompt do usuário. Sem dados de engajamento.
+
+- **Prompt base:** "[ASSUNTO] in a modern anime style: expressive large eyes, clean cel-shaded coloring, detailed hair with highlight sheen, dynamic composition, cinematic anime lighting and background, in the style of a high-quality modern animated film."
+- **No Three.js:** `MeshToonMaterial` com 3 tons (gradientMap), contorno preto por casco invertido, olhos grandes com brilho branco, céu em degradê com nuvens volumosas, luz de fim de tarde com contorno quente, speed lines nos movimentos rápidos e composição dinâmica (câmera baixa, diagonais).
+- **Paleta:**
+
+  | Uso | Hex |
+  | --- | --- |
+  | Céu alto | `#3A7BD5` |
+  | Céu baixo | `#FFC88A` |
+  | Contorno | `#1A1A2E` |
+  | Brilho | `#FFF4D6` |
+  | Destaque | `#FF5A5F` |
+
+- **Legenda:** a mesma da R01 (serifa itálica com sombra suave), acompanhando cada fala.
+- **Uso:** animais, personagens, histórias com emoção, "e se" narrativo.
+- **Limite:** sai como anime 3D simplificado. Qualidade de filme só com geração de imagem ou vídeo, que é paga. Nunca copie personagens ou estúdios específicos.
+
