@@ -1,0 +1,31 @@
+<template>
+  <!-- Gerado por scripts/gera-hud-legendas.py (ref R05). Não edite à mão. -->
+  <style>
+    #root { position: absolute; inset: 0; pointer-events: none; }
+    .cap { position: absolute; left: 130px; right: 310px; top: 1045px; height: 170px; display: flex; align-items: center;
+      justify-content: center; text-align: center; overflow: visible; }
+    .cap-t { display: block; font-family: "Anton", sans-serif; font-style: normal; font-weight: 400; font-size: 80px;
+      line-height: 1.04; color: #FFFFFF; text-transform: uppercase; text-shadow: 5px 5px 0 #000, 0 0 2px #000; -webkit-text-stroke: 3px #000; paint-order: stroke fill;
+ }
+    #cap-faixa { position: absolute; left: 40px; right: 220px; top: 1005px; height: 250px; background: none; }
+    .cap-t .num { color: #F2B53A; }
+  </style>
+  <div id="root" data-composition-id="captions" data-width="1080" data-height="1920">
+
+
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      function cap(sel, s, e) {
+        tl.fromTo(sel, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.12, ease: "power2.out" }, s);
+        tl.to(sel, { opacity: 0, duration: 0.1, ease: "power2.in" }, Math.max(s + 0.13, e - 0.1));
+        tl.set(sel, { opacity: 0, visibility: "hidden" }, e);
+      }
+
+      tl.set({}, {}, 6.0);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["captions"] = tl;
+    })();
+  </script>
+</template>
