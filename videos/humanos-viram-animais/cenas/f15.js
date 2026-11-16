@@ -1,0 +1,37 @@
+/*META {"rotulos": []} */
+        const st = T.createToyStage(canvas, { fov: 42, ceu: ["#E79A6A", "#F6DDB8"], nevoa: [30, 140], exposicao: 1.05 });
+        const S = st.scene, cam = st.cam;
+        st.key.color.setHex(0xffa860); st.hemi.color.setHex(0xffd8b0);
+        const city = T.rua({ len: 200, seed: 151, chao: 0xb6ae8a }); S.add(city.group);
+        // escola
+        const esc = T.predio({ w: 16, d: 10, h: 9, cor: T.PAL.amarelo, seed: 5 }); esc.rotation.y = Math.PI / 2; esc.position.set(-17.5, 0, -8); S.add(esc);
+        const relogio = T.mesh(new THREE.CylinderGeometry(1.1, 1.1, 0.3, 24), 0xf6f1e8, esc); relogio.rotation.x = Math.PI / 2; relogio.position.set(0, 9.6, 5.2);
+        const tri = T.mesh(new THREE.ConeGeometry(4, 2.2, 3), T.PAL.tijolo, esc); tri.position.set(0, 10, 4.9); tri.scale.z = 0.2;
+        // brinquedos
+        const bola = new THREE.Group(); const b1 = T.mesh(T.SPH, T.PAL.tijolo, bola, 0.5); b1.scale.setScalar(0.5); const b2 = T.mesh(new THREE.TorusGeometry(0.5, 0.08, 8, 24), 0xf6f1e8, bola); bola.position.set(-4, 0.62, -4); S.add(bola);
+        [[-6, -2, T.PAL.amarelo], [-5.4, -1.2, 0x4f9bd9], [-5.7, -1.6, 0x7dbb5a]].forEach(([x, z, c], i) => { const k = T.mesh(T.roundBox(0.6, 0.6, 0.6, 0.12), c, S); k.position.set(x, 0.12 + (i === 2 ? 0.6 : 0), z); k.rotation.y = i * 0.5; });
+        const urso = new THREE.Group(); const U = 0xb07a4a;
+        [[0, 0.5, 0, 0.45], [0, 1.15, 0, 0.32], [0.2, 1.4, 0.2, 0.12], [0.2, 1.4, -0.2, 0.12], [0.25, 0.25, 0.3, 0.16], [0.25, 0.25, -0.3, 0.16]].forEach(([x, y, z, r]) => { const m = T.mesh(T.SPH, U, urso); m.position.set(x, y, z); m.scale.setScalar(r); });
+        urso.position.set(-6.5, 0.12, -9); urso.rotation.set(0, 0.5, 0.4); S.add(urso);
+        // foto de família (silhuetas)
+        const cv = document.createElement("canvas"); cv.width = 256; cv.height = 320; const g = cv.getContext("2d");
+        g.fillStyle = "#F3E2C4"; g.fillRect(0, 0, 256, 320); g.fillStyle = "#F2B57A"; g.fillRect(0, 200, 256, 120);
+        g.fillStyle = "#5a3a2a";
+        [[60, 120, 1], [196, 120, 1], [100, 175, 0.7], [150, 180, 0.6]].forEach(([x, y, s]) => { g.beginPath(); g.arc(x, y - 52 * s, 24 * s, 0, 7); g.fill(); g.beginPath(); g.ellipse(x, y + 30 * s, 34 * s, 60 * s, 0, 0, 7); g.fill(); });
+        const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace;
+        const foto = new THREE.Group();
+        T.mesh(T.roundBox(2.2, 2.7, 0.25, 0.1), 0x8a5a3c, foto);
+        const img = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 2.25), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.7 })); img.position.set(0, 1.35, 0.14); foto.add(img);
+        foto.position.set(0.5, 0.12, -14); foto.rotation.set(-0.2, 0.15, 0); S.add(foto);
+        const ele = A.createAnimal("elefante", { fase: 0.3 }); ele.group.scale.setScalar(1.15); A.face(ele.group, 0, -1); S.add(ele.group);
+        function render(t) {
+          const k = ease.outCubic(range(t, 0, 4.6));
+          ele.group.position.set(0.2, 0.12, lerp(6, -7.6, k));
+          const walking = t < 4.6;
+          ele.update(t, { passo: walking ? 0.55 * (1 - range(t, 3.8, 4.6)) : 0, tromba: range(t, 4.5, 6.2) * -0.6, cabeca: -0.25 * range(t, 4.3, 5.5) });
+          const e = ease.inOutSine(clamp(t / D));
+          cam.position.set(lerp(-6.5, -4.2, e), lerp(4.2, 3.8, e), lerp(16, 1.0, e));
+          cam.lookAt(lerp(0, 0.5, e), lerp(2.4, 1.3, e), lerp(1, -14, e));
+          st.sol(0, -6, 25);
+          st.draw();
+        }

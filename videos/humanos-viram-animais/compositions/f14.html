@@ -1,57 +1,78 @@
-<!-- Modelo de cena 3D (R01). cenas.py --criar copia para compositions/fNN.html trocando os marcadores de id e duração.
-     Padrão: script clássico registra buildReady na hora; import dinâmico do kit e dos blocos;
-     K.bindSeek(canvas, render) dá o tempo LOCAL da cena (sem gambiarra de data-start). -->
+<!-- f14: cena 3D de massinha. Lógica em cenas/f14.js (gerado por scripts/monta-cenas.py). -->
 <template>
   <style>
-    #root { position: absolute; inset: 0; overflow: hidden; background: #0b1018; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #8CC7D8; }
     #f14-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
-    #f14-titulo { position: absolute; left: 160px; right: 200px; top: 660px; text-align: center; }
-    #f14-titulo-in { display: block; font-family: "EB Garamond", serif; font-size: 84px; line-height: 1.05; color: #fff;
-      text-shadow: 0 4px 26px rgba(4, 10, 20, 0.75), 0 1px 4px rgba(4, 10, 20, 0.6); }
-    #f14-titulo-in .ice { color: #8fcbf2; }
+    .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .rot-t { display: block; font-family: "Anton", sans-serif; font-size: 92px; line-height: 1.0; color: #fff; text-transform: uppercase;
+      -webkit-text-stroke: 4px #1a1410; paint-order: stroke fill; text-shadow: 7px 7px 0 #1a1410; }
+    .rot-t .y { color: #F2B53A; }
+    .rot-t .p { font-size: 70px; }
+
   </style>
   <div id="root" data-composition-id="f14" data-width="1080" data-height="1920">
     <canvas id="f14-canvas" width="1080" height="1920"></canvas>
-    <div id="f14-titulo" class="clip" data-start="0.3" data-duration="2.2">
-      <span id="f14-titulo-in">Texto da <span class="ice">cena</span></span>
-    </div>
+    <div id="f14-r1" class="clip rot" style="top: 700px" data-start="0.2" data-duration="2.4"><span id="f14-r1-in" class="rot-t">A TERRA <span class="y">CONTINUA</span></span></div>
   </div>
   <script>
     (function () {
-      /* 2D por cima (GSAP). Título entre y 640 e 1000: o HUD ocupa 290-620 e a legenda 1045-1195. */
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f14-titulo-in", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 0.3);
-      tl.to("#f14-titulo-in", { opacity: 0, duration: 0.2, ease: "power2.in" }, 2.3);
+      tl.fromTo("#f14-r1-in", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2)" }, 0.2);
+      tl.to("#f14-r1-in", { opacity: 0, y: -20, duration: 0.25, ease: "power2.in" }, 2.3);
       tl.set({}, {}, 5.88);
       window.__timelines = window.__timelines || {};
       window.__timelines["f14"] = tl;
 
-      /* 3D */
       window.__hf = window.__hf || {};
       window.__hf.buildReady = window.__hf.buildReady || {};
       window.__hf.buildReady["f14"] = Promise.all([
-        import("./assets/lib/kit.js"),
-        import("./assets/lib/blocks/city.js"),
-        // import("./assets/lib/blocks/globe.js"), import("./assets/lib/blocks/particles.js"),
-        // import("./assets/lib/blocks/shockwave.js"), import("./assets/lib/blocks/counter.js"),
-      ]).then(async ([K, { createCity }]) => {
-        const { THREE, ease, range, lerp, clamp } = K;
+        import("./assets/lib/kit.js"), import("./assets/lib/blocks/toy.js"), import("./assets/lib/blocks/animals.js")
+      ]).then(async ([K, T, A]) => {
+        const { THREE, ease, range, lerp, clamp, smoothstep, mulberry32 } = K;
+        const D = 5.88;
         const canvas = document.getElementById("f14-canvas");
-        const renderer = K.createRenderer(canvas);
-        const scene = new THREE.Scene();
-        const cam = new THREE.PerspectiveCamera(35, K.W / K.H, 1, 2000);
-        const city = createCity(scene, { seed: 7, geada: [5.88 * 0.6, 5.88 * 0.6 + 0.35], paraEm: 5.88 * 0.6 });
 
-        function render(t) {               // t = segundos locais da cena
-          const p = ease.outCubic(clamp(t / 5.88));
-          const h = lerp(300, 175, p), ang = lerp(-0.35, 0.05, p);
-          cam.position.set(Math.sin(ang) * 18, h, Math.cos(ang) * 18 + 10);
-          cam.up.set(Math.sin(ang), 0, -Math.cos(ang));
-          cam.lookAt(0, 0, 0);
-          city.update(t);
-          renderer.render(scene, cam);
+        const st = T.createToyStage(canvas, { fov: 45, ceu: ["#7FBFD0", "#F3E2C4"], nevoa: [80, 400] });
+        const S = st.scene, cam = st.cam;
+        const rr = mulberry32(141);
+        const ilha = (x, z, cor) => { const g = new THREE.Group(); g.position.set(x, 0, z); S.add(g); const b = T.mesh(new THREE.CylinderGeometry(12, 11, 3, 40), 0xd98a4e, g, 0.85); b.position.y = -1.5; const tp = T.mesh(new THREE.CylinderGeometry(12.2, 12.2, 0.8, 40), cor, g, 0.9); tp.position.y = 0.4 - 0.4; return g; };
+        const P = [[-20, -20], [20, -20], [-20, 20], [20, 20]];
+        // floresta
+        const fo = ilha(...P[0], T.PAL.verde);
+        for (let i = 0; i < 16; i++) { const a = T.arvore(1 + rr() * 0.8, [T.PAL.verde, T.PAL.verdeEsc][i % 2], 600 + i); const r = Math.sqrt(rr()) * 9, an = rr() * 6.28; a.position.set(Math.cos(an) * r, 0.4, Math.sin(an) * r); fo.add(a); }
+        const mF = A.createAnimal("macaco", { fase: 0.1 }); mF.group.scale.setScalar(1.6); fo.add(mF.group);
+        // oceano
+        const oc = ilha(...P[1], 0x3aa0c8);
+        const dF = A.createAnimal("golfinho", { fase: 0.2 }); dF.group.scale.setScalar(1.8); oc.add(dF.group);
+        const bF = A.createAnimal("baleia", { fase: 0.2 }); bF.group.scale.setScalar(0.5); bF.group.position.set(-3, -0.2, 4); oc.add(bF.group);
+        // deserto
+        const de = ilha(...P[2], 0xe8cf9a);
+        for (let i = 0; i < 6; i++) { const c = new THREE.Group(); T.mesh(new THREE.CapsuleGeometry(0.5, 2.5, 4, 10), 0x5f9a4a, c).position.y = 1.7; const br = T.mesh(new THREE.CapsuleGeometry(0.3, 1, 4, 8), 0x5f9a4a, c); br.position.set(0.7, 2, 0); br.rotation.z = 0.6; const an = rr() * 6.28, r = 3 + rr() * 6; c.position.set(Math.cos(an) * r, 0.4, Math.sin(an) * r); de.add(c); }
+        const rF = A.createAnimal("rinoceronte", { fase: 0.3 }); rF.group.scale.setScalar(1.3); de.add(rF.group);
+        // cidade tomada
+        const ci = ilha(...P[3], 0x9aa29a);
+        for (let i = 0; i < 7; i++) { const b = T.predio({ w: 4, d: 4, h: 6 + rr() * 10, cor: [T.PAL.tijolo, T.PAL.amarelo, T.PAL.creme][i % 3], seed: i }); const an = i / 7 * 6.28, r = 6.5; b.position.set(Math.cos(an) * r, 0.4, Math.sin(an) * r); ci.add(b); for (let k = 0; k < 3; k++) { const v = T.mesh(T.SPH, T.PAL.verdeEsc, b); v.scale.setScalar(1.2); v.position.set((rr() - 0.5) * 3, rr() * b.userData.h, 2.1); } }
+        const gF = A.createAnimal("girafa", { fase: 0.4 }); ci.add(gF.group);
+        const ilhas = [fo, oc, de, ci];
+        function render(t) {
+          mF.group.position.set(Math.cos(t) * 3, 0.4, Math.sin(t) * 3); A.face(mF.group, -Math.sin(t), Math.cos(t)); mF.update(t, { passo: 2 });
+          const jp = (t * 0.9) % 1; dF.group.position.set(lerp(-6, 6, jp), Math.sin(jp * Math.PI) * 5 - 0.5, 0); dF.group.rotation.z = Math.cos(jp * Math.PI) * 0.9; dF.update(t, { nada: 2 });
+          bF.update(t, { nada: 0.5 });
+          rF.group.position.set(Math.cos(-t * 0.6) * 2, 0.4, Math.sin(-t * 0.6) * 2); A.face(rF.group, Math.sin(-t * 0.6), -Math.cos(-t * 0.6)); rF.update(t, { passo: 1.3 });
+          gF.group.position.set(Math.cos(t * 0.5) * 2, 0.4, Math.sin(t * 0.5) * 2); A.face(gF.group, -Math.sin(t * 0.5), Math.cos(t * 0.5)); gF.update(t, { passo: 1 });
+          const seg = Math.min(3, Math.floor(t / 1.05));
+          const top = ease.inOutCubic(range(t, 4.1, 5.88));
+          const [ix, iz] = P[seg], lt = t - seg * 1.05;
+          const ang = lt * 0.4 + seg;
+          const close = [ix + Math.sin(ang) * (34 - lt * 4), 15 - lt * 2, iz + Math.cos(ang) * (34 - lt * 4)];
+          const far = [0, 120, 60];
+          cam.position.set(lerp(close[0], far[0], top), lerp(close[1], far[1], top), lerp(close[2], far[2], top));
+          cam.lookAt(lerp(ix, 0, top), lerp(3, 0, top), lerp(iz, 0, top));
+          st.sol(lerp(ix, 0, top), lerp(iz, 0, top), lerp(20, 50, top));
+          st.draw();
         }
-        await K.bindSeek(canvas, render, { warm: [{ renderer, scene, camera: cam }], duration: 5.88 });
+
+        await K.bindSeek(canvas, render, { warm: [st.warm, ...(st.extraWarm || [])], duration: D });
       });
     })();
   </script>

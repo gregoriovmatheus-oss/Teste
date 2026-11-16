@@ -1,57 +1,68 @@
-<!-- Modelo de cena 3D (R01). cenas.py --criar copia para compositions/fNN.html trocando os marcadores de id e duração.
-     Padrão: script clássico registra buildReady na hora; import dinâmico do kit e dos blocos;
-     K.bindSeek(canvas, render) dá o tempo LOCAL da cena (sem gambiarra de data-start). -->
+<!-- f09: cena 3D de massinha. Lógica em cenas/f09.js (gerado por scripts/monta-cenas.py). -->
 <template>
   <style>
-    #root { position: absolute; inset: 0; overflow: hidden; background: #0b1018; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #8CC7D8; }
     #f09-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
-    #f09-titulo { position: absolute; left: 160px; right: 200px; top: 660px; text-align: center; }
-    #f09-titulo-in { display: block; font-family: "EB Garamond", serif; font-size: 84px; line-height: 1.05; color: #fff;
-      text-shadow: 0 4px 26px rgba(4, 10, 20, 0.75), 0 1px 4px rgba(4, 10, 20, 0.6); }
-    #f09-titulo-in .ice { color: #8fcbf2; }
+    .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .rot-t { display: block; font-family: "Anton", sans-serif; font-size: 92px; line-height: 1.0; color: #fff; text-transform: uppercase;
+      -webkit-text-stroke: 4px #1a1410; paint-order: stroke fill; text-shadow: 7px 7px 0 #1a1410; }
+    .rot-t .y { color: #F2B53A; }
+    .rot-t .p { font-size: 70px; }
+
   </style>
   <div id="root" data-composition-id="f09" data-width="1080" data-height="1920">
     <canvas id="f09-canvas" width="1080" height="1920"></canvas>
-    <div id="f09-titulo" class="clip" data-start="0.3" data-duration="2.2">
-      <span id="f09-titulo-in">Texto da <span class="ice">cena</span></span>
-    </div>
+    <div id="f09-r1" class="clip rot" style="top: 700px" data-start="0.8" data-duration="2.8"><span id="f09-r1-in" class="rot-t">A NATUREZA <span class="y">VOLTA</span></span></div>
   </div>
   <script>
     (function () {
-      /* 2D por cima (GSAP). Título entre y 640 e 1000: o HUD ocupa 290-620 e a legenda 1045-1195. */
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f09-titulo-in", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 0.3);
-      tl.to("#f09-titulo-in", { opacity: 0, duration: 0.2, ease: "power2.in" }, 2.3);
+      tl.fromTo("#f09-r1-in", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2)" }, 0.8);
+      tl.to("#f09-r1-in", { opacity: 0, y: -20, duration: 0.25, ease: "power2.in" }, 3.3);
       tl.set({}, {}, 5.54);
       window.__timelines = window.__timelines || {};
       window.__timelines["f09"] = tl;
 
-      /* 3D */
       window.__hf = window.__hf || {};
       window.__hf.buildReady = window.__hf.buildReady || {};
       window.__hf.buildReady["f09"] = Promise.all([
-        import("./assets/lib/kit.js"),
-        import("./assets/lib/blocks/city.js"),
-        // import("./assets/lib/blocks/globe.js"), import("./assets/lib/blocks/particles.js"),
-        // import("./assets/lib/blocks/shockwave.js"), import("./assets/lib/blocks/counter.js"),
-      ]).then(async ([K, { createCity }]) => {
-        const { THREE, ease, range, lerp, clamp } = K;
+        import("./assets/lib/kit.js"), import("./assets/lib/blocks/toy.js"), import("./assets/lib/blocks/animals.js")
+      ]).then(async ([K, T, A]) => {
+        const { THREE, ease, range, lerp, clamp, smoothstep, mulberry32 } = K;
+        const D = 5.54;
         const canvas = document.getElementById("f09-canvas");
-        const renderer = K.createRenderer(canvas);
-        const scene = new THREE.Scene();
-        const cam = new THREE.PerspectiveCamera(35, K.W / K.H, 1, 2000);
-        const city = createCity(scene, { seed: 7, geada: [5.54 * 0.6, 5.54 * 0.6 + 0.35], paraEm: 5.54 * 0.6 });
 
-        function render(t) {               // t = segundos locais da cena
-          const p = ease.outCubic(clamp(t / 5.54));
-          const h = lerp(300, 175, p), ang = lerp(-0.35, 0.05, p);
-          cam.position.set(Math.sin(ang) * 18, h, Math.cos(ang) * 18 + 10);
-          cam.up.set(Math.sin(ang), 0, -Math.cos(ang));
-          cam.lookAt(0, 0, 0);
-          city.update(t);
-          renderer.render(scene, cam);
+        const st = T.createToyStage(canvas, { fov: 50, ceu: 0x8cc7d8, nevoa: [50, 200] });
+        const S = st.scene, cam = st.cam;
+        const city = T.rua({ len: 200, seed: 91 }); S.add(city.group);
+        const rr = mulberry32(92);
+        const tufos = Array.from({ length: 70 }, () => { const g = T.mesh(new THREE.ConeGeometry(0.35, 1, 6), [T.PAL.verde, T.PAL.verdeEsc][Math.floor(rr() * 2)], S); g.position.set((rr() - 0.5) * 15, 0, 6 - rr() * 70); g.userData.t0 = rr() * 3.2; g.userData.s = 0.6 + rr(); return g; });
+        const rach = Array.from({ length: 14 }, () => { const c = T.mesh(T.roundBox(0.25, 0.04, 3 + rr() * 4, 0.02), 0x2c2f36, S); c.position.set((rr() - 0.5) * 12, 0.13, 2 - rr() * 60); c.rotation.y = (rr() - 0.5) * 1.4; c.userData.t0 = rr() * 1.5; return c; });
+        const arv = Array.from({ length: 10 }, (_, i) => { const a = T.arvore(1, T.PAL.verde, 900 + i); a.position.set((i % 2 ? 1 : -1) * (2.5 + rr() * 4), 0, 2 - i * 6.5); a.userData.t0 = 0.5 + rr() * 2.5; S.add(a); return a; });
+        const vinhas = [];
+        city.buildings.forEach((b, bi) => { if (Math.abs(b.position.z) > 60) return; for (let i = 0; i < 4; i++) { const v = T.mesh(T.SPH, T.PAL.verdeEsc, b, 0.9); v.position.set((rr() - 0.5) * 5, rr() * b.userData.h * 0.8, 4.2); v.userData.s = 1 + rr() * 1.4; v.userData.t0 = 1 + rr() * 3.5; vinhas.push(v); } });
+        const zeb = A.createAnimal("zebra", { fase: 0.2 }); A.face(zeb.group, 0, 1); S.add(zeb.group);
+        const coe = [0, 1].map((i) => { const c = A.createAnimal("coelho", { fase: i * 0.4 }); c.group.scale.setScalar(1.5); A.face(c.group, 0.3, 1); S.add(c.group); return c; });
+        const skyD = new THREE.Color(0x8cc7d8), skyN = new THREE.Color(0x2b3550), tmp = new THREE.Color();
+        function render(t) {
+          const day = 0.5 + 0.5 * Math.cos(t * 2 * Math.PI / 1.8);
+          tmp.copy(skyN).lerp(skyD, day); S.background = tmp.clone(); S.fog.color.copy(tmp);
+          st.key.intensity = 0.4 + 2.2 * day; st.hemi.intensity = 0.5 + 0.7 * day;
+          const ang = t * 2 * Math.PI / 1.8;
+          st.sol(Math.sin(ang) * 40, -20, 45);
+          tufos.forEach((g) => { const s = ease.outBack(range(t, g.userData.t0, g.userData.t0 + 0.8)) * g.userData.s; g.scale.set(s + 0.001, s * 1.4 + 0.001, s + 0.001); g.position.y = 0.12 + s * 0.6; });
+          rach.forEach((c) => { c.scale.z = range(t, c.userData.t0, c.userData.t0 + 0.6) + 0.001; });
+          arv.forEach((a) => { a.scale.setScalar(1.6 * ease.outCubic(range(t, a.userData.t0, a.userData.t0 + 2)) + 0.001); });
+          vinhas.forEach((v) => { const s = v.userData.s * ease.outCubic(range(t, v.userData.t0, v.userData.t0 + 1.2)); v.scale.set(s + 0.001, s * 1.3 + 0.001, 0.4 * s + 0.001); });
+          zeb.group.position.set(-2, 0, -30 + t * 2.2); zeb.update(t, { passo: 1.2 });
+          coe.forEach((c, i) => { c.group.position.set(3 + i, 0.12, -14 + t * 2.4 - i * 2); c.update(t, { passo: 2.5, salto: 0.25 }); });
+          const e = ease.inOutSine(clamp(t / D));
+          cam.position.set(lerp(3, -2, e), lerp(3, 12, e), lerp(14, 22, e));
+          cam.lookAt(0, lerp(3, 4, e), -16);
+          st.draw();
         }
-        await K.bindSeek(canvas, render, { warm: [{ renderer, scene, camera: cam }], duration: 5.54 });
+
+        await K.bindSeek(canvas, render, { warm: [st.warm, ...(st.extraWarm || [])], duration: D });
       });
     })();
   </script>

@@ -1,57 +1,80 @@
-<!-- Modelo de cena 3D (R01). cenas.py --criar copia para compositions/fNN.html trocando os marcadores de id e duração.
-     Padrão: script clássico registra buildReady na hora; import dinâmico do kit e dos blocos;
-     K.bindSeek(canvas, render) dá o tempo LOCAL da cena (sem gambiarra de data-start). -->
+<!-- f02: cena 3D de massinha. Lógica em cenas/f02.js (gerado por scripts/monta-cenas.py). -->
 <template>
   <style>
-    #root { position: absolute; inset: 0; overflow: hidden; background: #0b1018; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #8CC7D8; }
     #f02-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
-    #f02-titulo { position: absolute; left: 160px; right: 200px; top: 660px; text-align: center; }
-    #f02-titulo-in { display: block; font-family: "EB Garamond", serif; font-size: 84px; line-height: 1.05; color: #fff;
-      text-shadow: 0 4px 26px rgba(4, 10, 20, 0.75), 0 1px 4px rgba(4, 10, 20, 0.6); }
-    #f02-titulo-in .ice { color: #8fcbf2; }
+    .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .rot-t { display: block; font-family: "Anton", sans-serif; font-size: 92px; line-height: 1.0; color: #fff; text-transform: uppercase;
+      -webkit-text-stroke: 4px #1a1410; paint-order: stroke fill; text-shadow: 7px 7px 0 #1a1410; }
+    .rot-t .y { color: #F2B53A; }
+    .rot-t .p { font-size: 70px; }
+
   </style>
   <div id="root" data-composition-id="f02" data-width="1080" data-height="1920">
     <canvas id="f02-canvas" width="1080" height="1920"></canvas>
-    <div id="f02-titulo" class="clip" data-start="0.3" data-duration="2.2">
-      <span id="f02-titulo-in">Texto da <span class="ice">cena</span></span>
-    </div>
+    <div id="f02-r1" class="clip rot" style="top: 700px" data-start="3.2" data-duration="3.5"><span id="f02-r1-in" class="rot-t">LEÕES NA <span class="y">AVENIDA</span></span></div>
   </div>
   <script>
     (function () {
-      /* 2D por cima (GSAP). Título entre y 640 e 1000: o HUD ocupa 290-620 e a legenda 1045-1195. */
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f02-titulo-in", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 0.3);
-      tl.to("#f02-titulo-in", { opacity: 0, duration: 0.2, ease: "power2.in" }, 2.3);
+      tl.fromTo("#f02-r1-in", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2)" }, 3.2);
+      tl.to("#f02-r1-in", { opacity: 0, y: -20, duration: 0.25, ease: "power2.in" }, 6.4);
       tl.set({}, {}, 6.94);
       window.__timelines = window.__timelines || {};
       window.__timelines["f02"] = tl;
 
-      /* 3D */
       window.__hf = window.__hf || {};
       window.__hf.buildReady = window.__hf.buildReady || {};
       window.__hf.buildReady["f02"] = Promise.all([
-        import("./assets/lib/kit.js"),
-        import("./assets/lib/blocks/city.js"),
-        // import("./assets/lib/blocks/globe.js"), import("./assets/lib/blocks/particles.js"),
-        // import("./assets/lib/blocks/shockwave.js"), import("./assets/lib/blocks/counter.js"),
-      ]).then(async ([K, { createCity }]) => {
-        const { THREE, ease, range, lerp, clamp } = K;
+        import("./assets/lib/kit.js"), import("./assets/lib/blocks/toy.js"), import("./assets/lib/blocks/animals.js")
+      ]).then(async ([K, T, A]) => {
+        const { THREE, ease, range, lerp, clamp, smoothstep, mulberry32 } = K;
+        const D = 6.94;
         const canvas = document.getElementById("f02-canvas");
-        const renderer = K.createRenderer(canvas);
-        const scene = new THREE.Scene();
-        const cam = new THREE.PerspectiveCamera(35, K.W / K.H, 1, 2000);
-        const city = createCity(scene, { seed: 7, geada: [6.94 * 0.6, 6.94 * 0.6 + 0.35], paraEm: 6.94 * 0.6 });
 
-        function render(t) {               // t = segundos locais da cena
-          const p = ease.outCubic(clamp(t / 6.94));
-          const h = lerp(300, 175, p), ang = lerp(-0.35, 0.05, p);
-          cam.position.set(Math.sin(ang) * 18, h, Math.cos(ang) * 18 + 10);
-          cam.up.set(Math.sin(ang), 0, -Math.cos(ang));
-          cam.lookAt(0, 0, 0);
-          city.update(t);
-          renderer.render(scene, cam);
+        const st = T.createToyStage(canvas, { fov: 50, nevoa: [50, 200] });
+        const S = st.scene, cam = st.cam;
+        const city = T.rua({ len: 200, seed: 21 });
+        S.add(city.group);
+        const leao = A.createAnimal("leao", { fase: 0.2 }); leao.group.scale.setScalar(1.3); S.add(leao.group); A.face(leao.group, 1, 0.15);
+        const ele = A.createAnimal("elefante", { fase: 0.5 }); ele.group.scale.setScalar(1.2); S.add(ele.group); A.face(ele.group, 0, 1);
+        const car = T.carro(T.PAL.amarelo); S.add(car);
+        const car2 = T.carro(0x6fafa6); car2.position.set(-3.5, 0, -24); S.add(car2);
+        const macs = [0, 1, 2].map((i) => { const m = A.createAnimal("macaco", { fase: i * 0.3 }); m.group.scale.setScalar(1.4); A.face(m.group, 1, 0); S.add(m.group); return m; });
+        const aves = [0, 1, 2, 3, 4, 5, 6].map((i) => { const b = A.createAnimal("passaro", { fase: i * 0.13, cor: [0x4f9bd9, 0xd9583b, 0xf2b53a][i % 3] }); b.group.scale.setScalar(2); S.add(b.group); return b; });
+        const pf = T.createBurst(S, { seed: 7, n: 18, cores: [0xd9cfc0, 0xffffff], raio: 2.2, tam: 0.3 });
+        function render(t) {
+          const lx = -12 + t * 3.2;
+          leao.group.position.set(lx, 0, 2 + t * 0.4);
+          leao.update(t, { passo: 2.0 });
+          const ez = -22 + t * 1.7;
+          ele.group.position.set(1.8, 0, ez);
+          ele.update(t, { passo: 0.9, tromba: range(t, 3.6, 4.2) });
+          // contato ~ t 4.0: carro é empurrado e tomba
+          const k = ease.outCubic(range(t, 4.0, 4.9));
+          car.position.set(2.6 + k * 2.2, k * 0.9 * (1 - range(t, 4.7, 5.1)) + Math.sin(k * Math.PI) * 0.8, -12.5 + k * 1.5);
+          car.rotation.set(0, k * 0.5, -k * 1.55);
+          pf.at(t, 4.05, 3, 0.5, -12);
+          macs.forEach((m, i) => {
+            const y = Math.max(0, (t - 0.4 * i) * 1.6);
+            m.group.position.set(12.6, 1 + y, -6 - i * 7);
+            m.update(t, { passo: 2.2, sobe: 1 });
+          });
+          aves.forEach((b, i) => {
+            const t0 = 4.6 + i * 0.1, ta = Math.max(0, t - t0);
+            b.group.position.set(-9.5 + i * 0.9 + ta * 1.5, 0.4 + ta * ta * 2.2, -2 - i * 1.3 - ta * 2);
+            b.group.rotation.z = -0.5 * range(ta, 0, 0.4);
+            b.update(t, { voa: ta > 0 ? 8 : 0 });
+          });
+          const e = ease.inOutSine(clamp(t / D));
+          const sh = t > 4 ? T.shaker(3)(t, 0.25 * (1 - range(t, 4, 5))) : [0, 0, 0];
+          cam.position.set(lerp(-7, -9, e) + sh[0], lerp(2.6, 9, e) + sh[1], lerp(13, 18, e));
+          cam.lookAt(lerp(lx * 0.5, 2, e), lerp(2.6, 4.5, e), lerp(-3, -10, e));
+          st.sol(0, -6, 35);
+          st.draw();
         }
-        await K.bindSeek(canvas, render, { warm: [{ renderer, scene, camera: cam }], duration: 6.94 });
+
+        await K.bindSeek(canvas, render, { warm: [st.warm, ...(st.extraWarm || [])], duration: D });
       });
     })();
   </script>

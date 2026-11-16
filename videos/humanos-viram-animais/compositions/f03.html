@@ -1,57 +1,109 @@
-<!-- Modelo de cena 3D (R01). cenas.py --criar copia para compositions/fNN.html trocando os marcadores de id e duração.
-     Padrão: script clássico registra buildReady na hora; import dinâmico do kit e dos blocos;
-     K.bindSeek(canvas, render) dá o tempo LOCAL da cena (sem gambiarra de data-start). -->
+<!-- f03: cena 3D de massinha. Lógica em cenas/f03.js (gerado por scripts/monta-cenas.py). -->
 <template>
   <style>
-    #root { position: absolute; inset: 0; overflow: hidden; background: #0b1018; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #8CC7D8; }
     #f03-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
-    #f03-titulo { position: absolute; left: 160px; right: 200px; top: 660px; text-align: center; }
-    #f03-titulo-in { display: block; font-family: "EB Garamond", serif; font-size: 84px; line-height: 1.05; color: #fff;
-      text-shadow: 0 4px 26px rgba(4, 10, 20, 0.75), 0 1px 4px rgba(4, 10, 20, 0.6); }
-    #f03-titulo-in .ice { color: #8fcbf2; }
+    .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .rot-t { display: block; font-family: "Anton", sans-serif; font-size: 92px; line-height: 1.0; color: #fff; text-transform: uppercase;
+      -webkit-text-stroke: 4px #1a1410; paint-order: stroke fill; text-shadow: 7px 7px 0 #1a1410; }
+    .rot-t .y { color: #F2B53A; }
+    .rot-t .p { font-size: 70px; }
+
   </style>
   <div id="root" data-composition-id="f03" data-width="1080" data-height="1920">
     <canvas id="f03-canvas" width="1080" height="1920"></canvas>
-    <div id="f03-titulo" class="clip" data-start="0.3" data-duration="2.2">
-      <span id="f03-titulo-in">Texto da <span class="ice">cena</span></span>
-    </div>
+    <div id="f03-r1" class="clip rot" style="top: 700px" data-start="0.4" data-duration="2.25"><span id="f03-r1-in" class="rot-t">SEM <span class="y">PILOTOS</span></span></div>
+    <div id="f03-r2" class="clip rot" style="top: 700px" data-start="2.9" data-duration="2.5"><span id="f03-r2-in" class="rot-t"><span class="y">DESGOVERNADOS</span></span></div>
   </div>
   <script>
     (function () {
-      /* 2D por cima (GSAP). Título entre y 640 e 1000: o HUD ocupa 290-620 e a legenda 1045-1195. */
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f03-titulo-in", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 0.3);
-      tl.to("#f03-titulo-in", { opacity: 0, duration: 0.2, ease: "power2.in" }, 2.3);
+      tl.fromTo("#f03-r1-in", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2)" }, 0.4);
+      tl.to("#f03-r1-in", { opacity: 0, y: -20, duration: 0.25, ease: "power2.in" }, 2.35);
+      tl.fromTo("#f03-r2-in", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2)" }, 2.9);
+      tl.to("#f03-r2-in", { opacity: 0, y: -20, duration: 0.25, ease: "power2.in" }, 5.1);
       tl.set({}, {}, 5.4);
       window.__timelines = window.__timelines || {};
       window.__timelines["f03"] = tl;
 
-      /* 3D */
       window.__hf = window.__hf || {};
       window.__hf.buildReady = window.__hf.buildReady || {};
       window.__hf.buildReady["f03"] = Promise.all([
-        import("./assets/lib/kit.js"),
-        import("./assets/lib/blocks/city.js"),
-        // import("./assets/lib/blocks/globe.js"), import("./assets/lib/blocks/particles.js"),
-        // import("./assets/lib/blocks/shockwave.js"), import("./assets/lib/blocks/counter.js"),
-      ]).then(async ([K, { createCity }]) => {
-        const { THREE, ease, range, lerp, clamp } = K;
+        import("./assets/lib/kit.js"), import("./assets/lib/blocks/toy.js"), import("./assets/lib/blocks/animals.js")
+      ]).then(async ([K, T, A]) => {
+        const { THREE, ease, range, lerp, clamp, smoothstep, mulberry32 } = K;
+        const D = 5.4;
         const canvas = document.getElementById("f03-canvas");
-        const renderer = K.createRenderer(canvas);
-        const scene = new THREE.Scene();
-        const cam = new THREE.PerspectiveCamera(35, K.W / K.H, 1, 2000);
-        const city = createCity(scene, { seed: 7, geada: [5.4 * 0.6, 5.4 * 0.6 + 0.35], paraEm: 5.4 * 0.6 });
 
-        function render(t) {               // t = segundos locais da cena
-          const p = ease.outCubic(clamp(t / 5.4));
-          const h = lerp(300, 175, p), ang = lerp(-0.35, 0.05, p);
-          cam.position.set(Math.sin(ang) * 18, h, Math.cos(ang) * 18 + 10);
-          cam.up.set(Math.sin(ang), 0, -Math.cos(ang));
-          cam.lookAt(0, 0, 0);
-          city.update(t);
-          renderer.render(scene, cam);
+        const st = T.createToyStage(canvas, { fov: 55, nevoa: [60, 240] });
+        const S = st.scene, cam = st.cam;
+        /* A: cabine */
+        const cab = new THREE.Group(); S.add(cab);
+        const fora = new THREE.Group(); cab.add(fora);
+        const chao = T.mesh(new THREE.PlaneGeometry(800, 800), T.PAL.verde, fora); chao.rotation.x = -Math.PI / 2; chao.position.y = -60;
+        const rr = mulberry32(31);
+        for (let i = 0; i < 30; i++) { const n = T.nuvem(i + 3); n.scale.setScalar(2 + rr() * 2); n.position.set((rr() - 0.5) * 160, -20 + rr() * 30, -30 - rr() * 200); n.userData.z0 = n.position.z; fora.add(n); }
+        const C = 0x4a5160, Cl = 0xd8d2c4;
+        const dash = T.mesh(T.roundBox(6.4, 1.3, 1.6, 0.35), C, cab); dash.position.set(0, 0.6, -2.2);
+        const top = T.mesh(T.roundBox(6.4, 0.6, 2.2, 0.25), Cl, cab); top.position.set(0, 3.6, -1.8);
+        for (const x of [-3.0, 0, 3.0]) { const p = T.mesh(T.roundBox(0.3, 2.2, 0.3, 0.12), Cl, cab); p.position.set(x, 1.6, -2.6); p.rotation.x = 0.25; }
+        for (const s of [1, -1]) { const w = T.mesh(T.roundBox(0.4, 4, 6, 0.2), Cl, cab); w.position.set(s * 3.3, 0, 0.5); }
+        const flo = T.mesh(T.roundBox(6.6, 0.3, 7, 0.1), 0x3a3f4a, cab); flo.position.set(0, -0.3, 0.5);
+        const leds = [];
+        for (let i = 0; i < 14; i++) { const m = new THREE.MeshStandardMaterial({ color: 0x331111, emissive: 0xff3a2a, emissiveIntensity: 0, roughness: 0.4 }); const l = T.mesh(T.roundBox(0.32, 0.2, 0.1, 0.04), m, cab); l.position.set(-2.4 + (i % 7) * 0.8, 1.45 + Math.floor(i / 7) * 0.32, -1.55); leds.push(m); }
+        const telas = [-1.4, 1.4].map((x) => { const m = new THREE.MeshStandardMaterial({ color: 0x0f2a33, emissive: 0x39c6d9, emissiveIntensity: 0.6, roughness: 0.4 }); const s = T.mesh(T.roundBox(1.4, 0.9, 0.1, 0.05), m, cab); s.position.set(x, 1.6, -1.45); s.rotation.x = -0.3; return m; });
+        const manche = new THREE.Group(); manche.position.set(-1.1, 0.9, -0.8); cab.add(manche);
+        T.mesh(new THREE.CylinderGeometry(0.07, 0.07, 1.0, 10), 0x222222, manche).rotation.x = Math.PI / 2;
+        const mh = T.mesh(T.roundBox(0.9, 0.2, 0.15, 0.06), 0x222222, manche); mh.position.z = 0.5;
+        for (const x of [-1.1, 1.1]) { const s = T.mesh(T.roundBox(1.3, 1.3, 0.5, 0.2), 0x6b4a32, cab); s.position.set(x, -0.2, 1.4); const b = T.mesh(T.roundBox(1.3, 0.4, 1.3, 0.15), 0x6b4a32, cab); b.position.set(x, -0.1, 0.8); }
+        const pil = A.createAnimal("humano", { cor: 0xf6f1e8, cor2: 0x2f3b52 }); A.face(pil.group, 0, -1); pil.group.position.set(-1.1, -0.15, 0.6); cab.add(pil.group);
+        const cap = T.mesh(T.roundBox(0.46, 0.14, 0.46, 0.06), 0x1f2a44, pil.head); cap.position.y = 0.25;
+        const ag = A.createAnimal("aguia", { fase: 0.2 }); A.face(ag.group, 0, -1); ag.group.position.set(-1.1, 0.1, 0.7); ag.group.scale.setScalar(0.85); cab.add(ag.group);
+        const pf = T.createBurst(cab, { seed: 5, n: 22, cores: [0xffffff, T.PAL.amarelo, 0x6b4a32], raio: 1.2 });
+        /* B: cruzamento */
+        const rua = new THREE.Group(); S.add(rua);
+        const city = T.rua({ len: 160, seed: 33, arvores: false }); rua.add(city.group);
+        const cross = T.mesh(T.roundBox(160, 0.13, 16, 0.05), T.PAL.asfalto, rua); cross.castShadow = false;
+        const cA = T.carro(T.PAL.tijolo), cB = T.carro(0x9fc9d9); rua.add(cA, cB);
+        const pb = T.createBurst(rua, { seed: 9, n: 26, cores: [0xffffff, T.PAL.amarelo, 0x9a9a9a], raio: 3 });
+        function render(t) {
+          const A1 = t < 2.7;
+          cab.visible = A1; rua.visible = !A1;
+          if (A1) {
+            S.fog.far = 400;
+            const tilt = Math.sin(t * 1.7) * 0.12 + range(t, 1.2, 2.7) * 0.5;
+            fora.rotation.z = tilt; fora.rotation.x = -range(t, 1.3, 2.7) * 0.25;
+            fora.children.forEach((n) => { if (n.userData.z0 !== undefined) n.position.z = n.userData.z0 + t * 45; });
+            const k = range(t, 0.95, 1.2);
+            pil.group.visible = k < 1; pil.group.scale.set(1 + k * 0.4, 1 - k * 0.8, 1 + k * 0.4); pil.update(t, {});
+            pf.at(t, 1.05, -1.1, 1.2, 0.6);
+            const s = ease.outBack(range(t, 1.1, 1.5)); ag.group.visible = s > 0.001; ag.group.scale.setScalar(0.85 * Math.max(0.001, s));
+            ag.update(t, { voa: 4 }); ag.head.rotation.y = Math.sin(t * 5) * 0.5;
+            leds.forEach((m, i) => { m.emissiveIntensity = t > 1.3 && Math.sin(t * 14 + i * 1.7) > 0 ? 2.2 : 0.1; });
+            telas.forEach((m) => { m.emissive.setHex(t > 1.4 && Math.sin(t * 20) > 0 ? 0xff3a2a : 0x39c6d9); });
+            manche.rotation.z = t > 1.3 ? Math.sin(t * 9) * 0.35 : 0;
+            const sh = T.shaker(1)(t, 0.03 + range(t, 1.3, 2.7) * 0.08);
+            cam.position.set(0.9 + sh[0], 3.0 + sh[1], 3.6 - t * 0.25);
+            cam.lookAt(-1.3, 1.0, -1.4);
+            st.sol(0, 0, 10);
+          } else {
+            S.fog.far = 240;
+            const u = t - 2.7;
+            const hit = 1.2;
+            const a = Math.min(u, hit), b = Math.max(0, u - hit);
+            cA.position.set(-2.5 + b * 1.5, 0, -14 + a * 9 + b * 3 * Math.exp(-b * 2));
+            cA.rotation.set(0, b * 2.5 * Math.exp(-b), 0);
+            cB.position.set(14 - a * 12 - b * 2, 0, -1.2 - b * 1.5); cB.rotation.set(0, -Math.PI / 2 - b * 3 * Math.exp(-b), b > 0 ? Math.sin(Math.min(b * 3, Math.PI)) * 0.6 : 0);
+            pb.at(u, hit, 0, 1, -2.5);
+            const sh = T.shaker(2)(u, u > hit ? 0.35 * Math.exp(-(u - hit) * 2) : 0);
+            cam.position.set(-8 + u * 0.5 + sh[0], 4.2 + sh[1], 9 - u * 0.6);
+            cam.lookAt(0.5, 1.0, -4);
+            st.sol(0, -4, 30);
+          }
+          st.draw();
         }
-        await K.bindSeek(canvas, render, { warm: [{ renderer, scene, camera: cam }], duration: 5.4 });
+
+        await K.bindSeek(canvas, render, { warm: [st.warm, ...(st.extraWarm || [])], duration: D });
       });
     })();
   </script>

@@ -1,57 +1,66 @@
-<!-- Modelo de cena 3D (R01). cenas.py --criar copia para compositions/fNN.html trocando os marcadores de id e duração.
-     Padrão: script clássico registra buildReady na hora; import dinâmico do kit e dos blocos;
-     K.bindSeek(canvas, render) dá o tempo LOCAL da cena (sem gambiarra de data-start). -->
+<!-- f16: cena 3D de massinha. Lógica em cenas/f16.js (gerado por scripts/monta-cenas.py). -->
 <template>
   <style>
-    #root { position: absolute; inset: 0; overflow: hidden; background: #0b1018; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #8CC7D8; }
     #f16-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
-    #f16-titulo { position: absolute; left: 160px; right: 200px; top: 660px; text-align: center; }
-    #f16-titulo-in { display: block; font-family: "EB Garamond", serif; font-size: 84px; line-height: 1.05; color: #fff;
-      text-shadow: 0 4px 26px rgba(4, 10, 20, 0.75), 0 1px 4px rgba(4, 10, 20, 0.6); }
-    #f16-titulo-in .ice { color: #8fcbf2; }
+    .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .rot-t { display: block; font-family: "Anton", sans-serif; font-size: 92px; line-height: 1.0; color: #fff; text-transform: uppercase;
+      -webkit-text-stroke: 4px #1a1410; paint-order: stroke fill; text-shadow: 7px 7px 0 #1a1410; }
+    .rot-t .y { color: #F2B53A; }
+    .rot-t .p { font-size: 70px; }
+
   </style>
   <div id="root" data-composition-id="f16" data-width="1080" data-height="1920">
     <canvas id="f16-canvas" width="1080" height="1920"></canvas>
-    <div id="f16-titulo" class="clip" data-start="0.3" data-duration="2.2">
-      <span id="f16-titulo-in">Texto da <span class="ice">cena</span></span>
-    </div>
+    <div id="f16-r1" class="clip rot" style="top: 690px" data-start="4.8" data-duration="2.92"><span id="f16-r1-in" class="rot-t"><span class="p">E VOCÊ,</span><br>QUAL ANIMAL <span class="y">SERIA?</span></span></div>
   </div>
   <script>
     (function () {
-      /* 2D por cima (GSAP). Título entre y 640 e 1000: o HUD ocupa 290-620 e a legenda 1045-1195. */
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f16-titulo-in", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 0.3);
-      tl.to("#f16-titulo-in", { opacity: 0, duration: 0.2, ease: "power2.in" }, 2.3);
+      tl.fromTo("#f16-r1-in", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2)" }, 4.8);
       tl.set({}, {}, 7.72);
       window.__timelines = window.__timelines || {};
       window.__timelines["f16"] = tl;
 
-      /* 3D */
       window.__hf = window.__hf || {};
       window.__hf.buildReady = window.__hf.buildReady || {};
       window.__hf.buildReady["f16"] = Promise.all([
-        import("./assets/lib/kit.js"),
-        import("./assets/lib/blocks/city.js"),
-        // import("./assets/lib/blocks/globe.js"), import("./assets/lib/blocks/particles.js"),
-        // import("./assets/lib/blocks/shockwave.js"), import("./assets/lib/blocks/counter.js"),
-      ]).then(async ([K, { createCity }]) => {
-        const { THREE, ease, range, lerp, clamp } = K;
+        import("./assets/lib/kit.js"), import("./assets/lib/blocks/toy.js"), import("./assets/lib/blocks/animals.js"), import("./assets/lib/blocks/globe.js")
+      ]).then(async ([K, T, A, GLOBE]) => {
+        const { THREE, ease, range, lerp, clamp, smoothstep, mulberry32 } = K;
+        const D = 7.72;
         const canvas = document.getElementById("f16-canvas");
-        const renderer = K.createRenderer(canvas);
-        const scene = new THREE.Scene();
-        const cam = new THREE.PerspectiveCamera(35, K.W / K.H, 1, 2000);
-        const city = createCity(scene, { seed: 7, geada: [7.72 * 0.6, 7.72 * 0.6 + 0.35], paraEm: 7.72 * 0.6 });
 
-        function render(t) {               // t = segundos locais da cena
-          const p = ease.outCubic(clamp(t / 7.72));
-          const h = lerp(300, 175, p), ang = lerp(-0.35, 0.05, p);
-          cam.position.set(Math.sin(ang) * 18, h, Math.cos(ang) * 18 + 10);
-          cam.up.set(Math.sin(ang), 0, -Math.cos(ang));
-          cam.lookAt(0, 0, 0);
-          city.update(t);
-          renderer.render(scene, cam);
+        const st = T.createToyStage(canvas, { fov: 50, ceu: ["#6FB6CC", "#D7EBE6"], nevoa: [120, 600] });
+        const S = st.scene, cam = st.cam;
+        const c = T.cidade({ n: 7, seed: 161, verde: 0.3 }); S.add(c.group);
+        const rr = mulberry32(162);
+        const nuv = Array.from({ length: 40 }, (_, i) => { const n = T.nuvem(700 + i); n.scale.setScalar(4 + rr() * 5); n.position.set((rr() - 0.5) * 160, 120 + rr() * 90, (rr() - 0.5) * 160); S.add(n); return n; });
+        const ele = A.createAnimal("elefante", { fase: 0.3 }); ele.group.scale.setScalar(1.6); A.face(ele.group, 0, 1); ele.group.position.set(-18, 0.5, 4); S.add(ele.group);
+        const GS = new THREE.Scene();
+        const G = GLOBE.createGlobe(GS, { detalhe: 64, destaque: null, marcador: false, onda: null, nuvensAlvo: 0,
+          caminho: [{ t: 0, lon: -40, lat: -12, alt: 0.9 }, { t: 4.4, lon: -10, lat: 8, alt: 5.2 }] });
+        st.extraWarm = [{ renderer: st.renderer, scene: GS, camera: G.camera }];
+        function render(t) {
+          if (t < 3.3) {
+            const e = ease.inCubic(range(t, 0, 3.3));
+            ele.update(t, { passo: 0.6 });
+            ele.group.position.z = 4 + t * 0.9;
+            cam.position.set(-18 + e * 10, lerp(14, 230, e), 16 + e * 20);
+            cam.up.set(0, 0, -1);
+            cam.lookAt(-18 + e * 10, 0, 4);
+            st.sol(-10, 0, 80);
+            st.draw(S, cam, { cor: "#ffffff", a: range(t, 2.4, 3.2) });
+          } else {
+            const u = t - 3.3;
+            G.update(u);
+            G.earth.rotation.y += u * 0.04;
+            const blk = 0.8 * ease.inOutSine(range(t, 5.6, 7.72));
+            st.draw(GS, G.camera, blk > 0 ? { cor: "#000000", a: blk } : { cor: "#ffffff", a: 1 - range(u, 0, 0.6) });
+          }
         }
-        await K.bindSeek(canvas, render, { warm: [{ renderer, scene, camera: cam }], duration: 7.72 });
+
+        await K.bindSeek(canvas, render, { warm: [st.warm, ...(st.extraWarm || [])], duration: D });
       });
     })();
   </script>
