@@ -1,7 +1,7 @@
 {
   "slug": "humanos-viram-animais",
   "ref": "R05",
-  "duracao": 6,
+  "duracao": 101.34,
   "duracao_fixa": null,
   "narracao": {
     "arquivo": "assets/audio/narracao.mp3"
@@ -11,13 +11,97 @@
       "id": "f01",
       "palavra": "E se",
       "inicio": 0,
-      "fim": 3
+      "fim": 4.89
     },
     {
       "id": "f02",
-      "palavra": "Primeiro",
-      "inicio": 3,
-      "fim": 6
+      "palavra": "Em poucos",
+      "inicio": 4.89,
+      "fim": 11.83
+    },
+    {
+      "id": "f03",
+      "palavra": "Pilotos",
+      "inicio": 11.83,
+      "fim": 17.23
+    },
+    {
+      "id": "f04",
+      "palavra": "Algumas",
+      "inicio": 17.23,
+      "fim": 23.23
+    },
+    {
+      "id": "f05",
+      "palavra": "Já",
+      "inicio": 23.23,
+      "fim": 28.74
+    },
+    {
+      "id": "f06",
+      "palavra": "Milhões poderiam",
+      "inicio": 28.74,
+      "fim": 34.87
+    },
+    {
+      "id": "f07",
+      "palavra": "Sem pessoas",
+      "inicio": 34.87,
+      "fim": 41.29
+    },
+    {
+      "id": "f08",
+      "palavra": "E encontrar",
+      "inicio": 41.29,
+      "fim": 48.44
+    },
+    {
+      "id": "f09",
+      "palavra": "Enquanto",
+      "inicio": 48.44,
+      "fim": 53.98
+    },
+    {
+      "id": "f10",
+      "palavra": "Sem leis",
+      "inicio": 53.98,
+      "fim": 61.49
+    },
+    {
+      "id": "f11",
+      "palavra": "Toda",
+      "inicio": 61.49,
+      "fim": 67.77
+    },
+    {
+      "id": "f12",
+      "palavra": "Alguns",
+      "inicio": 67.77,
+      "fim": 74.21
+    },
+    {
+      "id": "f13",
+      "palavra": "Meses",
+      "inicio": 74.21,
+      "fim": 80.92
+    },
+    {
+      "id": "f14",
+      "palavra": "A Terra",
+      "inicio": 80.92,
+      "fim": 86.8
+    },
+    {
+      "id": "f15",
+      "palavra": "Milhões de",
+      "inicio": 86.8,
+      "fim": 93.62
+    },
+    {
+      "id": "f16",
+      "palavra": "A natureza",
+      "inicio": 93.62,
+      "fim": 101.34
     }
   ],
   "hud": {

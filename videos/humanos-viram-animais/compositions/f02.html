@@ -22,7 +22,7 @@
       const tl = gsap.timeline({ paused: true });
       tl.fromTo("#f02-titulo-in", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 0.3);
       tl.to("#f02-titulo-in", { opacity: 0, duration: 0.2, ease: "power2.in" }, 2.3);
-      tl.set({}, {}, 3.0);
+      tl.set({}, {}, 6.94);
       window.__timelines = window.__timelines || {};
       window.__timelines["f02"] = tl;
 
@@ -40,10 +40,10 @@
         const renderer = K.createRenderer(canvas);
         const scene = new THREE.Scene();
         const cam = new THREE.PerspectiveCamera(35, K.W / K.H, 1, 2000);
-        const city = createCity(scene, { seed: 7, geada: [3.0 * 0.6, 3.0 * 0.6 + 0.35], paraEm: 3.0 * 0.6 });
+        const city = createCity(scene, { seed: 7, geada: [6.94 * 0.6, 6.94 * 0.6 + 0.35], paraEm: 6.94 * 0.6 });
 
         function render(t) {               // t = segundos locais da cena
-          const p = ease.outCubic(clamp(t / 3.0));
+          const p = ease.outCubic(clamp(t / 6.94));
           const h = lerp(300, 175, p), ang = lerp(-0.35, 0.05, p);
           cam.position.set(Math.sin(ang) * 18, h, Math.cos(ang) * 18 + 10);
           cam.up.set(Math.sin(ang), 0, -Math.cos(ang));
@@ -51,7 +51,7 @@
           city.update(t);
           renderer.render(scene, cam);
         }
-        await K.bindSeek(canvas, render, { warm: [{ renderer, scene, camera: cam }], duration: 3.0 });
+        await K.bindSeek(canvas, render, { warm: [{ renderer, scene, camera: cam }], duration: 6.94 });
       });
     })();
   </script>

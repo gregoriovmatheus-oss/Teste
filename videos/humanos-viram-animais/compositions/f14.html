@@ -1,0 +1,58 @@
+<!-- Modelo de cena 3D (R01). cenas.py --criar copia para compositions/fNN.html trocando os marcadores de id e duração.
+     Padrão: script clássico registra buildReady na hora; import dinâmico do kit e dos blocos;
+     K.bindSeek(canvas, render) dá o tempo LOCAL da cena (sem gambiarra de data-start). -->
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0b1018; }
+    #f14-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+    #f14-titulo { position: absolute; left: 160px; right: 200px; top: 660px; text-align: center; }
+    #f14-titulo-in { display: block; font-family: "EB Garamond", serif; font-size: 84px; line-height: 1.05; color: #fff;
+      text-shadow: 0 4px 26px rgba(4, 10, 20, 0.75), 0 1px 4px rgba(4, 10, 20, 0.6); }
+    #f14-titulo-in .ice { color: #8fcbf2; }
+  </style>
+  <div id="root" data-composition-id="f14" data-width="1080" data-height="1920">
+    <canvas id="f14-canvas" width="1080" height="1920"></canvas>
+    <div id="f14-titulo" class="clip" data-start="0.3" data-duration="2.2">
+      <span id="f14-titulo-in">Texto da <span class="ice">cena</span></span>
+    </div>
+  </div>
+  <script>
+    (function () {
+      /* 2D por cima (GSAP). Título entre y 640 e 1000: o HUD ocupa 290-620 e a legenda 1045-1195. */
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo("#f14-titulo-in", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 0.3);
+      tl.to("#f14-titulo-in", { opacity: 0, duration: 0.2, ease: "power2.in" }, 2.3);
+      tl.set({}, {}, 5.88);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["f14"] = tl;
+
+      /* 3D */
+      window.__hf = window.__hf || {};
+      window.__hf.buildReady = window.__hf.buildReady || {};
+      window.__hf.buildReady["f14"] = Promise.all([
+        import("./assets/lib/kit.js"),
+        import("./assets/lib/blocks/city.js"),
+        // import("./assets/lib/blocks/globe.js"), import("./assets/lib/blocks/particles.js"),
+        // import("./assets/lib/blocks/shockwave.js"), import("./assets/lib/blocks/counter.js"),
+      ]).then(async ([K, { createCity }]) => {
+        const { THREE, ease, range, lerp, clamp } = K;
+        const canvas = document.getElementById("f14-canvas");
+        const renderer = K.createRenderer(canvas);
+        const scene = new THREE.Scene();
+        const cam = new THREE.PerspectiveCamera(35, K.W / K.H, 1, 2000);
+        const city = createCity(scene, { seed: 7, geada: [5.88 * 0.6, 5.88 * 0.6 + 0.35], paraEm: 5.88 * 0.6 });
+
+        function render(t) {               // t = segundos locais da cena
+          const p = ease.outCubic(clamp(t / 5.88));
+          const h = lerp(300, 175, p), ang = lerp(-0.35, 0.05, p);
+          cam.position.set(Math.sin(ang) * 18, h, Math.cos(ang) * 18 + 10);
+          cam.up.set(Math.sin(ang), 0, -Math.cos(ang));
+          cam.lookAt(0, 0, 0);
+          city.update(t);
+          renderer.render(scene, cam);
+        }
+        await K.bindSeek(canvas, render, { warm: [{ renderer, scene, camera: cam }], duration: 5.88 });
+      });
+    })();
+  </script>
+</template>
