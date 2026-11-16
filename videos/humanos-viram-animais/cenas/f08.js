@@ -1,5 +1,5 @@
-/*META {"rotulos": [{"de": 0.3, "ate": 3.0, "texto": "ONDE ACHAR <span class=\"y\">COMIDA?</span>"}]} */
-        const st = T.createToyStage(canvas, { fov: 52, ceu: ["#F3E2C4", "#E8D3B0"], nevoa: [20, 80] });
+/*META {"rotulos": [{"de": 0.3, "ate": 3.0, "texto": "ONDE ACHAR <span class=\"y\">COMIDA?</span>"}], "D0": 7.15} */
+        const st = T.createToyStage(canvas, { fov: 52, ceu: ["#F3E2C4", "#E8D3B0"], nevoa: [20, 80], nuvens: 0 });
         const S = st.scene, cam = st.cam;
         const piso = T.mesh(new THREE.PlaneGeometry(200, 200), 0xe9e4da, S, 0.6); piso.rotation.x = -Math.PI / 2; piso.castShadow = false;
         const teto = T.mesh(new THREE.PlaneGeometry(200, 200), 0xf3efe6, S, 0.9); teto.rotation.x = Math.PI / 2; teto.position.y = 9;

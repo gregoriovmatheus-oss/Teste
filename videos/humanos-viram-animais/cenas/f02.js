@@ -1,4 +1,4 @@
-/*META {"rotulos": [{"de": 3.2, "ate": 6.7, "texto": "LEÕES NA <span class=\"y\">AVENIDA</span>"}]} */
+/*META {"rotulos": [{"de": 3.2, "ate": 6.7, "texto": "LEÕES NA <span class=\"y\">AVENIDA</span>"}], "D0": 6.94} */
         const st = T.createToyStage(canvas, { fov: 50, nevoa: [50, 200] });
         const S = st.scene, cam = st.cam;
         const city = T.rua({ len: 200, seed: 21 });
@@ -11,7 +11,7 @@
         const aves = [0, 1, 2, 3, 4, 5, 6].map((i) => { const b = A.createAnimal("passaro", { fase: i * 0.13, cor: [0x4f9bd9, 0xd9583b, 0xf2b53a][i % 3] }); b.group.scale.setScalar(2); S.add(b.group); return b; });
         const pf = T.createBurst(S, { seed: 7, n: 18, cores: [0xd9cfc0, 0xffffff], raio: 2.2, tam: 0.3 });
         function render(t) {
-          const lx = -12 + t * 3.2;
+          const lx = -8 + t * 2.2;
           leao.group.position.set(lx, 0, 2 + t * 0.4);
           leao.update(t, { passo: 2.0 });
           const ez = -22 + t * 1.7;
@@ -36,7 +36,8 @@
           const e = ease.inOutSine(clamp(t / D));
           const sh = t > 4 ? T.shaker(3)(t, 0.25 * (1 - range(t, 4, 5))) : [0, 0, 0];
           cam.position.set(lerp(-7, -9, e) + sh[0], lerp(2.6, 9, e) + sh[1], lerp(13, 18, e));
-          cam.lookAt(lerp(lx * 0.5, 2, e), lerp(2.6, 4.5, e), lerp(-3, -10, e));
+          st.vel = 0.35 * (1 - range(t, 5, 6)); st.velT = t;
+          cam.lookAt(lerp(lx * 0.75, lx * 0.6, e), lerp(2.6, 4.5, e), lerp(-3, -10, e));
           st.sol(0, -6, 35);
           st.draw();
         }

@@ -1,11 +1,11 @@
-/*META {"rotulos": [{"de": 0.3, "ate": 3.4, "texto": "<span class=\"y\">MESES</span> DEPOIS"}]} */
+/*META {"rotulos": [{"de": 0.3, "ate": 3.4, "texto": "<span class=\"y\">MESES</span> DEPOIS"}], "D0": 6.71} */
         const st = T.createToyStage(canvas, { fov: 48, nevoa: [60, 240] });
         const S = st.scene, cam = st.cam;
         const city = T.rua({ len: 220, larg: 16, seed: 131 }); S.add(city.group);
         const rr = mulberry32(132);
         // materiais próprios para envelhecer sem afetar outras cenas
         const mats = [];
-        city.group.traverse((o) => { if (o.isMesh && o.material && o.material.isMeshStandardMaterial && !o.isInstancedMesh) { o.material = o.material.clone(); o.material.userData.c0 = o.material.color.clone(); mats.push(o.material); } });
+        city.group.traverse((o) => { if (o.isMesh && o.material && o.material.isMeshToonMaterial && !o.isInstancedMesh) { o.material = o.material.clone(); o.material.userData.c0 = o.material.color.clone(); mats.push(o.material); } });
         const velho = new THREE.Color(0x7d8a6e);
         const cresce = [];
         city.buildings.forEach((b) => { if (Math.abs(b.position.z) > 70) return; for (let i = 0; i < 6; i++) { const v = T.mesh(T.SPH, [T.PAL.verde, T.PAL.verdeEsc][i % 2], b, 0.9); const top = i < 2; v.position.set((rr() - 0.5) * 6, top ? b.userData.h : rr() * b.userData.h, top ? (rr() - 0.5) * 4 : 4.3); v.userData.s = top ? 1.6 + rr() : 0.9 + rr() * 1.4; v.userData.t0 = rr() * 4; v.userData.flat = !top; cresce.push(v); } });

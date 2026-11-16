@@ -1,5 +1,5 @@
-/*META {"rotulos": [{"de": 0.4, "ate": 2.65, "texto": "SEM <span class=\"y\">PILOTOS</span>"}, {"de": 2.9, "ate": 5.4, "texto": "<span class=\"y\">DESGOVERNADOS</span>"}]} */
-        const st = T.createToyStage(canvas, { fov: 55, nevoa: [60, 240] });
+/*META {"rotulos": [{"de": 0.4, "ate": 2.65, "texto": "SEM <span class=\"y\">PILOTOS</span>"}, {"de": 2.9, "ate": 5.4, "texto": "<span class=\"y\">DESGOVERNADOS</span>"}], "D0": 5.4} */
+        const st = T.createToyStage(canvas, { fov: 55, nevoa: [60, 240], nuvens: 0 });
         const S = st.scene, cam = st.cam;
         /* A: cabine */
         const cab = new THREE.Group(); S.add(cab);
@@ -22,7 +22,7 @@
         for (const x of [-1.1, 1.1]) { const s = T.mesh(T.roundBox(1.3, 1.3, 0.5, 0.2), 0x6b4a32, cab); s.position.set(x, -0.2, 1.4); const b = T.mesh(T.roundBox(1.3, 0.4, 1.3, 0.15), 0x6b4a32, cab); b.position.set(x, -0.1, 0.8); }
         const pil = A.createAnimal("humano", { cor: 0xf6f1e8, cor2: 0x2f3b52 }); A.face(pil.group, 0, -1); pil.group.position.set(-1.1, -0.15, 0.6); cab.add(pil.group);
         const cap = T.mesh(T.roundBox(0.46, 0.14, 0.46, 0.06), 0x1f2a44, pil.head); cap.position.y = 0.25;
-        const ag = A.createAnimal("aguia", { fase: 0.2 }); A.face(ag.group, 0, -1); ag.group.position.set(-1.1, 0.1, 0.7); ag.group.scale.setScalar(0.85); cab.add(ag.group);
+        const ag = A.createAnimal("aguia", { fase: 0.2 }); A.face(ag.group, 0, -1); ag.group.position.set(-1.1, 0.1, 0.7); ag.group.scale.setScalar(1.05); cab.add(ag.group);
         const pf = T.createBurst(cab, { seed: 5, n: 22, cores: [0xffffff, T.PAL.amarelo, 0x6b4a32], raio: 1.2 });
         /* B: cruzamento */
         const rua = new THREE.Group(); S.add(rua);
@@ -41,14 +41,15 @@
             const k = range(t, 0.95, 1.2);
             pil.group.visible = k < 1; pil.group.scale.set(1 + k * 0.4, 1 - k * 0.8, 1 + k * 0.4); pil.update(t, {});
             pf.at(t, 1.05, -1.1, 1.2, 0.6);
-            const s = ease.outBack(range(t, 1.1, 1.5)); ag.group.visible = s > 0.001; ag.group.scale.setScalar(0.85 * Math.max(0.001, s));
+            const s = ease.outBack(range(t, 1.1, 1.5)); ag.group.visible = s > 0.001; ag.group.scale.setScalar(1.05 * Math.max(0.001, s));
             ag.update(t, { voa: 4 }); ag.head.rotation.y = Math.sin(t * 5) * 0.5;
             leds.forEach((m, i) => { m.emissiveIntensity = t > 1.3 && Math.sin(t * 14 + i * 1.7) > 0 ? 2.2 : 0.1; });
             telas.forEach((m) => { m.emissive.setHex(t > 1.4 && Math.sin(t * 20) > 0 ? 0xff3a2a : 0x39c6d9); });
             manche.rotation.z = t > 1.3 ? Math.sin(t * 9) * 0.35 : 0;
             const sh = T.shaker(1)(t, 0.03 + range(t, 1.3, 2.7) * 0.08);
-            cam.position.set(0.9 + sh[0], 3.0 + sh[1], 3.6 - t * 0.25);
-            cam.lookAt(-1.3, 1.0, -1.4);
+            cam.position.set(1.1 + sh[0], 2.1 + sh[1], 1.9 - t * 0.12);
+            cam.lookAt(-1.25, 1.15, -0.5);
+            st.vel = 0;
             st.sol(0, 0, 10);
           } else {
             S.fog.far = 240;
@@ -59,10 +60,11 @@
             cA.rotation.set(0, b * 2.5 * Math.exp(-b), 0);
             cB.position.set(14 - a * 12 - b * 2, 0, -1.2 - b * 1.5); cB.rotation.set(0, -Math.PI / 2 - b * 3 * Math.exp(-b), b > 0 ? Math.sin(Math.min(b * 3, Math.PI)) * 0.6 : 0);
             pb.at(u, hit, 0, 1, -2.5);
+            st.vel = 0.9 * (range(u, hit - 0.1, hit) - range(u, hit + 0.2, hit + 0.9)); st.velT = t;
             const sh = T.shaker(2)(u, u > hit ? 0.35 * Math.exp(-(u - hit) * 2) : 0);
             cam.position.set(-8 + u * 0.5 + sh[0], 4.2 + sh[1], 9 - u * 0.6);
             cam.lookAt(0.5, 1.0, -4);
             st.sol(0, -4, 30);
           }
-          st.draw();
+          st.draw(S, cam, { cor: "#FFF4D6", a: Math.max(0, 1 - Math.abs(t - 2.7) / 0.18) });
         }

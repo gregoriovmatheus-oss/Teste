@@ -1,5 +1,5 @@
 /**
- * toy.js — palco e mundo de brinquedo/massinha (R05) para as cenas 3D. Renderer WebGL ÚNICO, compartilhado.
+ * toy.js — palco e mundo em anime cel-shaded (R09: MeshToonMaterial de 3 tons + contorno por casco invertido) para as cenas 3D. Renderer WebGL ÚNICO, compartilhado.
  *
  *   const st = createToyStage(canvas, { ceu: ["#6FB6CC", "#D7EBE6"], nevoa: [60, 260], exposicao: 1.1 });
  *   st.scene, st.cam, st.sol(x, z, tamanho)   // move a luz-chave (e a sombra) para perto do que a câmera vê
@@ -33,13 +33,41 @@ export function sharedRenderer() {
   return R;
 }
 
+/* ---------- material toon (3 tons) + contorno ---------- */
+export const R09 = { ceuAlto: "#3A7BD5", ceuBaixo: "#FFC88A", contorno: 0x1a1a2e, brilho: 0xfff4d6, destaque: 0xff5a5f };
+const _grad = (() => {
+  const d = new Uint8Array([70, 70, 70, 255, 165, 165, 165, 255, 255, 255, 255, 255]);
+  const t = new THREE.DataTexture(d, 3, 1, THREE.RGBAFormat);
+  t.minFilter = t.magFilter = THREE.NearestFilter; t.generateMipmaps = false; t.needsUpdate = true;
+  return t;
+})();
+export function TOON(params = {}) {
+  const { roughness, metalness, ...rest } = params;
+  return new THREE.MeshToonMaterial({ gradientMap: _grad, ...rest });
+}
 const _mats = new Map();
 export function M(color, rough = 0.7, extra = null) {
-  const key = color + "|" + rough + (extra ? JSON.stringify(extra) : "");
+  const key = color + "|" + (extra ? JSON.stringify(extra) : "");
   if (_mats.has(key)) return _mats.get(key);
-  const m = new THREE.MeshStandardMaterial({ color, roughness: rough, metalness: 0, ...(extra || {}) });
+  const m = TOON({ color, ...(extra || {}) });
   _mats.set(key, m);
   return m;
+}
+const LINHA = new THREE.MeshBasicMaterial({ color: R09.contorno, side: THREE.BackSide });
+const _bb = new Map();
+// casco invertido: cópia da geometria em BackSide, 3% maior (espessura limitada em objetos grandes), centrada no objeto
+export function contorno(m, k = 0.03) {
+  const g = m.geometry;
+  if (!_bb.has(g)) { g.computeBoundingBox(); const b = g.boundingBox; _bb.set(g, [b.getCenter(new THREE.Vector3()), b.getSize(new THREE.Vector3())]); }
+  const [c, sz] = _bb.get(g);
+  const o = new THREE.Mesh(g, LINHA);
+  const ws = new THREE.Vector3(); m.getWorldScale(ws);
+  const sx = 1 + Math.min(k, 0.14 / Math.max(1e-3, sz.x * Math.abs(m.scale.x || 1))), sy = 1 + Math.min(k, 0.14 / Math.max(1e-3, sz.y * Math.abs(m.scale.y || 1))), sz2 = 1 + Math.min(k, 0.14 / Math.max(1e-3, sz.z * Math.abs(m.scale.z || 1)));
+  o.scale.set(sx, sy, sz2);
+  o.position.set(c.x * (1 - sx), c.y * (1 - sy), c.z * (1 - sz2));
+  o.userData.contorno = true;
+  m.add(o);
+  return o;
 }
 
 export function gradTex(top, bottom) {
@@ -54,8 +82,8 @@ export function gradTex(top, bottom) {
   return t;
 }
 
-export function createToyStage(canvas, { ceu = ["#6FB6CC", "#D7EBE6"], nevoa = [60, 260], corNevoa = null, fov = 40,
-  exposicao = 1.1, luz = 1, sombra = 60 } = {}) {
+export function createToyStage(canvas, { ceu = [R09.ceuAlto, R09.ceuBaixo], nevoa = [60, 260], corNevoa = null, fov = 40,
+  exposicao = 1.0, luz = 1, sombra = 60, nuvens = 14 } = {}) {
   const renderer = sharedRenderer();
   const ctx = canvas.getContext("2d");
   const scene = new THREE.Scene();
@@ -64,16 +92,16 @@ export function createToyStage(canvas, { ceu = ["#6FB6CC", "#D7EBE6"], nevoa = [
   const fogC = corNevoa ?? (Array.isArray(ceu) ? ceu[1] : ceu);
   if (nevoa) scene.fog = new THREE.Fog(fogC, nevoa[0], nevoa[1]);
   const cam = new THREE.PerspectiveCamera(fov, 1080 / 1920, 0.05, 2000);
-  const hemi = new THREE.HemisphereLight(0xfff1dc, 0x8a6f5c, 1.15 * luz);
-  const key = new THREE.DirectionalLight(0xffd6a0, 2.5 * luz);
+  const hemi = new THREE.HemisphereLight(0xbfd8ff, 0x8a5f5c, 1.3 * luz);
+  const key = new THREE.DirectionalLight(0xffc890, 2.6 * luz);
   key.castShadow = true;
   key.shadow.mapSize.set(2048, 2048);
   key.shadow.bias = -0.0005;
   key.shadow.normalBias = 0.04;
-  const rim = new THREE.DirectionalLight(0x9fd4ff, 0.9 * luz);
+  const rim = new THREE.DirectionalLight(0xff9a50, 1.6 * luz); // contorno quente de fim de tarde
   scene.add(hemi, key, key.target, rim, rim.target);
   function sol(x = 0, z = 0, size = sombra, y = 0) {
-    key.position.set(x - 0.9 * size, y + 1.6 * size, z + 0.7 * size);
+    key.position.set(x - 1.2 * size, y + 0.9 * size, z + 0.6 * size);
     key.target.position.set(x, y, z);
     rim.position.set(x + size, y + 0.6 * size, z - size);
     rim.target.position.set(x, y, z);
@@ -81,15 +109,49 @@ export function createToyStage(canvas, { ceu = ["#6FB6CC", "#D7EBE6"], nevoa = [
     key.shadow.camera.updateProjectionMatrix();
   }
   sol();
+  if (nuvens) {
+    const r = mulberry32(777);
+    for (let i = 0; i < nuvens; i++) {
+      const n = nuvem(800 + i, 0xffffff, true);
+      const a = (i / nuvens) * Math.PI * 2 + r() * 0.3, d = 330 + r() * 120;
+      n.scale.setScalar(9 + r() * 9);
+      n.position.set(Math.cos(a) * d, 70 + r() * 110, Math.sin(a) * d);
+      scene.add(n);
+    }
+  }
+  // speed lines (2D, determinísticas): st.vel = 0..1 antes do draw; st.velT = tempo para sortear as linhas
+  const stg = { vel: 0, velT: 0, velC: [540, 900] };
+  function speedLines() {
+    if (stg.vel <= 0.01) return;
+    const r = mulberry32(1 + Math.floor(stg.velT * 24));
+    ctx.save();
+    ctx.strokeStyle = "rgba(255,244,214,0.9)";
+    ctx.lineCap = "round";
+    for (let i = 0; i < 70; i++) {
+      const a = r() * Math.PI * 2, r0 = 380 + r() * 300, len = (120 + r() * 380) * stg.vel;
+      ctx.globalAlpha = 0.25 + 0.55 * r() * stg.vel;
+      ctx.lineWidth = 2 + r() * 5;
+      const [cx, cy] = stg.velC;
+      ctx.beginPath(); ctx.moveTo(cx + Math.cos(a) * r0, cy + Math.sin(a) * r0); ctx.lineTo(cx + Math.cos(a) * (r0 + len), cy + Math.sin(a) * (r0 + len)); ctx.stroke();
+    }
+    ctx.restore();
+  }
   // ov = { cor: "#fff", a: 0..1 } pinta um véu por cima (nuvem, escurecer)
+  let contornado = false;
   function draw(sc = scene, cm = cam, ov = null) {
+    if (!contornado) { contornar(scene); contornado = true; }
+    if (sc !== scene && !sc.userData.contornado) { contornar(sc); sc.userData.contornado = true; }
     renderer.toneMappingExposure = exposicao;
     renderer.render(sc, cm);
     ctx.globalAlpha = 1;
+    ctx.filter = stg.blur > 0.3 ? `blur(${stg.blur.toFixed(1)}px)` : "none";
     ctx.drawImage(renderer.domElement, 0, 0);
+    ctx.filter = "none";
+    speedLines();
     if (ov && ov.a > 0) { ctx.globalAlpha = Math.min(1, ov.a); ctx.fillStyle = ov.cor; ctx.fillRect(0, 0, 1080, 1920); ctx.globalAlpha = 1; }
   }
-  return { renderer, scene, cam, key, rim, hemi, sol, draw, warm: { renderer, scene, camera: cam } };
+  stg.blur = 0;
+  return Object.assign(stg, { renderer, scene, cam, key, rim, hemi, sol, draw, ctx, warm: { renderer, scene, camera: cam } });
 }
 
 /* ---------- geometria ---------- */
@@ -116,11 +178,18 @@ export function roundBox(w, h, d, r = 0.2) {
   return g;
 }
 
-export function mesh(geo, color, parent, rough = 0.7) {
+export function mesh(geo, color, parent, rough = 0.7, linha = true) {
   const m = new THREE.Mesh(geo, typeof color === "object" ? color : M(color, rough));
   m.castShadow = true; m.receiveShadow = true;
   if (parent) parent.add(m);
+  if (linha && !geo.isPlaneGeometry && !(geo.type === "PlaneGeometry")) m.userData.querLinha = true;
   return m;
+}
+// adiciona os contornos depois que as escalas foram definidas (chame uma vez no fim da montagem da cena)
+export function contornar(root) {
+  const lst = [];
+  root.traverse((o) => { if (o.isMesh && o.userData.querLinha && !o.userData.temLinha) lst.push(o); });
+  for (const o of lst) { o.userData.temLinha = true; contorno(o); }
 }
 export const SPH = new THREE.SphereGeometry(1, 24, 16);
 
@@ -131,7 +200,7 @@ export function predio({ w = 8, d = 8, h = 16, cor = PAL.tijolo, seed = 1, janel
   mesh(roundBox(w, h, d, 0.45), cor, g, 0.8);
   const rc = new THREE.Color(cor).multiplyScalar(0.8);
   if (telhado) { const t = mesh(roundBox(w + 0.5, 0.7, d + 0.5, 0.3), rc.getHex(), g, 0.8); t.position.y = h - 0.2; }
-  const win = new THREE.MeshStandardMaterial({ color: 0x7fb2c6, roughness: 0.35, emissive: 0xffc56a, emissiveIntensity: 0 });
+  const win = TOON({ color: 0x7fb2c6, emissive: 0xffc56a, emissiveIntensity: 0 });
   g.userData.win = win;
   if (janelas) {
     const geo = roundBox(1.0, 1.3, 0.3, 0.12);
@@ -187,12 +256,13 @@ export function arvore(s = 1, cor = PAL.verde, seed = 1) {
   return g;
 }
 
-export function nuvem(seed = 1, cor = 0xffffff) {
+export function nuvem(seed = 1, cor = 0xffffff, ceu = false) {
   const r = mulberry32(seed);
   const g = new THREE.Group();
-  const m = M(cor, 0.95, { emissive: 0xdde8f0, emissiveIntensity: 0.25 });
-  for (let i = 0; i < 6; i++) {
+  const m = ceu ? TOON({ color: cor, emissive: 0xffd9b0, emissiveIntensity: 0.35, fog: false }) : M(cor, 0.95, { emissive: 0xffe6cc, emissiveIntensity: 0.25 });
+  for (let i = 0; i < 7; i++) {
     const c = new THREE.Mesh(SPH, m);
+    if (!ceu) c.userData.querLinha = true;
     const s = 1 + r() * 1.3;
     c.scale.set(s, s * 0.8, s);
     c.position.set((i - 2.5) * 1.3 + r() * 0.5, r() * 0.8, (r() - 0.5) * 1.5);

@@ -1,24 +1,35 @@
-<!-- f16: cena 3D de massinha. Lógica em cenas/f16.js (gerado por scripts/monta-cenas.py). -->
+<!-- f16: cena 3D anime cel-shaded (R09). Lógica em cenas/f16.js (gerado por scripts/monta-cenas.py).
+     Tempos escritos para 7.72 s e esticados para a duração real do host (data-duration). -->
 <template>
   <style>
-    #root { position: absolute; inset: 0; overflow: hidden; background: #8CC7D8; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #3A7BD5; }
     #f16-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+    /* rótulos 2D: y 680-980, acima da faixa da legenda (1005-1235) */
     .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
     .rot-t { display: block; font-family: "Anton", sans-serif; font-size: 92px; line-height: 1.0; color: #fff; text-transform: uppercase;
-      -webkit-text-stroke: 4px #1a1410; paint-order: stroke fill; text-shadow: 7px 7px 0 #1a1410; }
-    .rot-t .y { color: #F2B53A; }
+      -webkit-text-stroke: 4px #1A1A2E; paint-order: stroke fill; text-shadow: 6px 6px 0 #1A1A2E; opacity: 0; }
+    .rot-t .y { color: #FF5A5F; }
     .rot-t .p { font-size: 70px; }
 
   </style>
   <div id="root" data-composition-id="f16" data-width="1080" data-height="1920">
     <canvas id="f16-canvas" width="1080" height="1920"></canvas>
-    <div id="f16-r1" class="clip rot" style="top: 690px" data-start="4.8" data-duration="2.92"><span id="f16-r1-in" class="rot-t"><span class="p">E VOCÊ,</span><br>QUAL ANIMAL <span class="y">SERIA?</span></span></div>
+    <div id="f16-r1" class="rot" style="top: 690px"><span id="f16-r1-in" class="rot-t"><span class="p">E VOCÊ,</span><br>QUAL ANIMAL <span class="y">SERIA?</span></span></div>
   </div>
   <script>
     (function () {
+      const D0 = 7.72;
+      // duração real = data-duration do host da cena (muda quando a narração muda)
+      const durReal = () => {
+        for (let n = document.getElementById("f16-canvas"); n; n = n.parentElement) {
+          if (n.getAttribute && n.getAttribute("data-composition-id") === "f16" && n.hasAttribute("data-duration")) return parseFloat(n.getAttribute("data-duration")) || D0;
+        }
+        return D0;
+      };
+      const DR = durReal(), K = DR / D0;
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f16-r1-in", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2)" }, 4.8);
-      tl.set({}, {}, 7.72);
+      tl.fromTo("#f16-r1-in", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2)" }, 4.8 * K);
+      tl.set({}, {}, DR);
       window.__timelines = window.__timelines || {};
       window.__timelines["f16"] = tl;
 
@@ -26,20 +37,21 @@
       window.__hf.buildReady = window.__hf.buildReady || {};
       window.__hf.buildReady["f16"] = Promise.all([
         import("./assets/lib/kit.js"), import("./assets/lib/blocks/toy.js"), import("./assets/lib/blocks/animals.js"), import("./assets/lib/blocks/globe.js")
-      ]).then(async ([K, T, A, GLOBE]) => {
+      ]).then(async ([K_, T, A, GLOBE]) => {
+        const K = K_;
         const { THREE, ease, range, lerp, clamp, smoothstep, mulberry32 } = K;
-        const D = 7.72;
+        const D = D0;   // o corpo trabalha no tempo de autoria
         const canvas = document.getElementById("f16-canvas");
 
-        const st = T.createToyStage(canvas, { fov: 50, ceu: ["#6FB6CC", "#D7EBE6"], nevoa: [120, 600] });
+        const st = T.createToyStage(canvas, { fov: 50, nevoa: [120, 600] });
         const S = st.scene, cam = st.cam;
         const c = T.cidade({ n: 7, seed: 161, verde: 0.3 }); S.add(c.group);
         const rr = mulberry32(162);
         const nuv = Array.from({ length: 40 }, (_, i) => { const n = T.nuvem(700 + i); n.scale.setScalar(4 + rr() * 5); n.position.set((rr() - 0.5) * 160, 120 + rr() * 90, (rr() - 0.5) * 160); S.add(n); return n; });
         const ele = A.createAnimal("elefante", { fase: 0.3 }); ele.group.scale.setScalar(1.6); A.face(ele.group, 0, 1); ele.group.position.set(-18, 0.5, 4); S.add(ele.group);
         const GS = new THREE.Scene();
-        const G = GLOBE.createGlobe(GS, { detalhe: 64, destaque: null, marcador: false, onda: null, nuvensAlvo: 0,
-          caminho: [{ t: 0, lon: -40, lat: -12, alt: 0.9 }, { t: 4.4, lon: -10, lat: 8, alt: 5.2 }] });
+        const G = GLOBE.createGlobe(GS, { detalhe: 96, destaque: null, marcador: false, onda: null, nuvensAlvo: 0,
+          caminho: [{ t: 0, lon: -40, lat: -12, alt: 1.8 }, { t: 4.4, lon: -10, lat: 8, alt: 6.4 }] });
         st.extraWarm = [{ renderer: st.renderer, scene: GS, camera: G.camera }];
         function render(t) {
           if (t < 3.3) {
@@ -60,7 +72,8 @@
           }
         }
 
-        await K.bindSeek(canvas, render, { warm: [st.warm, ...(st.extraWarm || [])], duration: D });
+        // DR foi lido na hora em que o script rodou (depois do inline o host pode mudar de atributos)
+        await K.bindSeek(canvas, (t) => render(t * D / DR), { warm: [st.warm, ...(st.extraWarm || [])], duration: DR });
       });
     })();
   </script>

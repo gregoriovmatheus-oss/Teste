@@ -1,5 +1,4 @@
-/*META {"rotulos": [{"de": 0, "ate": 4.89, "top": 650, "fixo": true, "pulso": 2.85,
- "texto": "<span class=\"p\">E SE TODOS OS</span><br><span class=\"p\">HUMANOS VIRASSEM</span><br><span class=\"y\" style=\"font-size:130px\">ANIMAIS?</span>"}]} */
+/*META {"rotulos": [{"de": 0, "ate": 4.89, "top": 650, "fixo": true, "pulso": 2.85, "texto": "<span class=\"p\">E SE TODOS OS</span><br><span class=\"p\">HUMANOS VIRASSEM</span><br><span class=\"y\" style=\"font-size:130px\">ANIMAIS?</span>"}], "D0": 4.89} */
         const st = T.createToyStage(canvas, { fov: 52, nevoa: [40, 170] });
         const S = st.scene, cam = st.cam;
         const city = T.rua({ len: 200, seed: 11 });
@@ -19,7 +18,7 @@
           const h = A.createAnimal("humano", { cor: c1, cor2: c2, mulher: !!mul, cabelo: [0x4a3226, 0x2a1d16, 0x8a5a3c][i % 3], fase });
           const opt = { fase, cor: [0x4f9bd9, 0xd9583b, 0xf2b53a][i % 3] };
           const a = A.createAnimal(vira, opt);
-          A.face(h.group, 0, 1); A.face(a.group, 0, 1);
+          A.face(h.group, 0, 1); A.face(a.group, 0, 1); h.group.userData.k = 1.3;
           S.add(h.group, a.group);
           const sc = { leao: 1.1, girafa: 1, macaco: 1.15, passaro: 1.8, elefante: 0.85, coelho: 1.6 }[vira];
           const b = T.createBurst(S, { seed: 100 + i, raio: 1.4, n: 22 });
@@ -32,11 +31,11 @@
             p.h.group.position.set(p.x, 0, zz);
             p.h.update(t, { passo: 1.7 });
             p.h.group.visible = k < 1;
-            p.h.group.scale.set(1 + k * 0.5, 1 - k * 0.85, 1 + k * 0.5);
+            p.h.group.scale.set(1.3 * (1 + k * 0.5), 1.3 * (1 - k * 0.85), 1.3 * (1 + k * 0.5));
             p.b.at(t, p.t0 + 0.12, p.x, 1.1, zz);
             const s = ease.outBack(range(t, p.t0 + 0.12, p.t0 + 0.55));
             p.a.group.visible = s > 0.001;
-            p.a.group.scale.setScalar(p.sc * Math.max(0.001, s));
+            p.a.group.scale.setScalar(1.2 * p.sc * Math.max(0.001, s));
             const ta = Math.max(0, t - p.t0);
             if (p.vira === "passaro") {
               p.a.group.position.set(p.x + ta * 0.6, 0.2 + ta * ta * 1.6, zz + ta * 1.2);
@@ -48,8 +47,8 @@
             }
           }
           const e = ease.inOutSine(clamp(t / D));
-          cam.position.set(lerp(-2.5, 1.5, e), lerp(3.4, 4.4, e), lerp(10.5, 14.5, e) + t * 1.1);
-          cam.lookAt(0, 3.4, -4 + t * 1.1);
+          cam.position.set(lerp(-1.5, 1, e), lerp(2.3, 2.6, e), lerp(9.5, 11.5, e) + t * 1.1);
+          cam.lookAt(0, 3.6, -6 + t * 1.1);
           st.sol(0, t * 1.1, 30);
           st.draw();
         }

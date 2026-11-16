@@ -1,25 +1,36 @@
-<!-- f10: cena 3D de massinha. Lógica em cenas/f10.js (gerado por scripts/monta-cenas.py). -->
+<!-- f10: cena 3D anime cel-shaded (R09). Lógica em cenas/f10.js (gerado por scripts/monta-cenas.py).
+     Tempos escritos para 7.51 s e esticados para a duração real do host (data-duration). -->
 <template>
   <style>
-    #root { position: absolute; inset: 0; overflow: hidden; background: #8CC7D8; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #3A7BD5; }
     #f10-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+    /* rótulos 2D: y 680-980, acima da faixa da legenda (1005-1235) */
     .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
     .rot-t { display: block; font-family: "Anton", sans-serif; font-size: 92px; line-height: 1.0; color: #fff; text-transform: uppercase;
-      -webkit-text-stroke: 4px #1a1410; paint-order: stroke fill; text-shadow: 7px 7px 0 #1a1410; }
-    .rot-t .y { color: #F2B53A; }
+      -webkit-text-stroke: 4px #1A1A2E; paint-order: stroke fill; text-shadow: 6px 6px 0 #1A1A2E; opacity: 0; }
+    .rot-t .y { color: #FF5A5F; }
     .rot-t .p { font-size: 70px; }
 
   </style>
   <div id="root" data-composition-id="f10" data-width="1080" data-height="1920">
     <canvas id="f10-canvas" width="1080" height="1920"></canvas>
-    <div id="f10-r1" class="clip rot" style="top: 700px" data-start="5.0" data-duration="2.51"><span id="f10-r1-in" class="rot-t">SÓ <span class="y">INSTINTO</span></span></div>
+    <div id="f10-r1" class="rot" style="top: 700px"><span id="f10-r1-in" class="rot-t">SÓ <span class="y">INSTINTO</span></span></div>
   </div>
   <script>
     (function () {
+      const D0 = 7.51;
+      // duração real = data-duration do host da cena (muda quando a narração muda)
+      const durReal = () => {
+        for (let n = document.getElementById("f10-canvas"); n; n = n.parentElement) {
+          if (n.getAttribute && n.getAttribute("data-composition-id") === "f10" && n.hasAttribute("data-duration")) return parseFloat(n.getAttribute("data-duration")) || D0;
+        }
+        return D0;
+      };
+      const DR = durReal(), K = DR / D0;
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f10-r1-in", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2)" }, 5.0);
-      tl.to("#f10-r1-in", { opacity: 0, y: -20, duration: 0.25, ease: "power2.in" }, 7.21);
-      tl.set({}, {}, 7.51);
+      tl.fromTo("#f10-r1-in", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2)" }, 5.0 * K);
+      tl.to("#f10-r1-in", { opacity: 0, y: -20, duration: 0.25, ease: "power2.in" }, 7.21 * K);
+      tl.set({}, {}, DR);
       window.__timelines = window.__timelines || {};
       window.__timelines["f10"] = tl;
 
@@ -27,12 +38,13 @@
       window.__hf.buildReady = window.__hf.buildReady || {};
       window.__hf.buildReady["f10"] = Promise.all([
         import("./assets/lib/kit.js"), import("./assets/lib/blocks/toy.js"), import("./assets/lib/blocks/animals.js")
-      ]).then(async ([K, T, A]) => {
+      ]).then(async ([K_, T, A]) => {
+        const K = K_;
         const { THREE, ease, range, lerp, clamp, smoothstep, mulberry32 } = K;
-        const D = 7.51;
+        const D = D0;   // o corpo trabalha no tempo de autoria
         const canvas = document.getElementById("f10-canvas");
 
-        const st = T.createToyStage(canvas, { fov: 50, ceu: ["#7FBFD0", "#E6E8C8"], nevoa: [40, 180] });
+        const st = T.createToyStage(canvas, { fov: 50, nevoa: [40, 180] });
         const S = st.scene, cam = st.cam;
         const city = T.rua({ len: 240, larg: 18, seed: 101, chao: 0x9cc46a }); S.add(city.group);
         const rr = mulberry32(102);
@@ -52,13 +64,15 @@
           eles.forEach((e, i) => { e.group.position.set(-4 + i * 4.5, 0, -48 + t * 1.3 - (i === 2 ? -2 : i * 3)); e.update(t, { passo: 0.8 }); });
           peq.forEach((a, i) => { const b = arbustos[i % 3]; const k = ease.inCubic(range(t, 3.3 + i * 0.2, 5.2 + i * 0.2)); a.group.position.set(lerp(0.5 - i, b.position.x, k), 0.12, lerp(-34 - i * 3, b.position.z, k)); A.face(a.group, b.position.x - (0.5 - i), b.position.z + 34); a.update(t, { passo: 4, salto: i % 2 ? 0 : 0.3 }); a.group.visible = k < 0.98; });
           const w = ease.inOutCubic(range(t, 3.0, 5.0));
+          st.vel = 0.6 * (1 - w); st.velT = t; st.velC = [540, 1150];
           cam.position.set(lerp(zx * 0.4 + 2, 9, w), lerp(2.8, 7, w), lerp(zz + 10, -20, w));
           cam.lookAt(lerp(0, -1, w), lerp(1.8, 2, w), lerp(zz - 2, -42, w));
           st.sol(0, lerp(zz, -40, w), 30);
           st.draw();
         }
 
-        await K.bindSeek(canvas, render, { warm: [st.warm, ...(st.extraWarm || [])], duration: D });
+        // DR foi lido na hora em que o script rodou (depois do inline o host pode mudar de atributos)
+        await K.bindSeek(canvas, (t) => render(t * D / DR), { warm: [st.warm, ...(st.extraWarm || [])], duration: DR });
       });
     })();
   </script>

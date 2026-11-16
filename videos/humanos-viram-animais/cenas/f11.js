@@ -1,5 +1,5 @@
-/*META {"rotulos": [{"de": 0.5, "ate": 3.2, "texto": "TECNOLOGIA <span class=\"y\">SEM DONO</span>"}]} */
-        const st = T.createToyStage(canvas, { fov: 42, ceu: ["#9CCAD3", "#E6DCC2"], nevoa: [14, 60] });
+/*META {"rotulos": [{"de": 0.5, "ate": 3.2, "texto": "TECNOLOGIA <span class=\"y\">SEM DONO</span>"}], "D0": 6.28} */
+        const st = T.createToyStage(canvas, { fov: 42, nevoa: [14, 60] });
         const S = st.scene, cam = st.cam;
         const chao = T.mesh(new THREE.PlaneGeometry(200, 200), 0xb9b09a, S, 0.95); chao.rotation.x = -Math.PI / 2; chao.castShadow = false;
         const rr = mulberry32(111);

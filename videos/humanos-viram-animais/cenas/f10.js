@@ -1,5 +1,5 @@
-/*META {"rotulos": [{"de": 5.0, "ate": 7.51, "texto": "SÓ <span class=\"y\">INSTINTO</span>"}]} */
-        const st = T.createToyStage(canvas, { fov: 50, ceu: ["#7FBFD0", "#E6E8C8"], nevoa: [40, 180] });
+/*META {"rotulos": [{"de": 5.0, "ate": 7.51, "texto": "SÓ <span class=\"y\">INSTINTO</span>"}], "D0": 7.51} */
+        const st = T.createToyStage(canvas, { fov: 50, nevoa: [40, 180] });
         const S = st.scene, cam = st.cam;
         const city = T.rua({ len: 240, larg: 18, seed: 101, chao: 0x9cc46a }); S.add(city.group);
         const rr = mulberry32(102);
@@ -19,6 +19,7 @@
           eles.forEach((e, i) => { e.group.position.set(-4 + i * 4.5, 0, -48 + t * 1.3 - (i === 2 ? -2 : i * 3)); e.update(t, { passo: 0.8 }); });
           peq.forEach((a, i) => { const b = arbustos[i % 3]; const k = ease.inCubic(range(t, 3.3 + i * 0.2, 5.2 + i * 0.2)); a.group.position.set(lerp(0.5 - i, b.position.x, k), 0.12, lerp(-34 - i * 3, b.position.z, k)); A.face(a.group, b.position.x - (0.5 - i), b.position.z + 34); a.update(t, { passo: 4, salto: i % 2 ? 0 : 0.3 }); a.group.visible = k < 0.98; });
           const w = ease.inOutCubic(range(t, 3.0, 5.0));
+          st.vel = 0.6 * (1 - w); st.velT = t; st.velC = [540, 1150];
           cam.position.set(lerp(zx * 0.4 + 2, 9, w), lerp(2.8, 7, w), lerp(zz + 10, -20, w));
           cam.lookAt(lerp(0, -1, w), lerp(1.8, 2, w), lerp(zz - 2, -42, w));
           st.sol(0, lerp(zz, -40, w), 30);

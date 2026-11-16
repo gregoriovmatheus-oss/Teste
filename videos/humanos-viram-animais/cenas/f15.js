@@ -1,5 +1,5 @@
-/*META {"rotulos": []} */
-        const st = T.createToyStage(canvas, { fov: 42, ceu: ["#E79A6A", "#F6DDB8"], nevoa: [30, 140], exposicao: 1.05 });
+/*META {"rotulos": [], "D0": 6.82} */
+        const st = T.createToyStage(canvas, { fov: 42, ceu: ["#5E6FD0", "#FFB070"], nevoa: [30, 140], exposicao: 1.05 });
         const S = st.scene, cam = st.cam;
         st.key.color.setHex(0xffa860); st.hemi.color.setHex(0xffd8b0);
         const city = T.rua({ len: 200, seed: 151, chao: 0xb6ae8a }); S.add(city.group);
@@ -22,7 +22,7 @@
         const foto = new THREE.Group();
         T.mesh(T.roundBox(2.2, 2.7, 0.25, 0.1), 0x8a5a3c, foto);
         const img = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 2.25), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.7 })); img.position.set(0, 1.35, 0.14); foto.add(img);
-        foto.position.set(0.5, 0.12, -14); foto.rotation.set(-0.2, 0.15, 0); S.add(foto);
+        foto.scale.setScalar(1.9); foto.position.set(0.5, 0.12, -14); foto.rotation.set(-0.2, 0.15, 0); S.add(foto);
         const ele = A.createAnimal("elefante", { fase: 0.3 }); ele.group.scale.setScalar(1.15); A.face(ele.group, 0, -1); S.add(ele.group);
         function render(t) {
           const k = ease.outCubic(range(t, 0, 4.6));
@@ -30,8 +30,8 @@
           const walking = t < 4.6;
           ele.update(t, { passo: walking ? 0.55 * (1 - range(t, 3.8, 4.6)) : 0, tromba: range(t, 4.5, 6.2) * -0.6, cabeca: -0.25 * range(t, 4.3, 5.5) });
           const e = ease.inOutSine(clamp(t / D));
-          cam.position.set(lerp(-6.5, -4.2, e), lerp(4.2, 3.8, e), lerp(16, 1.0, e));
-          cam.lookAt(lerp(0, 0.5, e), lerp(2.4, 1.3, e), lerp(1, -14, e));
+          cam.position.set(lerp(-7, -5.5, e), lerp(4.6, 4.2, e), lerp(18, 4.0, e));
+          cam.lookAt(lerp(0, 0.5, e), lerp(2.4, 2.2, e), lerp(1, -12, e));
           st.sol(0, -6, 25);
           st.draw();
         }

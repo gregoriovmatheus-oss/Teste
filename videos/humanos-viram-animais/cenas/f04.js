@@ -1,4 +1,4 @@
-/*META {"rotulos": [{"de": 2.7, "ate": 5.8, "texto": "<span class=\"y\">TONELADAS</span>"}]} */
+/*META {"rotulos": [{"de": 2.7, "ate": 5.8, "texto": "<span class=\"y\">TONELADAS</span>"}], "D0": 6.0} */
         const st = T.createToyStage(canvas, { fov: 50, nevoa: [50, 220] });
         const S = st.scene, cam = st.cam;
         /* beco estreito em x = -200 */

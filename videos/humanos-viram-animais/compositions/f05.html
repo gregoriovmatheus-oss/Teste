@@ -1,25 +1,36 @@
-<!-- f05: cena 3D de massinha. Lógica em cenas/f05.js (gerado por scripts/monta-cenas.py). -->
+<!-- f05: cena 3D anime cel-shaded (R09). Lógica em cenas/f05.js (gerado por scripts/monta-cenas.py).
+     Tempos escritos para 5.51 s e esticados para a duração real do host (data-duration). -->
 <template>
   <style>
-    #root { position: absolute; inset: 0; overflow: hidden; background: #8CC7D8; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #3A7BD5; }
     #f05-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+    /* rótulos 2D: y 680-980, acima da faixa da legenda (1005-1235) */
     .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
     .rot-t { display: block; font-family: "Anton", sans-serif; font-size: 92px; line-height: 1.0; color: #fff; text-transform: uppercase;
-      -webkit-text-stroke: 4px #1a1410; paint-order: stroke fill; text-shadow: 7px 7px 0 #1a1410; }
-    .rot-t .y { color: #F2B53A; }
+      -webkit-text-stroke: 4px #1A1A2E; paint-order: stroke fill; text-shadow: 6px 6px 0 #1A1A2E; opacity: 0; }
+    .rot-t .y { color: #FF5A5F; }
     .rot-t .p { font-size: 70px; }
 
   </style>
   <div id="root" data-composition-id="f05" data-width="1080" data-height="1920">
     <canvas id="f05-canvas" width="1080" height="1920"></canvas>
-    <div id="f05-r1" class="clip rot" style="top: 700px" data-start="3.85" data-duration="1.66"><span id="f05-r1-in" class="rot-t">TUDO É <span class="y">AMEAÇA</span></span></div>
+    <div id="f05-r1" class="rot" style="top: 700px"><span id="f05-r1-in" class="rot-t">TUDO É <span class="y">AMEAÇA</span></span></div>
   </div>
   <script>
     (function () {
+      const D0 = 5.51;
+      // duração real = data-duration do host da cena (muda quando a narração muda)
+      const durReal = () => {
+        for (let n = document.getElementById("f05-canvas"); n; n = n.parentElement) {
+          if (n.getAttribute && n.getAttribute("data-composition-id") === "f05" && n.hasAttribute("data-duration")) return parseFloat(n.getAttribute("data-duration")) || D0;
+        }
+        return D0;
+      };
+      const DR = durReal(), K = DR / D0;
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f05-r1-in", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2)" }, 3.85);
-      tl.to("#f05-r1-in", { opacity: 0, y: -20, duration: 0.25, ease: "power2.in" }, 5.21);
-      tl.set({}, {}, 5.51);
+      tl.fromTo("#f05-r1-in", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2)" }, 3.85 * K);
+      tl.to("#f05-r1-in", { opacity: 0, y: -20, duration: 0.25, ease: "power2.in" }, 5.21 * K);
+      tl.set({}, {}, DR);
       window.__timelines = window.__timelines || {};
       window.__timelines["f05"] = tl;
 
@@ -27,16 +38,17 @@
       window.__hf.buildReady = window.__hf.buildReady || {};
       window.__hf.buildReady["f05"] = Promise.all([
         import("./assets/lib/kit.js"), import("./assets/lib/blocks/toy.js"), import("./assets/lib/blocks/animals.js")
-      ]).then(async ([K, T, A]) => {
+      ]).then(async ([K_, T, A]) => {
+        const K = K_;
         const { THREE, ease, range, lerp, clamp, smoothstep, mulberry32 } = K;
-        const D = 5.51;
+        const D = D0;   // o corpo trabalha no tempo de autoria
         const canvas = document.getElementById("f05-canvas");
 
         const st = T.createToyStage(canvas, { fov: 55, nevoa: [12, 70] });
         const S = st.scene, cam = st.cam;
         const city = T.rua({ len: 160, seed: 51 }); city.group.rotation.y = Math.PI / 2; S.add(city.group);
         const rato = A.createAnimal("rato", { fase: 0.2 }); rato.group.scale.setScalar(1.4); S.add(rato.group);
-        const coelho = A.createAnimal("coelho", { fase: 0.4 }); coelho.group.scale.setScalar(1.3); S.add(coelho.group);
+        const coelho = A.createAnimal("coelho", { fase: 0.4 }); coelho.group.scale.setScalar(1.8); S.add(coelho.group);
         const lixo = T.mesh(new THREE.CylinderGeometry(0.55, 0.48, 1.3, 18), 0x5f8a5a, S); lixo.position.set(6.2, 0.65 + 0.4, -8.6);
         const tampa = T.mesh(T.roundBox(1.2, 0.15, 1.2, 0.07), 0x4f7a4a, S); tampa.position.set(6.2, 1.75, -8.6);
         const e1 = A.createAnimal("elefante", { fase: 0.1 }); e1.group.scale.setScalar(1.3); A.face(e1.group, 0, 1); S.add(e1.group);
@@ -50,10 +62,10 @@
           e1.group.position.set(1.5, 0.12, -9 + t * 2.3); e1.update(t, { passo: 0.9 });
           e2.group.position.set(6.5, 0.12, 9 - t * 2.4); e2.update(t, { passo: 1.2 });
           pc.position.set(-14 + t * 9, 0.12, -4);
-          const ct = range(t, 3.4, 4.6);
-          coelho.group.position.set(lerp(3.5, 6.2, ease.outCubic(ct)), 0.4, lerp(-6.5, -9.3, ease.outCubic(ct)));
+          const ct = range(t, 2.6, 4.2);
+          coelho.group.position.set(lerp(2.8, 5.4, ease.outCubic(ct)), 0.4, lerp(-6.2, -7.8, ease.outCubic(ct)));
           A.face(coelho.group, 1, -1);
-          coelho.update(t, { passo: ct > 0 && ct < 1 ? 3 : 0, salto: ct > 0 && ct < 1 ? 0.3 : 0 });
+          coelho.update(t, { passo: ct > 0 && ct < 1 ? 3 : 0, salto: ct > 0 && ct < 1 ? 0.3 : 0, cabeca: ct >= 1 ? Math.sin(t * 3) * 0.15 : 0 });
           const sh = T.shaker(5)(t, 0.04 + 0.08 * Math.max(0, Math.sin(t * 0.9 * 6.283)) * (1 - range(t, 3, 4)));
           const late = ease.inOutSine(range(t, 3.3, 5.0));
           cam.position.set(lerp(mx - 2.4, 4.0, late) + sh[0], lerp(0.55, 1.4, late) + sh[1], lerp(mz + 2.4, -4.2, late));
@@ -62,7 +74,8 @@
           st.draw();
         }
 
-        await K.bindSeek(canvas, render, { warm: [st.warm, ...(st.extraWarm || [])], duration: D });
+        // DR foi lido na hora em que o script rodou (depois do inline o host pode mudar de atributos)
+        await K.bindSeek(canvas, (t) => render(t * D / DR), { warm: [st.warm, ...(st.extraWarm || [])], duration: DR });
       });
     })();
   </script>

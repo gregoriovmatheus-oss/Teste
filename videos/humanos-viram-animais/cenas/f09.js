@@ -1,5 +1,5 @@
-/*META {"rotulos": [{"de": 0.8, "ate": 3.6, "texto": "A NATUREZA <span class=\"y\">VOLTA</span>"}]} */
-        const st = T.createToyStage(canvas, { fov: 50, ceu: 0x8cc7d8, nevoa: [50, 200] });
+/*META {"rotulos": [{"de": 0.8, "ate": 3.6, "texto": "A NATUREZA <span class=\"y\">VOLTA</span>"}], "D0": 5.54} */
+        const st = T.createToyStage(canvas, { fov: 50, ceu: 0x5a8fd8, nevoa: [50, 200] });
         const S = st.scene, cam = st.cam;
         const city = T.rua({ len: 200, seed: 91 }); S.add(city.group);
         const rr = mulberry32(92);
@@ -10,7 +10,7 @@
         city.buildings.forEach((b, bi) => { if (Math.abs(b.position.z) > 60) return; for (let i = 0; i < 4; i++) { const v = T.mesh(T.SPH, T.PAL.verdeEsc, b, 0.9); v.position.set((rr() - 0.5) * 5, rr() * b.userData.h * 0.8, 4.2); v.userData.s = 1 + rr() * 1.4; v.userData.t0 = 1 + rr() * 3.5; vinhas.push(v); } });
         const zeb = A.createAnimal("zebra", { fase: 0.2 }); A.face(zeb.group, 0, 1); S.add(zeb.group);
         const coe = [0, 1].map((i) => { const c = A.createAnimal("coelho", { fase: i * 0.4 }); c.group.scale.setScalar(1.5); A.face(c.group, 0.3, 1); S.add(c.group); return c; });
-        const skyD = new THREE.Color(0x8cc7d8), skyN = new THREE.Color(0x2b3550), tmp = new THREE.Color();
+        const skyD = new THREE.Color(0x5a8fd8), skyN = new THREE.Color(0x2b2850), tmp = new THREE.Color();
         function render(t) {
           const day = 0.5 + 0.5 * Math.cos(t * 2 * Math.PI / 1.8);
           tmp.copy(skyN).lerp(skyD, day); S.background = tmp.clone(); S.fog.color.copy(tmp);

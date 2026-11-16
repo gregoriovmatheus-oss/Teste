@@ -1,5 +1,5 @@
-/*META {"rotulos": [{"de": 0.6, "ate": 3.2, "texto": "MILHÕES NO <span class=\"y\">OCEANO</span>"}]} */
-        const st = T.createToyStage(canvas, { fov: 55, ceu: ["#2E86A8", "#0B3550"], nevoa: [6, 75], corNevoa: "#185a7a", luz: 0.9 });
+/*META {"rotulos": [{"de": 0.6, "ate": 3.2, "texto": "MILHÕES NO <span class=\"y\">OCEANO</span>"}], "D0": 6.13} */
+        const st = T.createToyStage(canvas, { fov: 55, ceu: ["#2E86A8", "#0B3550"], nevoa: [6, 75], corNevoa: "#185a7a", luz: 0.9, nuvens: 0 });
         const S = st.scene, cam = st.cam;
         const bgMar = S.background, bgCeu = T.gradTex("#6FB6CC", "#D7EBE6");
         st.hemi.color.setHex(0xbfe8ff);
@@ -22,12 +22,33 @@
           polvo.group.position.set(4, -26, -16); polvo.group.rotation.y = 0.8 + t * 0.2; polvo.update(t, {});
           peixes.forEach((f, i) => { const [a, b, c, ph] = f.o; const ang = t * 0.5 + a * 2; f.group.position.set(-3 + Math.cos(ang) * (7 + a * 4) + b * 3, -9 + b * 5 + Math.sin(t * 2 + ph) * 0.3, -14 + Math.sin(ang) * (5 + c * 3)); f.group.rotation.y = -ang - Math.PI / 2; f.update(t, { nada: 3 }); });
           bolhas.forEach((b) => { const [x, y0, z, s] = b.o; b.position.set(x + Math.sin(t * 2 + y0) * 0.3, -26 + ((y0 + t * 3) % 26), z); b.scale.setScalar(s); });
-          const d = ease.inOutCubic(range(t, 0, 1.4));
-          const cy = lerp(3, -8, d), cz = lerp(8, 6, d) - t * 0.8;
-          S.background = cy > 0 ? bgCeu : bgMar;
-          S.fog.near = cy > 0 ? 60 : 6; S.fog.far = cy > 0 ? 300 : 75;
+          const d = ease.inOutCubic(range(t, 0, 1.6));
+          const cy = lerp(-2, -8, d), cz = lerp(8, 6, d) - t * 0.8;
           cam.position.set(Math.sin(t * 0.3) * 2, cy, cz);
-          cam.lookAt(0, lerp(-8, -11, d), -20);
+          cam.lookAt(0, lerp(-6, -11, d), -20);
           st.sol(0, -16, 40, -12);
           st.draw();
+          // linha d'água descendo pela tela (a câmera afunda) e bolhas subindo
+          const c = st.ctx;
+          if (d < 1) {
+            const yl = lerp(-60, 2000, d);
+            c.save();
+            c.beginPath(); c.moveTo(0, 1920);
+            for (let x = 0; x <= 1080; x += 30) c.lineTo(x, yl + Math.sin(x / 70 + t * 9) * 22);
+            c.lineTo(1080, 1920); c.closePath();
+            const g = c.createLinearGradient(0, yl, 0, yl + 900); g.addColorStop(0, "rgba(255,244,214,0.92)"); g.addColorStop(1, "rgba(140,210,240,0.92)");
+            c.fillStyle = g; c.fill();
+            c.beginPath(); for (let x = 0; x <= 1080; x += 30) c[x ? "lineTo" : "moveTo"](x, yl + Math.sin(x / 70 + t * 9) * 22);
+            c.lineWidth = 8; c.strokeStyle = "#1A1A2E"; c.stroke();
+            c.restore();
+          }
+          const rb = mulberry32(66);
+          c.save(); c.lineWidth = 4; c.strokeStyle = "rgba(26,26,46,0.8)"; c.fillStyle = "rgba(255,244,214,0.35)";
+          for (let i = 0; i < 40; i++) {
+            const x0 = rb() * 1080, t0 = rb() * 2.2, sp = 500 + rb() * 700, r = 8 + rb() * 22, u = t - t0;
+            if (u < 0 || u > 2.6) continue;
+            const y = 1950 - u * sp, x = x0 + Math.sin(u * 5 + i) * 18;
+            c.beginPath(); c.arc(x, y, r, 0, 6.3); c.fill(); c.stroke();
+          }
+          c.restore();
         }

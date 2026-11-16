@@ -1,5 +1,5 @@
 /**
- * animals.js — fábrica de bichos e bonecos low-poly de massinha (mesma cara em todas as cenas).
+ * animals.js — fábrica de bichos e bonecos em anime cel-shaded (R09; toon + contorno via toy.js) (mesma cara em todas as cenas).
  *
  *   import { createAnimal, face } from "./assets/lib/blocks/animals.js";
  *   const leao = createAnimal("leao", { fase: 0.3 });   scene.add(leao.group);
@@ -37,10 +37,14 @@ function blob(p, c, s, pos, rough = 0.7) { const m = mesh(SPH, c, p, rough); m.s
 function piv(p, pos, rz = 0) { const g = new THREE.Group(); g.position.set(...pos); g.rotation.z = rz; p.add(g); return g; }
 function limb(p, pos, len, r, c, rz = 0) { const g = piv(p, pos, rz); mesh(capGeo(r, len), c, g); g.userData.len = len; return g; }
 function cone(p, c, r, h, pos, rz = 0, rx = 0) { const m = mesh(coneGeo(r, h), c, p); m.position.set(...pos); m.rotation.z = rz; m.rotation.x = rx; return m; }
+// olhos grandes de anime: globo branco, íris escura grande e dois brilhos (#FFF4D6). Olham para +x.
 function eyes(p, x, y, z, r = 0.06) {
+  const R = r * 1.9;
   for (const s of [1, -1]) {
-    blob(p, M(0x1d1b22, 0.25), [r, r, r], [x, y, s * z]);
-    blob(p, M(0xffffff, 0.3, { emissive: 0xffffff, emissiveIntensity: 0.4 }), [r * 0.3, r * 0.3, r * 0.3], [x + r * 0.7, y + r * 0.4, s * z + r * 0.2 * s]);
+    const w = blob(p, 0xffffff, [R * 0.7, R, R * 0.85], [x - R * 0.2, y, s * z]);
+    const ir = mesh(SPH, M(0x1d1b22, 0.25), p, 0.25, false); ir.scale.set(R * 0.45, R * 0.72, R * 0.6); ir.position.set(x + R * 0.18, y - R * 0.05, s * z);
+    const h1 = mesh(SPH, M(0xfff4d6, 0.2, { emissive: 0xfff4d6, emissiveIntensity: 0.9 }), p, 0.2, false); h1.scale.setScalar(R * 0.26); h1.position.set(x + R * 0.5, y + R * 0.3, s * z + s * R * 0.12);
+    const h2 = mesh(SPH, M(0xfff4d6, 0.2, { emissive: 0xfff4d6, emissiveIntensity: 0.9 }), p, 0.2, false); h2.scale.setScalar(R * 0.12); h2.position.set(x + R * 0.5, y - R * 0.3, s * z - s * R * 0.12);
   }
 }
 // anel (listra) em volta de um elipsoide de raios (ry, rz) no plano yz, na posição x
@@ -185,9 +189,9 @@ B.aguia = () => {
   eyes(head, 0.13, 0.05, 0.1, 0.03);
   const wings = [1, -1].map((s) => {
     const w = piv(body, [0, 0.68, s * 0.2]);
-    blob(w, C, [0.32, 0.05, 0.6], [-0.05, 0, s * 0.55]);
-    const tip = piv(w, [0, 0, s * 1.05]);
-    blob(tip, 0x553a28, [0.25, 0.04, 0.5], [-0.1, 0, s * 0.4]);
+    blob(w, C, [0.45, 0.07, 0.75], [-0.05, 0, s * 0.68]);
+    const tip = piv(w, [0, 0, s * 1.35]);
+    blob(tip, 0x553a28, [0.38, 0.06, 0.65], [-0.12, 0, s * 0.5]);
     w.userData.tip = tip;
     return w;
   });

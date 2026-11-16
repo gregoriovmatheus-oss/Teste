@@ -1,5 +1,5 @@
-/*META {"rotulos": [{"de": 0.2, "ate": 2.6, "texto": "A TERRA <span class=\"y\">CONTINUA</span>"}]} */
-        const st = T.createToyStage(canvas, { fov: 45, ceu: ["#7FBFD0", "#F3E2C4"], nevoa: [80, 400] });
+/*META {"rotulos": [{"de": 0.2, "ate": 2.6, "texto": "A TERRA <span class=\"y\">CONTINUA</span>"}], "D0": 5.88} */
+        const st = T.createToyStage(canvas, { fov: 45, nevoa: [80, 400] });
         const S = st.scene, cam = st.cam;
         const rr = mulberry32(141);
         const ilha = (x, z, cor) => { const g = new THREE.Group(); g.position.set(x, 0, z); S.add(g); const b = T.mesh(new THREE.CylinderGeometry(12, 11, 3, 40), 0xd98a4e, g, 0.85); b.position.y = -1.5; const tp = T.mesh(new THREE.CylinderGeometry(12.2, 12.2, 0.8, 40), cor, g, 0.9); tp.position.y = 0.4 - 0.4; return g; };
@@ -27,11 +27,16 @@
           bF.update(t, { nada: 0.5 });
           rF.group.position.set(Math.cos(-t * 0.6) * 2, 0.4, Math.sin(-t * 0.6) * 2); A.face(rF.group, Math.sin(-t * 0.6), -Math.cos(-t * 0.6)); rF.update(t, { passo: 1.3 });
           gF.group.position.set(Math.cos(t * 0.5) * 2, 0.4, Math.sin(t * 0.5) * 2); A.face(gF.group, -Math.sin(t * 0.5), Math.cos(t * 0.5)); gF.update(t, { passo: 1 });
+          const camIlha = (s, lt) => { const [ix, iz] = P[s], ang = lt * 0.4 + s; return [ix + Math.sin(ang) * (34 - lt * 4), 15 - lt * 2, iz + Math.cos(ang) * (34 - lt * 4), ix, iz]; };
           const seg = Math.min(3, Math.floor(t / 1.05));
           const top = ease.inOutCubic(range(t, 4.1, 5.88));
-          const [ix, iz] = P[seg], lt = t - seg * 1.05;
-          const ang = lt * 0.4 + seg;
-          const close = [ix + Math.sin(ang) * (34 - lt * 4), 15 - lt * 2, iz + Math.cos(ang) * (34 - lt * 4)];
+          const lt = t - seg * 1.05;
+          // whip-pan: nos últimos 0,22 s de cada ilha a câmera chicoteia até a próxima, com blur
+          const wp = seg < 3 ? range(lt, 0.83, 1.05) : 0, we = ease.inOutCubic(wp);
+          const a0 = camIlha(seg, lt), a1 = seg < 3 ? camIlha(seg + 1, 0) : a0;
+          const close = a0.map((v, i) => lerp(v, a1[i], we));
+          const ix = close[3], iz = close[4];
+          st.blur = 26 * Math.sin(Math.PI * wp);
           const far = [0, 120, 60];
           cam.position.set(lerp(close[0], far[0], top), lerp(close[1], far[1], top), lerp(close[2], far[2], top));
           cam.lookAt(lerp(ix, 0, top), lerp(3, 0, top), lerp(iz, 0, top));

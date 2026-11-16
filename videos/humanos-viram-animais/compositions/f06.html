@@ -1,25 +1,36 @@
-<!-- f06: cena 3D de massinha. Lógica em cenas/f06.js (gerado por scripts/monta-cenas.py). -->
+<!-- f06: cena 3D anime cel-shaded (R09). Lógica em cenas/f06.js (gerado por scripts/monta-cenas.py).
+     Tempos escritos para 6.13 s e esticados para a duração real do host (data-duration). -->
 <template>
   <style>
-    #root { position: absolute; inset: 0; overflow: hidden; background: #8CC7D8; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #3A7BD5; }
     #f06-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+    /* rótulos 2D: y 680-980, acima da faixa da legenda (1005-1235) */
     .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
     .rot-t { display: block; font-family: "Anton", sans-serif; font-size: 92px; line-height: 1.0; color: #fff; text-transform: uppercase;
-      -webkit-text-stroke: 4px #1a1410; paint-order: stroke fill; text-shadow: 7px 7px 0 #1a1410; }
-    .rot-t .y { color: #F2B53A; }
+      -webkit-text-stroke: 4px #1A1A2E; paint-order: stroke fill; text-shadow: 6px 6px 0 #1A1A2E; opacity: 0; }
+    .rot-t .y { color: #FF5A5F; }
     .rot-t .p { font-size: 70px; }
 
   </style>
   <div id="root" data-composition-id="f06" data-width="1080" data-height="1920">
     <canvas id="f06-canvas" width="1080" height="1920"></canvas>
-    <div id="f06-r1" class="clip rot" style="top: 700px" data-start="0.6" data-duration="2.6"><span id="f06-r1-in" class="rot-t">MILHÕES NO <span class="y">OCEANO</span></span></div>
+    <div id="f06-r1" class="rot" style="top: 700px"><span id="f06-r1-in" class="rot-t">MILHÕES NO <span class="y">OCEANO</span></span></div>
   </div>
   <script>
     (function () {
+      const D0 = 6.13;
+      // duração real = data-duration do host da cena (muda quando a narração muda)
+      const durReal = () => {
+        for (let n = document.getElementById("f06-canvas"); n; n = n.parentElement) {
+          if (n.getAttribute && n.getAttribute("data-composition-id") === "f06" && n.hasAttribute("data-duration")) return parseFloat(n.getAttribute("data-duration")) || D0;
+        }
+        return D0;
+      };
+      const DR = durReal(), K = DR / D0;
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f06-r1-in", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2)" }, 0.6);
-      tl.to("#f06-r1-in", { opacity: 0, y: -20, duration: 0.25, ease: "power2.in" }, 2.9);
-      tl.set({}, {}, 6.13);
+      tl.fromTo("#f06-r1-in", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2)" }, 0.6 * K);
+      tl.to("#f06-r1-in", { opacity: 0, y: -20, duration: 0.25, ease: "power2.in" }, 2.9 * K);
+      tl.set({}, {}, DR);
       window.__timelines = window.__timelines || {};
       window.__timelines["f06"] = tl;
 
@@ -27,12 +38,13 @@
       window.__hf.buildReady = window.__hf.buildReady || {};
       window.__hf.buildReady["f06"] = Promise.all([
         import("./assets/lib/kit.js"), import("./assets/lib/blocks/toy.js"), import("./assets/lib/blocks/animals.js")
-      ]).then(async ([K, T, A]) => {
+      ]).then(async ([K_, T, A]) => {
+        const K = K_;
         const { THREE, ease, range, lerp, clamp, smoothstep, mulberry32 } = K;
-        const D = 6.13;
+        const D = D0;   // o corpo trabalha no tempo de autoria
         const canvas = document.getElementById("f06-canvas");
 
-        const st = T.createToyStage(canvas, { fov: 55, ceu: ["#2E86A8", "#0B3550"], nevoa: [6, 75], corNevoa: "#185a7a", luz: 0.9 });
+        const st = T.createToyStage(canvas, { fov: 55, ceu: ["#2E86A8", "#0B3550"], nevoa: [6, 75], corNevoa: "#185a7a", luz: 0.9, nuvens: 0 });
         const S = st.scene, cam = st.cam;
         const bgMar = S.background, bgCeu = T.gradTex("#6FB6CC", "#D7EBE6");
         st.hemi.color.setHex(0xbfe8ff);
@@ -55,17 +67,39 @@
           polvo.group.position.set(4, -26, -16); polvo.group.rotation.y = 0.8 + t * 0.2; polvo.update(t, {});
           peixes.forEach((f, i) => { const [a, b, c, ph] = f.o; const ang = t * 0.5 + a * 2; f.group.position.set(-3 + Math.cos(ang) * (7 + a * 4) + b * 3, -9 + b * 5 + Math.sin(t * 2 + ph) * 0.3, -14 + Math.sin(ang) * (5 + c * 3)); f.group.rotation.y = -ang - Math.PI / 2; f.update(t, { nada: 3 }); });
           bolhas.forEach((b) => { const [x, y0, z, s] = b.o; b.position.set(x + Math.sin(t * 2 + y0) * 0.3, -26 + ((y0 + t * 3) % 26), z); b.scale.setScalar(s); });
-          const d = ease.inOutCubic(range(t, 0, 1.4));
-          const cy = lerp(3, -8, d), cz = lerp(8, 6, d) - t * 0.8;
-          S.background = cy > 0 ? bgCeu : bgMar;
-          S.fog.near = cy > 0 ? 60 : 6; S.fog.far = cy > 0 ? 300 : 75;
+          const d = ease.inOutCubic(range(t, 0, 1.6));
+          const cy = lerp(-2, -8, d), cz = lerp(8, 6, d) - t * 0.8;
           cam.position.set(Math.sin(t * 0.3) * 2, cy, cz);
-          cam.lookAt(0, lerp(-8, -11, d), -20);
+          cam.lookAt(0, lerp(-6, -11, d), -20);
           st.sol(0, -16, 40, -12);
           st.draw();
+          // linha d'água descendo pela tela (a câmera afunda) e bolhas subindo
+          const c = st.ctx;
+          if (d < 1) {
+            const yl = lerp(-60, 2000, d);
+            c.save();
+            c.beginPath(); c.moveTo(0, 1920);
+            for (let x = 0; x <= 1080; x += 30) c.lineTo(x, yl + Math.sin(x / 70 + t * 9) * 22);
+            c.lineTo(1080, 1920); c.closePath();
+            const g = c.createLinearGradient(0, yl, 0, yl + 900); g.addColorStop(0, "rgba(255,244,214,0.92)"); g.addColorStop(1, "rgba(140,210,240,0.92)");
+            c.fillStyle = g; c.fill();
+            c.beginPath(); for (let x = 0; x <= 1080; x += 30) c[x ? "lineTo" : "moveTo"](x, yl + Math.sin(x / 70 + t * 9) * 22);
+            c.lineWidth = 8; c.strokeStyle = "#1A1A2E"; c.stroke();
+            c.restore();
+          }
+          const rb = mulberry32(66);
+          c.save(); c.lineWidth = 4; c.strokeStyle = "rgba(26,26,46,0.8)"; c.fillStyle = "rgba(255,244,214,0.35)";
+          for (let i = 0; i < 40; i++) {
+            const x0 = rb() * 1080, t0 = rb() * 2.2, sp = 500 + rb() * 700, r = 8 + rb() * 22, u = t - t0;
+            if (u < 0 || u > 2.6) continue;
+            const y = 1950 - u * sp, x = x0 + Math.sin(u * 5 + i) * 18;
+            c.beginPath(); c.arc(x, y, r, 0, 6.3); c.fill(); c.stroke();
+          }
+          c.restore();
         }
 
-        await K.bindSeek(canvas, render, { warm: [st.warm, ...(st.extraWarm || [])], duration: D });
+        // DR foi lido na hora em que o script rodou (depois do inline o host pode mudar de atributos)
+        await K.bindSeek(canvas, (t) => render(t * D / DR), { warm: [st.warm, ...(st.extraWarm || [])], duration: DR });
       });
     })();
   </script>
