@@ -6,12 +6,12 @@ _,_,lw=lf0(w,srw)
 y,sr=sf.read(sys.argv[1]); y=y.astype(np.float64)
 f0,t,la=lf0(y,sr); sp=pw.cheaptrick(y,f0,t,sr); ap=pw.d4c(y,f0,t,sr)
 # entonação: mesma média e mesma variação do Will (menos monótono = menos robô)
-k=lw.std()/la.std(); v=f0>0
+k=min(lw.std()/la.std(),1.25); v=f0>0
 f0[v]=np.exp(lw.mean()+(np.log(f0[v])-la.mean())*k)
 f0=ss.medfilt(f0,5)
 # timbre mais encorpado + aperiodicidade suavizada (tira o zumbido metálico)
 fq=np.linspace(0,1,sp.shape[1]); sp=np.array([np.interp(fq*0.95,fq,r) for r in sp])
-ap=ss.uniform_filter1d(ap,9,axis=0) if hasattr(ss,"uniform_filter1d") else np.apply_along_axis(lambda c:np.convolve(c,np.ones(9)/9,"same"),0,ap)
+ap=ss.uniform_filter1d(ap,15,axis=0) if hasattr(ss,"uniform_filter1d") else np.apply_along_axis(lambda c:np.convolve(c,np.ones(9)/9,"same"),0,ap)
 z=pw.synthesize(*(np.ascontiguousarray(a) for a in (f0,sp,ap)),sr)
 # EQ idêntica ao Will (curva medida, sem limite)
 def L(x):
