@@ -7,7 +7,7 @@
         const oc = off.getContext("2d");
         function render(t) {
           const e = ease.inOutSine(range(t, 0, 3.54));
-          cam.position.set(lerp(22, -10, e), lerp(30, 24, e), lerp(58, 52, e));
+          cam.position.set(lerp(6, -5, e), lerp(36, 30, e), lerp(62, 56, e));
           cam.lookAt(0, 3, lerp(-12, -18, e));
           st.sol(0, 0, 80);
           // antes: cidade limpa, luzes acesas
