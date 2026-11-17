@@ -53,9 +53,9 @@
         const S = st.scene, cam = st.cam;
         st.bloom = 0.5;
         S.environment = null;
-        LUA.estrelas(S, { n: 2800, r: 400, seed: 111 });
+        LUA.ceuDoc(S, { seed: 111, n: 5000, via: 0.32, raio: 400 });
         const SUN = new THREE.Vector3(-200, 60, 160);
-        const E = LUA.terra(S, { r: 1 }); E.setSol(SUN); E.grupo.rotation.z = 0.41;
+        const E = await LUA.terraDoc(S, { r: 1 }); E.setSol(SUN); E.grupo.rotation.z = 0.41;
         st.key.position.copy(SUN); st.key.target.position.set(0, 0, 0); st.key.castShadow = false; st.key.intensity = 3.2; st.key.color.set(0xfff1e0);
         st.hemi.intensity = 0.2; st.hemi.color.set(0x8fa8d8); st.rim.intensity = 0;
         const R0 = 4, luaM = LUA.luaEsfera(0.32); S.add(luaM);
@@ -89,7 +89,7 @@
           const c = st.ctx, fa = LUA.borda(t, D);
           const [x, y] = LUA.proj(b, cam);
           LUA.tag(c, "+3,8 CM/ANO", x, y - 60, { a: fa * range(t, 3.1, 3.5), tam: 32, cor: "#ff8a4c" });
-          LUA.tag(c, "ESCALA EXAGERADA", 420, 300, { a: fa * range(t, 2.2, 2.6) * 0.9, tam: 24, fundo: "rgba(8,10,20,0.4)" });
+          LUA.tag(c, "ESCALA EXAGERADA", 420, 1330, { a: fa * range(t, 2.2, 2.6) * 0.9, tam: 24, fundo: "rgba(8,10,20,0.4)" });
         }
 
         // DR foi lido na hora em que o script rodou (depois do inline o host pode mudar de atributos)

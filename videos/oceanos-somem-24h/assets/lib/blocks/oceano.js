@@ -340,7 +340,7 @@ export function etiqueta(ctx, cam, pos, texto, { dx = 70, dy = -50, cor = "#ffff
   if (p.atras) return;
   ctx.save();
   ctx.globalAlpha = clamp(a);
-  const tx = clamp(p.x + dx, 60, 1020), ty = clamp(p.y + dy, 190, 1880);
+  const tx = clamp(p.x + dx, 60, 1020), ty = clamp(p.y + dy, 450, 1880);
   ctx.strokeStyle = destaque; ctx.lineWidth = 3;
   ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(tx, ty); ctx.stroke();
   if (ponto) { ctx.fillStyle = destaque; ctx.beginPath(); ctx.arc(p.x, p.y, 7, 0, 6.2832); ctx.fill(); }
@@ -413,4 +413,34 @@ export function peixe(cor = 0xd9a441, seed = 1) {
   add(BOLA_P, TOON({ color: 0x0a0a0a, roughness: 0.1 }), [0.04, 0.04, 0.03], [0.34, 0.04, 0.09]);
   add(BOLA_P, TOON({ color: 0x0a0a0a, roughness: 0.1 }), [0.04, 0.04, 0.03], [0.34, 0.04, -0.09]);
   return { group, tail, mat };
+}
+
+/* ---------- espaço documental com terra.js (Terra NASA, céu, Sol) ---------- */
+// TERRA = módulo terra.js importado pela cena. solDir = de onde vem a luz. Devolve { E, C, SOL, dir }.
+export async function espacoDoc(st, TERRA, { solDir = [-0.8, 0.3, 0.55], solDist = 420, solRaio = 7, via = 0.55 } = {}) {
+  const S = st.scene;
+  S.background = new THREE.Color(0x000000); S.fog = null; S.environment = null;
+  st.hemi.intensity = 0.05; st.key.intensity = 0.0; st.rim.intensity = 0.0; st.key.castShadow = false;
+  const C = TERRA.createCeu({ seed: 7, n: 5000, via }); S.add(C);
+  const E = await TERRA.createTerra({ raio: 1 }); S.add(E.group);
+  const dir = new THREE.Vector3(...solDir).normalize();
+  E.sol.copy(dir);
+  const SOL = TERRA.createSol({ raio: solRaio, halo: 60 }); SOL.group.position.copy(dir).multiplyScalar(solDist); S.add(SOL.group);
+  st.bloom = 0.7;
+  return { E, C, SOL, dir };
+}
+// costura das dorsais sobre a Terra do terra.js (tubos laranja que crescem com prog 0..1)
+export function dorsaisTerra(E, { cor = 0xff8a4c, r = 1.004, raio = 0.0045 } = {}) {
+  const tubos = DORSAIS.map((L) => {
+    const pts = [];
+    for (let i = 1; i < L.length; i++) {
+      let [a0, b0] = L[i - 1], [a1, b1] = L[i];
+      if (a1 - a0 > 180) a1 -= 360; else if (a0 - a1 > 180) a1 += 360;
+      for (let k = 0; k < 6; k++) pts.push(E.ponto(lerp(a0, a1, k / 6), lerp(b0, b1, k / 6), r));
+    }
+    const l = L[L.length - 1]; pts.push(E.ponto(l[0], l[1], r));
+    const m = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), pts.length * 3, raio, 5, false), new THREE.MeshBasicMaterial({ color: cor, toneMapped: false }));
+    E.earth.add(m); return m;
+  });
+  return (prog) => { for (const m of tubos) { const n = m.geometry.index.count; m.geometry.setDrawRange(0, Math.floor((n / 6) * clamp(prog)) * 6); m.visible = prog > 0; } };
 }

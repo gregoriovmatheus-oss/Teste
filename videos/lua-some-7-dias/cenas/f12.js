@@ -1,4 +1,4 @@
-/*META {"imports": ["lua"], "rotulos": [{"de": 0.9, "ate": 3.55, "texto": "Longe demais para<br><span class=\"y\">cobrir o Sol</span>"}, {"de": 5.4, "ate": 8.0, "sai": false, "texto": "Só que<br><span class=\"y\">bem devagar</span>"}], "D0": 8.0} */
+/*META {"imports": ["lua"], "rotulos": [{"de": 0.9, "ate": 3.55, "texto": "Longe demais<br>para <span class=\"y\">cobrir o Sol</span>"}, {"de": 5.4, "ate": 8.0, "sai": false, "texto": "Só que<br><span class=\"y\">bem devagar</span>"}], "D0": 8.0} */
         // f12 — A: eclipse total visto de um morro; a Lua encolhe (mais longe) e deixa um anel de Sol: o eclipse total acaba. B (3,7 s): no espaço, a Lua se afasta devagar.
         const st = T.createToyStage(canvas, { fov: 60, ceu: "#050810", nevoa: [80, 600], corNevoa: "#3a2a2a", nuvens: 0, exposicao: 1.05 });
         const S = st.scene, cam = st.cam;
@@ -21,9 +21,9 @@
         st.hemi.color.set(0x6a6a90); st.hemi.groundColor.set(0x1a1410);
         // B: espaço
         const SB = new THREE.Scene(), camB = new THREE.PerspectiveCamera(38, 1080 / 1920, 0.05, 2000);
-        LUA.estrelas(SB, { n: 2800, r: 400, seed: 122 });
+        LUA.ceuDoc(SB, { seed: 122, n: 5000, via: 0.32, raio: 400 });
         const SUN = new THREE.Vector3(-250, 50, 120);
-        const E = LUA.terra(SB, { r: 1 }); E.setSol(SUN); E.grupo.rotation.z = 0.41;
+        const E = await LUA.terraDoc(SB, { r: 1 }); E.setSol(SUN); E.grupo.rotation.z = 0.41;
         const dlB = new THREE.DirectionalLight(0xfff1e0, 3.2); dlB.position.copy(SUN); SB.add(dlB);
         SB.add(new THREE.HemisphereLight(0x8fa8d8, 0x111111, 0.12));
         const luaB = LUA.luaEsfera(0.3); SB.add(luaB);

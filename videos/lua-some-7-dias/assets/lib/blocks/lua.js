@@ -20,6 +20,7 @@ import * as THREE from "../three.module.js";
 import { mulberry32, clamp, lerp } from "../kit.js";
 import { LAND } from "./globe.js";
 import { M, SPH, mesh } from "./toy.js";
+import { createTerra, createCeu } from "./terra.js";
 
 /* ---------- texturas ---------- */
 const _glow = new Map();
@@ -297,6 +298,7 @@ export function proj(v, cam) {
 }
 export function tag(ctx, txt, x, y, { a = 1, tam = 34, cor = "#ffffff", fundo = "rgba(8,10,20,0.55)", align = "center", ax = null, ay = null, borda = null } = {}) {
   if (a <= 0.01) return;
+  y = Math.max(y, 455);   // faixa 190–420 é do HUD (doc.html)
   ctx.save(); ctx.globalAlpha = Math.min(1, a);
   ctx.font = `600 ${tam}px Montserrat, sans-serif`; ctx.textBaseline = "middle";
   const w = ctx.measureText(txt).width, px = tam * 0.55, h = tam * 1.55;
@@ -417,4 +419,15 @@ export function terreno(scene, h, { w = 400, d = 400, seg = 90, cor = 0x2f4a2a, 
   geo.computeVertexNormals();
   const m = new THREE.Mesh(geo, M(cor, rough)); m.receiveShadow = true; scene.add(m);
   return m;
+}
+
+// Terra NASA (terra.js) com a mesma interface de terra(): { grupo, giro, nuvens, atmo, setSol, u }
+export async function terraDoc(scene, { r = 1, seg = 80 } = {}) {
+  const T = await createTerra({ raio: r, seg }); scene.add(T.group);
+  return { grupo: T.group, giro: T.earth, nuvens: T.nuv, atmo: T.atm, u: T.u, T, setSol: (v) => T.sol.copy(v).normalize() };
+}
+// céu do padrão doc (estrelas + Via Láctea) com interface de estrelas(): { mat.uniforms.uA }
+export function ceuDoc(scene, { seed = 7, n = 5000, via = 0.55, raio = 900 } = {}) {
+  const C = createCeu({ seed, n, via, raio }); scene.add(C);
+  return { grupo: C, mat: { uniforms: { uA: C.userData.brilho } } };
 }

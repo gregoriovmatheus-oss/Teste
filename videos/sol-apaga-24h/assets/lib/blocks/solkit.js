@@ -22,6 +22,29 @@ import * as THREE from "../three.module.js";
 import { mulberry32, clamp, lerp, ease } from "../kit.js";
 import { createGlobe, LAND, ll } from "./globe.js";
 import { M, SPH, mesh } from "./toy.js";
+import { createTerra, createCeu, createLua } from "./terra.js";
+
+/* ---------- padrão documentário: Terra NASA e céu de terra.js ---------- */
+// E.set({ sol: Vector3 (de onde vem a luz), luz: 0..1, cidades: 0..1.5, rotY, incl, nuvens })
+export async function terraDoc(S, { raio = 1, seg = 96, pos = null } = {}) {
+  const E = await createTerra({ raio, seg });
+  if (pos) E.group.position.set(...pos);
+  S.add(E.group);
+  E.set = ({ sol, luz, cidades, rotY, incl, nuvens } = {}) => {
+    if (sol) E.sol.copy(sol).normalize();
+    if (luz !== undefined) E.u.luzSol.value = luz;
+    if (cidades !== undefined) E.u.luzes.value = cidades;
+    if (rotY !== undefined && rotY !== null) E.earth.rotation.y = rotY;
+    if (incl !== undefined && incl !== null) E.group.rotation.z = incl;
+    if (nuvens !== undefined) E.u.nuvens.value = nuvens;
+  };
+  return E;
+}
+export function ceuDoc(S, o = {}) {
+  const C = createCeu({ seed: 7, n: 5000, via: 0.5, ...o }); S.add(C);
+  return { C, set: (a) => { C.userData.brilho.value = a; } };
+}
+export { createLua };
 
 // padrão documentário: rótulos técnicos em mono, acento azul nos diagramas e laranja no que é anomalia
 export const AZUL = "#7cc8ff", LARANJA = "#ff8a4c";
@@ -459,4 +482,25 @@ export function morcego(seed = 1) {
   const ph = mulberry32(seed)() * 6.28;
   function update(t, voa = 7) { wings.forEach((w, i) => { w.rotation.x = (i ? -1 : 1) * Math.sin(t * voa * 6.283 + ph) * 0.9; }); }
   return { group: g, update };
+}
+
+/* ---------- desempenho: janelas dos prédios com caixa simples (12 triângulos em vez do roundBox chanfrado) ---------- */
+const _jan = new THREE.BoxGeometry(1.0, 1.3, 0.3);
+export function aliviar(root) {
+  root.traverse((o) => { if (o.isInstancedMesh && o.material && o.material.emissive && o.geometry.type === "ExtrudeGeometry" && o.count > 4) o.geometry = _jan; });
+  return root;
+}
+/* ---------- terminador 2D: lado escuro de uma linha no chão (x = xe), com borda suave ---------- */
+export function terminador(ctx, cam, xe, a = 0.8, borda = 140) {
+  const p1 = proj(new THREE.Vector3(xe, 0, -400), cam), p2 = proj(new THREE.Vector3(xe, 0, 400), cam);
+  const q = proj(new THREE.Vector3(xe - 50, 0, 0), cam);   // um ponto do lado escuro
+  let dx = p2[0] - p1[0], dy = p2[1] - p1[1]; const L = Math.hypot(dx, dy) || 1; dx /= L; dy /= L;
+  let nx = -dy, ny = dx; if ((q[0] - p1[0]) * nx + (q[1] - p1[1]) * ny < 0) { nx = -nx; ny = -ny; }
+  const mx = (p1[0] + p2[0]) / 2, my = (p1[1] + p2[1]) / 2;
+  ctx.save(); ctx.translate(mx, my); ctx.rotate(Math.atan2(ny, nx));
+  const g = ctx.createLinearGradient(-borda / 2, 0, borda / 2, 0);
+  g.addColorStop(0, "rgba(255,170,90,0)"); g.addColorStop(0.35, `rgba(255,150,80,${0.35 * a})`); g.addColorStop(0.5, `rgba(3,5,14,${a * 0.6})`); g.addColorStop(1, `rgba(3,5,14,${a})`);
+  ctx.fillStyle = g; ctx.fillRect(-borda / 2, -4000, borda, 8000);
+  ctx.fillStyle = `rgba(3,5,14,${a})`; ctx.fillRect(borda / 2, -4000, 6000, 8000);
+  ctx.restore();
 }

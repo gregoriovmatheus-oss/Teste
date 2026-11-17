@@ -1,8 +1,12 @@
-/*META {"imports": ["oceano"], "rotulos": [{"de": 0, "ate": 2.55, "top": 660, "texto": "<span class=\"k\">UM EXPERIMENTO MENTAL</span><br>E se os oceanos<br><span class=\"y\">sumissem?</span>"}], "D0": 5.36} */
+/*META {"imports": ["oceano", "terra"], "rotulos": [{"de": 0, "ate": 2.55, "top": 660, "texto": "<span class=\"k\">UM EXPERIMENTO MENTAL</span><br>E se os oceanos<br><span class=\"y\">sumissem?</span>"}], "D0": 5.36} */
         const O = OCEANO;
         try { await document.fonts.load('500 26px "JetBrains Mono"'); } catch (e) {}
-        const st = T.createToyStage(canvas, { fov: 50, ceu: ["#3d76b8", "#f6d3a0"], nevoa: [120, 900], corNevoa: "#b9cbd6", nuvens: 10, exposicao: 1.05 });
+        const st = T.createToyStage(canvas, { fov: 50, ceu: ["#22385e", "#f2b27a"], nevoa: [120, 900], corNevoa: "#c9a688", nuvens: 0, exposicao: 0.98 });
         const S = st.scene, cam = st.cam;
+        // abertura: a Terra real vista do espaço, mergulho até a costa
+        const TD = 1.4;
+        const st2 = T.createToyStage(canvas, { fov: 34, ceu: ["#000000", "#02030a"], nuvens: 0, nevoa: null });
+        const { E } = await O.espacoDoc(st2, TERRA, { solDir: [-0.5, 0.25, 0.85] });
         // praia: areia sobe para +z; o fundo desce para -z (plataforma suave, depois mais íngreme)
         const alt = (x, z) => {
           let y = z > 0 ? z * 0.07 : z * 0.055 + Math.min(0, z + 60) * 0.045;
@@ -47,10 +51,24 @@
         const sol = new THREE.Sprite(new THREE.SpriteMaterial({ map: solTx, blending: THREE.AdditiveBlending, fog: false, depthWrite: false, transparent: true }));
         sol.position.set(80, 70, -440); sol.scale.setScalar(85); S.add(sol);
         const longe = new THREE.Mesh(new THREE.PlaneGeometry(3000, 3000), T.TOON({ color: 0x174f66, roughness: 0.15 })); longe.rotation.x = -Math.PI / 2; longe.position.z = -1500; S.add(longe);
+        // spray: gotas arrancadas das cristas e puxadas para o mar (câmera lenta)
+        const NS = 320, sg = new THREE.BufferGeometry(), sp = new Float32Array(NS * 3), ss = [];
+        for (let i = 0; i < NS; i++) ss.push([(rr() - 0.5) * 30, -1 - rr() * 26, 2.9 + rr() * 2.2, 0.6 + rr()]);
+        sg.setAttribute("position", new THREE.BufferAttribute(sp, 3));
+        const spray = new THREE.Points(sg, new THREE.PointsMaterial({ color: 0xfff4e6, size: 0.16, map: O.texPonto(), transparent: true, depthWrite: false, opacity: 0.9 })); S.add(spray);
+        const lento = (t) => (t < 2.85 ? t : 2.85 + (t - 2.85) * 0.35);
         const nivel = (t) => 0.12 * Math.sin(t * 1.3) - 0.72 * Math.pow(Math.max(0, t - 2.85), 1.9);
         function render(t) {
-          const wl = nivel(t);
-          const recua = clamp((t - 2.85) / 2.5);
+          if (t < TD) {
+            const k = t / TD, d = Math.exp(lerp(Math.log(2.6), Math.log(0.07), ease.inCubic(k)));
+            E.aim(lerp(-44, -36, ease.outCubic(k)), lerp(-14, -9, ease.outCubic(k))); E.nuv.rotation.y = t * 0.01;
+            st2.cam.position.set(0, 0, 1 + d); st2.cam.up.set(0, 1, 0); st2.cam.lookAt(0, lerp(0.12, 0, k), 0);
+            st2.T = st.T + 0.17; st2.D = st.D; st2.blur = 2.5 * range(t, 0.9, TD);
+            st2.draw(st2.scene, st2.cam, { cor: "#fff4e6", a: range(t, 1.05, TD) });
+            return;
+          }
+          const wl = nivel(t), tw = t; t = lento(t);
+          const recua = clamp((tw - 2.85) / 2.5);
           for (let i = 0; i < ap.count; i++) {
             const x = base[i * 3], z = base[i * 3 + 2];
             const amp = 1 - 0.6 * recua;
@@ -72,11 +90,25 @@
             p.f.group.rotation.set(Math.PI / 2 - pulo * 0.5, 0, p.fase * 4 + pulo * 0.6);
             p.f.tail.rotation.y = seco ? Math.sin(ph * 3) * 0.7 * (0.3 + pulo) : Math.sin(t * 5 + p.fase) * 0.3;
           }
+          t = tw;
+          for (let i = 0; i < NS; i++) { const [x, z, b, v] = ss[i], a = t - b;
+            if (a < 0) { sp.set([0, -999, 0], i * 3); continue; }
+            sp.set([x * (1 + a * 0.1), nivel(b) + 0.2 + a * 1.6 * v - a * a * 0.5, z - a * a * 7 * v], i * 3); }
+          sg.attributes.position.needsUpdate = true;
+          const fx = range(t, 2.95, 3.4) - range(t, 4.8, 5.3);
+          st.blur = 1.6 * fx; st.bloom = 0.75;
           const u = t / D, e = ease.inOutSine(u);
           cam.position.set(lerp(-3.5, 2.5, u), lerp(1.7, 6.2, e), lerp(15, 5, u));
           cam.lookAt(lerp(0, 0.5, u), lerp(0.4, -2.6, e), lerp(-30, -42, u));
           st.sol(0, -25, 60);
           st.key.position.set(55, 48, -110); st.key.target.position.set(0, 0, -20);
           st.rim.position.set(-40, 30, 60);
-          st.draw();
+          st.draw(S, cam, { cor: "#fff4e6", a: 1 - range(t, TD, TD + 0.35) });
+          if (fx > 0) { // rastros radiais puxados para o horizonte
+            const c = st.ctx, vp = O.tela(cam, new THREE.Vector3(0, -3, -300)), r = mulberry32(5 + Math.floor(t * 30));
+            c.save(); c.strokeStyle = "rgba(255,240,220,1)"; c.lineCap = "round";
+            for (let i = 0; i < 36; i++) { const an = r() * 6.283, r0 = 260 + r() * 700, len = (90 + r() * 260) * fx;
+              c.globalAlpha = (0.06 + 0.16 * r()) * fx; c.lineWidth = 1 + r() * 3;
+              c.beginPath(); c.moveTo(vp.x + Math.cos(an) * r0, vp.y + Math.sin(an) * r0 * 1.3); c.lineTo(vp.x + Math.cos(an) * (r0 - len), vp.y + Math.sin(an) * (r0 - len) * 1.3); c.stroke(); }
+            c.restore(); }
         }

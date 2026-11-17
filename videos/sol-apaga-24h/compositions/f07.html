@@ -53,10 +53,10 @@
 
         const SK = SOLKIT;
         await SK.fontes();
-        const st = T.createToyStage(canvas, { fov: 42, nevoa: null, nuvens: 0 });
+        const st = T.createToyStage(canvas, { fov: 55, nevoa: null, nuvens: 0 });
         const S = SK.espaco(st), cam = st.cam;
-        cam.setViewOffset(1080, 1920, 0, 430, 1080, 1920);   // o diagrama fica na metade de cima; os rótulos, embaixo dele
-        const stars = SK.estrelas(S, { n: 2200, seed: 71 });
+        cam.setViewOffset(1080, 1920, 0, 400, 1080, 1920);   // o diagrama fica na metade de cima; os rótulos, embaixo dele
+        const stars = SK.ceuDoc(S, { seed: 71, via: 0.35 });
         const R = 6;
         const sol = SK.criaSol(S, { r: 1.2, pos: [0, 0, 0], halo: 5 });
         // malha do espaço-tempo afundada pela massa do Sol (que continua lá)
@@ -74,9 +74,10 @@
         S.add(grade);
         const orb = new THREE.Mesh(new THREE.TorusGeometry(R, 0.025, 6, 160), new THREE.MeshBasicMaterial({ color: 0x9cc4f0, transparent: true, opacity: 0.8, toneMapped: false }));
         orb.rotation.x = Math.PI / 2; S.add(orb);
-        const tmat = new THREE.MeshBasicMaterial({ map: SK.terraTex(), toneMapped: false }); tmat.color.setScalar(0.75);
-        const terra = new THREE.Mesh(new THREE.SphereGeometry(0.5, 40, 24), tmat); S.add(terra);
-        const fant = new THREE.Mesh(terra.geometry, new THREE.MeshBasicMaterial({ color: 0xff8a4c, transparent: true, opacity: 0.35, toneMapped: false })); S.add(fant);
+        const terra = await SK.terraDoc(S, { raio: 0.5, seg: 48 });
+        st.bloom = 0.6;
+        const tGlow = SK.brilho(0x7cc8ff, 2.2, "suave", 0.45); S.add(tGlow);
+        const fant = new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 20), new THREE.MeshBasicMaterial({ color: 0xff8a4c, transparent: true, opacity: 0.35, toneMapped: false })); S.add(fant);
         const gSeta = SK.criaSeta(0x7cc8ff, { emis: 0.9 }), vSeta = SK.criaSeta(0xe8f4ff, { emis: 0.9 });
         S.add(gSeta.group, vSeta.group);
         const tan = new THREE.Mesh(new THREE.BoxGeometry(1, 0.03, 0.03), new THREE.MeshBasicMaterial({ color: 0xff8a4c, transparent: true, opacity: 0.6, toneMapped: false })); S.add(tan);
@@ -87,7 +88,7 @@
           const th = 0.6 + t * 0.32;
           P.set(Math.cos(th) * R, 0, -Math.sin(th) * R);
           Vt.set(-Math.sin(th), 0, -Math.cos(th));
-          terra.position.copy(P); terra.rotation.y = t * 1.2;
+          terra.group.position.copy(P); terra.earth.rotation.y = t * 1.2; terra.set({ sol: P.clone().negate(), luz: 0, cidades: 1.5 }); tGlow.position.copy(P);
           const ga = range(t, 0.2, 0.6);
           gSeta.apontar(P.clone().addScaledVector(P, -0.5 / R), P.clone().multiplyScalar(1 - (0.5 + 2.4 * ga) / R), 0.07);
           gSeta.group.visible = ga > 0.01;
@@ -103,9 +104,9 @@
           grade.material.opacity = 0.35 + 0.35 * Math.exp(-Math.pow((t - 3.5) / 0.4, 2)) + 0.25 * Math.exp(-Math.pow((t - 5.0) / 0.4, 2));
           // órbita em grua: de rasante para mais alto, girando
           const e = ease.inOutSine(range(t, 0, 6.12));
-          const a = lerp(0.2, 0.9, e), rc = lerp(17, 15, e);
-          cam.position.set(Math.sin(a) * rc, lerp(4.5, 9.5, e), Math.cos(a) * rc);
-          cam.lookAt(0, -0.8, 0);
+          const a = lerp(0.2, 0.9, e), rc = lerp(15, 12, e);
+          cam.position.set(Math.sin(a) * rc, lerp(15, 20, e), Math.cos(a) * rc);
+          cam.lookAt(0, -0.5, 0);
           stars.set(1, t);
           st.draw();
           tag(v.copy(P).multiplyScalar(1 - 2.0 / R).add(new THREE.Vector3(0, 0.7, 0)), "GRAVIDADE", { tam: 30, cor: SK.AZUL, a: ga });

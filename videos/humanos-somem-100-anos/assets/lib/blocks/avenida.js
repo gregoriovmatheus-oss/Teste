@@ -408,12 +408,12 @@ export function gente(S, { n = 180, seed = 21, larg = 18, calc = 4, zona = [-60,
   const pts = new THREE.Points(geo, pm); pts.frustumCulled = false; S.add(pts);
   const PV = Array.from({ length: NP }, () => [R() - 0.5, R() * 1.8, R() - 0.5, 0.6 + R()]);
   // update(t, { modo, t0, dur, anda, olha: [x,z] })
-  function update(t, { modo = "fica", t0 = 0, dur = 0.5, anda = false, olha = null, dz = 0 } = {}) {
+  function update(t, { modo = "fica", t0 = 0, dur = 0.5, anda = false, olha = null, dz = 0, bd = 0.7, sobe = 0, lento = 1 } = {}) {
     let np = 0;
     P.forEach((p, i) => {
       const ti = t0 + p.ordem * dur;
       let k = 1, burst = -1;
-      if (modo === "some") { k = t < ti ? 1 : 1 - clamp((t - ti) / 0.08); burst = t - ti; }
+      if (modo === "some") { k = t < ti ? 1 : 1 - clamp((t - ti) / (0.08 * lento)); burst = t - ti; }
       if (modo === "surge") { k = t < ti ? 0 : ease.outBack(clamp((t - ti) / 0.25)); burst = t - ti; }
       const tt = anda ? t : 0;
       const x = p.x0 + p.dx * p.v * tt, z = p.z0 + p.dz * p.v * tt + dz;
@@ -427,14 +427,14 @@ export function gente(S, { n = 180, seed = 21, larg = 18, calc = 4, zona = [-60,
         _o.position.set(x + Math.cos(ry) * (sd ? 0.1 : -0.1), (0.86 + bob) * p.h, z - Math.sin(ry) * (sd ? 0.1 : -0.1));
         _o.rotation.set(0, ry, 0); _o.rotateX(sd ? sw : -sw); _o.scale.set(k || 1e-4, h || 1e-4, k || 1e-4); _o.updateMatrix(); iP.setMatrixAt(i * 2 + sd, _o.matrix);
       }
-      if (burst > 0 && burst < 0.7) {
-        const e = ease.outCubic(burst / 0.7);
-        for (let j = 0; j < 5; j++) { const v = PV[i * 5 + j]; pos[np * 3] = x + v[0] * 1.6 * e; pos[np * 3 + 1] = 0.2 + v[1] * (0.6 + e * 0.6); pos[np * 3 + 2] = z + v[2] * 1.6 * e; np++; }
+      if (burst > 0 && burst < bd) {
+        const e = ease.outCubic(burst / bd);
+        for (let j = 0; j < 5; j++) { const v = PV[i * 5 + j]; pos[np * 3] = x + v[0] * 1.6 * e; pos[np * 3 + 1] = 0.2 + v[1] * (0.6 + e * 0.6) + sobe * e * v[3]; pos[np * 3 + 2] = z + v[2] * 1.6 * e; np++; }
       }
     });
     for (let j = np; j < NP; j++) pos[j * 3 + 1] = -50;
     geo.attributes.position.needsUpdate = true;
-    pm.opacity = 0.9;
+    pm.opacity = 0.9; pm.size = 0.22 * (bd > 1 ? 1.4 : 1);
     for (const m of [iT, iP, iC]) { m.instanceMatrix.needsUpdate = true; if (m.instanceColor) m.instanceColor.needsUpdate = true; }
   }
   return { update, P, meshes: [iT, iP, iC], pts };

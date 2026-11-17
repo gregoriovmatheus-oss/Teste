@@ -33,5 +33,5 @@
           cam.position.set(lx - 9 + e * 2, hgt(lx - 9, 6) + lerp(2.8, 3.2, e), lerp(7.5, 6.5, e));
           cam.lookAt(lx + 6 + e * 3, lerp(0.6, 1.0, e), -2.5);
           st.draw();
-          LUA.tag(st.ctx, "7 NOITES SEM LUAR", 450, 270, { a: range(t, 3.1, 3.6) * LUA.borda(t, D), tam: 32, borda: "rgba(150,170,220,0.9)" });
+          LUA.tag(st.ctx, "7 NOITES SEM LUAR", 450, 1330, { a: range(t, 3.1, 3.6) * LUA.borda(t, D), tam: 32, borda: "rgba(150,170,220,0.9)" });
         }

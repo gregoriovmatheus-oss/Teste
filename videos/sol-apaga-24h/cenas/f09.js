@@ -75,8 +75,8 @@
             SK.txt(c, Math.round(val * 100) + "%", 880, y - 18, { tam: 34, al: "right", fonte: "mono", peso: 600, esp: 0.02, a });
             c.save(); c.globalAlpha = a; c.fillStyle = "rgba(255,255,255,0.15)"; c.fillRect(200, y + 12, 680, 16); c.fillStyle = cor; c.fillRect(200, y + 12, 680 * val, 16); c.restore();
           };
-          bar(290, "FOTOSSÍNTESE", L, L > 0.5 ? "#7dd35a" : "#ff6a5a", range(t, 0.05, 0.35));
-          bar(410, "RESERVA DE AMIDO", 1 - 0.35 * gasto, "#f4e6b8", range(t, 1.9, 2.3));
+          bar(490, "FOTOSSÍNTESE", L, L > 0.5 ? "#7dd35a" : "#ff6a5a", range(t, 0.05, 0.35));
+          bar(600, "RESERVA DE AMIDO", 1 - 0.35 * gasto, "#f4e6b8", range(t, 1.9, 2.3));
           const [ax, ay] = SK.proj(v.set(1.6, 1.0, 0.3).applyMatrix4(folha.matrixWorld), cam);
           SK.txt(c, "GRÃOS DE AMIDO", ax + 60, ay - 150, { tam: 28, cor: "#f4e6b8", a: range(t, 2.4, 2.8) });
           const [cx, cy] = SK.proj(v.set(-2.5, 3, 5).applyMatrix4(folha.matrixWorld), cam);

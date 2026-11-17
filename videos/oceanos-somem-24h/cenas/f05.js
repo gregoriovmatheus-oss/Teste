@@ -1,4 +1,4 @@
-/*META {"imports": ["oceano"], "rotulos": [{"de": 2.1, "ate": 5.15, "texto": "<span class=\"k\">DORSAL MESO-OCEÂNICA</span><br><span class=\"y\">65 mil km</span><br>de cordilheira"}], "D0": 5.18} */
+/*META {"imports": ["oceano", "terra"], "rotulos": [{"de": 2.1, "ate": 5.15, "texto": "<span class=\"k\">DORSAL MESO-OCEÂNICA</span><br><span class=\"y\">65 mil km</span><br>de cordilheira"}], "D0": 5.18} */
         const O = OCEANO, G0 = 20.19, TC = 2.55;
         try { await document.fonts.load('500 26px "JetBrains Mono"'); } catch (e) {}
         // parte A: voo sobre a dorsal (vale de rifte no eixo, falhas transformantes deslocando segmentos)
@@ -18,9 +18,10 @@
         const lava = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(eixo), 480, 1.2, 5, false), new THREE.MeshBasicMaterial({ color: 0xff6a20 }));
         S.add(lava);
         // parte B: a Terra seca com as dorsais acendendo como uma costura
-        const st2 = T.createToyStage(canvas, { fov: 36, nuvens: 0, nevoa: null });
-        O.espaco(st2, { solDir: [-0.7, 0.4, 0.6] });
-        const G = O.globoSeco(st2.scene, {}); G.setAgua(0);
+        const st2 = T.createToyStage(canvas, { fov: 34, ceu: ["#000000", "#02030a"], nuvens: 0, nevoa: null });
+        const { E } = await O.espacoDoc(st2, TERRA, { solDir: [-0.7, 0.4, 0.6] });
+        E.u.seco.value = 1; E.u.nuvens.value = 0.4;
+        const cristas = O.dorsaisTerra(E, { raio: 0.009, r: 1.006 });
         function render(t) {
           if (t < TC) {
             const z = 140 - t * 70;
@@ -31,9 +32,9 @@
             st.draw();
           } else {
             const u = t - TC;
-            G.cristas(ease.inOutCubic(range(t, 2.75, 4.7)));
-            G.aim(lerp(10, 45, u / 2.6), lerp(-22, -30, u / 2.6));
-            const d = lerp(5.6, 4.6, ease.outCubic(range(u, 0, 2.6)));
+            cristas(ease.inOutCubic(range(t, 2.75, 4.7)));
+            E.aim(lerp(0, 40, u / 2.6), lerp(-25, -32, u / 2.6));
+            const d = lerp(5.4, 4.3, ease.outCubic(range(u, 0, 2.6)));
             st2.cam.position.set(0.2, 0.25, d); st2.cam.lookAt(0, 0.35, 0);
             st2.T = st.T; st2.D = st.D;
             st2.draw(st2.scene, st2.cam, { cor: "#000", a: 1 - range(u, 0, 0.25) });

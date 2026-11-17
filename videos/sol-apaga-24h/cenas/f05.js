@@ -5,7 +5,7 @@
         const S = st.scene, cam = st.cam;
         S.environmentIntensity = 0.1; st.hemi.intensity = 0.12; st.hemi.color.setHex(0x6f86c0); st.rim.intensity = 0;
         st.key.intensity = 0.35; st.key.color.setHex(0x8fa8ff); st.key.castShadow = false;
-        const cid = T.cidade({ n: 4, seed: 51, verde: 0.1, hMin: 8, hMax: 30 }); S.add(cid.group);
+        const cid = T.cidade({ n: 4, seed: 51, verde: 0.1, hMin: 8, hMax: 30 }); S.add(SK.aliviar(cid.group));
         const rr = mulberry32(52);
         cid.buildings.forEach((b) => { b.userData.win.emissiveIntensity = rr() < 0.6 ? 0.9 + rr() * 0.6 : 0; });
         const stars = SK.estrelas(S, { n: 3400, r: 900, seed: 53, tam: 3.6 });
@@ -22,7 +22,7 @@
             void main(){ vec3 tx = texture2D(map, vUv).rgb; float lam = smoothstep(-0.05, 0.35, dot(normalize(vN), uSun));
               vec3 c = tx * lam * 1.25 * uL + vec3(0.012, 0.016, 0.03); gl_FragColor = vec4(c, 1.0); }`,
         });
-        const MD = new THREE.Vector3(0.18, 0.72, -1).normalize();
+        const MD = new THREE.Vector3(0.05, 0.55, -1).normalize();
         const moon = new THREE.Mesh(new THREE.SphereGeometry(36, 48, 32), moonMat); moon.position.copy(MD).multiplyScalar(760); S.add(moon);
         const moonGlow = SK.brilho(0xcfd8ff, 230, "suave", 0.6); moonGlow.position.copy(moon.position); S.add(moonGlow);
         function render(t) {
@@ -32,7 +32,7 @@
           // panorâmica para cima: dos telhados até o céu
           const e = ease.inOutSine(range(t, 0, 4.55));
           cam.position.set(lerp(-6, 4, e), lerp(30, 36, e), lerp(70, 62, e));
-          const pitch = lerp(0.02, 0.5, ease.inOutSine(range(t, 0, 3.0))), yaw = lerp(-0.12, 0.1, e);
+          const pitch = lerp(0.15, 0.3, ease.inOutSine(range(t, 0, 3.0))), yaw = lerp(-0.12, 0.1, e);
           cam.lookAt(cam.position.x + Math.sin(yaw) * 10, cam.position.y + Math.tan(pitch) * 10, cam.position.z - Math.cos(yaw) * 10);
           st.draw();
           // a Lua continua lá, só não reflete mais nada: contorno tracejado

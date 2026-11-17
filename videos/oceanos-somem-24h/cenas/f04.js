@@ -2,7 +2,7 @@
         const O = OCEANO, G0 = 14.89;
         try { await document.fonts.load('500 26px "JetBrains Mono"'); } catch (e) {}
         // 1 unidade = 50 m. A antiga superfície do mar fica 74 u acima do chão (3.700 m).
-        const st = T.createToyStage(canvas, { fov: 50, ceu: ["#4b78ad", "#d9c7a8"], nevoa: [60, 520], corNevoa: "#b8ad9b", nuvens: 0, exposicao: 1.05 });
+        const st = T.createToyStage(canvas, { fov: 50, ceu: ["#263f68", "#dfa678"], nevoa: [60, 520], corNevoa: "#a8876c", nuvens: 0, exposicao: 1.05 });
         const S = st.scene, cam = st.cam;
         const alt = (x, z) => 3.2 * O.fbm(x * 0.03, z * 0.03, 4, 21) + 1.2 * Math.abs(O.ruido(x * 0.012, z * 0.05, 22)) ;
         const cor = (x, z, y, c) => O.mistura(c, 0x6f6152, 0x9a8a72, (y + 2) / 6 + 0.2 * O.ruido(x * 0.1, z * 0.1, 23));

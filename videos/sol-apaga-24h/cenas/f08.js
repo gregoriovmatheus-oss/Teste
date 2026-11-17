@@ -5,7 +5,7 @@
         const S = st.scene, cam = st.cam;
         S.environmentIntensity = 0.1; st.hemi.intensity = 0.14; st.hemi.color.setHex(0x6f86c0); st.rim.intensity = 0.15; st.rim.color.setHex(0x7f9bd8);
         st.key.intensity = 0.3; st.key.color.setHex(0x8fa8ff);
-        const rua = T.rua({ len: 260, larg: 14, seed: 81, hMin: 14, hMax: 38 }); S.add(rua.group);
+        const rua = T.rua({ len: 260, larg: 14, seed: 81, hMin: 14, hMax: 38 }); S.add(SK.aliviar(rua.group));
         const stars = SK.estrelas(S, { n: 2400, r: 900, seed: 82 });
         const rr = mulberry32(83);
         rua.buildings.forEach((b) => { b.userData.on = 1.4 + rr() * 2.6; b.userData.max = rr() < 0.25 ? 0 : 0.8 + rr() * 0.8; });

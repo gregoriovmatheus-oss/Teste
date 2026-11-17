@@ -65,7 +65,7 @@
             camB.lookAt(0, lerp(2.6, 3.6, e), -12);
             st.draw(SB, camB, { cor: "#000", a: 1 - range(u, 0, 0.25) });
             // gráfico: migração vertical (posição média) — em ritmo, depois sem ritmo
-            const c = st.ctx, gx = 120, gy = 230, gw = 600, gh = 120, ga = range(u, 0.3, 0.6) * LUA.borda(t, D);
+            const c = st.ctx, gx = 120, gy = 1330, gw = 600, gh = 120, ga = range(u, 0.3, 0.6) * LUA.borda(t, D);
             if (ga > 0) {
               c.save(); c.globalAlpha = ga; c.fillStyle = "rgba(4,14,22,0.6)"; c.fillRect(gx - 20, gy - 50, gw + 40, gh + 80);
               c.font = "600 24px Montserrat, sans-serif"; c.fillStyle = "#bfe9e0"; c.fillText("SOBE E DESCE COM A LUA", gx, gy - 20);
@@ -78,6 +78,6 @@
               }
               c.stroke(); c.restore();
             }
-            LUA.tag(st.ctx, "ÁRTICO · NOITE POLAR", 450, 470, { a: range(u, 0.2, 0.6) * LUA.borda(t, D), tam: 28 });
+            LUA.tag(st.ctx, "ÁRTICO · NOITE POLAR", 420, 1520, { a: range(u, 0.2, 0.6) * LUA.borda(t, D), tam: 28 });
           }
         }

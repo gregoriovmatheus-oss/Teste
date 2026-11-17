@@ -1,4 +1,4 @@
-/*META {"imports": ["avenida"], "css": ".rot-t .selo{display:inline-block;font-family:\"Inter\",sans-serif;font-weight:800;font-size:128px;line-height:1.05;letter-spacing:0.01em;text-transform:uppercase;background:linear-gradient(180deg,#ffffff 35%,#9fd6ff);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none;filter:drop-shadow(0 4px 16px rgba(0,0,0,0.65))}.rot-t .sp{display:block;font-family:\"JetBrains Mono\",monospace;font-weight:500;font-size:28px;letter-spacing:0.34em;color:#7cc8ff;margin-bottom:12px;text-transform:uppercase}.rot-t .sl{display:block;width:380px;height:2px;margin:14px auto 0;background:linear-gradient(90deg,rgba(124,200,255,0),#7cc8ff,rgba(124,200,255,0))}", "rotulos": [{"de": 0, "ate": 5.86, "top": 300, "fixo": true, "pulso": 0.2, "texto": "<span class=\"sp\">TEMPO SEM HUMANOS</span><span class=\"selo\">DÉCADAS</span><span class=\"sl\"></span>"}, {"de": 1.0, "ate": 2.6, "texto": "Aço <span class=\"y\">enferruja</span>"}, {"de": 4.15, "ate": 5.86, "texto": "<span class=\"k\">FERRUGEM</span><br>até <span class=\"y\">6×</span> o volume"}], "D0": 5.86} */
+/*META {"imports": ["avenida"], "css": ".rot-t .selo{display:inline-block;font-family:\"Inter\",sans-serif;font-weight:800;font-size:112px;line-height:1.05;letter-spacing:0.01em;text-transform:uppercase;background:linear-gradient(180deg,#ffffff 35%,#9fd6ff);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none;filter:drop-shadow(0 4px 16px rgba(0,0,0,0.65))}.rot-t .sp{display:block;font-family:\"JetBrains Mono\",monospace;font-weight:500;font-size:28px;letter-spacing:0.34em;color:#7cc8ff;margin-bottom:12px;text-transform:uppercase}.rot-t .sl{display:block;width:380px;height:2px;margin:14px auto 0;background:linear-gradient(90deg,rgba(124,200,255,0),#7cc8ff,rgba(124,200,255,0))}#f07-r2,#f07-r3{align-items:flex-end}#f07-r2-in,#f07-r3-in{font-size:68px}", "rotulos": [{"de": 0, "ate": 5.86, "top": 580, "fixo": true, "pulso": 0.2, "texto": "<span class=\"sp\">TEMPO SEM HUMANOS</span><span class=\"selo\">DÉCADAS</span><span class=\"sl\"></span>"}, {"de": 1.0, "ate": 2.6, "texto": "Aço <span class=\"y\">enferruja</span>"}, {"de": 4.15, "ate": 5.86, "texto": "<span class=\"k\">FERRUGEM</span><br>até <span class=\"y\">6×</span> o volume"}], "D0": 5.86} */
         const st = T.createToyStage(canvas, { fov: 44, ceu: ["#8EA2B8", "#E2D8C2"], nevoa: [30, 230], corNevoa: "#cfc7b4", luz: 0.85 });
         const S = st.scene, cam = st.cam;
         const av = AVENIDA.avenida(S);
@@ -7,7 +7,7 @@
         GS.background = T.gradTex("#1d2430", "#3a3f48"); GS.environment = S.environment;
         GS.add(new THREE.HemisphereLight(0xcfe0ff, 0x3a3430, 1.2));
         const dl = new THREE.DirectionalLight(0xffe2c0, 2.6); dl.position.set(-6, 8, 10); GS.add(dl);
-        const conc = new THREE.Mesh(new THREE.BoxGeometry(8, 5, 3), new THREE.MeshStandardMaterial({ color: 0xb9b4aa, roughness: 0.95, transparent: true, opacity: 0.42, depthWrite: false }));
+        const conc = new THREE.Mesh(new THREE.BoxGeometry(8, 5, 3), new THREE.MeshStandardMaterial({ color: 0xb9b4aa, roughness: 0.95, transparent: true, opacity: 0.55, depthWrite: false }));
         conc.position.y = 2.5; GS.add(conc);
         const corte = new THREE.Mesh(new THREE.PlaneGeometry(8, 5), new THREE.MeshStandardMaterial({ color: 0x8f8a80, roughness: 1, side: THREE.DoubleSide, transparent: true, opacity: 0.35 }));
         corte.position.set(0, 2.5, 1.505); GS.add(corte);
@@ -55,7 +55,7 @@
             const sp = range(t, 5.25, 5.86);
             lasca.position.set(2.4 + sp * 0.8, 4.75 + sp * 1.2 - sp * sp * 3, 0.9 + sp * 2.2); lasca.rotation.set(sp * 1.5, 0, -sp * 2);
             const e = ease.inOutSine(range(u, 0, 3.24));
-            cam2.position.set(lerp(-7, 4.5, e), lerp(5.5, 3.6, e), lerp(11, 9.5, e));
+            cam2.position.set(lerp(-8, 5, e), lerp(6.5, 4.5, e), lerp(16, 14, e));
             cam2.lookAt(0, 2.5, 0);
             st.draw(GS, cam2, { cor: "#0b0a12", a: 1 - range(u, 0, 0.3) });
           }

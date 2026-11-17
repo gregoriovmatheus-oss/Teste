@@ -53,5 +53,5 @@
           caminho.rotation.z = -Math.atan2(MP.x, -MP.z);
           cam.lookAt(lerp(-5, -8, e), lerp(4.5, 6.5, e), -40);
           st.draw();
-          LUA.tag(st.ctx, "NO MESMO LUGAR", 300, 290, { a: range(t, 1.7, 2.1) * (1 - range(t, 2.8, 3.1)), tam: 30 });
+          LUA.tag(st.ctx, "NO MESMO LUGAR", 300, 470, { a: range(t, 1.7, 2.1) * (1 - range(t, 2.8, 3.1)), tam: 30 });
         }

@@ -50,10 +50,10 @@
         const S = st.scene, cam = st.cam;
         st.bloom = 0.5;
         S.environment = null;
-        LUA.estrelas(S, { n: 2600, r: 400, seed: 41 });
-        const E = LUA.terra(S, { r: 1 });
+        LUA.ceuDoc(S, { seed: 41, n: 5000, via: 0.32, raio: 400 });
+        const E = await LUA.terraDoc(S, { r: 1 });
         const SUN = new THREE.Vector3(60, 40, 90);
-        E.setSol(SUN); E.atmo.material.uniforms.uA.value = 0.6;
+        E.setSol(SUN); E.u.atmo.value = 0.8;
         st.key.position.copy(SUN); st.key.target.position.set(0, 0, 0); st.key.castShadow = false; st.key.intensity = 3.0; st.key.color.set(0xfff1e0);
         st.hemi.intensity = 0.35; st.hemi.color.set(0x8fa8d8); st.hemi.groundColor.set(0x222838); st.rim.intensity = 0.6; st.rim.position.set(-60, 10, -40);
         // oceano deformado (bojos), exagerado para ver

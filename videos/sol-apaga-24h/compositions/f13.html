@@ -59,10 +59,11 @@
         // parte A: espaço (o Sol reacende e a frente de luz volta a viajar)
         const st = T.createToyStage(canvas, { fov: 40, nevoa: null, nuvens: 0 });
         const S = SK.espaco(st), cam = st.cam;
-        const stars = SK.estrelas(S, { n: 2600, seed: 131 });
+        st.bloom = 0.8;
+        const stars = SK.ceuDoc(S, { seed: 131 });
         const SP = new THREE.Vector3(0, 13, -2);
         const sol = SK.criaSol(S, { r: 1.7, pos: SP.toArray(), halo: 9 });
-        const terra = SK.criaTerra(S, st, {});
+        const terra = await SK.terraDoc(S);
         const cascaMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
           uniforms: { uA: { value: 1 } },
           vertexShader: `varying vec3 vN; varying vec3 vV; void main(){ vec4 mv = modelViewMatrix * vec4(position,1.0); vN = normalize(normalMatrix*normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix * mv; }`,
@@ -72,7 +73,7 @@
         // parte B: a mesma rua do começo, ensolarada de novo
         const st2 = T.createToyStage(canvas, { fov: 50, ceu: ["#3f86d6", "#d9e8ee"], nevoa: [90, 340], exposicao: 1.05, nuvens: 10 });
         const S2 = st2.scene, cam2 = st2.cam;
-        const rua = T.rua({ len: 280, larg: 14, seed: 21, hMin: 12, hMax: 36 }); S2.add(rua.group);
+        const rua = T.rua({ len: 280, larg: 14, seed: 21, hMin: 12, hMax: 36 }); S2.add(SK.aliviar(rua.group));
         const rr = mulberry32(132);
         const pessoas = Array.from({ length: 10 }, (_, i) => { const h = A.createAnimal("humano", { cor: [0xd9583b, 0x3d6a8c, 0xe8b24a, 0x6c7880, 0xae6848][i % 5], cor2: [0x3f5677, 0x2d2f36][i % 2], mulher: i % 2 === 0, fase: rr() });
           h.dir = rr() < 0.5 ? 1 : -1; h.x = (i % 2 ? 1 : -1) * (8.2 + rr() * 1.4); h.z0 = 20 - i * 6; h.v = 1.1 + rr() * 0.4; S2.add(h.group); return h; });
@@ -94,7 +95,6 @@
             cam.lookAt(0, lerp(6.8, 5.5, e), 0);
             stars.set(1, t);
             st.draw();
-            SK.cronometro(st.ctx, 540, 1040 - 760, (1 - p) * 500, "A LUZ CHEGA EM", range(t, 0.7, 1.0) * (1 - range(t, 3.9, 4.1)), Math.exp(-Math.pow((t - 2.2) / 0.2, 2)));
             const fl = range(t, 3.6, 4.1);
             if (fl > 0) { const c = st.ctx; c.save(); c.globalAlpha = fl; c.fillStyle = "#fff6e0"; c.fillRect(0, 0, 1080, 1920); c.restore(); }
           } else {

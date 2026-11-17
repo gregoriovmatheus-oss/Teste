@@ -1,7 +1,7 @@
 /*META {"imports": ["oceano"], "rotulos": [{"de": 1.25, "ate": 3.3, "texto": "<span class=\"k\">VIDA MARINHA</span><br>Fim <span class=\"y\">imediato</span>"}, {"de": 1.25, "ate": 5.95, "texto": "<span class=\"chip im\">● Imediato<small>peixes · corais · baleias</small></span>", "sai": true}], "css": "    .chip{display:inline-block;font-family:\"JetBrains Mono\",\"Menlo\",monospace;font-weight:500;font-size:28px;letter-spacing:.14em;line-height:1.1;padding:14px 26px;border-radius:6px;text-shadow:none;text-transform:uppercase;background:rgba(4,8,16,.62);text-align:left}.chip.im{color:#ff8a4c;border:2px solid #ff8a4c}.chip.le{color:#7cc8ff;border:2px solid #7cc8ff}.chip.di{color:#ffd28a;border:2px solid #ffd28a}.chip small{display:block;font-size:20px;color:rgba(255,255,255,.8);letter-spacing:.1em;margin-top:6px}#f08-r2{top:1262px!important;height:110px;left:0;right:0;justify-content:center;align-items:flex-start}\n", "D0": 6.01} */
         const O = OCEANO, G0 = 35.56;
         try { await document.fonts.load('500 26px "JetBrains Mono"'); } catch (e) {}
-        const st = T.createToyStage(canvas, { fov: 48, ceu: ["#4a7fbf", "#e6d7bc"], nevoa: [60, 380], corNevoa: "#c9bca4", nuvens: 0, exposicao: 1.08 });
+        const st = T.createToyStage(canvas, { fov: 48, ceu: ["#2b4a78", "#e7b383"], nevoa: [60, 380], corNevoa: "#c4a283", nuvens: 0, exposicao: 1.08 });
         const S = st.scene, cam = st.cam;
         const alt = (x, z) => 0.8 * O.fbm(x * 0.05, z * 0.05, 4, 81) + 0.1 * Math.sin(x * 0.7 + 2 * O.ruido(x * 0.05, z * 0.05, 82));
         S.add(O.terreno({ w: 300, d: 300, sx: 80, sz: 80, cz: -60, alt, cor: (x, z, y, c) => O.mistura(c, 0x9d8c6e, 0xc4b18b, (y + 0.8) / 1.6 + 0.25 * O.ruido(x * 0.15, z * 0.15, 83)) }));

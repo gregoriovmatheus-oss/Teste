@@ -46,6 +46,7 @@
           const cx = lerp(2.4, 1.7, e), cz = lerp(10, 7.6, e), cy = hgt(cx, cz) + 1.0;
           cam.position.set(cx, cy, cz);
           cam.lookAt(lerp(-0.3, -0.7, e), cy + Math.tan(0.206) * (cz + 10) + lerp(0, 0.3, e), -10);
+          st.T = t + 0.17;   // gancho: sem o dip de entrada no frame 0
           st.draw();
           // rastros radiais convergindo para a Lua (sem explosão: a luz some para dentro)
           const [mx, my] = LUA.proj(MP, cam), c = st.ctx, sa = pre * (1 - range(t, TV, TV + 0.25));

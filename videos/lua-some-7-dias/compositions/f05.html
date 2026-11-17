@@ -94,9 +94,9 @@
           cam.lookAt(0, lerp(0.6, 1.0, e), -24);
           st.draw();
           const c = st.ctx, fa = LUA.borda(t, D);
-          LUA.tag(c, "LUA + SOL (SIZÍGIA)", 280, 260, { a: fa, tam: 30, borda: "rgba(124,200,255,0.95)" });
-          LUA.tag(c, "SÓ O SOL", 700, 260, { a: fa, tam: 30, borda: "rgba(255,138,76,0.95)" });
-          LUA.tag(c, "TIME-LAPSE · 12 H", 540, 345, { a: fa * 0.85, tam: 22, fundo: "rgba(8,10,20,0.4)" });
+          LUA.tag(c, "LUA + SOL (SIZÍGIA)", 280, 470, { a: fa, tam: 30, borda: "rgba(124,200,255,0.95)" });
+          LUA.tag(c, "SÓ O SOL", 700, 470, { a: fa, tam: 30, borda: "rgba(255,138,76,0.95)" });
+          LUA.tag(c, "TIME-LAPSE · 12 H", 480, 1330, { a: fa * 0.85, tam: 22, fundo: "rgba(8,10,20,0.4)" });
           // colchetes de amplitude ao lado de cada régua
           const ab = range(t, 2.3, 2.8) * fa;
           if (ab > 0) for (const l of lados) {

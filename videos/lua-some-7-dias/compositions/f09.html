@@ -53,10 +53,10 @@
         const S = st.scene, cam = st.cam;
         st.bloom = 0.7;
         S.environment = null;
-        LUA.estrelas(S, { n: 2800, r: 400, seed: 91 });
+        LUA.ceuDoc(S, { seed: 91, n: 5000, via: 0.32, raio: 400 });
         const SUN = new THREE.Vector3(-320, 0, 60);
         LUA.sol(S, { pos: SUN, r: 9 });
-        const E = LUA.terra(S, { r: 1 }); E.setSol(SUN);
+        const E = await LUA.terraDoc(S, { r: 1 }); E.setSol(SUN);
         const TILT = 23.4 * Math.PI / 180;
         E.grupo.rotation.z = -TILT;   // polo norte inclinado para +x
         st.key.position.copy(SUN); st.key.target.position.set(0, 0, 0); st.key.castShadow = false; st.key.intensity = 3.4; st.key.color.set(0xfff1e0);
@@ -91,7 +91,7 @@
           [x, y] = LUA.proj(pG, cam);
           LUA.tag(c, "23,4°", x, y - 70, { a: fa * range(t, 4.5, 4.9), tam: 34, borda: "rgba(124,200,255,0.9)" });
           const n = Math.min(7, 1 + Math.floor(dias));
-          LUA.tag(c, `DIA ${n}`, 430, 255, { a: fa * range(t, 1.2, 1.5), tam: 40, borda: "rgba(255,255,255,0.6)" });
+          LUA.tag(c, `DIA ${n}`, 430, 1330, { a: fa * range(t, 1.2, 1.5), tam: 40, borda: "rgba(255,255,255,0.6)" });
         }
 
         // DR foi lido na hora em que o script rodou (depois do inline o host pode mudar de atributos)

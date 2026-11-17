@@ -4,22 +4,19 @@
         const st = T.createToyStage(canvas, { fov: 50, nevoa: [160, 560], nuvens: 0, ceu: ["#5E8FCB", "#F2D3A8"] });
         const S = st.scene, cam = st.cam;
         const ceu = SK.ceuDin(st, ["#5E8FCB", "#F2D3A8"], ["#02040a", "#0a1226"]);
-        const cid = T.cidade({ n: 6, seed: 41, verde: 0.18 }); S.add(cid.group);
+        const cid = T.cidade({ n: 5, seed: 41, verde: 0.18 }); S.add(SK.aliviar(cid.group));
         const stars = SK.estrelas(S, { n: 2200, r: 900, seed: 42 });
         const rr = mulberry32(43);
         cid.buildings.forEach((b) => { b.userData.on = rr() < 0.55 ? 2.6 + rr() * 1.6 : 99; });
         // borda da sombra: placa invisível (não desenha cor nem profundidade) que só projeta sombra
-        const occ = new THREE.Mesh(new THREE.BoxGeometry(600, 2, 700), new THREE.MeshBasicMaterial({ colorWrite: false, depthWrite: false }));
-        occ.castShadow = true; S.add(occ);
         const SD = new THREE.Vector3(-1.2, 0.9, 0.6).normalize();
         const sunHalo = SK.brilho(0xffe2b0, 300, "suave", 1), sunCore = SK.brilho(0xffffff, 70, "disco", 1);
         S.add(sunHalo, sunCore);
         function render(t) {
           // a frente da escuridão atravessa a cidade (na direção em que a luz viajava, do lado do Sol para fora)
-          const xe = lerp(-280, 120, ease.inOutSine(range(t, 0.45, 2.3)));
-          occ.position.set(xe - 300, 46, 0);
+          const xe = lerp(-150, 170, ease.inOutSine(range(t, 0.45, 2.3)));
           st.sol(0, 0, 130);
-          const k = range(t, 0.7, 2.6);
+          const k = range(t, 1.5, 2.7);
           ceu.set(ease.inOutSine(k));
           S.environmentIntensity = lerp(1, 0.07, k);
           st.hemi.intensity = 0.55 * lerp(1, 0.1, k);
@@ -35,4 +32,7 @@
           cam.position.set(Math.sin(a) * R, lerp(125, 82, e), Math.cos(a) * R);
           cam.lookAt(0, 0, -10);
           st.draw();
+          // frente da escuridão varrendo a cidade (borda alaranjada = último entardecer), depois o escuro geral assume
+          const ta = 0.82 * (1 - range(t, 2.3, 2.9));
+          if (ta > 0.01) SK.terminador(st.ctx, cam, xe, ta);
         }

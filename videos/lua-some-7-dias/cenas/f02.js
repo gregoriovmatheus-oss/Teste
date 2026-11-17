@@ -4,10 +4,10 @@
         const S = st.scene, cam = st.cam;
         st.bloom = 0.7;
         S.environment = null;
-        const est = LUA.estrelas(S, { n: 3200, r: 400, seed: 21 });
+        const est = LUA.ceuDoc(S, { seed: 21, n: 5000, via: 0.32, raio: 400 });
         const SUN = new THREE.Vector3(-260, 80, 150);
         LUA.sol(S, { pos: SUN, r: 8 });
-        const E = LUA.terra(S, { r: 1 });
+        const E = await LUA.terraDoc(S, { r: 1 });
         E.setSol(SUN); E.grupo.rotation.z = 0.41;
         st.key.position.copy(SUN); st.key.target.position.set(0, 0, 0); st.key.castShadow = false; st.key.intensity = 3.6; st.key.color.set(0xfff1e0);
         st.hemi.intensity = 0.03; st.rim.intensity = 0;
