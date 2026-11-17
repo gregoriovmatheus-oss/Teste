@@ -80,6 +80,9 @@
           for (const s of [sunHalo, sunCore, sunRaios]) s.position.copy(cam.position).addScaledVector(SDIR, 900);
           sunRaios.material.rotation = t * 0.04;
           st.draw();
+          const c2 = st.ctx, g = c2.createLinearGradient(0, 560, 0, 1080);
+          g.addColorStop(0, "rgba(6,10,20,0)"); g.addColorStop(0.45, "rgba(6,10,20,0.5)"); g.addColorStop(1, "rgba(6,10,20,0)");
+          c2.fillStyle = g; c2.fillRect(0, 560, 1080, 520);
         }
 
         // DR foi lido na hora em que o script rodou (depois do inline o host pode mudar de atributos)

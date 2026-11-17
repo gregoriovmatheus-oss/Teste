@@ -42,9 +42,9 @@ html = f'''<template>
     #chapN {{ color: {AZ}; font-size: 54px; letter-spacing: 0; }}
     #hud {{ position: absolute; left: 64px; right: 64px; top: 268px; font-family: "JetBrains Mono", monospace; opacity: 0; text-shadow: 0 1px 10px rgba(0,0,0,0.85); }}
     .row {{ display: flex; justify-content: space-between; align-items: baseline; margin-top: 16px; }}
-    .lbl {{ font-size: 22px; letter-spacing: 0.22em; color: rgba(243,239,232,0.68); }}
+    .lbl {{ font-size: 22px; letter-spacing: 0.22em; color: rgba(243,239,232,0.9); }}
     .val {{ font-size: 30px; letter-spacing: 0.06em; color: #f3efe8; white-space: nowrap; }}
-    .un {{ font-size: 22px; color: rgba(243,239,232,0.7); }}
+    .un {{ font-size: 22px; color: rgba(243,239,232,0.9); }}
     .val.al {{ color: {LA}; }}
     .meter {{ height: 3px; background: rgba(255,255,255,0.16); margin-top: 10px; overflow: hidden; }}
     .meter > div {{ height: 100%; background: {AZ}; transform-origin: left; transform: scaleX(0); }}

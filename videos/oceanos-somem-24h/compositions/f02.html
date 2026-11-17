@@ -51,7 +51,6 @@
         const canvas = document.getElementById("f02-canvas");
 
         const O = OCEANO, G0 = 5.36;
-        try { await document.fonts.load('500 26px "JetBrains Mono"'); } catch (e) {}
         const st = T.createToyStage(canvas, { fov: 46, ceu: ["#23406b", "#e8b483"], nevoa: [700, 2600], corNevoa: "#b59b84", nuvens: 0, exposicao: 1.05 });
         const S = st.scene, cam = st.cam;
         // margem continental: costa (+z) -> plataforma -> talude com cânions -> planície abissal (-z)

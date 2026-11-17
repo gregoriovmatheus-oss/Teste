@@ -1,6 +1,5 @@
 /*META {"imports": ["oceano", "terra"], "rotulos": [{"de": 0, "ate": 2.55, "top": 660, "texto": "<span class=\"k\">UM EXPERIMENTO MENTAL</span><br>E se os oceanos<br><span class=\"y\">sumissem?</span>"}], "D0": 5.36} */
         const O = OCEANO;
-        try { await document.fonts.load('500 26px "JetBrains Mono"'); } catch (e) {}
         const st = T.createToyStage(canvas, { fov: 50, ceu: ["#22385e", "#f2b27a"], nevoa: [120, 900], corNevoa: "#c9a688", nuvens: 0, exposicao: 0.98 });
         const S = st.scene, cam = st.cam;
         // abertura: a Terra real vista do espaço, mergulho até a costa

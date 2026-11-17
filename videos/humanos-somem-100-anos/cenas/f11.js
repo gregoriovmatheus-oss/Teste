@@ -16,5 +16,5 @@
           cam.position.set(lerp(6, 2.5, e), lerp(12, 6.5, e), lerp(56, 44, e));
           cam.lookAt(0, lerp(3, 2.5, e), lerp(-10, -14, e));
           st.sol(0, 10, 70);
-          st.draw(S, cam, fl > 0 ? { cor: "#fff6e6", a: fl * 0.85 } : null);
+          st.draw(S, cam, fl > 0 ? { cor: "#fff6e6", a: fl * 0.6 } : null);
         }

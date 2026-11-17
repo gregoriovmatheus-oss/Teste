@@ -52,7 +52,6 @@
         const canvas = document.getElementById("f10-canvas");
 
         const O = OCEANO, G0 = 47.78, TP = 5.83;
-        try { await document.fonts.load('500 26px "JetBrains Mono"'); } catch (e) {}
         // diagrama 3D do ciclo da água: bacia oceânica (seca) à esquerda, continente à direita, nuvens em cima
         const st = T.createToyStage(canvas, { fov: 42, ceu: ["#1d3557", "#8fa9c2"], nevoa: [300, 900], corNevoa: "#6f87a3", nuvens: 0, exposicao: 1.05 });
         const S = st.scene, cam = st.cam;

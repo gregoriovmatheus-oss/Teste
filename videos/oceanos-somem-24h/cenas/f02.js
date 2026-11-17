@@ -1,6 +1,5 @@
 /*META {"imports": ["oceano"], "rotulos": [{"de": 0.75, "ate": 4.45, "texto": "<span class=\"k\">VOLUME DOS OCEANOS</span><br><span class=\"y\">1,3 bilhão</span><br>de km³ de água"}, {"de": 0.15, "ate": 4.45, "texto": "<span class=\"chip im\">● Imediato<small>em minutos</small></span>", "sai": true}], "css": "    .chip{display:inline-block;font-family:\"JetBrains Mono\",\"Menlo\",monospace;font-weight:500;font-size:28px;letter-spacing:.14em;line-height:1.1;padding:14px 26px;border-radius:6px;text-shadow:none;text-transform:uppercase;background:rgba(4,8,16,.62);text-align:left}.chip.im{color:#ff8a4c;border:2px solid #ff8a4c}.chip.le{color:#7cc8ff;border:2px solid #7cc8ff}.chip.di{color:#ffd28a;border:2px solid #ffd28a}.chip small{display:block;font-size:20px;color:rgba(255,255,255,.8);letter-spacing:.1em;margin-top:6px}#f02-r2{top:1262px!important;height:110px;left:0;right:0;justify-content:center;align-items:flex-start}\n", "D0": 4.51} */
         const O = OCEANO, G0 = 5.36;
-        try { await document.fonts.load('500 26px "JetBrains Mono"'); } catch (e) {}
         const st = T.createToyStage(canvas, { fov: 46, ceu: ["#23406b", "#e8b483"], nevoa: [700, 2600], corNevoa: "#b59b84", nuvens: 0, exposicao: 1.05 });
         const S = st.scene, cam = st.cam;
         // margem continental: costa (+z) -> plataforma -> talude com cânions -> planície abissal (-z)

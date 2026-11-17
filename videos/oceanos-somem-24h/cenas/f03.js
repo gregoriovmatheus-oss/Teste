@@ -1,6 +1,5 @@
 /*META {"imports": ["oceano", "terra"], "rotulos": [{"de": 3.55, "ate": 5.0, "texto": "<span class=\"k\">VISTA ORBITAL</span><br>Um planeta <span class=\"y\">a seco</span>"}], "D0": 5.02} */
         const O = OCEANO, G0 = 9.87;
-        try { await document.fonts.load('500 26px "JetBrains Mono"'); } catch (e) {}
         // a Terra real perde o azul: o oceano drena (terra.js: seco 0 -> 1) e aparece o relevo do fundo
         const st = T.createToyStage(canvas, { fov: 34, ceu: ["#000000", "#02030a"], nuvens: 0, nevoa: null });
         const S = st.scene, cam = st.cam;

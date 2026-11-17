@@ -47,7 +47,6 @@
         const canvas = document.getElementById("f12-canvas");
 
         const O = OCEANO, G0 = 60.55, TC = 2.7;
-        try { await document.fonts.load('500 26px "JetBrains Mono"'); } catch (e) {}
         // parte A: a água volta e invade a bacia
         const st = T.createToyStage(canvas, { fov: 50, ceu: ["#263f68", "#dfa678"], nevoa: [60, 520], corNevoa: "#a8876c", nuvens: 0, exposicao: 1.05 });
         const S = st.scene, cam = st.cam;

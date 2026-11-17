@@ -17,6 +17,7 @@ import { mulberry32, clamp, lerp, ease } from "../kit.js";
 const rg = (t, a, b) => clamp((t - a) / (b - a));
 const BOX = new THREE.BoxGeometry(1, 1, 1);
 const SPH_B = new THREE.SphereGeometry(1, 10, 8);
+const SPH_L = new THREE.SphereGeometry(1, 7, 5);
 const CONE = (() => { const g = new THREE.ConeGeometry(1, 1, 5); g.translate(0, 0.5, 0); return g; })();
 const TRONCO = (() => { const g = new THREE.CylinderGeometry(0.16, 0.28, 1, 7); g.translate(0, 0.5, 0); return g; })();
 
@@ -238,7 +239,7 @@ export function avenida(S, { seed = 11, larg = 18, calc = 4 } = {}) {
       for (let j = 0; j < n && y > 0.5; j++) { a += (R() - 0.5) * 0.9; a = clamp(a, -Math.PI + 0.3, -0.3); const L = 0.6 + R() * 0.9; const y2 = y + Math.sin(a) * L, z2 = z + Math.cos(a) * L; FEN.push({ x: b.fx - b.s * 0.06, y: (y + y2) / 2, z: (z + z2) / 2, L, a, k: j / n, d0 }); y = y2; z = z2; }
     }
   }
-  av.hera = inst(SPH_B, M(0xffffff, 0.9), HERA.length, root);
+  av.hera = inst(SPH_L, M(0xffffff, 0.9), HERA.length, root);
   HERA.forEach((p, i) => av.hera.setColorAt(i, new THREE.Color([0x3f6a2a, 0x557f33, 0x2f5622, 0x6b8f3a][i % 4])));
   av.fendas = inst(BOX, crackMat, FEN.length, root); av.fendas.castShadow = false;
   av.HERA = HERA; av.FEN = FEN;
@@ -247,14 +248,14 @@ export function avenida(S, { seed = 11, larg = 18, calc = 4 } = {}) {
   const RUST = [];
   av.carros.forEach((c, ci) => { for (let i = 0; i < 9; i++) RUST.push({ c, lx: (R() - 0.5) * 2.0, ly: 0.75 + R() * 0.55, lz: (R() - 0.5) * 3.8, k: R(), r: 0.35 + R() * 0.45 }); });
   postes.forEach(([x, z]) => { for (let i = 0; i < 3; i++) RUST.push({ wx: x, wy: 0.5 + R() * 6, wz: z, k: R(), r: 0.22 }); });
-  av.rust = inst(SPH_B, new THREE.MeshStandardMaterial({ color: 0x8a4a22, roughness: 1 }), RUST.length, root);
+  av.rust = inst(SPH_L, new THREE.MeshStandardMaterial({ color: 0x8a4a22, roughness: 1 }), RUST.length, root);
   RUST.forEach((p, i) => av.rust.setColorAt(i, new THREE.Color([0x8a4a22, 0x6e3518, 0xa25a28][i % 3])));
   av.RUST = RUST;
 
   // ---------- floresta: árvores instanciadas (rua, calçada, estacionamento) + árvores-herói (arvore de toy.js) ----------
   const ARV = [];
   const add = (x, z, b, s) => ARV.push({ x, z, b, s, c: Math.floor(R() * 4), r: R() * 6 });
-  for (let i = 0; i < 60; i++) { const x = (R() - 0.5) * (larg + 2), z = -95 + R() * 125; if (Math.abs(x) < 2.2 && z > 10) continue; add(x, z, R() * 0.55, 0.9 + R() * 0.8); }
+  for (let i = 0; i < 60; i++) { const x = (R() - 0.5) * (larg + 2); let z = -95 + R() * 125; if (z > 16) z -= 40; add(x, z, R() * 0.55, 0.9 + R() * 0.8); }
   for (let i = 0; i < 26; i++) add(-borda - 2 - R() * 26, LOT[0] + R() * (LOT[1] - LOT[0]), R() * 0.5, 1 + R() * 0.7);
   for (let i = 0; i < 24; i++) { const s = R() < 0.5 ? 1 : -1; add(s * (larg / 2 + 0.5 + R() * 3), -95 + R() * 140, R() * 0.6, 0.8 + R() * 0.6); }
   const copaCores = [0x3f6e2c, 0x4f7f34, 0x5a8a3a, 0x36612a];
@@ -262,13 +263,13 @@ export function avenida(S, { seed = 11, larg = 18, calc = 4 } = {}) {
   av.copa = inst(SPH_B, M(0xffffff, 0.85), ARV.length * 3, root);
   ARV.forEach((p, i) => { for (let j = 0; j < 3; j++) av.copa.setColorAt(i * 3 + j, new THREE.Color(copaCores[(p.c + j) % 4]).multiplyScalar(0.85 + 0.3 * ((p.r * (j + 1)) % 1))); });
   av.ARV = ARV;
-  av.herois = [[-4.5, 26, 0.1], [5.2, 31, 0.15], [-1.5, 8, 0.25], [7.5, 20, 0.05], [-7.8, 38, 0.2], [3.5, -6, 0.3]].map(([x, z, b], i) => {
+  av.herois = [[-11.5, 26, 0.1], [11.2, 33, 0.15], [-1.5, 4, 0.25], [6.5, 12, 0.05], [-11, 40, 0.2], [3.5, -10, 0.3]].map(([x, z, b], i) => {
     const a = arvore(1, PAL.verde, 900 + i); a.position.set(x, 0.12, z); root.add(a); a.userData = { b, s: 2.6 + (i % 3) * 0.5 }; a.visible = false; return a;
   });
   // arbustos cobrindo os carros
   const ARB = [];
   av.carros.forEach((c) => { for (let i = 0; i < 6; i++) ARB.push({ c, lx: (R() - 0.5) * 3.4, lz: (R() - 0.5) * 5.2, k: R(), r: 0.6 + R() * 0.8 }); });
-  av.arbusto = inst(SPH_B, M(0xffffff, 0.9), ARB.length, root);
+  av.arbusto = inst(SPH_L, M(0xffffff, 0.9), ARB.length, root);
   ARB.forEach((p, i) => av.arbusto.setColorAt(i, new THREE.Color(copaCores[i % 4])));
   av.ARB = ARB;
   // neve/geada (f05): véu branco sobre o asfalto via cor do material
@@ -318,7 +319,7 @@ export function aplicar(av, st, t = 0) {
   av.cracks.instanceMatrix.needsUpdate = true;
   // mato brotando nas frestas
   av.TUF.forEach((p, i) => {
-    const k = ease.outCubic(clamp((s.mato * 1.6 - p.d0 - p.k * 0.4) / 0.4)) * (1 + s.floresta * 0.8);
+    const k = ease.outCubic(clamp((s.mato * 1.6 - p.d0 - p.k * 0.4) / 0.4)) * (1 + s.floresta * 0.25);
     const y = p.x * p.x > (av.larg / 2) ** 2 ? 0.4 : 0.12;
     for (let j = 0; j < 4; j++) { const a = p.a + j * 1.57; setM(av.tufos, i * 4 + j, p.x + Math.cos(a) * 0.05, y, p.z + Math.sin(a) * 0.05, 0.05 * p.s * k, (0.55 + 0.2 * j) * p.s * k, 0.05 * p.s * k, a, 0, 0.25 + 0.12 * j + Math.sin(t * 2 + p.a + j) * 0.05); }
   });
@@ -361,6 +362,9 @@ export function aplicar(av, st, t = 0) {
     setM(av.arbusto, i, _v.x, _v.y, _v.z, p.r * k, p.r * 0.8 * k, p.r * k);
   });
   av.arbusto.instanceMatrix.needsUpdate = true; if (av.arbusto.instanceColor) av.arbusto.instanceColor.needsUpdate = true;
+  av.cracks.visible = s.racha > 0; av.tufos.visible = s.mato > 0; av.hera.visible = s.hera > 0; av.fendas.visible = s.fenda > 0;
+  av.rust.visible = fe > 0; av.tronco.visible = av.copa.visible = fl > 0; av.arbusto.visible = Math.max(s.mato * 0.5, fl) > 0.05;
+  for (const m of [av.hera, av.tufos, av.rust, av.cracks, av.fendas]) m.castShadow = false;
   av.state = s;
 }
 

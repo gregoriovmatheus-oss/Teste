@@ -52,7 +52,6 @@
         const canvas = document.getElementById("f09-canvas");
 
         const O = OCEANO, G0 = 41.57;
-        try { await document.fonts.load('500 26px "JetBrains Mono"'); } catch (e) {}
         const st = T.createToyStage(canvas, { fov: 45, ceu: ["#000000", "#02030a"], nuvens: 0, nevoa: null });
         const S = st.scene, cam = st.cam;
         // Sol logo acima do horizonte: a Terra seca em contraluz, a atmosfera acesa na borda

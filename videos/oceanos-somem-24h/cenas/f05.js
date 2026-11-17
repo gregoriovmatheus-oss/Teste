@@ -1,6 +1,5 @@
 /*META {"imports": ["oceano", "terra"], "rotulos": [{"de": 2.1, "ate": 5.15, "texto": "<span class=\"k\">DORSAL MESO-OCEÂNICA</span><br><span class=\"y\">65 mil km</span><br>de cordilheira"}], "D0": 5.18} */
         const O = OCEANO, G0 = 20.19, TC = 2.55;
-        try { await document.fonts.load('500 26px "JetBrains Mono"'); } catch (e) {}
         // parte A: voo sobre a dorsal (vale de rifte no eixo, falhas transformantes deslocando segmentos)
         const st = T.createToyStage(canvas, { fov: 52, ceu: ["#46699a", "#d6b993"], nevoa: [200, 1300], corNevoa: "#ad9f8d", nuvens: 0, exposicao: 1.05 });
         const S = st.scene, cam = st.cam;

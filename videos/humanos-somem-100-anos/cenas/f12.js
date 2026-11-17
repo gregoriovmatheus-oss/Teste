@@ -24,8 +24,8 @@
           cervos.slice(1).forEach((c, i) => c.update(t, { cabeca: -1.1 + Math.sin(t + i) * 0.1 }));
           lobos.forEach((l, i) => l.update(t, { cabeca: Math.sin(t * 0.7 + i) * 0.2, vira: Math.sin(t * 0.5 + i) * 0.4 }));
           // grua: de trás das pessoas até o lado, na altura dos olhos
-          const e = ease.inOutSine(range(t, 0, 5.27)), a = lerp(-0.25, 0.75, e), R = lerp(9.5, 8, e);
-          cam.position.set(1 + Math.sin(a) * R, lerp(1.9, 2.8, e), 18 + Math.cos(a) * R);
+          const e = ease.inOutSine(range(t, 0, 5.27)), a = lerp(-0.25, 0.75, e), R = lerp(11, 9, e);
+          cam.position.set(1 + Math.sin(a) * R, lerp(2.6, 3.4, e), 18 + Math.cos(a) * R);
           cam.lookAt(lerp(0.6, 0.8, e), lerp(1.6, 1.4, e), lerp(14, 18, e));
           st.sol(0, 15, 40);
           st.draw();

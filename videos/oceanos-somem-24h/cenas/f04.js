@@ -1,6 +1,5 @@
 /*META {"imports": ["oceano"], "rotulos": [{"de": 2.6, "ate": 5.25, "texto": "<span class=\"k\">PROFUNDIDADE MÉDIA</span><br><span class=\"y\">3.700 m</span>"}], "D0": 5.3} */
         const O = OCEANO, G0 = 14.89;
-        try { await document.fonts.load('500 26px "JetBrains Mono"'); } catch (e) {}
         // 1 unidade = 50 m. A antiga superfície do mar fica 74 u acima do chão (3.700 m).
         const st = T.createToyStage(canvas, { fov: 50, ceu: ["#263f68", "#dfa678"], nevoa: [60, 520], corNevoa: "#a8876c", nuvens: 0, exposicao: 1.05 });
         const S = st.scene, cam = st.cam;

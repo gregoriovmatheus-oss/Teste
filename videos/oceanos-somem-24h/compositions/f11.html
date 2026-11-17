@@ -51,7 +51,6 @@
         const canvas = document.getElementById("f11-canvas");
 
         const O = OCEANO, G0 = 54.8;
-        try { await document.fonts.load('500 26px "JetBrains Mono"'); } catch (e) {}
         const st = T.createToyStage(canvas, { fov: 52, ceu: ["#3a4656", "#a59a8a"], nevoa: [40, 340], corNevoa: "#6f6c68", nuvens: 0, exposicao: 1.0, luz: 0.7 });
         const S = st.scene, cam = st.cam;
         const alt = (x, z) => 1.6 * O.fbm(x * 0.04, z * 0.04, 4, 111) + 0.15 * Math.sin(x * 0.6);

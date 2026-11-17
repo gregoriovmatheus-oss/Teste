@@ -65,8 +65,8 @@
             jv.forEach(([ph0, dx, dz], i) => { const u = (t * 0.9 + ph0) % 1; jp[i * 3] = dx; jp[i * 3 + 1] = 14 - 30 * u * u * 0.5 + u * 2; jp[i * 3 + 2] = -5 + u * 16 + dz; if (jp[i * 3 + 1] < 0.2) jp[i * 3 + 1] = 0.2 + (u % 0.1) * 6; });
             jg.attributes.position.needsUpdate = true;
             const e = ease.inOutSine(range(t, 0, T1));
-            cam.position.set(lerp(-18, 6, e), lerp(4, 58, e), lerp(70, 42, e));
-            cam.lookAt(lerp(0, 0, e), lerp(26, 30, e), lerp(-6, -40, e));
+            cam.position.set(lerp(-26, 8, e), lerp(6, 62, e), lerp(120, 70, e));
+            cam.lookAt(0, lerp(24, 26, e), lerp(-6, -40, e));
             st.sol(0, -10, 90, 20);
             st.draw(S, cam, { cor: "#0b0a12", a: range(t, T1 - 0.2, T1) });
           } else {

@@ -1,6 +1,5 @@
 /*META {"imports": ["oceano", "terra"], "rotulos": [{"de": 0.1, "ate": 2.1, "texto": "<span class=\"k\">T+24:00</span><br><span class=\"y\">24 horas</span> depois"}], "D0": 4.75} */
         const O = OCEANO, G0 = 60.55, TC = 2.7;
-        try { await document.fonts.load('500 26px "JetBrains Mono"'); } catch (e) {}
         // parte A: a água volta e invade a bacia
         const st = T.createToyStage(canvas, { fov: 50, ceu: ["#263f68", "#dfa678"], nevoa: [60, 520], corNevoa: "#a8876c", nuvens: 0, exposicao: 1.05 });
         const S = st.scene, cam = st.cam;

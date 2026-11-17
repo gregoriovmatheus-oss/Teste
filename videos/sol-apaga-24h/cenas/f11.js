@@ -1,7 +1,7 @@
 /*META {"imports": ["solkit"], "rotulos": [{"de": 0.3, "ate": 1.0, "top": 700, "texto": "E o <span class=\"y\">frio</span>?"}, {"de": 2.7, "ate": 4.8, "top": 700, "texto": "O oceano<br><span class=\"y\">guarda calor</span>"}, {"de": 4.95, "ate": 7.38, "top": 700, "texto": "<span class=\"k\">EM 24 HORAS</span><br>Não <span class=\"y\">congela</span>", "sai": false}], "D0": 7.38} */
         const SK = SOLKIT;
         await SK.fontes();
-        const st = T.createToyStage(canvas, { fov: 40, ceu: ["#050a16", "#13213a"], nevoa: null, nuvens: 0 });
+        const st = T.createToyStage(canvas, { fov: 58, ceu: ["#050a16", "#13213a"], nevoa: null, nuvens: 0 });
         const S = st.scene, cam = st.cam;
         cam.setViewOffset(1080, 1920, 0, 380, 1080, 1920);
         S.environmentIntensity = 0.35; st.hemi.intensity = 0.4; st.hemi.color.setHex(0xa8bce6); st.key.intensity = 1.6; st.key.color.setHex(0xc8d6ff); st.rim.intensity = 0.8; st.rim.color.setHex(0x8fb0ff);
@@ -62,15 +62,15 @@
           hg.attributes.position.needsUpdate = true; hg.attributes.aA.needsUpdate = true;
           const e = ease.inOutSine(range(t, 0, 7.38));
           const a = lerp(-0.45, 0.4, e);
-          cam.position.set(Math.sin(a) * 22, lerp(7.5, 10, e), Math.cos(a) * 22);
+          cam.position.set(Math.sin(a) * 30, lerp(11, 14, e), Math.cos(a) * 30);
           cam.lookAt(0, 3.0, 0);
           st.sol(0, 0, 18);
           stars.set(0.7, t);
           st.draw();
           const c = st.ctx;
-          tag(v.set(-4.6, 8.2, 2.2), "CONTINENTE", { tam: 32 });
-          tag(v.set(4.6, 8.2, 2.2), "OCEANO", { tam: 32 });
-          tag(v.set(-4.6, 7.5, 2.2), "ESFRIA RÁPIDO", { tam: 26, cor: "#9fd6ff", a: range(t, 1.6, 2.0) });
-          tag(v.set(4.6, 7.5, 2.2), "SEGURA O CALOR", { tam: 26, cor: SK.AZUL, a: range(t, 2.8, 3.2) });
+          tag(v.set(-4.6, -2.9, 4.6), "CONTINENTE", { tam: 32, a: 1 - range(t, 2.4, 2.7) });
+          tag(v.set(4.6, -2.9, 4.6), "OCEANO", { tam: 32, a: 1 - range(t, 2.4, 2.7) });
+          tag(v.set(-4.6, -3.7, 4.6), "ESFRIA RÁPIDO", { tam: 26, cor: "#9fd6ff", a: range(t, 1.6, 2.0) * (1 - range(t, 2.4, 2.7)) });
+          tag(v.set(4.6, -3.7, 4.6), "SEGURA O CALOR", { tam: 26, cor: SK.AZUL, a: range(t, 1.9, 2.2) * (1 - range(t, 2.4, 2.7)) });
           for (const tm of [tT, tO]) tag(v.set(tm.g.position.x + 1.1, 1.0 + tm.zeroY, 2.2), "0 °C", { tam: 26, cor: "#9fd6ff", al: "left" });
         }

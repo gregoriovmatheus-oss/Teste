@@ -75,16 +75,16 @@
         const rb = mulberry32(92);
         const bokeh = Array.from({ length: 22 }, () => { const b = SK.brilho(rb() < 0.5 ? 0xfff0b0 : 0xb8e08a, 3 + rb() * 5, "disco", 0.5); b.position.set((rb() - 0.5) * 34, (rb() - 0.5) * 50, -26 - rb() * 10); b.ph = rb() * 6; S.add(b); return b; });
         // CO2 entrando e O2 saindo (InstancedMesh)
-        const NC = 70;
+        const NC = 40;
         const co2 = new THREE.InstancedMesh(T.SPH, new THREE.MeshStandardMaterial({ color: 0xaab4c0, roughness: 0.4, transparent: true }), NC);
         const o2 = new THREE.InstancedMesh(T.SPH, new THREE.MeshStandardMaterial({ color: 0x8fdcff, emissive: 0x4fb8ff, emissiveIntensity: 0.5, roughness: 0.2, transparent: true }), NC);
         S.add(co2, o2); co2.frustumCulled = o2.frustumCulled = false;
-        const rp = mulberry32(93), pd = Array.from({ length: NC }, () => [(rp() - 0.5) * 6, (rp() - 0.5) * 9, rp(), 0.08 + rp() * 0.08]);
+        const rp = mulberry32(93), pd = Array.from({ length: NC }, () => [(rp() - 0.5) * 6, (rp() - 0.5) * 9, rp(), 0.05 + rp() * 0.05]);
         // grãos de amido na folha
         const NA = 46;
         const amido = new THREE.InstancedMesh(T.SPH, new THREE.MeshStandardMaterial({ color: 0xf4f0e2, emissive: 0xfff3c8, emissiveIntensity: 0.25, roughness: 0.4 }), NA);
         folha.add(amido);
-        const ra = mulberry32(94), ad = Array.from({ length: NA }, () => { const y = (ra() - 0.5) * 8, w = 2.6 * Math.cos(y / 6.5); const x = (ra() - 0.5) * 2 * w; return [x, y, -0.09 * x * x + 0.35 * Math.sin(y * 0.35) + 0.08, 0.1 + ra() * 0.09]; });
+        const ra = mulberry32(94), ad = Array.from({ length: NA }, () => { const y = (ra() - 0.5) * 8, w = 2.6 * Math.cos(y / 6.5); const x = (ra() - 0.5) * 2 * w; return [x, y, -0.09 * x * x + 0.35 * Math.sin(y * 0.35) + 0.06, 0.07 + ra() * 0.06]; });
         const o3 = new THREE.Object3D(), v = new THREE.Vector3(), W = new THREE.Vector3();
         const sunC = new THREE.Color(0xffd9a0), nightC = new THREE.Color(0x5a74b8);
         // tempo "congelado" das moléculas: param quando a luz acaba

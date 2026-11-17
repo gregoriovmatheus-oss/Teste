@@ -55,7 +55,6 @@
         const canvas = document.getElementById("f13-canvas");
 
         const O = OCEANO, G0 = 65.3;
-        try { await document.fonts.load('500 26px "JetBrains Mono"'); } catch (e) {}
         // o oceano de volta: azul, mas vazio. Recife morto (branco/cinza), neve marinha, raios de luz, nenhum peixe.
         const st = T.createToyStage(canvas, { fov: 50, ceu: ["#1f6e9c", "#0a2a40"], nevoa: [6, 90], corNevoa: "#0f4766", nuvens: 0, exposicao: 1.1, luz: 0.9 });
         const S = st.scene, cam = st.cam;

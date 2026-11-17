@@ -61,8 +61,8 @@
         const S = SK.espaco(st), cam = st.cam;
         st.bloom = 0.8;
         const stars = SK.ceuDoc(S, { seed: 131 });
-        const SP = new THREE.Vector3(0, 13, -2);
-        const sol = SK.criaSol(S, { r: 1.7, pos: SP.toArray(), halo: 9 });
+        const SP = new THREE.Vector3(0, 7, -1.5);
+        const sol = SK.criaSol(S, { r: 1.2, pos: SP.toArray(), halo: 8 });
         const terra = await SK.terraDoc(S);
         const cascaMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
           uniforms: { uA: { value: 1 } },
@@ -86,13 +86,13 @@
             const L = ease.outCubic(range(t, 0.55, 1.1));
             sol.set(L, t);
             // a frente de luz sai do Sol e anda em velocidade constante até a Terra (chega em 3,6 s: "chegar")
-            const p = range(t, 0.75, 3.6), R = Math.max(0.01, p * (SP.length() - 1.0) + 1.7 * (p > 0 ? 1 : 0));
+            const p = range(t, 0.75, 3.6), R = Math.max(0.01, 1.2 + p * (SP.length() - 2.2));
             casca.scale.setScalar(R); casca.visible = p > 0 && p < 1;
             const chegou = range(t, 3.55, 3.85);
             terra.set({ sol: SUND, luz: chegou, cidades: 1 - 0.5 * chegou, rotY: 1.0 + t * 0.06, incl: 0.25 });
             const e = ease.inOutSine(range(t, 0, 4.1));
-            cam.position.set(lerp(9, 6, e), lerp(3.5, 4.5, e), lerp(30, 22, e));
-            cam.lookAt(0, lerp(6.8, 5.5, e), 0);
+            cam.position.set(lerp(7, 4, e), lerp(2.0, 2.6, e), lerp(27, 23, e));
+            cam.lookAt(0, lerp(1.6, 1.9, e), 0);
             stars.set(1, t);
             st.draw();
             const fl = range(t, 3.6, 4.1);
@@ -109,6 +109,11 @@
             st2.key.position.copy(st2.key.target.position).addScaledVector(D2, 100);
             for (const s of [sh, sc]) s.position.copy(cam2.position).addScaledVector(D2, 900);
             st2.draw(S2, cam2, { cor: "#fff6e0", a: 1 - range(u, 0, 0.5) });
+            // véu escuro atrás dos títulos (céu claro) e o fim escurecendo para a pergunta
+            const c2 = st2.ctx, g = c2.createLinearGradient(0, 560, 0, 1080);
+            g.addColorStop(0, "rgba(6,10,20,0)"); g.addColorStop(0.45, "rgba(6,10,20,0.55)"); g.addColorStop(1, "rgba(6,10,20,0)");
+            c2.fillStyle = g; c2.fillRect(0, 560, 1080, 520);
+            const fim = 0.45 * range(u, 2.0, 4.4); if (fim > 0) { c2.fillStyle = `rgba(4,6,14,${fim})`; c2.fillRect(0, 0, 1080, 1920); }
           }
         }
 

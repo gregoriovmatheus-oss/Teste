@@ -47,7 +47,6 @@
         const canvas = document.getElementById("f01-canvas");
 
         const O = OCEANO;
-        try { await document.fonts.load('500 26px "JetBrains Mono"'); } catch (e) {}
         const st = T.createToyStage(canvas, { fov: 50, ceu: ["#22385e", "#f2b27a"], nevoa: [120, 900], corNevoa: "#c9a688", nuvens: 0, exposicao: 0.98 });
         const S = st.scene, cam = st.cam;
         // abertura: a Terra real vista do espaço, mergulho até a costa

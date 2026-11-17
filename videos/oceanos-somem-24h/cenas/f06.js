@@ -1,6 +1,5 @@
 /*META {"imports": ["oceano"], "rotulos": [{"de": 1.95, "ate": 2.95, "texto": "<span class=\"k\">FOSSA DAS MARIANAS</span><br>Quase <span class=\"y\">11.000 m</span>"}, {"de": 3.05, "ate": 5.0, "sai": false, "texto": "<span class=\"k\">EVEREST</span><br><span class=\"y\">8.849 m</span><br>cabe inteiro"}], "D0": 5.0} */
         const O = OCEANO, G0 = 25.37;
-        try { await document.fonts.load('500 26px "JetBrains Mono"'); } catch (e) {}
         // diorama em corte da Fossa das Marianas. 1 unidade = 100 m (sem exagero vertical). Nível do mar = y 0.
         const st = T.createToyStage(canvas, { fov: 45, ceu: ["#2f5583", "#c9b394"], nevoa: [300, 1400], corNevoa: "#a49783", nuvens: 0, exposicao: 1.05 });
         const S = st.scene, cam = st.cam;

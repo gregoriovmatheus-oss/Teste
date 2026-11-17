@@ -1,6 +1,5 @@
 /*META {"imports": ["oceano"], "rotulos": [{"de": 2.25, "ate": 5.15, "texto": "<span class=\"k\">FONTES HIDROTERMAIS</span><br>Fluidos a <span class=\"y\">400 °C</span>"}], "D0": 5.19} */
         const O = OCEANO, G0 = 30.37;
-        try { await document.fonts.load('500 26px "JetBrains Mono"'); } catch (e) {}
         const st = T.createToyStage(canvas, { fov: 50, ceu: ["#22314f", "#b07a52"], nevoa: [50, 260], corNevoa: "#5a4a44", nuvens: 0, exposicao: 1.0, luz: 0.8 });
         const S = st.scene, cam = st.cam;
         const alt = (x, z) => 2.2 * O.fbm(x * 0.06, z * 0.06, 4, 71) + 1.5 * Math.max(0, O.ruido(x * 0.2, z * 0.2, 72));
