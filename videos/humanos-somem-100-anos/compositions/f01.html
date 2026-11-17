@@ -68,7 +68,7 @@
             E.aim(-46.6 - t * 1.5, -23.5);
             E.nuv.rotation.y = t * 0.004;
             const e = ease.inCubic(range(t, 0, T1));
-            const d = lerp(3.6, 1.04, e);
+            const d = lerp(6.2, 1.04, e);
             cam2.position.set(lerp(0.35, 0.02, e), lerp(0.25, 0.01, e), d);
             cam2.lookAt(0, 0, 0);
             cam2.rotateZ(lerp(0.12, 0, e));
