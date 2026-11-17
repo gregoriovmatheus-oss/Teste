@@ -1,0 +1,118 @@
+{
+  "slug": "humanos-somem-100-anos",
+  "ref": "R09",
+  "duracao": 79.27,
+  "duracao_fixa": null,
+  "narracao": {
+    "arquivo": "assets/audio/narracao.mp3"
+  },
+  "cenas": [
+    {
+      "id": "f01",
+      "palavra": "Uma cidade",
+      "inicio": 0,
+      "fim": 5.49
+    },
+    {
+      "id": "f02",
+      "palavra": "Carros param",
+      "inicio": 5.49,
+      "fim": 11.19
+    },
+    {
+      "id": "f03",
+      "palavra": "Algumas horas",
+      "inicio": 11.19,
+      "fim": 17.9
+    },
+    {
+      "id": "f04",
+      "palavra": "Dias depois,",
+      "inicio": 17.9,
+      "fim": 25.47
+    },
+    {
+      "id": "f05",
+      "palavra": "Anos depois,",
+      "inicio": 25.47,
+      "fim": 30.66
+    },
+    {
+      "id": "f06",
+      "palavra": "Os animais",
+      "inicio": 30.66,
+      "fim": 36.84
+    },
+    {
+      "id": "f07",
+      "palavra": "Décadas depois,",
+      "inicio": 36.84,
+      "fim": 42.7
+    },
+    {
+      "id": "f08",
+      "palavra": "Telhados caem,",
+      "inicio": 42.7,
+      "fim": 46.51
+    },
+    {
+      "id": "f09",
+      "palavra": "Mas nem",
+      "inicio": 46.51,
+      "fim": 54.73
+    },
+    {
+      "id": "f10",
+      "palavra": "Cem anos",
+      "inicio": 54.73,
+      "fim": 60.28
+    },
+    {
+      "id": "f11",
+      "palavra": "Então, num",
+      "inicio": 60.28,
+      "fim": 63.89
+    },
+    {
+      "id": "f12",
+      "palavra": "Encontram prédios",
+      "inicio": 63.89,
+      "fim": 69.16
+    },
+    {
+      "id": "f13",
+      "palavra": "A humanidade",
+      "inicio": 69.16,
+      "fim": 72.7
+    },
+    {
+      "id": "f14",
+      "palavra": "Nós podemos",
+      "inicio": 72.7,
+      "fim": 79.27
+    }
+  ],
+  "hud": {
+    "inicio": 0.5,
+    "fim": 6,
+    "rotulo": "O CALOR VOLTA EM",
+    "linha2": "AR −273 °C",
+    "contador": {
+      "de": 5,
+      "ate": 0,
+      "fim": 5.5,
+      "unidade": "s",
+      "casas": 2
+    }
+  },
+  "legendas": {
+    "juntar": [],
+    "numeros": {},
+    "ocultar": []
+  },
+  "trilha": {
+    "arquivo": "assets/audio/trilha.mp3",
+    "volume": 0.12
+  },
+  "sfx": []
+}

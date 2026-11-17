@@ -1,0 +1,112 @@
+{
+  "slug": "sol-apaga-24h",
+  "ref": "R09",
+  "duracao": 70.49,
+  "duracao_fixa": null,
+  "narracao": {
+    "arquivo": "assets/audio/narracao.mp3"
+  },
+  "cenas": [
+    {
+      "id": "f01",
+      "palavra": "Meio-dia. O",
+      "inicio": 0,
+      "fim": 4.13
+    },
+    {
+      "id": "f02",
+      "palavra": "Mas aqui",
+      "inicio": 4.13,
+      "fim": 10.11
+    },
+    {
+      "id": "f03",
+      "palavra": "Nesse tempo,",
+      "inicio": 10.11,
+      "fim": 15.06
+    },
+    {
+      "id": "f04",
+      "palavra": "Então, a",
+      "inicio": 15.06,
+      "fim": 19.61
+    },
+    {
+      "id": "f05",
+      "palavra": "A Lua",
+      "inicio": 19.61,
+      "fim": 24.16
+    },
+    {
+      "id": "f06",
+      "palavra": "Júpiter some",
+      "inicio": 24.16,
+      "fim": 29.23
+    },
+    {
+      "id": "f07",
+      "palavra": "Mas a",
+      "inicio": 29.23,
+      "fim": 35.35
+    },
+    {
+      "id": "f08",
+      "palavra": "Nas cidades,",
+      "inicio": 35.35,
+      "fim": 40.48
+    },
+    {
+      "id": "f09",
+      "palavra": "A fotossíntese",
+      "inicio": 40.48,
+      "fim": 45.68
+    },
+    {
+      "id": "f10",
+      "palavra": "Os animais",
+      "inicio": 45.68,
+      "fim": 50.55
+    },
+    {
+      "id": "f11",
+      "palavra": "E o",
+      "inicio": 50.55,
+      "fim": 57.93
+    },
+    {
+      "id": "f12",
+      "palavra": "Do espaço,",
+      "inicio": 57.93,
+      "fim": 61.87
+    },
+    {
+      "id": "f13",
+      "palavra": "Então o",
+      "inicio": 61.87,
+      "fim": 70.49
+    }
+  ],
+  "hud": {
+    "inicio": 0.5,
+    "fim": 6,
+    "rotulo": "O CALOR VOLTA EM",
+    "linha2": "AR −273 °C",
+    "contador": {
+      "de": 5,
+      "ate": 0,
+      "fim": 5.5,
+      "unidade": "s",
+      "casas": 2
+    }
+  },
+  "legendas": {
+    "juntar": [],
+    "numeros": {},
+    "ocultar": []
+  },
+  "trilha": {
+    "arquivo": "assets/audio/trilha.mp3",
+    "volume": 0.12
+  },
+  "sfx": []
+}

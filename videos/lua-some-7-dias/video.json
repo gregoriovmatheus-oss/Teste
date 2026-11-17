@@ -1,0 +1,106 @@
+{
+  "slug": "lua-some-7-dias",
+  "ref": "R09",
+  "duracao": 69.72,
+  "duracao_fixa": null,
+  "narracao": {
+    "arquivo": "assets/audio/narracao.mp3"
+  },
+  "cenas": [
+    {
+      "id": "f01",
+      "palavra": "Você olha",
+      "inicio": 0,
+      "fim": 3.83
+    },
+    {
+      "id": "f02",
+      "palavra": "Nenhuma explosão.",
+      "inicio": 3.83,
+      "fim": 9.19
+    },
+    {
+      "id": "f03",
+      "palavra": "A primeira",
+      "inicio": 9.19,
+      "fim": 14.31
+    },
+    {
+      "id": "f04",
+      "palavra": "A Lua",
+      "inicio": 14.31,
+      "fim": 19.65
+    },
+    {
+      "id": "f05",
+      "palavra": "Sem a",
+      "inicio": 19.65,
+      "fim": 24.58
+    },
+    {
+      "id": "f06",
+      "palavra": "Na Grande",
+      "inicio": 24.58,
+      "fim": 31.28
+    },
+    {
+      "id": "f07",
+      "palavra": "Na savana,",
+      "inicio": 31.28,
+      "fim": 37.23
+    },
+    {
+      "id": "f08",
+      "palavra": "O besouro",
+      "inicio": 37.23,
+      "fim": 44.69
+    },
+    {
+      "id": "f09",
+      "palavra": "E o",
+      "inicio": 44.69,
+      "fim": 51.77
+    },
+    {
+      "id": "f10",
+      "palavra": "No oitavo",
+      "inicio": 51.77,
+      "fim": 56.58
+    },
+    {
+      "id": "f11",
+      "palavra": "Mas ela",
+      "inicio": 56.58,
+      "fim": 61.72
+    },
+    {
+      "id": "f12",
+      "palavra": "Um dia,",
+      "inicio": 61.72,
+      "fim": 69.72
+    }
+  ],
+  "hud": {
+    "inicio": 0.5,
+    "fim": 6,
+    "rotulo": "O CALOR VOLTA EM",
+    "linha2": "AR −273 °C",
+    "contador": {
+      "de": 5,
+      "ate": 0,
+      "fim": 5.5,
+      "unidade": "s",
+      "casas": 2
+    }
+  },
+  "legendas": {
+    "juntar": [],
+    "numeros": {},
+    "ocultar": []
+  },
+  "trilha": {
+    "arquivo": "assets/audio/trilha.mp3",
+    "volume": 0.12
+  },
+  "sfx": []
+}

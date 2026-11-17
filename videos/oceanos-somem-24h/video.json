@@ -1,0 +1,112 @@
+{
+  "slug": "oceanos-somem-24h",
+  "ref": "R09",
+  "duracao": 73.29,
+  "duracao_fixa": null,
+  "narracao": {
+    "arquivo": "assets/audio/narracao.mp3"
+  },
+  "cenas": [
+    {
+      "id": "f01",
+      "palavra": "Uma praia",
+      "inicio": 0,
+      "fim": 5.36
+    },
+    {
+      "id": "f02",
+      "palavra": "Em minutos,",
+      "inicio": 5.36,
+      "fim": 9.87
+    },
+    {
+      "id": "f03",
+      "palavra": "Do espaço,",
+      "inicio": 9.87,
+      "fim": 14.89
+    },
+    {
+      "id": "f04",
+      "palavra": "A profundidade",
+      "inicio": 14.89,
+      "fim": 20.19
+    },
+    {
+      "id": "f05",
+      "palavra": "Aparece a",
+      "inicio": 20.19,
+      "fim": 25.37
+    },
+    {
+      "id": "f06",
+      "palavra": "Mais fundo,",
+      "inicio": 25.37,
+      "fim": 30.37
+    },
+    {
+      "id": "f07",
+      "palavra": "Fontes hidrotermais,",
+      "inicio": 30.37,
+      "fim": 35.56
+    },
+    {
+      "id": "f08",
+      "palavra": "Para a",
+      "inicio": 35.56,
+      "fim": 41.57
+    },
+    {
+      "id": "f09",
+      "palavra": "E o",
+      "inicio": 41.57,
+      "fim": 47.78
+    },
+    {
+      "id": "f10",
+      "palavra": "Mas o",
+      "inicio": 47.78,
+      "fim": 54.8
+    },
+    {
+      "id": "f11",
+      "palavra": "Ainda chove.",
+      "inicio": 54.8,
+      "fim": 60.55
+    },
+    {
+      "id": "f12",
+      "palavra": "Vinte e",
+      "inicio": 60.55,
+      "fim": 65.3
+    },
+    {
+      "id": "f13",
+      "palavra": "Mas o",
+      "inicio": 65.3,
+      "fim": 73.29
+    }
+  ],
+  "hud": {
+    "inicio": 0.5,
+    "fim": 6,
+    "rotulo": "O CALOR VOLTA EM",
+    "linha2": "AR −273 °C",
+    "contador": {
+      "de": 5,
+      "ate": 0,
+      "fim": 5.5,
+      "unidade": "s",
+      "casas": 2
+    }
+  },
+  "legendas": {
+    "juntar": [],
+    "numeros": {},
+    "ocultar": []
+  },
+  "trilha": {
+    "arquivo": "assets/audio/trilha.mp3",
+    "volume": 0.12
+  },
+  "sfx": []
+}
