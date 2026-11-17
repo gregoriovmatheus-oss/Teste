@@ -8,3 +8,6 @@ renders/.*
 renders/previa.mp4
 renders/previa-quadros/
 renders/*.mp4
+renders/*.log
+renders/snap*/
+renders/previa-quadros/
