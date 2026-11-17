@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zero Gravity — 5 segundos sem gravidade</title>
+  <meta name="description" content="Experiência cinematográfica 3D em tempo real: e se a gravidade da Terra desaparecesse por 5 segundos?" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <canvas id="gl"></canvas>
+
+  <div id="bars"><div class="bar top"></div><div class="bar bottom"></div></div>
+
+  <div id="title">
+    <div class="kicker">UM EXPERIMENTO MENTAL</div>
+    <h1>E se a gravidade da Terra<br /><em>desaparecesse</em> por 5 segundos?</h1>
+  </div>
+
+  <div id="chapter"><span id="chapterN">01</span><span id="chapterName">O PLANETA</span></div>
+
+  <div id="hud">
+    <div class="hud-left">
+      <div class="lbl">HIPÓTESE CINEMATOGRÁFICA</div>
+      <div id="loc" class="val small">ÓRBITA</div>
+    </div>
+    <div class="hud-right">
+      <div class="row"><span class="lbl">GRAVIDADE</span><span class="val"><span id="gVal">9.81</span> m/s²</span></div>
+      <div class="meter"><div id="gBar"></div></div>
+      <div class="row"><span class="lbl">TEMPO REAL DECORRIDO</span><span class="val">T+<span id="simVal">0.00</span> / 5.00 s</span></div>
+      <div class="meter"><div id="simBar"></div></div>
+      <div id="slowmo" class="lbl dim">TEMPO REAL</div>
+    </div>
+  </div>
+
+  <div id="caption"></div>
+  <div id="progress"><div id="progressBar"></div></div>
+  <div id="status"></div>
+
+  <div id="start">
+    <div class="start-inner">
+      <div class="kicker">ZERO GRAVITY · EXPERIÊNCIA 3D EM TEMPO REAL</div>
+      <h2>5 segundos<br />sem gravidade</h2>
+      <p>Uma hipótese cinematográfica — não uma previsão científica. Use fones de ouvido.</p>
+      <p class="rotate">No celular, gire para a horizontal.</p>
+      <button id="startBtn" disabled>▶&nbsp; INICIAR</button>
+      <div id="loading">Carregando…</div>
+      <div class="keys">ESPAÇO pausa · H oculta interface · R reinicia</div>
+    </div>
+  </div>
+
+  <div id="end">
+    <div class="end-inner">
+      <div class="kicker">FIM</div>
+      <h2>A gravidade nunca desaparece.</h2>
+      <p>Mas por cinco segundos, imaginamos como seria.</p>
+      <p class="small">Simulação ilustrativa: escalas de tempo e altura foram exageradas para fins cinematográficos.<br />Sem gravidade, a rotação da Terra e a pressão interna do ar e do solo comandariam os primeiros instantes.</p>
+      <button id="replay">↻&nbsp; ASSISTIR NOVAMENTE</button>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
