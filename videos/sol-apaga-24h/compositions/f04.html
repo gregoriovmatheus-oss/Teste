@@ -64,7 +64,7 @@
         function render(t) {
           // a última luz chega a todo o lado iluminado quase ao mesmo tempo: o Sol, o céu e as sombras somem juntos em ~0,5 s
           st.sol(0, 0, 130);
-          const k = ease.inOutSine(range(t, 0.55, 1.05));
+          const k = ease.inOutSine(range(t, 0.4, 0.9));
           ceu.set(k);
           S.environmentIntensity = lerp(1, 0.07, k);
           st.hemi.intensity = 0.55 * lerp(1, 0.1, k);
@@ -76,7 +76,7 @@
           // grua aérea girando e descendo, com um leve tremor no instante do apagão
           const e = ease.inOutSine(range(t, 0, 4.55));
           const a = lerp(0.35, 0.85, e), R = lerp(175, 135, e);
-          const [tx, ty, tz] = tremor(t, 1.6 * Math.exp(-Math.pow((t - 0.85) / 0.3, 2)));
+          const [tx, ty, tz] = tremor(t, 1.6 * Math.exp(-Math.pow((t - 0.65) / 0.3, 2)));
           cam.position.set(Math.sin(a) * R + tx, lerp(125, 82, e) + ty, Math.cos(a) * R + tz);
           cam.lookAt(0, 0, -10);
           st.draw();

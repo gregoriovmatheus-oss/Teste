@@ -9,7 +9,7 @@
         for (let i = 0; i <= N; i++) { const f = -PH + (2 * PH * i) / N; const p = [RI * Math.sin(f), RI * Math.cos(f) - CZ]; i ? sh.lineTo(...p) : sh.moveTo(...p); }
         for (let i = N; i >= 0; i--) { const f = -PH + (2 * PH * i) / N; sh.lineTo(RE * Math.sin(f), RE * Math.cos(f) - CZ); }
         const dg = new THREE.ExtrudeGeometry(sh, { depth: HD, bevelEnabled: false, curveSegments: 2 }); dg.rotateX(-Math.PI / 2); dg.computeVertexNormals();
-        const damMat = new THREE.MeshStandardMaterial({ color: 0xc9c3b6, roughness: 0.9 });
+        const damMat = new THREE.MeshStandardMaterial({ color: 0x9d988e, roughness: 0.95 });
         const dam = new THREE.Mesh(dg, damMat); dam.castShadow = dam.receiveShadow = true; S.add(dam);
         // faixas de junta no paramento (instanciadas)
         const jun = new THREE.InstancedMesh(new THREE.BoxGeometry(0.25, HD, 0.3), T.M(0xa9a397, 0.9), 13); S.add(jun);
