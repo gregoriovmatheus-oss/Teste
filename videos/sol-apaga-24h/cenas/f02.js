@@ -1,4 +1,4 @@
-/*META {"imports": ["solkit"], "rotulos": [{"de": 0.9, "ate": 3.6, "top": 660, "texto": "Ninguém <span class=\"y\">percebe</span>"}, {"de": 3.9, "ate": 5.98, "top": 660, "texto": "<span class=\"k\">A LUZ AINDA ESTÁ A CAMINHO</span><br><span class=\"y\">8 min 20 s</span>", "sai": false}], "D0": 5.98} */
+/*META {"imports": ["solkit"], "rotulos": [{"de": 0.9, "ate": 3.6, "top": 660, "texto": "Ninguém <span class=\"y\">percebe</span>"}, {"de": 3.6, "ate": 5.98, "top": 660, "texto": "<span class=\"k\">A LUZ AINDA ESTÁ A CAMINHO</span><br><span class=\"y\">8 min 20 s</span>", "sai": false}], "D0": 5.98} */
         const SK = SOLKIT;
         await SK.fontes();
         const st = T.createToyStage(canvas, { fov: 52, ceu: ["#3f86d6", "#d9e8ee"], nevoa: [90, 340], exposicao: 1.05, nuvens: 10 });

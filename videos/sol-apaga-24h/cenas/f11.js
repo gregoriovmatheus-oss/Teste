@@ -1,4 +1,4 @@
-/*META {"imports": ["solkit"], "rotulos": [{"de": 0.3, "ate": 1.0, "top": 700, "texto": "E o <span class=\"y\">frio</span>?"}, {"de": 2.7, "ate": 4.8, "top": 700, "texto": "O oceano<br><span class=\"y\">guarda calor</span>"}, {"de": 4.95, "ate": 7.38, "top": 700, "texto": "<span class=\"k\">EM 24 HORAS</span><br>Não <span class=\"y\">congela</span>", "sai": false}], "D0": 7.38} */
+/*META {"imports": ["solkit"], "rotulos": [{"de": 0.2, "ate": 1.9, "top": 700, "texto": "E o <span class=\"y\">frio</span>?"}, {"de": 2.7, "ate": 4.8, "top": 700, "texto": "O oceano<br><span class=\"y\">guarda calor</span>"}, {"de": 4.95, "ate": 7.38, "top": 700, "texto": "<span class=\"k\">EM 24 HORAS</span><br>Não <span class=\"y\">congela</span>", "sai": false}], "D0": 7.38} */
         const SK = SOLKIT;
         await SK.fontes();
         const st = T.createToyStage(canvas, { fov: 58, ceu: ["#050a16", "#13213a"], nevoa: null, nuvens: 0 });

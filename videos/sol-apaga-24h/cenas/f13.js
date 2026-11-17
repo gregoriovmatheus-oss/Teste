@@ -1,4 +1,4 @@
-/*META {"imports": ["solkit"], "rotulos": [{"de": 0.5, "ate": 1.9, "top": 700, "texto": "O Sol <span class=\"y\">volta</span>"}, {"de": 2.05, "ate": 3.75, "top": 700, "texto": "<span class=\"k\">DE NOVO</span><br><span class=\"y\">8 min 20 s</span>"}, {"de": 4.2, "ate": 5.4, "top": 680, "texto": "Tudo parece <span class=\"y\">normal</span>"}, {"de": 5.5, "ate": 8.62, "top": 680, "texto": "O planeta estaria<br><span class=\"y\">mesmo igual</span>?", "sai": false}], "D0": 8.62} */
+/*META {"imports": ["solkit"], "rotulos": [{"de": 0.5, "ate": 1.9, "top": 700, "texto": "O Sol <span class=\"y\">volta</span>"}, {"de": 1.95, "ate": 4.15, "top": 700, "texto": "<span class=\"k\">DE NOVO</span><br><span class=\"y\">8 min 20 s</span>"}, {"de": 4.2, "ate": 5.45, "top": 680, "texto": "Tudo parece <span class=\"y\">normal</span>"}, {"de": 5.5, "ate": 8.62, "top": 680, "texto": "O planeta estaria<br><span class=\"y\">mesmo igual</span>?", "sai": false}], "D0": 8.62} */
         const SK = SOLKIT;
         await SK.fontes();
         // parte A: espaço (o Sol reacende e a frente de luz volta a viajar)

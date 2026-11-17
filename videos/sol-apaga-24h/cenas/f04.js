@@ -1,4 +1,4 @@
-/*META {"imports": ["solkit"], "rotulos": [{"de": 0.5, "ate": 1.55, "top": 660, "texto": "A <span class=\"y\">escuridão</span> chega"}, {"de": 1.6, "ate": 4.55, "top": 660, "texto": "O dia vira <span class=\"y\">noite</span>", "sai": false}], "D0": 4.55} */
+/*META {"imports": ["solkit"], "rotulos": [{"de": 0.3, "ate": 1.65, "top": 660, "texto": "A <span class=\"y\">escuridão</span> chega"}, {"de": 1.7, "ate": 4.55, "top": 660, "texto": "O dia vira <span class=\"y\">noite</span>", "sai": false}], "D0": 4.55} */
         const SK = SOLKIT;
         await SK.fontes();
         const st = T.createToyStage(canvas, { fov: 50, nevoa: [160, 560], nuvens: 0, ceu: ["#5E8FCB", "#F2D3A8"] });

@@ -1,4 +1,4 @@
-/*META {"imports": ["solkit"], "rotulos": [{"de": 0.5, "ate": 1.8, "top": 690, "texto": "Não sai da <span class=\"y\">órbita</span>"}, {"de": 3.2, "ate": 4.55, "top": 690, "texto": "<span class=\"k\">APAGAR ≠ SUMIR</span><br>A massa <span class=\"y\">continua</span>"}, {"de": 4.65, "ate": 6.12, "top": 690, "texto": "E a <span class=\"y\">gravidade</span><br>também", "sai": false}], "D0": 6.12} */
+/*META {"imports": ["solkit"], "rotulos": [{"de": 0.3, "ate": 2.6, "top": 690, "texto": "Não sai da <span class=\"y\">órbita</span>"}, {"de": 2.85, "ate": 4.6, "top": 690, "texto": "<span class=\"k\">APAGAR ≠ SUMIR</span><br>A massa <span class=\"y\">continua</span>"}, {"de": 4.65, "ate": 6.12, "top": 690, "texto": "E a <span class=\"y\">gravidade</span><br>também", "sai": false}], "D0": 6.12} */
         const SK = SOLKIT;
         await SK.fontes();
         const st = T.createToyStage(canvas, { fov: 55, nevoa: null, nuvens: 0 });
