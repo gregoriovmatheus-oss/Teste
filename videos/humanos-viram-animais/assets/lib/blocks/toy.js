@@ -19,9 +19,11 @@ import { createRenderer, mulberry32, clamp, lerp, ease } from "../kit.js";
 export const PAL = {
   pele: 0xf2b48a, amarelo: 0xf2b53a, tijolo: 0xd9583b, ceu: 0x8cc7d8,
   creme: 0xf3e2c4, salmao: 0xe8896b, verde: 0x7dbb5a, verdeEsc: 0x4f8f45, teal: 0x6fafa6,
-  rosa: 0xe9a3a0, asfalto: 0x5d6470, calcada: 0xe6d8bf, tronco: 0x8a5a3c, branco: 0xf6f1e8,
+  rosa: 0xe9a3a0, asfalto: 0x55565a, calcada: 0xaaa49b, tronco: 0x5e4330, branco: 0xf6f1e8,
 };
-const PREDIO_CORES = [PAL.tijolo, PAL.amarelo, PAL.creme, PAL.salmao, PAL.teal, PAL.rosa, 0x9fc9d9, 0xd98a4e];
+// R10: paleta urbana realista (tijolo, concreto, areia, ardósia) em todas as cenas
+PAL.verde = 0x5f8a3c; PAL.verdeEsc = 0x3d6a2c;
+const PREDIO_CORES = [0x9c5038, 0xc7b08e, 0xb5afa5, 0x8d8780, 0xae6848, 0xd6c9b0, 0x6c7880, 0xb48748];
 
 let R = null;
 export function sharedRenderer() {
@@ -41,15 +43,16 @@ const _grad = (() => {
   t.minFilter = t.magFilter = THREE.NearestFilter; t.generateMipmaps = false; t.needsUpdate = true;
   return t;
 })();
+// R10 cinema realista: PBR (MeshStandardMaterial) em todas as cenas. Nome TOON mantido por compatibilidade.
 export function TOON(params = {}) {
-  const { roughness, metalness, ...rest } = params;
-  return new THREE.MeshToonMaterial({ gradientMap: _grad, ...rest });
+  const { roughness = 0.75, metalness = 0, ...rest } = params;
+  return new THREE.MeshStandardMaterial({ roughness, metalness, envMapIntensity: 0.55, ...rest });
 }
 const _mats = new Map();
 export function M(color, rough = 0.7, extra = null) {
   const key = color + "|" + (extra ? JSON.stringify(extra) : "");
   if (_mats.has(key)) return _mats.get(key);
-  const m = TOON({ color, ...(extra || {}) });
+  const m = TOON({ color, roughness: rough, ...(extra || {}) });
   _mats.set(key, m);
   return m;
 }
@@ -82,7 +85,38 @@ export function gradTex(top, bottom) {
   return t;
 }
 
-export function createToyStage(canvas, { ceu = [R09.ceuAlto, R09.ceuBaixo], nevoa = [60, 260], corNevoa = null, fov = 40,
+// mapa de ambiente (céu de fim de tarde) para reflexos e luz indireta realista; um só para todas as cenas
+let _env = null;
+function envMap(renderer) {
+  if (_env) return _env;
+  const c = document.createElement("canvas"); c.width = 256; c.height = 128;
+  const g = c.getContext("2d"), gr = g.createLinearGradient(0, 0, 0, 128);
+  gr.addColorStop(0, "#5d8fcf"); gr.addColorStop(0.45, "#cfe0f0"); gr.addColorStop(0.5, "#f6d7ad"); gr.addColorStop(0.56, "#8c7a68"); gr.addColorStop(1, "#4a4038");
+  g.fillStyle = gr; g.fillRect(0, 0, 256, 128);
+  const sun = g.createRadialGradient(70, 52, 0, 70, 52, 30); sun.addColorStop(0, "rgba(255,240,210,1)"); sun.addColorStop(1, "rgba(255,200,140,0)");
+  g.fillStyle = sun; g.fillRect(0, 0, 256, 128);
+  const t = new THREE.CanvasTexture(c); t.mapping = THREE.EquirectangularReflectionMapping; t.colorSpace = THREE.SRGBColorSpace;
+  const pm = new THREE.PMREMGenerator(renderer); _env = pm.fromEquirectangular(t).texture; pm.dispose();
+  return _env;
+}
+// grão de filme: 4 texturas de ruído fixas, sorteadas por quadro (determinístico)
+let _grain = null;
+function grainTiles() {
+  if (_grain) return _grain;
+  _grain = [0, 1, 2, 3].map((k) => {
+    const c = document.createElement("canvas"); c.width = c.height = 256;
+    const g = c.getContext("2d"), im = g.createImageData(256, 256), r = mulberry32(91 + k);
+    for (let i = 0; i < im.data.length; i += 4) { const v = 128 + (r() - 0.5) * 120; im.data[i] = im.data[i + 1] = im.data[i + 2] = v; im.data[i + 3] = 255; }
+    g.putImageData(im, 0, 0); return c;
+  });
+  return _grain;
+}
+let _vin = null;
+function vinheta(ctx) {
+  if (!_vin) { _vin = ctx.createRadialGradient(540, 900, 380, 540, 960, 1250); _vin.addColorStop(0, "rgba(10,8,20,0)"); _vin.addColorStop(1, "rgba(10,8,20,0.55)"); }
+  return _vin;
+}
+export function createToyStage(canvas, { ceu = ["#5E8FCB", "#F2D3A8"], nevoa = [60, 260], corNevoa = null, fov = 40,
   exposicao = 1.0, luz = 1, sombra = 60, nuvens = 14 } = {}) {
   const renderer = sharedRenderer();
   const ctx = canvas.getContext("2d");
@@ -92,13 +126,15 @@ export function createToyStage(canvas, { ceu = [R09.ceuAlto, R09.ceuBaixo], nevo
   const fogC = corNevoa ?? (Array.isArray(ceu) ? ceu[1] : ceu);
   if (nevoa) scene.fog = new THREE.Fog(fogC, nevoa[0], nevoa[1]);
   const cam = new THREE.PerspectiveCamera(fov, 1080 / 1920, 0.05, 2000);
-  const hemi = new THREE.HemisphereLight(0xbfd8ff, 0x8a5f5c, 1.3 * luz);
-  const key = new THREE.DirectionalLight(0xffc890, 2.6 * luz);
+  scene.environment = envMap(renderer);
+  const hemi = new THREE.HemisphereLight(0xbfd8ff, 0x6e5a4c, 0.55 * luz);
+  const key = new THREE.DirectionalLight(0xffd2a0, 3.2 * luz);
   key.castShadow = true;
   key.shadow.mapSize.set(2048, 2048);
+  key.shadow.radius = 3;
   key.shadow.bias = -0.0005;
   key.shadow.normalBias = 0.04;
-  const rim = new THREE.DirectionalLight(0xff9a50, 1.6 * luz); // contorno quente de fim de tarde
+  const rim = new THREE.DirectionalLight(0xffa868, 1.1 * luz); // luz de recorte quente de fim de tarde
   scene.add(hemi, key, key.target, rim, rim.target);
   function sol(x = 0, z = 0, size = sombra, y = 0) {
     key.position.set(x - 1.2 * size, y + 0.9 * size, z + 0.6 * size);
@@ -142,15 +178,30 @@ export function createToyStage(canvas, { ceu = [R09.ceuAlto, R09.ceuBaixo], nevo
     if (!contornado) { contornar(scene); contornado = true; }
     if (sc !== scene && !sc.userData.contornado) { contornar(sc); sc.userData.contornado = true; }
     renderer.toneMappingExposure = exposicao;
+    // padrão único de câmera: "na mão" bem leve (ruído suave determinístico), aplicado e desfeito em volta do render
+    const T = stg.T || 0, hx = (Math.sin(T * 1.7) + Math.sin(T * 2.9 + 1.3) * 0.5) * 0.0035 * stg.mao, hy = (Math.sin(T * 1.3 + 2.1) + Math.sin(T * 3.7) * 0.4) * 0.003 * stg.mao;
+    cm.rotation.x += hy; cm.rotation.y += hx;
     renderer.render(sc, cm);
+    cm.rotation.x -= hy; cm.rotation.y -= hx;
     ctx.globalAlpha = 1;
-    ctx.filter = stg.blur > 0.3 ? `blur(${stg.blur.toFixed(1)}px)` : "none";
+    // gradação de cor única (contraste suave, saturação contida) + desfoque opcional
+    const bl = stg.blur + stg.vel * 1.6;
+    ctx.filter = (bl > 0.3 ? `blur(${bl.toFixed(1)}px) ` : "") + "contrast(1.06) saturate(0.9)";
     ctx.drawImage(renderer.domElement, 0, 0);
     ctx.filter = "none";
-    speedLines();
+    // R10: sem linhas de velocidade de desenho; velocidade vira desfoque de movimento leve (acima)
     if (ov && ov.a > 0) { ctx.globalAlpha = Math.min(1, ov.a); ctx.fillStyle = ov.cor; ctx.fillRect(0, 0, 1080, 1920); ctx.globalAlpha = 1; }
+    // vinheta + grão de filme
+    ctx.fillStyle = vinheta(ctx); ctx.fillRect(0, 0, 1080, 1920);
+    const gt = grainTiles(), fr = Math.floor(T * 30);
+    ctx.save(); ctx.globalAlpha = 0.07; ctx.globalCompositeOperation = "overlay";
+    ctx.fillStyle = ctx.createPattern(gt[fr % 4], "repeat"); ctx.translate((fr * 37) % 256, (fr * 71) % 256); ctx.fillRect(-256, -256, 1080 + 512, 1920 + 512);
+    ctx.restore();
+    // corte padrão: entra e sai de cada cena com um "dip" de 5 quadros
+    const D = stg.D || 1e9, dip = Math.max(1 - T / 0.17, 1 - (D - T) / 0.12, 0);
+    if (dip > 0) { ctx.globalAlpha = Math.min(1, dip) * 0.85; ctx.fillStyle = "#0b0a12"; ctx.fillRect(0, 0, 1080, 1920); ctx.globalAlpha = 1; }
   }
-  stg.blur = 0;
+  stg.blur = 0; stg.mao = 1; stg.T = 0; stg.D = 0;
   return Object.assign(stg, { renderer, scene, cam, key, rim, hemi, sol, draw, ctx, warm: { renderer, scene, camera: cam } });
 }
 
@@ -186,7 +237,9 @@ export function mesh(geo, color, parent, rough = 0.7, linha = true) {
   return m;
 }
 // adiciona os contornos depois que as escalas foram definidas (chame uma vez no fim da montagem da cena)
+export const USA_CONTORNO = false; // R10: sem contorno de desenho
 export function contornar(root) {
+  if (!USA_CONTORNO) return;
   const lst = [];
   root.traverse((o) => { if (o.isMesh && o.userData.querLinha && !o.userData.temLinha) lst.push(o); });
   for (const o of lst) { o.userData.temLinha = true; contorno(o); }
@@ -200,7 +253,7 @@ export function predio({ w = 8, d = 8, h = 16, cor = PAL.tijolo, seed = 1, janel
   mesh(roundBox(w, h, d, 0.45), cor, g, 0.8);
   const rc = new THREE.Color(cor).multiplyScalar(0.8);
   if (telhado) { const t = mesh(roundBox(w + 0.5, 0.7, d + 0.5, 0.3), rc.getHex(), g, 0.8); t.position.y = h - 0.2; }
-  const win = TOON({ color: 0x7fb2c6, emissive: 0xffc56a, emissiveIntensity: 0 });
+  const win = TOON({ color: 0x4a5e70, roughness: 0.08, metalness: 0.7, envMapIntensity: 1.2, emissive: 0xffc56a, emissiveIntensity: 0 });
   g.userData.win = win;
   if (janelas) {
     const geo = roundBox(1.0, 1.3, 0.3, 0.12);

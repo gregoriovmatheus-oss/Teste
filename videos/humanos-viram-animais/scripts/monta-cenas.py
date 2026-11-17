@@ -13,13 +13,13 @@ import json, sys, os, re
 os.chdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 v = json.load(open('video.json'))
 dur = {c['id']: round(c['fim'] - c['inicio'], 2) for c in v['cenas']}
-CSS = """    #root { position: absolute; inset: 0; overflow: hidden; background: #3A7BD5; }
+CSS = """    #root { position: absolute; inset: 0; overflow: hidden; background: #0b0a12; }
     #ID-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
     /* rótulos 2D: y 680-980, acima da faixa da legenda (1005-1235) */
     .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
     .rot-t { display: block; font-family: "Anton", sans-serif; font-size: 92px; line-height: 1.0; color: #fff; text-transform: uppercase;
-      -webkit-text-stroke: 4px #1A1A2E; paint-order: stroke fill; text-shadow: 6px 6px 0 #1A1A2E; opacity: 0; }
-    .rot-t .y { color: #FF5A5F; }
+      letter-spacing: 0.02em; text-shadow: 0 4px 18px rgba(0,0,0,0.55), 0 1px 3px rgba(0,0,0,0.6); opacity: 0; }
+    .rot-t .y { color: #FFC56B; }
     .rot-t .p { font-size: 70px; }
 """
 def build(sid):
@@ -45,9 +45,9 @@ def build(sid):
             if 'pulso' in r:
                 tl_l.append(f'      tl.fromTo("#{lid}-in", {{ scale: 1 }}, {{ scale: 1.08, duration: 0.25, yoyo: true, repeat: 1, ease: "power2.out" }}, {r["pulso"]} * K);')
         else:
-            tl_l.append(f'      tl.fromTo("#{lid}-in", {{ opacity: 0, scale: 0.6 }}, {{ opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2)" }}, {a} * K);')
+            tl_l.append(f'      tl.fromTo("#{lid}-in", {{ opacity: 0, y: 24, filter: "blur(8px)" }}, {{ opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }}, {a} * K);')
             if r.get('sai', True):
-                tl_l.append(f'      tl.to("#{lid}-in", {{ opacity: 0, y: -20, duration: 0.25, ease: "power2.in" }}, {round(b - 0.3, 2)} * K);')
+                tl_l.append(f'      tl.to("#{lid}-in", {{ opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }}, {round(b - 0.3, 2)} * K);')
     imports = meta.get('imports', [])
     imp = ''.join(f', import("./assets/lib/blocks/{x}.js")' for x in imports)
     names = ''.join(', ' + x.upper() for x in imports)
@@ -89,7 +89,7 @@ def build(sid):
         const canvas = document.getElementById("{sid}-canvas");
 {body}
         // DR foi lido na hora em que o script rodou (depois do inline o host pode mudar de atributos)
-        await K.bindSeek(canvas, (t) => render(t * D / DR), {{ warm: [st.warm, ...(st.extraWarm || [])], duration: DR }});
+        await K.bindSeek(canvas, (t) => {{ st.T = t * D / DR; st.D = D; render(st.T); }}, {{ warm: [st.warm, ...(st.extraWarm || [])], duration: DR }});
       }});
     }})();
   </script>

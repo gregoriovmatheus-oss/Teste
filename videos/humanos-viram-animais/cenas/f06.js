@@ -39,11 +39,11 @@
             const g = c.createLinearGradient(0, yl, 0, yl + 900); g.addColorStop(0, "rgba(255,244,214,0.92)"); g.addColorStop(1, "rgba(140,210,240,0.92)");
             c.fillStyle = g; c.fill();
             c.beginPath(); for (let x = 0; x <= 1080; x += 30) c[x ? "lineTo" : "moveTo"](x, yl + Math.sin(x / 70 + t * 9) * 22);
-            c.lineWidth = 8; c.strokeStyle = "#1A1A2E"; c.stroke();
+            c.lineWidth = 3; c.strokeStyle = "rgba(255,255,255,0.55)"; c.stroke();
             c.restore();
           }
           const rb = mulberry32(66);
-          c.save(); c.lineWidth = 4; c.strokeStyle = "rgba(26,26,46,0.8)"; c.fillStyle = "rgba(255,244,214,0.35)";
+          c.save(); c.lineWidth = 1.5; c.strokeStyle = "rgba(255,255,255,0.6)"; c.fillStyle = "rgba(220,240,255,0.18)";
           for (let i = 0; i < 40; i++) {
             const x0 = rb() * 1080, t0 = rb() * 2.2, sp = 500 + rb() * 700, r = 8 + rb() * 22, u = t - t0;
             if (u < 0 || u > 2.6) continue;

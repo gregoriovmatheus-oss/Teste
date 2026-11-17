@@ -2,7 +2,7 @@
         const st = T.createToyStage(canvas, { fov: 55, nevoa: [60, 260] });
         const S = st.scene, cam = st.cam;
         const city = T.rua({ len: 320, larg: 14, seed: 121, hMin: 22, hMax: 46 }); S.add(city.group);
-        const ag = A.createAnimal("aguia", { fase: 0.1 }); ag.group.scale.setScalar(3.4); A.face(ag.group, 0, -1); S.add(ag.group);
+        const ag = A.createAnimal("aguia", { fase: 0.1 }); ag.group.scale.setScalar(4.2); A.face(ag.group, 0, -1); S.add(ag.group);
         const fl = T.bando(S, { n: 160, seed: 12 });
         function render(t) {
           const v = 18;
@@ -13,9 +13,9 @@
           ag.update(t, { voa: t < 3 ? 2.2 : 3 });
           const w = ease.inOutCubic(range(t, 2.8, 5.6));
           fl.update(t, [0, 46 + t * 0.5, z - 40], [26, 9, 30], Math.PI / 2, 1.6);
-          cam.position.set(x * 0.6 + lerp(1.5, 0, w), lerp(y + 1.6, y - 4, w), z + lerp(10, 40, w));
+          cam.position.set(x * 0.6 + lerp(1.5, 0, w), lerp(y + 1.6, y - 4, w), z + lerp(10, 20, w));
           st.vel = 0.7 * (1 - w); st.velT = t;
-          cam.lookAt(x, lerp(y + 0.3, y + 22, w), z - lerp(10, 40, w));
+          cam.lookAt(x, lerp(y + 0.3, y + 14, w), z - lerp(10, 26, w));
           st.sol(0, z - 10, 50);
           st.draw();
         }

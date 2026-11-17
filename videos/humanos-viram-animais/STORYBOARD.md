@@ -1,74 +1,39 @@
-# STORYBOARD — E se todos os humanos virassem animais diferentes?
+# STORYBOARD v3: E se todos os humanos virassem animais diferentes?
 
-format: 1080x1920 · ref R05 (3D cartoon/massinha) · narração Kokoro local (assets/audio/narracao.mp3, 101,9 s)
-Storyboard original do usuário (aprovado). Tempos = video.json. Texto falado = SCRIPT.md (1 linha por cena).
+Formato 1080x1920 · 101,34 s · ref **R10 cinema 3D realista** (substitui R09 anime) · narração Kokoro · legenda R01.
+Tempos em video.json. Texto falado em SCRIPT.md (1 linha por cena).
 
-## f01 (0–4.89 s)
-- visual: Avenida movimentada; pessoas caminhando se transformam ao mesmo tempo: homem→leão, mulher→girafa, outros→macacos e pássaros. Gancho: pergunta na tela no frame 0.
-- status:
+## Bíblia de estilo (vale para TODAS as cenas)
+- **Look único:** 3D realista de filme de animação. Materiais PBR (sem contorno de desenho), céu de fim de tarde (#5E8FCB → #F2D3A8), sol quente baixo + luz de recorte, sombras suaves, reflexo de céu nos vidros.
+- **Paleta urbana:** tijolo, concreto, areia, ardósia. Verde de vegetação real. Animais em cores naturais, olhos pequenos e brilhantes.
+- **Gradação:** contraste 1.06, saturação 0.9, vinheta, grão de filme leve. Igual em todos os quadros.
+- **Câmera:** um movimento contínuo por cena (dolly, grua ou travelling), sempre com leve "câmera na mão". Nada de linhas de velocidade de desenho: velocidade vira desfoque de movimento leve.
+- **Corte padrão:** dip escuro de 5 quadros entre cenas. Único efeito de transição do vídeo.
+- **Títulos:** Anton branco, destaque âmbar #FFC56B, sombra suave, entram subindo com desfoque (0,5 s).
+- **Protagonista:** o homem de camisa vermelha vira **leão** em f01 e conduz a história (f02, f08, f10, f16). O **elefante** é o fio emocional (f02, f04, f15).
+- **Som:** narração + trilha grave + whoosh em cada corte + "puf" nas transformações.
 
-## f02 (4.89–11.83 s)
-- visual: Leão atravessa a avenida, elefante derruba carro sem querer, macacos sobem fachadas, pássaros levantam voo.
-- status:
+## Plano a plano
+| Cena | Tempo | Plano e movimento | Ação |
+|---|---|---|---|
+| f01 | 0–4,9 | Nível dos olhos, dolly para trás na avenida | Pedestres se transformam em sequência; o de vermelho vira leão. Pergunta na tela. |
+| f02 | 4,9–11,8 | Travelling lateral baixo | Leão atravessa; elefante empurra carro; macacos sobem fachada; pássaros decolam. |
+| f03 | 11,8–17,2 | Close na cabine → corte seco na rua | Piloto vira águia; painel sem controle; carros colidem. |
+| f04 | 17,2–23,2 | Contra-plongée, grua subindo | Girafa entala na rua estreita; rinoceronte entre carros; elefante ocupa a pista. |
+| f05 | 23,2–28,7 | Câmera no chão, escala de rato | Rato atravessa entre patas gigantes; coelho se esconde. |
+| f06 | 28,7–34,9 | Mergulho contínuo no mar | Baleia entre cardume, golfinhos, polvo no fundo. |
+| f07 | 34,9–41,3 | Aéreo lento | Hospitais e usinas vazios; luzes dos prédios apagando. |
+| f08 | 41,3–48,4 | Dolly no corredor do mercado | Macacos derrubam prateleiras; o leão acha comida. |
+| f09 | 48,4–54,0 | Time-lapse, câmera fixa com leve push | Plantas rompem o asfalto; árvores crescem. |
+| f10 | 54,0–61,5 | Travelling acompanhando a corrida | Leão persegue zebra; elefantes em fila; pequenos fogem. |
+| f11 | 61,5–67,8 | Close macro no chão | Macaco cutuca celular sem entender; carros abandonados ao fundo. |
+| f12 | 67,8–74,2 | Câmera presa à águia, abre devagar | Águia entre prédios (sempre grande no quadro); revela o bando. |
+| f13 | 74,2–80,9 | Aéreo com time-lapse de dia e noite | Prédios envelhecem; verde toma conta. |
+| f14 | 80,9–86,8 | Montagem rápida com grua subindo | Floresta, oceano, deserto, cidade selvagem. |
+| f15 | 86,8–93,6 | LENTO, dolly frontal | Elefante passa pela escola e para diante da foto da família (silhuetas). |
+| f16 | 93,6–101,3 | LENTO, grua até o espaço | O leão na rua; a câmera sobe pelas nuvens até a Terra inteira. Pergunta final. |
 
-## f03 (11.83–17.23 s)
-- visual: Cabine de avião: piloto vira águia, painel sem controle; corte para carros colidindo na avenida.
-- status:
-
-## f04 (17.23–23.23 s)
-- visual: Girafa tentando passar em rua estreita, rinoceronte entre carros, elefante ocupando a avenida.
-- status:
-
-## f05 (23.23–28.74 s)
-- visual: Câmera desce ao chão: ratinho atravessa rua enorme desviando de patas gigantes; coelho se esconde.
-- status:
-
-## f06 (28.74–34.87 s)
-- visual: Câmera mergulha no oceano: baleia entre peixes, golfinhos, polvo no fundo.
-- status:
-
-## f07 (34.87–41.29 s)
-- visual: Sobrevoo: hospitais vazios, usinas sem operadores, ruas sem humanos; luzes dos prédios apagando.
-- status:
-
-## f08 (41.29–48.44 s)
-- visual: Supermercado: macacos derrubam prateleiras, leão acha comida, bichos pequenos catando restos.
-- status:
-
-## f09 (48.44–53.98 s)
-- visual: Time-lapse: plantas rompem o asfalto, árvores crescem entre prédios, animais nas avenidas.
-- status:
-
-## f10 (53.98–61.49 s)
-- visual: Leão persegue zebra, elefantes caminham juntos, pequenos fogem para a vegetação.
-- status:
-
-## f11 (61.49–67.77 s)
-- visual: Macaco acha celular no chão, toca a tela sem conseguir usar; ao fundo computadores e carros abandonados.
-- status:
-
-## f12 (67.77–74.21 s)
-- visual: Águia voa entre prédios em alta velocidade; revela centenas de pássaros no céu.
-- status:
-
-## f13 (74.21–80.92 s)
-- visual: Passagem do tempo: prédios deterioram, vegetação cresce, animais livres na cidade.
-- status:
-
-## f14 (80.92–86.8 s)
-- visual: Transições rápidas: floresta, oceano, deserto, cidade tomada pela vida selvagem; câmera sobe.
-- status:
-
-## f15 (86.8–93.62 s)
-- visual: LENTO/emocional: elefante caminha por cidade abandonada, passa por escola, brinquedos no chão; para diante de foto de família humana (silhuetas, sem rosto realista).
-- status:
-
-## f16 (93.62–101.34 s)
-- visual: LENTO: câmera sobe da cidade, atravessa nuvens, chega ao espaço; Terra inteira; escurece suave. Pergunta final na tela.
-- status:
-
-## Diretrizes
-- Nenhuma cena parada: ação, personagem ou ambiente se transformando.
-- Alternar planos abertos, closes, aéreos e ponto de vista dos animais.
-- Animais e ambientes consistentes entre cenas.
-- f15–f16 mais lentas, peso emocional.
+## Regras
+- Nenhuma cena parada: sempre há personagem, câmera ou ambiente se movendo.
+- O mesmo leão e o mesmo elefante (mesma cor e porte) em todas as cenas.
+- f15 e f16 são mais lentas, com peso emocional.

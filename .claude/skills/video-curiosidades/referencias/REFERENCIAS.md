@@ -19,6 +19,7 @@ Servem só como estilo. Nunca use nos vídeos personagens, marcas, logotipos, ce
 | Gancho, listas, números | R07 | tipografia; kinetic (camada sobre qualquer ref) |
 | Química, biologia, medicina | R08 | 3D vidro (1 a 3 objetos); particles |
 | Animais, personagens, histórias, emoção | R09 | anime cel-shaded (toon + contorno); legenda R01 |
+| Animais e cidade com cara de filme, "mais realista" | R10 | cinema 3D realista (PBR, sem contorno, grão e vinheta); legenda R01 |
 
 - **Gancho no frame 0:** pergunta inteira na tela, palavra-chave na cor de destaque, câmera já em movimento.
 - **Legenda em y ≈ 1045–1215:** sério → serifa itálica com sombra suave; popular → Anton caixa alta com sombra preta dura.
@@ -183,3 +184,13 @@ Sem imagem: veio de um prompt do usuário. Sem dados de engajamento.
 - **Uso:** animais, personagens, histórias com emoção, "e se" narrativo.
 - **Limite:** sai como anime 3D simplificado. Qualidade de filme só com geração de imagem ou vídeo, que é paga. Nunca copie personagens ou estúdios específicos.
 
+
+### R10: cinema 3D realista (padrão único de animação)
+Usado em humanos-viram-animais v3. Código em `toy.js` (createToyStage) e `animals.js`.
+- Materiais PBR (MeshStandardMaterial), mapa de ambiente de céu de fim de tarde, sol quente + recorte, sombras suaves. Sem contorno.
+- Paleta urbana realista: tijolo #9C5038, areia #C7B08E, concreto #B5AFA5, ardósia #6C7880; vidro escuro reflexivo; asfalto #55565A.
+- Céu #5E8FCB → #F2D3A8. Animais em cores naturais, olhos pequenos com um brilho.
+- Pós único em todo quadro: contraste 1.06, saturação 0.9, vinheta, grão de filme 7%, câmera na mão leve.
+- Corte padrão: dip escuro de 5 quadros. Velocidade vira desfoque de movimento (sem linhas de velocidade).
+- Títulos: Anton branco, destaque #FFC56B, sombra suave, entrada subindo com desfoque. Legenda R01.
+- Som: whoosh nos cortes e "puf" nas transformações, sintetizados local (`audio/sfx-local.py`).

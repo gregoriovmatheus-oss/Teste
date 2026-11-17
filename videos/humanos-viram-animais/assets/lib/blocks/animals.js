@@ -37,14 +37,16 @@ function blob(p, c, s, pos, rough = 0.7) { const m = mesh(SPH, c, p, rough); m.s
 function piv(p, pos, rz = 0) { const g = new THREE.Group(); g.position.set(...pos); g.rotation.z = rz; p.add(g); return g; }
 function limb(p, pos, len, r, c, rz = 0) { const g = piv(p, pos, rz); mesh(capGeo(r, len), c, g); g.userData.len = len; return g; }
 function cone(p, c, r, h, pos, rz = 0, rx = 0) { const m = mesh(coneGeo(r, h), c, p); m.position.set(...pos); m.rotation.z = rz; m.rotation.x = rx; return m; }
-// olhos grandes de anime: globo branco, íris escura grande e dois brilhos (#FFF4D6). Olham para +x.
-function eyes(p, x, y, z, r = 0.06) {
-  const R = r * 1.9;
+// olhos realistas (R10): globo escuro brilhante, pequeno, com um reflexo de luz. Humanos têm esclera discreta. Olham para +x.
+const OLHO = () => M(0x17120f, 0.12);
+const BRILHO = () => M(0xffffff, 0.2, { emissive: 0xffffff, emissiveIntensity: 0.6 });
+function eyes(p, x, y, z, r = 0.06, humano = false) {
+  const R = humano ? r * 1.25 : r * 1.05;
   for (const s of [1, -1]) {
-    const w = blob(p, 0xffffff, [R * 0.7, R, R * 0.85], [x - R * 0.2, y, s * z]);
-    const ir = mesh(SPH, M(0x1d1b22, 0.25), p, 0.25, false); ir.scale.set(R * 0.45, R * 0.72, R * 0.6); ir.position.set(x + R * 0.18, y - R * 0.05, s * z);
-    const h1 = mesh(SPH, M(0xfff4d6, 0.2, { emissive: 0xfff4d6, emissiveIntensity: 0.9 }), p, 0.2, false); h1.scale.setScalar(R * 0.26); h1.position.set(x + R * 0.5, y + R * 0.3, s * z + s * R * 0.12);
-    const h2 = mesh(SPH, M(0xfff4d6, 0.2, { emissive: 0xfff4d6, emissiveIntensity: 0.9 }), p, 0.2, false); h2.scale.setScalar(R * 0.12); h2.position.set(x + R * 0.5, y - R * 0.3, s * z - s * R * 0.12);
+    if (humano) blob(p, 0xf4efe6, [R * 0.5, R * 0.7, R * 0.8], [x - R * 0.1, y, s * z]);
+    const ir = mesh(SPH, humano ? M(0x3b2618, 0.2) : OLHO(), p, 0.15, false);
+    ir.scale.set(R * 0.55, R * (humano ? 0.6 : 0.8), R * (humano ? 0.5 : 0.8)); ir.position.set(x + R * (humano ? 0.25 : 0.05), y, s * z);
+    const h1 = mesh(SPH, BRILHO(), p, 0.2, false); h1.scale.setScalar(R * 0.14); h1.position.set(x + R * 0.5, y + R * 0.3, s * z + s * R * 0.1);
   }
 }
 // anel (listra) em volta de um elipsoide de raios (ry, rz) no plano yz, na posição x
@@ -68,12 +70,12 @@ B.humano = (o) => {
   blob(head, PAL.pele, [0.2, 0.22, 0.2], [0, 0.04, 0]);
   blob(head, cab, [0.21, 0.15, 0.21], [-0.03, 0.14, 0]);
   if (o.mulher) blob(head, cab, [0.1, 0.2, 0.2], [-0.13, -0.05, 0]);
-  eyes(head, 0.17, 0.06, 0.07, 0.03);
+  eyes(head, 0.17, 0.06, 0.07, 0.03, true);
   return { g, body, head, legs, arms, legAmp: 0.55, bob: 0.06 };
 };
 
 B.leao = () => {
-  const Y = 0xe8a93a, J = 0xb5532a;
+  const Y = 0xc99a58, J = 0x7a4826;
   const g = new THREE.Group(), body = piv(g, [0, 0, 0]);
   blob(body, Y, [0.95, 0.48, 0.46], [0, 1.0, 0]);
   const legs = [[0.6, 0.27], [0.6, -0.27], [-0.62, 0.27], [-0.62, -0.27]].map(([x, z]) => {
@@ -121,7 +123,7 @@ B.girafa = () => {
 };
 
 B.elefante = () => {
-  const C = 0x9aa5b4, E = 0x8792a3;
+  const C = 0x8f8b86, E = 0x7f7a74;
   const g = new THREE.Group(), body = piv(g, [0, 0, 0]);
   blob(body, C, [1.45, 1.1, 1.0], [0, 2.1, 0]);
   const legs = [[0.8, 0.5], [0.8, -0.5], [-0.8, 0.5], [-0.8, -0.5]].map(([x, z]) => {
@@ -129,7 +131,7 @@ B.elefante = () => {
   });
   const head = piv(body, [1.45, 2.55, 0]);
   blob(head, C, [0.72, 0.72, 0.68], [0, 0, 0]);
-  const ears = [1, -1].map((s) => { const e = piv(head, [-0.15, 0.1, s * 0.62]); blob(e, E, [0.14, 0.65, 0.55], [0, 0, s * 0.3]); blob(e, 0xe3a7a0, [0.08, 0.48, 0.38], [0.08, 0, s * 0.3]); return e; });
+  const ears = [1, -1].map((s) => { const e = piv(head, [-0.15, 0.1, s * 0.62]); blob(e, E, [0.14, 0.65, 0.55], [0, 0, s * 0.3]); blob(e, 0xa08884, [0.08, 0.48, 0.38], [0.08, 0, s * 0.3]); return e; });
   eyes(head, 0.55, 0.15, 0.32, 0.06);
   const trunk = [];
   let p = piv(head, [0.6, -0.2, 0], 0.15);
