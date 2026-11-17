@@ -1,13 +1,13 @@
 # STORYBOARD — E se a Lua desaparecesse por 7 dias?
 
 **Bíblia de estilo**
-1. Documentário espacial R10: PBR, luz de cinema, ACES, grão, vinheta, câmera na mão e dip escuro entre cenas (`st.draw`), bloom nos pontos claros.
+1. Documentário espacial R10 (Terra NASA de `terra.js` nas cenas de espaço): PBR, luz de cinema, ACES, grão, vinheta, câmera na mão e dip escuro entre cenas (`st.draw`), bloom nos pontos claros.
 2. Paleta noturna/espacial profunda; um único bloco de dia (f05, praia em time-lapse) e o crepúsculo do eclipse (f12).
 3. Câmera sempre em movimento, alternando chão → espaço → diagrama 3D; nenhum enquadramento se repete.
 4. Diagramas com acento azul `#7cc8ff` (setas, eixos, órbitas) e laranja `#ff8a4c` para a anomalia (maré só solar, órbita que cresce); etiquetas 2D em Montserrat projetadas no 3D.
 5. Cada número entra na tela na palavra falada (tempos de `audio/palavras.json`); títulos `rotulos` em y 690–980.
 
-**Capítulos:** 01 A noite comum (0,00) · 02 O desaparecimento (2,23) · 03 A noite escura (9,19) · 04 O planeta sem Lua (14,31) · 05 O retorno (51,77)
+**Capítulos** (`video.json` → `doc`): 01 A noite (0,2) · 02 O desaparecimento (3,83) · 03 Escuridão e marés (9,19) · 04 A vida sem ritmo (24,58) · 05 O retorno (51,77). Tags 2D ficam fora da faixa do HUD (y 190–420).
 
 | cena | tempo | plano / movimento de câmera | ação | elemento científico na tela |
 |---|---|---|---|---|
