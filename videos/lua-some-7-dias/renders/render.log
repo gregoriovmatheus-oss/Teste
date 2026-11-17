@@ -1,1 +1,48 @@
 npm warn exec The following package was not found and will be installed: hyperframes@0.9.64
+
+◆  Rendering lua-some-7-dias → /home/user/Teste/videos/lua-some-7-dias/renders/lua-some-7-dias.mp4
+   30fps · delivery · 2 workers
+
+
+  Lint: 0 error(s), 1 warning(s) — run `hyperframes lint` for full output.
+  Continuing render despite lint issues. Use --strict to block errors.
+
+Checking browser...
+Browser: env
+[INFO] [Render] Pipeline started {"renderJobId":"b4f9809d-1752-43dd-9e23-66437402958f","platform":"linux","arch":"x64","nodeVersion":"v22.23.4","fps":{"num":30,"den":1},"format":"mp4","quality":"high","browserGpuMode":"software","forceScreenshot":true,"protocolTimeout":300000,"browserTimeout":120000,"pageNavigationTimeout":60000,"playerReadyTimeout":240000}
+[INFO] [Render:trace] {"renderJobId":"b4f9809d-1752-43dd-9e23-66437402958f","phase":"pipeline","status":"checkpoint","elapsedMs":5,"message":"started","format":"mp4","quality":"high","browserGpuMode":"software","forceScreenshot":true,"protocolTimeoutMs":300000,"pageNavigationTimeoutMs":60000,"playerReadyTimeoutMs":240000,"requestedWorkers":2}
+[INFO] [Render:trace] {"renderJobId":"b4f9809d-1752-43dd-9e23-66437402958f","phase":"compile","status":"start","elapsedMs":12,"needsAlpha":false}
+  █░░░░░░░░░░░░░░░░░░░░░░░░  5%  Compiling composition
+@hf-progress {"code":"compile","pct":5}
+[INFO] Compiled composition metadata {"renderJobId":"b4f9809d-1752-43dd-9e23-66437402958f","entryFile":"index.html","staticDuration":69.72,"width":1080,"height":1920,"videoCount":0,"audioCount":3,"renderModeHints":{"recommendScreenshot":false,"reasons":[]}}
+[INFO] [Render:trace] {"renderJobId":"b4f9809d-1752-43dd-9e23-66437402958f","phase":"compile","status":"end","elapsedMs":1764,"durationMs":1752,"needsAlpha":false}
+[INFO] [Render:trace] {"renderJobId":"b4f9809d-1752-43dd-9e23-66437402958f","phase":"compile","status":"checkpoint","elapsedMs":1766,"message":"composition metadata resolved","width":1080,"height":1920,"videoCount":0,"audioCount":3,"imageCount":0,"deviceScaleFactor":1,"forceScreenshot":true,"compositionHash":"8b5272fbfcd80644"}
+[INFO] [Render:trace] {"renderJobId":"b4f9809d-1752-43dd-9e23-66437402958f","phase":"browser_probe","status":"start","elapsedMs":1766,"forceScreenshot":true,"stagePhase":"calibrating"}
+[INFO] [Render:trace] {"renderJobId":"b4f9809d-1752-43dd-9e23-66437402958f","phase":"browser_probe","status":"end","elapsedMs":2240,"durationMs":473,"forceScreenshot":true,"stagePhase":"calibrating"}
+[INFO] [Render:trace] {"renderJobId":"b4f9809d-1752-43dd-9e23-66437402958f","phase":"browser_probe","status":"checkpoint","elapsedMs":2243,"message":"duration resolved","durationSeconds":69.72,"totalFrames":2092,"compositionHash":"8b5272fbfcd80644","beginFrameStalled":false}
+[INFO] [Render:trace] {"renderJobId":"b4f9809d-1752-43dd-9e23-66437402958f","phase":"video_extract","status":"start","elapsedMs":2243,"videoCount":0}
+  ██░░░░░░░░░░░░░░░░░░░░░░░  10%  Extracting video frames
+@hf-progress {"code":"extract_video","pct":10}
+[INFO] [Render:trace] {"renderJobId":"b4f9809d-1752-43dd-9e23-66437402958f","phase":"video_extract","status":"end","elapsedMs":2245,"durationMs":1,"videoCount":0}
+[INFO] [Render:trace] {"renderJobId":"b4f9809d-1752-43dd-9e23-66437402958f","phase":"video_extract","status":"checkpoint","elapsedMs":2250,"message":"frames resolved","videoCount":0,"extractedVideoCount":0,"totalFramesExtracted":0,"maxFramesPerVideo":0,"avgFramesPerExtractedVideo":null,"vfrPreflightCount":null,"vfrPreflightMs":null,"cacheHits":null,"cacheMisses":null,"transientRetries":null,"minVideoFrameCoverageRatio":null,"authoredTimedClipCount":85}
+[INFO] [Render] No HDR sources detected, rendering SDR {"renderJobId":"b4f9809d-1752-43dd-9e23-66437402958f"}
+[INFO] [Render:trace] {"renderJobId":"b4f9809d-1752-43dd-9e23-66437402958f","phase":"hdr_detection","status":"checkpoint","elapsedMs":2255,"message":"resolved","requestedHdrMode":"auto","effectiveHdr":"sdr","nativeHdrVideoCount":0,"nativeHdrImageCount":0}
+[INFO] [Render:trace] {"renderJobId":"b4f9809d-1752-43dd-9e23-66437402958f","phase":"audio_process","status":"start","elapsedMs":2256,"audioCount":3}
+[INFO] [Render:trace] {"renderJobId":"b4f9809d-1752-43dd-9e23-66437402958f","phase":"file_server","status":"start","elapsedMs":2259,"reused":false}
+  █████░░░░░░░░░░░░░░░░░░░░  20%  Processing audio tracks
+@hf-progress {"code":"process_audio","pct":20}
+  ██████░░░░░░░░░░░░░░░░░░░  25%  Starting frame capture
+@hf-progress {"code":"start_browsers","pct":25}
+[INFO] [Render:trace] {"renderJobId":"b4f9809d-1752-43dd-9e23-66437402958f","phase":"file_server","status":"end","elapsedMs":2265,"durationMs":6}
+  ██████░░░░░░░░░░░░░░░░░░░  25%  Checking browser GPU
+@hf-progress {"code":"start_browsers","pct":25}
+[INFO] [Render:trace] {"renderJobId":"b4f9809d-1752-43dd-9e23-66437402958f","phase":"capture_calibration","status":"checkpoint","elapsedMs":2277,"message":"skipped","requestedWorkers":2,"totalFrames":2092,"htmlInCanvasDetected":false,"lowMemoryMode":false,"deInversionEligible":false,"deParallelRouterEligible":false}
+[INFO] [Render:trace] {"renderJobId":"b4f9809d-1752-43dd-9e23-66437402958f","phase":"worker_resolution","status":"checkpoint","elapsedMs":2278,"message":"resolved","workerCount":2}
+[INFO] streaming-encode gate {"renderJobId":"b4f9809d-1752-43dd-9e23-66437402958f","enabled":false,"reason":"multi_worker","configFlag":true,"durationCapEnabled":false,"outputFormat":"mp4","workerCount":2,"durationSeconds":69.72,"maxDurationSeconds":240}
+[INFO] [Render:trace] {"renderJobId":"b4f9809d-1752-43dd-9e23-66437402958f","phase":"capture_strategy","status":"checkpoint","elapsedMs":2279,"message":"resolved","workerCount":2,"forceScreenshot":true,"captureBeyondViewport":null,"useStreamingEncode":false,"useLayeredComposite":false,"usePageSideCompositing":false,"hasHdrContent":false,"hasShaderTransitions":false,"isPngSequence":false}
+[INFO] [Render:trace] {"renderJobId":"b4f9809d-1752-43dd-9e23-66437402958f","phase":"capture_segmented","status":"start","elapsedMs":2280,"stagePhase":"capturing","workerCount":2,"forceScreenshot":true,"totalFrames":2092,"framesCompleted":0,"captureMode":"screenshot","captureOperation":"captureScreenshot"}
+  ██████░░░░░░░░░░░░░░░░░░░  25%  Starting frame capture
+@hf-progress {"code":"start_browsers","pct":25}
+[non-blocking] Failed to load resource: the server responded with a status of 404 (Not Found)
+[Browser:WARN] THREE.WebGLRenderer: KHR_parallel_shader_compile extension not supported.
+[Browser:WARN] THREE.WebGLRenderer: KHR_parallel_shader_compile extension not supported.
