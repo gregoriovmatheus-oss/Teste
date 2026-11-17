@@ -7,32 +7,28 @@
         const cid = T.cidade({ n: 5, seed: 41, verde: 0.18 }); S.add(SK.aliviar(cid.group));
         const stars = SK.estrelas(S, { n: 2200, r: 900, seed: 42 });
         const rr = mulberry32(43);
-        cid.buildings.forEach((b) => { b.userData.on = rr() < 0.55 ? 2.6 + rr() * 1.6 : 99; });
-        // borda da sombra: placa invisível (não desenha cor nem profundidade) que só projeta sombra
+        cid.buildings.forEach((b) => { b.userData.on = rr() < 0.55 ? 1.6 + rr() * 2.2 : 99; });
+        const tremor = T.shaker(44);
         const SD = new THREE.Vector3(-1.2, 0.9, 0.6).normalize();
         const sunHalo = SK.brilho(0xffe2b0, 300, "suave", 1), sunCore = SK.brilho(0xffffff, 70, "disco", 1);
         S.add(sunHalo, sunCore);
         function render(t) {
-          // a frente da escuridão atravessa a cidade (na direção em que a luz viajava, do lado do Sol para fora)
-          const xe = lerp(-150, 170, ease.inOutSine(range(t, 0.45, 2.3)));
+          // a última luz chega a todo o lado iluminado quase ao mesmo tempo: o Sol, o céu e as sombras somem juntos em ~0,5 s
           st.sol(0, 0, 130);
-          const k = range(t, 1.5, 2.7);
-          ceu.set(ease.inOutSine(k));
+          const k = ease.inOutSine(range(t, 0.55, 1.05));
+          ceu.set(k);
           S.environmentIntensity = lerp(1, 0.07, k);
           st.hemi.intensity = 0.55 * lerp(1, 0.1, k);
           st.rim.intensity = 1.1 * (1 - k);
-          st.key.intensity = 3.2 * (1 - range(t, 2.5, 3.0));
-          stars.set(range(t, 1.8, 3.4), t);
-          const sa = 1 - range(t, 0.8, 1.3);
-          for (const s of [sunHalo, sunCore]) { s.position.copy(cam.position).addScaledVector(SD, 900); s.material.opacity = sa; }
+          st.key.intensity = 3.2 * (1 - k);
+          stars.set(range(t, 1.0, 2.6), t);
+          for (const s of [sunHalo, sunCore]) { s.position.copy(cam.position).addScaledVector(SD, 900); s.material.opacity = 1 - k; }
           cid.buildings.forEach((b) => { b.userData.win.emissiveIntensity = 1.3 * range(t, b.userData.on, b.userData.on + 0.15); });
-          // grua aérea girando e descendo
+          // grua aérea girando e descendo, com um leve tremor no instante do apagão
           const e = ease.inOutSine(range(t, 0, 4.55));
           const a = lerp(0.35, 0.85, e), R = lerp(175, 135, e);
-          cam.position.set(Math.sin(a) * R, lerp(125, 82, e), Math.cos(a) * R);
+          const [tx, ty, tz] = tremor(t, 1.6 * Math.exp(-Math.pow((t - 0.85) / 0.3, 2)));
+          cam.position.set(Math.sin(a) * R + tx, lerp(125, 82, e) + ty, Math.cos(a) * R + tz);
           cam.lookAt(0, 0, -10);
           st.draw();
-          // frente da escuridão varrendo a cidade (borda alaranjada = último entardecer), depois o escuro geral assume
-          const ta = 0.82 * (1 - range(t, 2.3, 2.9));
-          if (ta > 0.01) SK.terminador(st.ctx, cam, xe, ta);
         }
