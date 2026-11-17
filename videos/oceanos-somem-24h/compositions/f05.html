@@ -1,0 +1,96 @@
+<!-- f05: cena 3D padrão documentário (R10 + doc). Lógica em cenas/f05.js (gerado por scripts/monta-cenas.py).
+     Tempos escritos para 5.18 s e esticados para a duração real do host (data-duration). -->
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0b0a12; }
+    #f05-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+    /* rótulos 2D: y 680-980, acima da faixa da legenda (1005-1235) */
+    .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .rot-t { display: block; font-family: "Inter", sans-serif; font-weight: 300; font-size: 84px; line-height: 1.1; color: #fff; text-transform: none;
+      letter-spacing: -0.01em; text-shadow: 0 2px 30px rgba(0,0,0,0.7), 0 1px 3px rgba(0,0,0,0.6); opacity: 0; }
+    .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }
+    .rot-t .p { font-size: 64px; }
+    .rot-t .k { display: inline-block; font-family: "JetBrains Mono", monospace; font-weight: 600; font-size: 26px; letter-spacing: 0.32em; color: #7cc8ff; margin-bottom: 18px; }
+    .rot-t .n { font-family: "JetBrains Mono", monospace; font-weight: 600; color: #7cc8ff; }
+
+  </style>
+  <div id="root" data-composition-id="f05" data-width="1080" data-height="1920">
+    <canvas id="f05-canvas" width="1080" height="1920"></canvas>
+    <div id="f05-r1" class="rot" style="top: 700px"><span id="f05-r1-in" class="rot-t"><span class="k">DORSAL MESO-OCEÂNICA</span><br><span class="y">65 mil km</span><br>de cordilheira</span></div>
+  </div>
+  <script>
+    (function () {
+      const D0 = 5.18;
+      // duração real = data-duration do host da cena (muda quando a narração muda)
+      const durReal = () => {
+        for (let n = document.getElementById("f05-canvas"); n; n = n.parentElement) {
+          if (n.getAttribute && n.getAttribute("data-composition-id") === "f05" && n.hasAttribute("data-duration")) return parseFloat(n.getAttribute("data-duration")) || D0;
+        }
+        return D0;
+      };
+      const DR = durReal(), K = DR / D0;
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo("#f05-r1-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 2.1 * K);
+      tl.to("#f05-r1-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 4.85 * K);
+      tl.set({}, {}, DR);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["f05"] = tl;
+
+      window.__hf = window.__hf || {};
+      window.__hf.buildReady = window.__hf.buildReady || {};
+      window.__hf.buildReady["f05"] = Promise.all([
+        import("./assets/lib/kit.js"), import("./assets/lib/blocks/toy.js"), import("./assets/lib/blocks/animals.js"), import("./assets/lib/blocks/oceano.js")
+      ]).then(async ([K_, T, A, OCEANO]) => {
+        const K = K_;
+        const { THREE, ease, range, lerp, clamp, smoothstep, mulberry32 } = K;
+        const D = D0;   // o corpo trabalha no tempo de autoria
+        const canvas = document.getElementById("f05-canvas");
+
+        const O = OCEANO, G0 = 20.19, TC = 2.55;
+        try { await document.fonts.load('500 26px "JetBrains Mono"'); } catch (e) {}
+        // parte A: voo sobre a dorsal (vale de rifte no eixo, falhas transformantes deslocando segmentos)
+        const st = T.createToyStage(canvas, { fov: 52, ceu: ["#46699a", "#d6b993"], nevoa: [200, 1300], corNevoa: "#ad9f8d", nuvens: 0, exposicao: 1.05 });
+        const S = st.scene, cam = st.cam;
+        const off = (z) => { const s = Math.floor((z + 2000) / 170); return (O.ruido(s * 7.3, 0.5, 31)) * 45; };
+        const xr = (x, z) => x - off(z) - 8 * Math.sin(z * 0.01);
+        const alt = (x, z) => {
+          const a = xr(x, z);
+          let y = 58 * Math.exp(-((a / 85) ** 2)) - 14 * Math.exp(-((a / 7) ** 2));
+          y += 5 * Math.sin(a * 0.11) * Math.exp(-((a / 110) ** 2));
+          return y + 4 * O.fbm(x * 0.02, z * 0.02, 4, 32);
+        };
+        const cor = (x, z, y, c) => { const a = Math.abs(xr(x, z)); O.mistura(c, 0x2e2b2a, 0x7a6b5a, smoothstep(5, 140, a) + 0.15 * O.ruido(x * 0.05, z * 0.05, 33)); };
+        S.add(O.terreno({ w: 700, d: 1400, sx: 110, sz: 150, cz: -500, alt, cor, rough: 0.85 }));
+        const eixo = []; for (let z = 260; z > -1180; z -= 6) { const x = off(z) + 8 * Math.sin(z * 0.01); eixo.push(new THREE.Vector3(x, alt(x, z) + 0.4, z)); }
+        const lava = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(eixo), 480, 1.2, 5, false), new THREE.MeshBasicMaterial({ color: 0xff6a20 }));
+        S.add(lava);
+        // parte B: a Terra seca com as dorsais acendendo como uma costura
+        const st2 = T.createToyStage(canvas, { fov: 36, nuvens: 0, nevoa: null });
+        O.espaco(st2, { solDir: [-0.7, 0.4, 0.6] });
+        const G = O.globoSeco(st2.scene, {}); G.setAgua(0);
+        function render(t) {
+          if (t < TC) {
+            const z = 140 - t * 70;
+            const sobe = ease.inOutSine(range(t, 0, TC));
+            cam.position.set(lerp(-30, -60, sobe) + off(z) * 0.4, lerp(70, 150, sobe), z);
+            cam.lookAt(off(z - 200) * 0.5, lerp(30, 0, sobe), z - 260);
+            st.sol(0, z - 120, 260);
+            st.draw();
+          } else {
+            const u = t - TC;
+            G.cristas(ease.inOutCubic(range(t, 2.75, 4.7)));
+            G.aim(lerp(10, 45, u / 2.6), lerp(-22, -30, u / 2.6));
+            const d = lerp(5.6, 4.6, ease.outCubic(range(u, 0, 2.6)));
+            st2.cam.position.set(0.2, 0.25, d); st2.cam.lookAt(0, 0.35, 0);
+            st2.T = st.T; st2.D = st.D;
+            st2.draw(st2.scene, st2.cam, { cor: "#000", a: 1 - range(u, 0, 0.25) });
+          }
+          if (t < TC) O.etiqueta(st.ctx, cam, new THREE.Vector3(off(-110), alt(off(-110), -110), -110), "VALE DE RIFTE", { dx: 80, dy: -90, tam: 26, a: range(t, 0.5, 0.9) - range(t, 2.0, 2.3), sub: "eixo da dorsal" });
+        }
+
+        // DR foi lido na hora em que o script rodou (depois do inline o host pode mudar de atributos)
+        await K.bindSeek(canvas, (t) => { st.T = t * D / DR; st.D = D; render(st.T); }, { warm: [st.warm, ...(st.extraWarm || [])], duration: DR });
+      });
+    })();
+  </script>
+</template>

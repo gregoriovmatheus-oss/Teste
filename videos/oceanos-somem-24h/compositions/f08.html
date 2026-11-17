@@ -1,0 +1,99 @@
+<!-- f08: cena 3D padrão documentário (R10 + doc). Lógica em cenas/f08.js (gerado por scripts/monta-cenas.py).
+     Tempos escritos para 6.01 s e esticados para a duração real do host (data-duration). -->
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0b0a12; }
+    #f08-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+    /* rótulos 2D: y 680-980, acima da faixa da legenda (1005-1235) */
+    .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .rot-t { display: block; font-family: "Inter", sans-serif; font-weight: 300; font-size: 84px; line-height: 1.1; color: #fff; text-transform: none;
+      letter-spacing: -0.01em; text-shadow: 0 2px 30px rgba(0,0,0,0.7), 0 1px 3px rgba(0,0,0,0.6); opacity: 0; }
+    .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }
+    .rot-t .p { font-size: 64px; }
+    .rot-t .k { display: inline-block; font-family: "JetBrains Mono", monospace; font-weight: 600; font-size: 26px; letter-spacing: 0.32em; color: #7cc8ff; margin-bottom: 18px; }
+    .rot-t .n { font-family: "JetBrains Mono", monospace; font-weight: 600; color: #7cc8ff; }
+    .chip{display:inline-block;font-family:"JetBrains Mono","Menlo",monospace;font-weight:500;font-size:28px;letter-spacing:.14em;line-height:1.1;padding:14px 26px;border-radius:6px;text-shadow:none;text-transform:uppercase;background:rgba(4,8,16,.62);text-align:left}.chip.im{color:#ff8a4c;border:2px solid #ff8a4c}.chip.le{color:#7cc8ff;border:2px solid #7cc8ff}.chip.di{color:#ffd28a;border:2px solid #ffd28a}.chip small{display:block;font-size:20px;color:rgba(255,255,255,.8);letter-spacing:.1em;margin-top:6px}#f08-r2{top:1262px!important;height:110px;left:0;right:0;justify-content:center;align-items:flex-start}
+
+  </style>
+  <div id="root" data-composition-id="f08" data-width="1080" data-height="1920">
+    <canvas id="f08-canvas" width="1080" height="1920"></canvas>
+    <div id="f08-r1" class="rot" style="top: 700px"><span id="f08-r1-in" class="rot-t"><span class="k">VIDA MARINHA</span><br>Fim <span class="y">imediato</span></span></div>
+    <div id="f08-r2" class="rot" style="top: 700px"><span id="f08-r2-in" class="rot-t"><span class="chip im">● Imediato<small>peixes · corais · baleias</small></span></span></div>
+  </div>
+  <script>
+    (function () {
+      const D0 = 6.01;
+      // duração real = data-duration do host da cena (muda quando a narração muda)
+      const durReal = () => {
+        for (let n = document.getElementById("f08-canvas"); n; n = n.parentElement) {
+          if (n.getAttribute && n.getAttribute("data-composition-id") === "f08" && n.hasAttribute("data-duration")) return parseFloat(n.getAttribute("data-duration")) || D0;
+        }
+        return D0;
+      };
+      const DR = durReal(), K = DR / D0;
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo("#f08-r1-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 1.25 * K);
+      tl.to("#f08-r1-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 3.0 * K);
+      tl.fromTo("#f08-r2-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 1.25 * K);
+      tl.to("#f08-r2-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 5.65 * K);
+      tl.set({}, {}, DR);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["f08"] = tl;
+
+      window.__hf = window.__hf || {};
+      window.__hf.buildReady = window.__hf.buildReady || {};
+      window.__hf.buildReady["f08"] = Promise.all([
+        import("./assets/lib/kit.js"), import("./assets/lib/blocks/toy.js"), import("./assets/lib/blocks/animals.js"), import("./assets/lib/blocks/oceano.js")
+      ]).then(async ([K_, T, A, OCEANO]) => {
+        const K = K_;
+        const { THREE, ease, range, lerp, clamp, smoothstep, mulberry32 } = K;
+        const D = D0;   // o corpo trabalha no tempo de autoria
+        const canvas = document.getElementById("f08-canvas");
+
+        const O = OCEANO, G0 = 35.56;
+        try { await document.fonts.load('500 26px "JetBrains Mono"'); } catch (e) {}
+        const st = T.createToyStage(canvas, { fov: 48, ceu: ["#4a7fbf", "#e6d7bc"], nevoa: [60, 380], corNevoa: "#c9bca4", nuvens: 0, exposicao: 1.08 });
+        const S = st.scene, cam = st.cam;
+        const alt = (x, z) => 0.8 * O.fbm(x * 0.05, z * 0.05, 4, 81) + 0.1 * Math.sin(x * 0.7 + 2 * O.ruido(x * 0.05, z * 0.05, 82));
+        S.add(O.terreno({ w: 300, d: 300, sx: 80, sz: 80, cz: -60, alt, cor: (x, z, y, c) => O.mistura(c, 0x9d8c6e, 0xc4b18b, (y + 0.8) / 1.6 + 0.25 * O.ruido(x * 0.15, z * 0.15, 83)) }));
+        const rr = mulberry32(84);
+        // recife no seco: corais perdendo a cor (branqueamento) diante da câmera
+        const tipos = ["galho", "cerebro", "leque", "tubo"], CC = [0xe8743b, 0xb24f8e, 0xe0b23a, 0xd8574a, 0x7f5bb5, 0x46a69a];
+        const corais = [];
+        for (let i = 0; i < 20; i++) {
+          const x = -6 + (rr() - 0.5) * 22, z = -2 - rr() * 16, c = O.coral(90 + i, tipos[i % 4], CC[i % 6]);
+          c.group.position.set(x, alt(x, z) - 0.05, z); c.group.scale.setScalar(0.7 + rr() * 0.6); c.group.rotation.y = rr() * 6; S.add(c.group); corais.push(c);
+        }
+        // peixes se debatendo
+        const cores = [0xd0a03a, 0x9fb3bd, 0xd06a3a, 0x6d8a9a, 0xe0c060, 0xb0503a];
+        const pe = Array.from({ length: 9 }, (_, i) => { const f = O.peixe(cores[i % 6], 100 + i); f.group.scale.setScalar(1.7); S.add(f.group);
+          const x = 6 - i * 2.3 + rr() * 1.2, z = 3 - rr() * 6; return { f, x, z, y: alt(x, z), fase: rr() * 6, giro: rr() * 6 }; });
+        // baleia encalhada
+        const bal = A.createAnimal("baleia", { fase: 0.2 }); bal.group.scale.setScalar(1.25); S.add(bal.group);
+        const BX = -18, BZ = -6; bal.group.position.set(BX, alt(BX, BZ) + 2.0, BZ); bal.group.rotation.set(0.28, 0.5, 0.03);
+        function render(t) {
+          corais.forEach((c, i) => c.branquear(ease.inOutSine(range(t, 1.1 + (i % 5) * 0.25, 4.6 + (i % 4) * 0.3))));
+          for (const p of pe) {
+            const ph = t * 2.4 + p.fase, pulo = Math.pow(Math.max(0, Math.sin(ph)), 5);
+            p.f.group.position.set(p.x, p.y + 0.14 + pulo * 0.7, p.z);
+            p.f.group.rotation.set(Math.PI / 2 - pulo * 0.6, 0, p.giro + pulo * 0.8);
+            p.f.tail.rotation.y = Math.sin(ph * 4) * 0.8 * (0.25 + pulo);
+          }
+          bal.update(t, { nada: 0.12 });
+          bal.tail.rotation.z = 0.15 + Math.sin(t * 0.9) * 0.12;
+          bal.group.scale.y = 1.25 * (1 + Math.sin(t * 1.3) * 0.015);
+          const u = t / D, e = ease.inOutSine(u);
+          cam.position.set(lerp(9, -8, e), lerp(1.6, 3.6, e), lerp(8, 11, e));
+          cam.lookAt(lerp(3, -15, e), lerp(0.4, 1.6, e), lerp(-4, -6, e));
+          st.sol(-4, -4, 30);
+          st.draw();
+          O.etiqueta(st.ctx, cam, new THREE.Vector3(-6, 1.6, -9), "CORAIS SECANDO", { dx: -40, dy: -260, tam: 26, a: range(t, 2.4, 2.8) - range(t, 4.2, 4.5) });
+          O.etiqueta(st.ctx, cam, new THREE.Vector3(BX + 2, alt(BX, BZ) + 4.5, BZ), "BALEIA ENCALHADA", { dx: 60, dy: -200, tam: 26, a: range(t, 3.0, 3.4) });
+        }
+
+        // DR foi lido na hora em que o script rodou (depois do inline o host pode mudar de atributos)
+        await K.bindSeek(canvas, (t) => { st.T = t * D / DR; st.D = D; render(st.T); }, { warm: [st.warm, ...(st.extraWarm || [])], duration: DR });
+      });
+    })();
+  </script>
+</template>

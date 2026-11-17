@@ -17,10 +17,12 @@ CSS = """    #root { position: absolute; inset: 0; overflow: hidden; background:
     #ID-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
     /* rótulos 2D: y 680-980, acima da faixa da legenda (1005-1235) */
     .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
-    .rot-t { display: block; font-family: "Anton", sans-serif; font-size: 92px; line-height: 1.0; color: #fff; text-transform: uppercase;
-      letter-spacing: 0.02em; text-shadow: 0 4px 18px rgba(0,0,0,0.55), 0 1px 3px rgba(0,0,0,0.6); opacity: 0; }
-    .rot-t .y { color: #FFC56B; }
-    .rot-t .p { font-size: 70px; }
+    .rot-t { display: block; font-family: "Inter", sans-serif; font-weight: 300; font-size: 84px; line-height: 1.1; color: #fff; text-transform: none;
+      letter-spacing: -0.01em; text-shadow: 0 2px 30px rgba(0,0,0,0.7), 0 1px 3px rgba(0,0,0,0.6); opacity: 0; }
+    .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }
+    .rot-t .p { font-size: 64px; }
+    .rot-t .k { display: inline-block; font-family: "JetBrains Mono", monospace; font-weight: 600; font-size: 26px; letter-spacing: 0.32em; color: #7cc8ff; margin-bottom: 18px; }
+    .rot-t .n { font-family: "JetBrains Mono", monospace; font-weight: 600; color: #7cc8ff; }
 """
 def build(sid):
     src = open(f'cenas/{sid}.js').read()
@@ -51,7 +53,7 @@ def build(sid):
     imports = meta.get('imports', [])
     imp = ''.join(f', import("./assets/lib/blocks/{x}.js")' for x in imports)
     names = ''.join(', ' + x.upper() for x in imports)
-    out = f'''<!-- {sid}: cena 3D anime cel-shaded (R09). Lógica em cenas/{sid}.js (gerado por scripts/monta-cenas.py).
+    out = f'''<!-- {sid}: cena 3D padrão documentário (R10 + doc). Lógica em cenas/{sid}.js (gerado por scripts/monta-cenas.py).
      Tempos escritos para {D0} s e esticados para a duração real do host (data-duration). -->
 <template>
   <style>

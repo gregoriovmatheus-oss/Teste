@@ -1,0 +1,138 @@
+<!-- f11: cena 3D padrão documentário (R10 + doc). Lógica em cenas/f11.js (gerado por scripts/monta-cenas.py).
+     Tempos escritos para 7.38 s e esticados para a duração real do host (data-duration). -->
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0b0a12; }
+    #f11-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+    /* rótulos 2D: y 680-980, acima da faixa da legenda (1005-1235) */
+    .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .rot-t { display: block; font-family: "Inter", sans-serif; font-weight: 300; font-size: 84px; line-height: 1.1; color: #fff; text-transform: none;
+      letter-spacing: -0.01em; text-shadow: 0 2px 30px rgba(0,0,0,0.7), 0 1px 3px rgba(0,0,0,0.6); opacity: 0; }
+    .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }
+    .rot-t .p { font-size: 64px; }
+    .rot-t .k { display: inline-block; font-family: "JetBrains Mono", monospace; font-weight: 600; font-size: 26px; letter-spacing: 0.32em; color: #7cc8ff; margin-bottom: 18px; }
+    .rot-t .n { font-family: "JetBrains Mono", monospace; font-weight: 600; color: #7cc8ff; }
+
+  </style>
+  <div id="root" data-composition-id="f11" data-width="1080" data-height="1920">
+    <canvas id="f11-canvas" width="1080" height="1920"></canvas>
+    <div id="f11-r1" class="rot" style="top: 700px"><span id="f11-r1-in" class="rot-t">E o <span class="y">frio</span>?</span></div>
+    <div id="f11-r2" class="rot" style="top: 700px"><span id="f11-r2-in" class="rot-t">O oceano<br><span class="y">guarda calor</span></span></div>
+    <div id="f11-r3" class="rot" style="top: 700px"><span id="f11-r3-in" class="rot-t"><span class="k">EM 24 HORAS</span><br>Não <span class="y">congela</span></span></div>
+  </div>
+  <script>
+    (function () {
+      const D0 = 7.38;
+      // duração real = data-duration do host da cena (muda quando a narração muda)
+      const durReal = () => {
+        for (let n = document.getElementById("f11-canvas"); n; n = n.parentElement) {
+          if (n.getAttribute && n.getAttribute("data-composition-id") === "f11" && n.hasAttribute("data-duration")) return parseFloat(n.getAttribute("data-duration")) || D0;
+        }
+        return D0;
+      };
+      const DR = durReal(), K = DR / D0;
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo("#f11-r1-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 0.3 * K);
+      tl.to("#f11-r1-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 0.7 * K);
+      tl.fromTo("#f11-r2-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 2.7 * K);
+      tl.to("#f11-r2-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 4.5 * K);
+      tl.fromTo("#f11-r3-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 4.95 * K);
+      tl.set({}, {}, DR);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["f11"] = tl;
+
+      window.__hf = window.__hf || {};
+      window.__hf.buildReady = window.__hf.buildReady || {};
+      window.__hf.buildReady["f11"] = Promise.all([
+        import("./assets/lib/kit.js"), import("./assets/lib/blocks/toy.js"), import("./assets/lib/blocks/animals.js"), import("./assets/lib/blocks/solkit.js")
+      ]).then(async ([K_, T, A, SOLKIT]) => {
+        const K = K_;
+        const { THREE, ease, range, lerp, clamp, smoothstep, mulberry32 } = K;
+        const D = D0;   // o corpo trabalha no tempo de autoria
+        const canvas = document.getElementById("f11-canvas");
+
+        const SK = SOLKIT;
+        await SK.fontes();
+        const st = T.createToyStage(canvas, { fov: 40, ceu: ["#050a16", "#13213a"], nevoa: null, nuvens: 0 });
+        const S = st.scene, cam = st.cam;
+        cam.setViewOffset(1080, 1920, 0, 380, 1080, 1920);
+        S.environmentIntensity = 0.35; st.hemi.intensity = 0.4; st.hemi.color.setHex(0xa8bce6); st.key.intensity = 1.6; st.key.color.setHex(0xc8d6ff); st.rim.intensity = 0.8; st.rim.color.setHex(0x8fb0ff);
+        const stars = SK.estrelas(S, { n: 1800, r: 900, seed: 111 });
+        // maquete: metade continente, metade oceano
+        const baseT = T.mesh(T.roundBox(9, 2.2, 9, 0.3), 0x6b5236, S, 0.9); baseT.position.set(-4.6, -1.2, 0);
+        const topoMat = new THREE.MeshStandardMaterial({ color: 0x7f8a45, roughness: 0.9 });
+        const topo = new THREE.Mesh(T.roundBox(9, 0.5, 9, 0.2), topoMat); topo.position.set(-4.6, 0.8, 0); topo.receiveShadow = true; S.add(topo);
+        const rr = mulberry32(112);
+        const morros = [];
+        for (let i = 0; i < 7; i++) { const m = new THREE.Mesh(T.SPH, topoMat); const s = 0.8 + rr() * 1.3; m.scale.set(s, s * (0.5 + rr() * 0.6), s); m.position.set(-4.6 + (rr() - 0.5) * 6.5, 1.1, (rr() - 0.5) * 6.5); m.castShadow = true; S.add(m); morros.push(m); }
+        for (let i = 0; i < 9; i++) { const a = T.arvore(0.45 + rr() * 0.2, 0x3d6a2c, 120 + i); a.position.set(-4.6 + (rr() - 0.5) * 7, 1.05, (rr() - 0.5) * 7); S.add(a); }
+        const baseO = T.mesh(T.roundBox(9, 2.2, 9, 0.3), 0x0f2f52, S, 0.6); baseO.position.set(4.6, -1.2, 0);
+        const agua = new THREE.Mesh(new THREE.PlaneGeometry(8.8, 8.8, 40, 40), new THREE.MeshStandardMaterial({ color: 0x2a6fa8, roughness: 0.15, metalness: 0.1, transparent: true, opacity: 0.92 }));
+        agua.rotation.x = -Math.PI / 2; agua.position.set(4.6, 0.85, 0); S.add(agua);
+        const ap = agua.geometry.attributes.position, a0 = Float32Array.from(ap.array);
+        // termômetros
+        function termometro(x) {
+          const g = new THREE.Group(); g.position.set(x, 1.0, 2.2); S.add(g);
+          const vidro = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.36, 6, 20, 1, true), new THREE.MeshStandardMaterial({ color: 0xffffff, transparent: true, opacity: 0.25, roughness: 0.05 }));
+          vidro.position.y = 3.6; g.add(vidro);
+          const tampa = new THREE.Mesh(T.SPH, vidro.material); tampa.scale.setScalar(0.36); tampa.position.y = 6.6; g.add(tampa);
+          const lm = new THREE.MeshStandardMaterial({ color: 0xff5a3d, emissive: 0xff5a3d, emissiveIntensity: 0.6, roughness: 0.3 });
+          const bulbo = new THREE.Mesh(T.SPH, lm); bulbo.scale.setScalar(0.62); bulbo.position.y = 0.6; g.add(bulbo);
+          const liq = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 1, 14), lm); g.add(liq);
+          const zero = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.035, 6, 24), new THREE.MeshBasicMaterial({ color: 0x9fd6ff, toneMapped: false })); zero.rotation.x = Math.PI / 2; g.add(zero);
+          const Z = 1.1 + 5.2 * 0.22; zero.position.y = Z;
+          function nivel(f, cor) { const h = 5.2 * f; liq.scale.y = h; liq.position.y = 1.1 + h / 2; lm.color.copy(cor); lm.emissive.copy(cor); }
+          return { g, nivel, zeroY: Z };
+        }
+        const tT = termometro(-4.6), tO = termometro(4.6);
+        // calor subindo (Points)
+        const NH = 160, hp = new Float32Array(NH * 3), hd = Array.from({ length: NH }, (_, i) => [i < NH / 2 ? -4.6 : 4.6, (rr() - 0.5) * 8, (rr() - 0.5) * 8, rr()]);
+        const hg = new THREE.BufferGeometry(); hg.setAttribute("position", new THREE.BufferAttribute(hp, 3));
+        const hc = new Float32Array(NH); hg.setAttribute("aA", new THREE.BufferAttribute(hc, 1));
+        const hm = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+          vertexShader: `attribute float aA; varying float vA; void main(){ vA = aA; vec4 mv = modelViewMatrix * vec4(position,1.0); gl_Position = projectionMatrix * mv; gl_PointSize = 260.0 / -mv.z; }`,
+          fragmentShader: `varying float vA; void main(){ vec2 d = gl_PointCoord - 0.5; float a = exp(-dot(d,d)*18.0) * vA; if (a < 0.003) discard; gl_FragColor = vec4(vec3(1.0,0.55,0.25)*a, 1.0); }` });
+        const heat = new THREE.Points(hg, hm); heat.frustumCulled = false; S.add(heat);
+        const quente = new THREE.Color(0xff5a3d), frio = new THREE.Color(0x5fb0ff), cT = new THREE.Color(), cO = new THREE.Color();
+        const verde = new THREE.Color(0x7f8a45), gelado = new THREE.Color(0x6f8796);
+        const v = new THREE.Vector3();
+        const tag = (p, s, o) => { const [x, y, z] = SK.proj(p, cam); if (z < 1) SK.txt(st.ctx, s, x, y, o); };
+        function render(t) {
+          // 0 -> 24 h sem Sol; continente cai rápido, oceano quase nada; ninguém passa de 0 °C
+          const h = range(t, 0.9, 5.4);
+          const fT = lerp(0.85, 0.4, ease.outCubic(h)), fO = lerp(0.85, 0.78, h);
+          cT.lerpColors(quente, frio, ease.outCubic(h) * 0.85); cO.lerpColors(quente, frio, h * 0.18);
+          tT.nivel(fT, cT); tO.nivel(fO, cO);
+          topoMat.color.lerpColors(verde, gelado, ease.outCubic(h) * 0.7);
+          for (let i = 0; i < ap.count; i++) ap.setZ(i, 0.06 * Math.sin(a0[i * 3] * 1.7 + t * 2.2) * Math.cos(a0[i * 3 + 1] * 1.3 + t * 1.6));
+          ap.needsUpdate = true; agua.geometry.computeVertexNormals();
+          hd.forEach(([x0, x, z, ph], i) => {
+            const u = (t * 0.35 + ph) % 1, terraP = i < NH / 2;
+            hp.set([x0 + x + Math.sin(u * 6 + ph * 9) * 0.3, 1.2 + u * 5, z], i * 3);
+            hc[i] = Math.sin(u * Math.PI) * 0.35 * (terraP ? 1 - ease.outCubic(h) * 0.95 : 1 - h * 0.25);
+          });
+          hg.attributes.position.needsUpdate = true; hg.attributes.aA.needsUpdate = true;
+          const e = ease.inOutSine(range(t, 0, 7.38));
+          const a = lerp(-0.45, 0.4, e);
+          cam.position.set(Math.sin(a) * 22, lerp(7.5, 10, e), Math.cos(a) * 22);
+          cam.lookAt(0, 3.0, 0);
+          st.sol(0, 0, 18);
+          stars.set(0.7, t);
+          st.draw();
+          const c = st.ctx;
+          SK.pilula(c, 540, 205, 380, 110);
+          SK.txt(c, "SEM SOL HÁ", 540, 178, { tam: 24, cor: SK.AZUL });
+          SK.txt(c, Math.floor(h * 24) + " H", 540, 225, { tam: 54, fonte: "mono", peso: 600, esp: 0.02 });
+          tag(v.set(-4.6, 8.2, 2.2), "CONTINENTE", { tam: 32 });
+          tag(v.set(4.6, 8.2, 2.2), "OCEANO", { tam: 32 });
+          tag(v.set(-4.6, 7.5, 2.2), "ESFRIA RÁPIDO", { tam: 26, cor: "#9fd6ff", a: range(t, 1.6, 2.0) });
+          tag(v.set(4.6, 7.5, 2.2), "SEGURA O CALOR", { tam: 26, cor: SK.AZUL, a: range(t, 2.8, 3.2) });
+          for (const tm of [tT, tO]) tag(v.set(tm.g.position.x + 1.1, 1.0 + tm.zeroY, 2.2), "0 °C", { tam: 26, cor: "#9fd6ff", al: "left" });
+        }
+
+        // DR foi lido na hora em que o script rodou (depois do inline o host pode mudar de atributos)
+        await K.bindSeek(canvas, (t) => { st.T = t * D / DR; st.D = D; render(st.T); }, { warm: [st.warm, ...(st.extraWarm || [])], duration: DR });
+      });
+    })();
+  </script>
+</template>

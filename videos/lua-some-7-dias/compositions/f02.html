@@ -1,0 +1,87 @@
+<!-- f02: cena 3D padrão documentário (R10 + doc). Lógica em cenas/f02.js (gerado por scripts/monta-cenas.py).
+     Tempos escritos para 5.36 s e esticados para a duração real do host (data-duration). -->
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0b0a12; }
+    #f02-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+    /* rótulos 2D: y 680-980, acima da faixa da legenda (1005-1235) */
+    .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .rot-t { display: block; font-family: "Inter", sans-serif; font-weight: 300; font-size: 84px; line-height: 1.1; color: #fff; text-transform: none;
+      letter-spacing: -0.01em; text-shadow: 0 2px 30px rgba(0,0,0,0.7), 0 1px 3px rgba(0,0,0,0.6); opacity: 0; }
+    .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }
+    .rot-t .p { font-size: 64px; }
+    .rot-t .k { display: inline-block; font-family: "JetBrains Mono", monospace; font-weight: 600; font-size: 26px; letter-spacing: 0.32em; color: #7cc8ff; margin-bottom: 18px; }
+    .rot-t .n { font-family: "JetBrains Mono", monospace; font-weight: 600; color: #7cc8ff; }
+
+  </style>
+  <div id="root" data-composition-id="f02" data-width="1080" data-height="1920">
+    <canvas id="f02-canvas" width="1080" height="1920"></canvas>
+    <div id="f02-r1" class="rot" style="top: 700px"><span id="f02-r1-in" class="rot-t"><span class="k">DURAÇÃO</span><br><span class="y">7 dias</span><br>sem Lua</span></div>
+  </div>
+  <script>
+    (function () {
+      const D0 = 5.36;
+      // duração real = data-duration do host da cena (muda quando a narração muda)
+      const durReal = () => {
+        for (let n = document.getElementById("f02-canvas"); n; n = n.parentElement) {
+          if (n.getAttribute && n.getAttribute("data-composition-id") === "f02" && n.hasAttribute("data-duration")) return parseFloat(n.getAttribute("data-duration")) || D0;
+        }
+        return D0;
+      };
+      const DR = durReal(), K = DR / D0;
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo("#f02-r1-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 2.6 * K);
+      tl.set({}, {}, DR);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["f02"] = tl;
+
+      window.__hf = window.__hf || {};
+      window.__hf.buildReady = window.__hf.buildReady || {};
+      window.__hf.buildReady["f02"] = Promise.all([
+        import("./assets/lib/kit.js"), import("./assets/lib/blocks/toy.js"), import("./assets/lib/blocks/animals.js"), import("./assets/lib/blocks/lua.js")
+      ]).then(async ([K_, T, A, LUA]) => {
+        const K = K_;
+        const { THREE, ease, range, lerp, clamp, smoothstep, mulberry32 } = K;
+        const D = D0;   // o corpo trabalha no tempo de autoria
+        const canvas = document.getElementById("f02-canvas");
+
+        // f02 — espaço: a câmera sai rente à atmosfera e recua até revelar a Terra inteira, sozinha, com a órbita da Lua vazia.
+        const st = T.createToyStage(canvas, { fov: 38, ceu: "#010207", nevoa: null, nuvens: 0, exposicao: 1.0 });
+        const S = st.scene, cam = st.cam;
+        st.bloom = 0.7;
+        S.environment = null;
+        const est = LUA.estrelas(S, { n: 3200, r: 400, seed: 21 });
+        const SUN = new THREE.Vector3(-260, 80, 150);
+        LUA.sol(S, { pos: SUN, r: 8 });
+        const E = LUA.terra(S, { r: 1 });
+        E.setSol(SUN); E.grupo.rotation.z = 0.41;
+        st.key.position.copy(SUN); st.key.target.position.set(0, 0, 0); st.key.castShadow = false; st.key.intensity = 3.6; st.key.color.set(0xfff1e0);
+        st.hemi.intensity = 0.03; st.rim.intensity = 0;
+        const orb = LUA.anelTracejado(5, { n: 110, tubo: 0.014, cor: 0x9fb8e0, opac: 0.55 }); S.add(orb);
+        const GP = new THREE.Vector3(-1.2, 0, 4.85);
+        const fantasma = new THREE.Mesh(new THREE.SphereGeometry(0.27, 20, 12), new THREE.MeshBasicMaterial({ color: 0x9fb8e0, wireframe: true, transparent: true, opacity: 0.3, fog: false }));
+        fantasma.position.copy(GP); S.add(fantasma);
+        const d0 = new THREE.Vector3(-0.15, 0.25, 1).normalize(), d1 = new THREE.Vector3(0.5, 0.42, 0.76).normalize(), dir = new THREE.Vector3(), alvo = new THREE.Vector3();
+        function render(t) {
+          E.giro.rotation.y = 1.2 + t * 0.12;
+          E.nuvens.rotation.y = t * 0.02;
+          const e = ease.inOutCubic(range(t, 0, 4.6)), e2 = ease.inOutSine(range(t, 0, 5.36));
+          const dist = Math.exp(lerp(Math.log(1.32), Math.log(10.5), e));
+          dir.copy(d0).lerp(d1, e2).normalize();
+          cam.position.copy(dir).multiplyScalar(dist);
+          alvo.set(lerp(-1.6, 0.4, e), lerp(1.25, -1.3, e), lerp(-1.2, 0.6, e));
+          cam.lookAt(alvo);
+          orb.userData.mat.opacity = 0.55 * range(t, 0.8, 2.2);
+          fantasma.material.opacity = 0.32 * range(t, 1.2, 2.4);
+          fantasma.rotation.y = t * 0.3;
+          st.draw();
+          const [x, y, ok] = LUA.proj(GP, cam);
+          if (ok) LUA.tag(st.ctx, "AQUI ESTAVA A LUA", x + 30, y - 110, { a: range(t, 1.6, 2.2) * LUA.borda(t, D), tam: 30, ax: x, ay: y });
+        }
+
+        // DR foi lido na hora em que o script rodou (depois do inline o host pode mudar de atributos)
+        await K.bindSeek(canvas, (t) => { st.T = t * D / DR; st.D = D; render(st.T); }, { warm: [st.warm, ...(st.extraWarm || [])], duration: DR });
+      });
+    })();
+  </script>
+</template>

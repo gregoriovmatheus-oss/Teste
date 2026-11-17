@@ -189,6 +189,14 @@ export function createToyStage(canvas, { ceu = ["#5E8FCB", "#F2D3A8"], nevoa = [
     ctx.filter = (bl > 0.3 ? `blur(${bl.toFixed(1)}px) ` : "") + "contrast(1.06) saturate(0.9)";
     ctx.drawImage(renderer.domElement, 0, 0);
     ctx.filter = "none";
+    // bloom 2D (padrão doc): passa-alta do brilho em 1/4 da resolução, desfocado e somado em "screen"
+    if (stg.bloom > 0) {
+      if (!stg._bc) { stg._bc = document.createElement("canvas"); stg._bc.width = 270; stg._bc.height = 480; stg._bx = stg._bc.getContext("2d"); }
+      const bx = stg._bx; bx.globalCompositeOperation = "copy"; bx.filter = "brightness(0.55) contrast(3.2) blur(5px)";
+      bx.drawImage(renderer.domElement, 0, 0, 270, 480); bx.filter = "none";
+      ctx.save(); ctx.globalCompositeOperation = "screen"; ctx.globalAlpha = Math.min(1, stg.bloom); ctx.filter = "blur(10px)";
+      ctx.drawImage(stg._bc, 0, 0, 1080, 1920); ctx.filter = "none"; ctx.globalAlpha = Math.min(1, stg.bloom * 0.8); ctx.drawImage(stg._bc, 0, 0, 1080, 1920); ctx.restore();
+    }
     // R10: sem linhas de velocidade de desenho; velocidade vira desfoque de movimento leve (acima)
     if (ov && ov.a > 0) { ctx.globalAlpha = Math.min(1, ov.a); ctx.fillStyle = ov.cor; ctx.fillRect(0, 0, 1080, 1920); ctx.globalAlpha = 1; }
     // vinheta + grão de filme
@@ -201,7 +209,7 @@ export function createToyStage(canvas, { ceu = ["#5E8FCB", "#F2D3A8"], nevoa = [
     const D = stg.D || 1e9, dip = Math.max(1 - T / 0.17, 1 - (D - T) / 0.12, 0);
     if (dip > 0) { ctx.globalAlpha = Math.min(1, dip) * 0.85; ctx.fillStyle = "#0b0a12"; ctx.fillRect(0, 0, 1080, 1920); ctx.globalAlpha = 1; }
   }
-  stg.blur = 0; stg.mao = 1; stg.T = 0; stg.D = 0;
+  stg.blur = 0; stg.bloom = 0.35; stg.mao = 1; stg.T = 0; stg.D = 0;
   return Object.assign(stg, { renderer, scene, cam, key, rim, hemi, sol, draw, ctx, warm: { renderer, scene, camera: cam } });
 }
 

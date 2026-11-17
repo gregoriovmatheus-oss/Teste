@@ -108,5 +108,93 @@
     "arquivo": "assets/audio/trilha.mp3",
     "volume": 0.12
   },
-  "sfx": []
+  "sfx": [],
+  "doc": {
+    "capitulos": [
+      [
+        0.2,
+        "A PRAIA"
+      ],
+      [
+        5.36,
+        "O DESAPARECIMENTO"
+      ],
+      [
+        14.89,
+        "O FUNDO EXPOSTO"
+      ],
+      [
+        35.56,
+        "O PLANETA SEM OCEANO"
+      ],
+      [
+        60.55,
+        "O RETORNO"
+      ]
+    ],
+    "hud": [
+      {
+        "rotulo": "VOLUME DOS OCEANOS",
+        "unid": "%",
+        "fmt": "int",
+        "keys": [
+          [
+            0,
+            100
+          ],
+          [
+            2.5,
+            100
+          ],
+          [
+            9.87,
+            0
+          ],
+          [
+            60.55,
+            0
+          ],
+          [
+            63.55,
+            100
+          ]
+        ],
+        "max": 100,
+        "alerta": [
+          [
+            2.5,
+            63.55
+          ]
+        ],
+        "de": 0.4
+      },
+      {
+        "rotulo": "TEMPO DECORRIDO",
+        "unid": "/ 24:00",
+        "fmt": "hhmm",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            2.5,
+            0
+          ],
+          [
+            60.55,
+            24
+          ]
+        ],
+        "max": 24,
+        "alerta": [
+          [
+            2.5,
+            60.55
+          ]
+        ],
+        "de": 0.4
+      }
+    ]
+  }
 }

@@ -1,0 +1,93 @@
+<!-- f04: cena 3D padrão documentário (R10 + doc). Lógica em cenas/f04.js (gerado por scripts/monta-cenas.py).
+     Tempos escritos para 5.3 s e esticados para a duração real do host (data-duration). -->
+<template>
+  <style>
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0b0a12; }
+    #f04-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+    /* rótulos 2D: y 680-980, acima da faixa da legenda (1005-1235) */
+    .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .rot-t { display: block; font-family: "Inter", sans-serif; font-weight: 300; font-size: 84px; line-height: 1.1; color: #fff; text-transform: none;
+      letter-spacing: -0.01em; text-shadow: 0 2px 30px rgba(0,0,0,0.7), 0 1px 3px rgba(0,0,0,0.6); opacity: 0; }
+    .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }
+    .rot-t .p { font-size: 64px; }
+    .rot-t .k { display: inline-block; font-family: "JetBrains Mono", monospace; font-weight: 600; font-size: 26px; letter-spacing: 0.32em; color: #7cc8ff; margin-bottom: 18px; }
+    .rot-t .n { font-family: "JetBrains Mono", monospace; font-weight: 600; color: #7cc8ff; }
+
+  </style>
+  <div id="root" data-composition-id="f04" data-width="1080" data-height="1920">
+    <canvas id="f04-canvas" width="1080" height="1920"></canvas>
+    <div id="f04-r1" class="rot" style="top: 700px"><span id="f04-r1-in" class="rot-t"><span class="k">PROFUNDIDADE MÉDIA</span><br><span class="y">3.700 m</span></span></div>
+  </div>
+  <script>
+    (function () {
+      const D0 = 5.3;
+      // duração real = data-duration do host da cena (muda quando a narração muda)
+      const durReal = () => {
+        for (let n = document.getElementById("f04-canvas"); n; n = n.parentElement) {
+          if (n.getAttribute && n.getAttribute("data-composition-id") === "f04" && n.hasAttribute("data-duration")) return parseFloat(n.getAttribute("data-duration")) || D0;
+        }
+        return D0;
+      };
+      const DR = durReal(), K = DR / D0;
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo("#f04-r1-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 2.6 * K);
+      tl.to("#f04-r1-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 4.95 * K);
+      tl.set({}, {}, DR);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["f04"] = tl;
+
+      window.__hf = window.__hf || {};
+      window.__hf.buildReady = window.__hf.buildReady || {};
+      window.__hf.buildReady["f04"] = Promise.all([
+        import("./assets/lib/kit.js"), import("./assets/lib/blocks/toy.js"), import("./assets/lib/blocks/animals.js"), import("./assets/lib/blocks/oceano.js")
+      ]).then(async ([K_, T, A, OCEANO]) => {
+        const K = K_;
+        const { THREE, ease, range, lerp, clamp, smoothstep, mulberry32 } = K;
+        const D = D0;   // o corpo trabalha no tempo de autoria
+        const canvas = document.getElementById("f04-canvas");
+
+        const O = OCEANO, G0 = 14.89;
+        try { await document.fonts.load('500 26px "JetBrains Mono"'); } catch (e) {}
+        // 1 unidade = 50 m. A antiga superfície do mar fica 74 u acima do chão (3.700 m).
+        const st = T.createToyStage(canvas, { fov: 50, ceu: ["#4b78ad", "#d9c7a8"], nevoa: [60, 520], corNevoa: "#b8ad9b", nuvens: 0, exposicao: 1.05 });
+        const S = st.scene, cam = st.cam;
+        const alt = (x, z) => 3.2 * O.fbm(x * 0.03, z * 0.03, 4, 21) + 1.2 * Math.abs(O.ruido(x * 0.012, z * 0.05, 22)) ;
+        const cor = (x, z, y, c) => O.mistura(c, 0x6f6152, 0x9a8a72, (y + 2) / 6 + 0.2 * O.ruido(x * 0.1, z * 0.1, 23));
+        S.add(O.terreno({ w: 700, d: 900, sx: 100, sz: 120, cz: -300, alt, cor }));
+        // nódulos de manganês (InstancedMesh)
+        const nodG = new THREE.IcosahedronGeometry(0.35, 0), rr = mulberry32(41), N = 900;
+        const nod = new THREE.InstancedMesh(nodG, T.TOON({ color: 0x2a2420, roughness: 0.6, flatShading: true }), N);
+        const mm = new THREE.Matrix4(), q = new THREE.Quaternion(), sv = new THREE.Vector3(), pv = new THREE.Vector3();
+        for (let i = 0; i < N; i++) { const x = (rr() - 0.5) * 120, z = 30 - rr() * 260, s = 0.5 + rr() * 1.2; pv.set(x, alt(x, z) + 0.1, z); q.setFromAxisAngle(sv.set(0, 1, 0), rr() * 6); mm.compose(pv, q, sv.set(s, s * 0.7, s)); nod.setMatrixAt(i, mm); }
+        nod.castShadow = true; S.add(nod);
+        // fantasma da superfície do mar (3.700 m acima) e régua vertical
+        const sup = new THREE.Mesh(new THREE.PlaneGeometry(1400, 1400), new THREE.MeshBasicMaterial({ color: 0x4aa3e0, transparent: true, opacity: 0.22, side: THREE.DoubleSide, depthWrite: false, fog: false }));
+        sup.rotation.x = -Math.PI / 2; sup.position.y = 74; S.add(sup);
+        const grade = new THREE.GridHelper(1400, 70, 0x9fd4ff, 0x9fd4ff); grade.position.y = 74.05; grade.material.transparent = true; grade.material.opacity = 0.35; grade.material.fog = false; S.add(grade);
+        const RX = 6, RZ = -28, ry0 = alt(RX, RZ);
+        const regua = new THREE.Group(); regua.position.set(RX, ry0, RZ); S.add(regua);
+        const mR = T.TOON({ color: 0xfff4dc, roughness: 0.4, emissive: 0x332200 }), mA = T.TOON({ color: 0xffb444, roughness: 0.4, emissive: 0x552a00 });
+        const haste = new THREE.Mesh(new THREE.BoxGeometry(0.7, 74 - ry0, 0.7), mR); haste.position.y = (74 - ry0) / 2; regua.add(haste);
+        for (let k = 0; k <= 7; k++) { const tk = new THREE.Mesh(new THREE.BoxGeometry(k % 2 ? 2.5 : 4.5, 0.5, 0.5), mA); tk.position.y = 74 - ry0 - k * 10; regua.add(tk); }
+        const topo = new THREE.Vector3(RX, 74, RZ), fundo = new THREE.Vector3(RX, ry0, RZ);
+        function render(t) {
+          const u = t / D;
+          // grua: começa na antiga superfície do mar e desce os 3.700 m ao lado da régua; depois voa rente ao chão
+          const desc = ease.inOutCubic(range(t, 0, 3.4));
+          const fly = Math.max(0, t - 3.0);
+          const cy = lerp(86, 5.5, desc), cz = lerp(30, 2, desc) - fly * fly * 3.2 - t * 1.5;
+          cam.position.set(lerp(-16, -6, desc), cy, cz);
+          cam.lookAt(lerp(RX, 0, range(t, 3.2, 5.3)), lerp(60, 3, ease.inOutSine(range(t, 0, 3.2))), lerp(RZ, cz - 60, range(t, 2.8, 4.6)));
+          st.sol(0, cz - 30, 70);
+          st.draw();
+          const ctx = st.ctx;
+          O.etiqueta(ctx, cam, topo, "ANTIGA SUPERFÍCIE · 0 m", { dx: 60, dy: 70, tam: 26, a: 1 - range(t, 2.6, 3.0) });
+          O.etiqueta(ctx, cam, fundo, "FUNDO · −3.700 m", { dx: 60, dy: -60, tam: 28, a: range(t, 2.3, 2.7) - range(t, 4.0, 4.3) });
+        }
+
+        // DR foi lido na hora em que o script rodou (depois do inline o host pode mudar de atributos)
+        await K.bindSeek(canvas, (t) => { st.T = t * D / DR; st.D = D; render(st.T); }, { warm: [st.warm, ...(st.extraWarm || [])], duration: DR });
+      });
+    })();
+  </script>
+</template>
