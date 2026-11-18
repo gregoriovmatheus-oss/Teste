@@ -1,5 +1,5 @@
 <!-- f08: cena 3D padrão documentário (R10 + doc). Lógica em cenas/f08.js (gerado por scripts/monta-cenas.py).
-     Tempos escritos para 5.13 s e esticados para a duração real do host (data-duration). -->
+     Tempos escritos para 6.63 s e esticados para a duração real do host (data-duration). -->
 <template>
   <style>
     #root { position: absolute; inset: 0; overflow: hidden; background: #0b0a12; }
@@ -17,11 +17,12 @@
   <div id="root" data-composition-id="f08" data-width="1080" data-height="1920">
     <canvas id="f08-canvas" width="1080" height="1920"></canvas>
     <div id="f08-r1" class="rot" style="top: 660px"><span id="f08-r1-in" class="rot-t">Os postes<br><span class="y">acendem</span></span></div>
-    <div id="f08-r2" class="rot" style="top: 660px"><span id="f08-r2-in" class="rot-t">Essa noite<br><span class="y">não termina</span></span></div>
+    <div id="f08-r2" class="rot" style="top: 660px"><span id="f08-r2-in" class="rot-t"><span class="k">ENERGIA SOLAR</span><br>Cai a <span class="y">zero</span></span></div>
+    <div id="f08-r3" class="rot" style="top: 660px"><span id="f08-r3-in" class="rot-t">Aquecimento<br><span class="y">no máximo</span></span></div>
   </div>
   <script>
     (function () {
-      const D0 = 5.13;
+      const D0 = 6.63;
       // duração real = data-duration do host da cena (muda quando a narração muda)
       const durReal = () => {
         for (let n = document.getElementById("f08-canvas"); n; n = n.parentElement) {
@@ -31,9 +32,11 @@
       };
       const DR = durReal(), K = DR / D0;
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f08-r1-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 0.8 * K);
-      tl.to("#f08-r1-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 2.8 * K);
-      tl.fromTo("#f08-r2-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 3.3 * K);
+      tl.fromTo("#f08-r1-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 0.6 * K);
+      tl.to("#f08-r1-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 1.9 * K);
+      tl.fromTo("#f08-r2-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 2.4 * K);
+      tl.to("#f08-r2-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 4.25 * K);
+      tl.fromTo("#f08-r3-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 4.7 * K);
       tl.set({}, {}, DR);
       window.__timelines = window.__timelines || {};
       window.__timelines["f08"] = tl;
@@ -78,7 +81,7 @@
           car.position.set(-3.4, 0.1, cz); car.rotation.y = 0;
           farois.forEach((g) => g.position.set(-3.4 + g.dx, 0.95, cz + 2.2));
           // travelling para a frente, câmera baixa subindo
-          const e = ease.inOutSine(range(t, 0, 5.13));
+          const e = ease.inOutSine(range(t, 0, 6.63));
           cam.position.set(lerp(2.5, -0.5, e), lerp(2.2, 4.4, e), lerp(44, 22, e));
           cam.lookAt(lerp(-1, 1, e), lerp(6, 7.5, e), -40);
           st.sol(0, cam.position.z - 30, 60);

@@ -1,7 +1,7 @@
 {
   "slug": "sol-apaga-7-dias",
   "ref": "R09",
-  "duracao": 74.25,
+  "duracao": 87.11,
   "duracao_fixa": null,
   "narracao": {
     "arquivo": "assets/audio/narracao.mp3"
@@ -39,51 +39,57 @@
     },
     {
       "id": "f06",
-      "palavra": "Júpiter some",
+      "palavra": "Lá em",
       "inicio": 24.16,
-      "fim": 29.23
+      "fim": 33.52
     },
     {
       "id": "f07",
       "palavra": "Mas a",
-      "inicio": 29.23,
-      "fim": 35.35
+      "inicio": 33.52,
+      "fim": 39.65
     },
     {
       "id": "f08",
       "palavra": "Nas cidades,",
-      "inicio": 35.35,
-      "fim": 40.48
+      "inicio": 39.65,
+      "fim": 46.28
     },
     {
       "id": "f09",
       "palavra": "A fotossíntese",
-      "inicio": 40.48,
-      "fim": 46.45
+      "inicio": 46.28,
+      "fim": 52.25
     },
     {
       "id": "f10",
       "palavra": "Os animais",
-      "inicio": 46.45,
-      "fim": 51.33
+      "inicio": 52.25,
+      "fim": 57.12
     },
     {
       "id": "f11",
       "palavra": "E o",
-      "inicio": 51.33,
-      "fim": 60.72
+      "inicio": 57.12,
+      "fim": 66.52
     },
     {
       "id": "f12",
-      "palavra": "Do espaço,",
-      "inicio": 60.72,
-      "fim": 64.66
+      "palavra": "Nas lavouras,",
+      "inicio": 66.52,
+      "fim": 73.59
     },
     {
       "id": "f13",
+      "palavra": "Do espaço,",
+      "inicio": 73.59,
+      "fim": 77.53
+    },
+    {
+      "id": "f14",
       "palavra": "Então, no",
-      "inicio": 64.66,
-      "fim": 74.25
+      "inicio": 77.53,
+      "fim": 87.11
     }
   ],
   "hud": {
@@ -124,11 +130,11 @@
         "A ESCURIDÃO"
       ],
       [
-        35.35,
+        39.65,
         "O PLANETA NO ESCURO"
       ],
       [
-        64.66,
+        77.53,
         "O RETORNO"
       ]
     ],
@@ -147,23 +153,23 @@
             100
           ],
           [
-            15.860000000000001,
+            15.86,
             0
           ],
           [
-            68.16,
+            81.03,
             0
           ],
           [
-            69.16,
+            82.03,
             100
           ]
         ],
         "max": 100,
         "alerta": [
           [
-            15.860000000000001,
-            69.16
+            15.86,
+            82.03
           ]
         ],
         "de": 0.4
@@ -205,7 +211,7 @@
             0
           ],
           [
-            64.66,
+            77.53,
             7
           ]
         ],
@@ -213,7 +219,7 @@
         "alerta": [
           [
             15.06,
-            64.66
+            77.53
           ]
         ],
         "de": 15.56

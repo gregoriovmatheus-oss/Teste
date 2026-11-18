@@ -28,7 +28,7 @@
   </div>
   <script>
     (function () {
-      const CAPS = [[0.2, "O SOL"], [4.13, "OS 8 MINUTOS"], [15.06, "A ESCURIDÃO"], [35.35, "O PLANETA NO ESCURO"], [64.66, "O RETORNO"]], HUD = [{"rotulo": "LUZ SOLAR NA TERRA", "unid": "%", "fmt": "int", "keys": [[0, 100], [15.06, 100], [15.860000000000001, 0], [68.16, 0], [69.16, 100]], "max": 100, "alerta": [[15.860000000000001, 69.16]], "de": 0.4}, {"rotulo": "DESDE QUE O SOL APAGOU", "fmt": "mmss", "keys": [[0, 0], [3.0, 0], [15.06, 500]], "max": 500, "alerta": [[3.0, 15.56]], "de": 0.4, "ate": 15.56}, {"rotulo": "SEM SOL", "unid": "dias", "fmt": "dias", "keys": [[15.06, 0], [64.66, 7]], "max": 7, "alerta": [[15.06, 64.66]], "de": 15.56}], D = 74.25;
+      const CAPS = [[0.2, "O SOL"], [4.13, "OS 8 MINUTOS"], [15.06, "A ESCURIDÃO"], [39.65, "O PLANETA NO ESCURO"], [77.53, "O RETORNO"]], HUD = [{"rotulo": "LUZ SOLAR NA TERRA", "unid": "%", "fmt": "int", "keys": [[0, 100], [15.06, 100], [15.86, 0], [81.03, 0], [82.03, 100]], "max": 100, "alerta": [[15.86, 82.03]], "de": 0.4}, {"rotulo": "DESDE QUE O SOL APAGOU", "fmt": "mmss", "keys": [[0, 0], [3.0, 0], [15.06, 500]], "max": 500, "alerta": [[3.0, 15.56]], "de": 0.4, "ate": 15.56}, {"rotulo": "SEM SOL", "unid": "dias", "fmt": "dias", "keys": [[15.06, 0], [77.53, 7]], "max": 7, "alerta": [[15.06, 77.53]], "de": 15.56}], D = 87.11;
       const $ = (id) => document.getElementById(id);
       const val = (h, t) => {
         const k = h.keys; if (h.fmt === "texto") { let s = k[0][1]; for (const [a, b] of k) if (t >= a) s = b; return s; }

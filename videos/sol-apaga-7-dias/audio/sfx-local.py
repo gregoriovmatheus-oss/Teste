@@ -1,6 +1,6 @@
 """sfx-local.py: efeitos sintetizados localmente (sem API) para "E se o Sol apagasse por 7 dias?".
 Whoosh em cada corte; queda grave quando o Sol apaga (f01); ronco da escuridão chegando (f04); tom da Lua apagando (f05);
-"ping" do último reflexo de Júpiter (f06); estalos dos postes (f08); pios e coruja (f10); Sol reacendendo e luz chegando (f13).
+bipes e desligamento dos satélites (f06); estalos dos postes (f08); pios e coruja (f10); gelo no cano (f12); Sol reacendendo e luz chegando (f14).
 Saída: assets/audio/sfx.wav (mono 48 kHz)."""
 import json, numpy as np, wave
 SR = 48000
@@ -58,18 +58,21 @@ add(I['f01'] + 3.55, tom(90, 32, 2.2, 1.6, 1.2), 0.9)
 add(I['f04'] + 0.3, rumble(2.4), 0.5)
 # f05: a Lua apaga (tom descendo)
 add(I['f05'] + 0.6, tom(520, 260, 1.2, 2.5), 0.18)
-# f06: o último reflexo de Júpiter chega à Terra
-add(I['f06'] + 4.5, tom(1400, 1350, 0.9, 5), 0.22)
+# f06: alerta de bateria fraca e satélites desligando
+for k in range(5): add(I['f06'] + 4.4 + k * 0.22, tom(1500, 1480, 0.08, 30), 0.14)
+add(I['f06'] + 5.5, tom(700, 90, 0.9, 3.0), 0.25)
 # f08: postes acendendo (estalos em sequência)
 for k in range(10): add(I['f08'] + 0.85 + k * 0.1, clique(), 0.28)
 # f10: pios das aves e a coruja
 for k, t0 in enumerate([0.6, 1.1, 1.5, 2.2]): add(I['f10'] + t0, tom(2600 + 300 * k, 3600 + 200 * k, 0.12, 18), 0.15)
 for t0 in [3.35, 3.75]: add(I['f10'] + t0, tom(390, 360, 0.35, 5), 0.3)
-# f13: o Sol reacende e a luz chega à Terra
-add(I['f13'] + 0.1, swell(0.6, 70, 260), 0.45)
-add(I['f13'] + 0.7, tom(120, 60, 1.5, 2.0, 0.8), 0.5)
-add(I['f13'] + 3.45, swell(0.2, 300, 900), 0.25)
-add(I['f13'] + 3.6, tom(880, 870, 1.8, 2.2), 0.2)
+# f12: gelo estalando no cano
+for k in range(8): add(I['f12'] + 2.1 + k * 0.17 + (k % 3) * 0.04, clique(), 0.22)
+# f14: o Sol reacende e a luz chega à Terra
+add(I['f14'] + 0.1, swell(0.6, 70, 260), 0.45)
+add(I['f14'] + 0.7, tom(120, 60, 1.5, 2.0, 0.8), 0.5)
+add(I['f14'] + 3.45, swell(0.2, 300, 900), 0.25)
+add(I['f14'] + 3.6, tom(880, 870, 1.8, 2.2), 0.2)
 out = out[: int(SR * DUR)]
 out = np.tanh(out * 1.2) * 0.8
 pcm = (out * 32767).astype('<i2')

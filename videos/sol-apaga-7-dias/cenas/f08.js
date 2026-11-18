@@ -1,4 +1,4 @@
-/*META {"imports": ["solkit"], "rotulos": [{"de": 0.8, "ate": 3.1, "top": 660, "texto": "Os postes<br><span class=\"y\">acendem</span>"}, {"de": 3.3, "ate": 5.13, "top": 660, "texto": "Essa noite<br><span class=\"y\">não termina</span>", "sai": false}], "D0": 5.13} */
+/*META {"imports": ["solkit"], "rotulos": [{"de": 0.6, "ate": 2.2, "top": 660, "texto": "Os postes<br><span class=\"y\">acendem</span>"}, {"de": 2.4, "ate": 4.55, "top": 660, "texto": "<span class=\"k\">ENERGIA SOLAR</span><br>Cai a <span class=\"y\">zero</span>"}, {"de": 4.7, "ate": 6.63, "top": 660, "texto": "Aquecimento<br><span class=\"y\">no máximo</span>", "sai": false}], "D0": 6.63} */
         const SK = SOLKIT;
         await SK.fontes();
         const st = T.createToyStage(canvas, { fov: 50, ceu: ["#02040b", "#0e1932"], nevoa: [50, 260], corNevoa: "#0b1326", nuvens: 0 });
@@ -29,7 +29,7 @@
           car.position.set(-3.4, 0.1, cz); car.rotation.y = 0;
           farois.forEach((g) => g.position.set(-3.4 + g.dx, 0.95, cz + 2.2));
           // travelling para a frente, câmera baixa subindo
-          const e = ease.inOutSine(range(t, 0, 5.13));
+          const e = ease.inOutSine(range(t, 0, 6.63));
           cam.position.set(lerp(2.5, -0.5, e), lerp(2.2, 4.4, e), lerp(44, 22, e));
           cam.lookAt(lerp(-1, 1, e), lerp(6, 7.5, e), -40);
           st.sol(0, cam.position.z - 30, 60);
