@@ -1,7 +1,7 @@
 {
   "slug": "sol-apaga-7-dias",
   "ref": "R09",
-  "duracao": 70.49,
+  "duracao": 74.25,
   "duracao_fixa": null,
   "narracao": {
     "arquivo": "assets/audio/narracao.mp3"
@@ -59,31 +59,31 @@
       "id": "f09",
       "palavra": "A fotossíntese",
       "inicio": 40.48,
-      "fim": 45.68
+      "fim": 46.45
     },
     {
       "id": "f10",
       "palavra": "Os animais",
-      "inicio": 45.68,
-      "fim": 50.55
+      "inicio": 46.45,
+      "fim": 51.33
     },
     {
       "id": "f11",
       "palavra": "E o",
-      "inicio": 50.55,
-      "fim": 57.93
+      "inicio": 51.33,
+      "fim": 60.72
     },
     {
       "id": "f12",
       "palavra": "Do espaço,",
-      "inicio": 57.93,
-      "fim": 61.87
+      "inicio": 60.72,
+      "fim": 64.66
     },
     {
       "id": "f13",
-      "palavra": "Então o",
-      "inicio": 61.87,
-      "fim": 70.49
+      "palavra": "Então, no",
+      "inicio": 64.66,
+      "fim": 74.25
     }
   ],
   "hud": {
@@ -128,7 +128,7 @@
         "O PLANETA NO ESCURO"
       ],
       [
-        61.87,
+        64.66,
         "O RETORNO"
       ]
     ],
@@ -151,11 +151,11 @@
             0
           ],
           [
-            65.37,
+            68.16,
             0
           ],
           [
-            66.37,
+            69.16,
             100
           ]
         ],
@@ -163,7 +163,7 @@
         "alerta": [
           [
             15.860000000000001,
-            66.37
+            69.16
           ]
         ],
         "de": 0.4
@@ -183,17 +183,13 @@
           [
             15.06,
             500
-          ],
-          [
-            61.87,
-            86400
           ]
         ],
-        "max": 86400,
+        "max": 500,
         "alerta": [
           [
             3.0,
-            61.87
+            15.56
           ]
         ],
         "de": 0.4,
@@ -201,23 +197,23 @@
       },
       {
         "rotulo": "SEM SOL",
-        "unid": "/ 24:00",
-        "fmt": "hhmm",
+        "unid": "dias",
+        "fmt": "dias",
         "keys": [
           [
             15.06,
-            0.14
+            0
           ],
           [
-            61.87,
-            24
+            64.66,
+            7
           ]
         ],
-        "max": 24,
+        "max": 7,
         "alerta": [
           [
             15.06,
-            61.87
+            64.66
           ]
         ],
         "de": 15.56
