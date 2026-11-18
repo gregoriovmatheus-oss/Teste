@@ -1,4 +1,4 @@
-/*META {"imports": ["solkit"], "rotulos": [{"de": 0.2, "ate": 1.9, "top": 700, "texto": "E o <span class=\"y\">frio</span>?"}, {"de": 2.7, "ate": 4.8, "top": 700, "texto": "O oceano<br><span class=\"y\">guarda calor</span>"}, {"de": 4.95, "ate": 7.38, "top": 700, "texto": "<span class=\"k\">EM 24 HORAS</span><br>Não <span class=\"y\">congela</span>", "sai": false}], "D0": 7.38} */
+/*META {"imports": ["solkit"], "rotulos": [{"de": 0.2, "ate": 1.9, "top": 700, "texto": "E o <span class=\"y\">frio</span>?"}, {"de": 2.7, "ate": 4.8, "top": 700, "texto": "O oceano<br><span class=\"y\">segura parte</span>"}, {"de": 4.95, "ate": 7.38, "top": 700, "texto": "<span class=\"k\">EM 7 DIAS</span><br>Perto de <span class=\"y\">zero</span>", "sai": false}], "D0": 7.38} */
         const SK = SOLKIT;
         await SK.fontes();
         const st = T.createToyStage(canvas, { fov: 58, ceu: ["#050a16", "#13213a"], nevoa: null, nuvens: 0 });
@@ -46,12 +46,12 @@
         const v = new THREE.Vector3();
         const tag = (p, s, o) => { const [x, y, z] = SK.proj(p, cam); if (z < 1) SK.txt(st.ctx, s, x, y, o); };
         function render(t) {
-          // 0 -> 24 h sem Sol; continente cai rápido, oceano quase nada; ninguém passa de 0 °C
+          // 0 -> 7 dias sem Sol; continente passa de 0 °C, oceano segura acima
           const h = range(t, 0.9, 5.4);
-          const fT = lerp(0.85, 0.4, ease.outCubic(h)), fO = lerp(0.85, 0.78, h);
+          const fT = lerp(0.85, 0.12, ease.outCubic(h)), fO = lerp(0.85, 0.6, h);
           cT.lerpColors(quente, frio, ease.outCubic(h) * 0.85); cO.lerpColors(quente, frio, h * 0.18);
           tT.nivel(fT, cT); tO.nivel(fO, cO);
-          topoMat.color.lerpColors(verde, gelado, ease.outCubic(h) * 0.7);
+          topoMat.color.lerpColors(verde, gelado, ease.outCubic(h) * 1.0);
           for (let i = 0; i < ap.count; i++) ap.setZ(i, 0.06 * Math.sin(a0[i * 3] * 1.7 + t * 2.2) * Math.cos(a0[i * 3 + 1] * 1.3 + t * 1.6));
           ap.needsUpdate = true; agua.geometry.computeVertexNormals();
           hd.forEach(([x0, x, z, ph], i) => {

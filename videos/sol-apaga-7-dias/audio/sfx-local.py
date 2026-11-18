@@ -1,4 +1,4 @@
-"""sfx-local.py: efeitos sintetizados localmente (sem API) para "E se o Sol apagasse por 24 horas?".
+"""sfx-local.py: efeitos sintetizados localmente (sem API) para "E se o Sol apagasse por 7 dias?".
 Whoosh em cada corte; queda grave quando o Sol apaga (f01); ronco da escuridão chegando (f04); tom da Lua apagando (f05);
 "ping" do último reflexo de Júpiter (f06); estalos dos postes (f08); pios e coruja (f10); Sol reacendendo e luz chegando (f13).
 Saída: assets/audio/sfx.wav (mono 48 kHz)."""
