@@ -21,7 +21,7 @@
           st.bloom = 0.7;
           // grua: do teto, em diagonal, descendo até a altura dos olhos de quem está em pé
           const e = ease.inOutSine(range(t, 0, 5.11));
-          cam.position.set(lerp(3.4, -2.0, e), lerp(2.2, 1.7, e), 1.3);
+          cam.position.set(lerp(3.2, -1.8, e), lerp(1.85, 1.6, e), 0.45);
           cam.lookAt(lerp(0.8, -0.2, e), lerp(1.0, 1.25, e), -1.15);
           st.sol(0, 0, 12, 2);
           st.draw();

@@ -78,6 +78,7 @@
             cam.position.set(lerp(1.2, -0.6, e), lerp(0.8, 0.9, e), lerp(3.2, 10.5, e));
             cam.lookAt(lerp(-1.8, -3.3, e), lerp(0.4, 0.3, e), 0);
           }
+          cam.near = t < TB ? 0.9 : 0.05; cam.updateProjectionMatrix(); // não atravessar moléculas no voo
           st.sol(0, 0, 15);
           st.draw(S, cam, t > TB - 0.15 && t < TB + 0.15 ? { cor: "#05070d", a: 1 - Math.abs(t - TB) / 0.15 } : null);
           const c = st.ctx;

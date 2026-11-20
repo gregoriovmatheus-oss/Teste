@@ -18,12 +18,17 @@
   <div id="root" data-composition-id="doc" data-width="1080" data-height="1920">
     <div id="chap"><span id="chapN">01</span><span id="chapT"></span></div>
     <div id="hud">
-
+    <div class="row" id="h0"><span class="lbl">MENTES OUVIDAS</span><span class="val"><span id="h0v"></span> <span class="un"></span></span></div>
+    <div class="meter" id="h0m"><div id="h0b"></div></div>
+    <div class="row" id="h1"><span class="lbl">VOZES SIMULTÂNEAS</span><span class="val"><span id="h1v"></span> <span class="un"></span></span></div>
+    <div class="meter" id="h1m"><div id="h1b"></div></div>
+    <div class="row" id="h2"><span class="lbl">MENTE DIVAGANDO</span><span class="val"><span id="h2v"></span> <span class="un">%</span></span></div>
+    <div class="meter" id="h2m"><div id="h2b"></div></div>
     </div>
   </div>
   <script>
     (function () {
-      const CAPS = [], HUD = [], D = 75.02;
+      const CAPS = [[0.2, "O SUPERPODER"], [10.38, "O FILTRO"], [35.81, "A MULTIDÃO"], [49.28, "O BARULHO"], [58.04, "O SILÊNCIO"]], HUD = [{"rotulo": "MENTES OUVIDAS", "fmt": "int", "keys": [[0, 0], [2.3, 46], [39.1, 46], [41.3, 80000]], "max": 80000, "alerta": [[41.3, 49.3]], "de": 0.4}, {"rotulo": "VOZES SIMULTÂNEAS", "fmt": "int", "keys": [[25.97, 1], [28.2, 2], [28.7, 3]], "max": 3, "alerta": [[28.7, 31.86]], "de": 25.97, "ate": 35.81}, {"rotulo": "MENTE DIVAGANDO", "unid": "%", "fmt": "int", "keys": [[42.44, 0], [44.3, 47]], "max": 100, "alerta": [[44.3, 49.28]], "de": 42.44, "ate": 58.04}], D = 75.02;
       const $ = (id) => document.getElementById(id);
       const val = (h, t) => {
         const k = h.keys; if (h.fmt === "texto") { let s = k[0][1]; for (const [a, b] of k) if (t >= a) s = b; return s; }
