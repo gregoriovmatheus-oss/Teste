@@ -25,6 +25,7 @@
           cam.position.set(lerp(2.5, 0.35, e2), lerp(1.8, 1.55, e) + 0.12 * Math.sin(Math.PI * e2), lerp(30.8, 23.2, e) - e2 * 0.0);
           cam.lookAt(lerp(0.4, 0.2, e), lerp(1.75, 1.45, e), lerp(22, 12, e));
           st.sol(0, 20, 50);
+          st.T = t + 0.2; // gancho: sem o dip de entrada no frame 0 (o vídeo começa já na chuva)
           st.draw(S, cam, fl > 0.01 ? { cor: "#dff1ff", a: fl * 0.35 } : null);
           // etiqueta na gota-herói: "chuva suspensa"
           const [hx, hy] = PAUSA.proj(heroi.position, cam);

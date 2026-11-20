@@ -38,6 +38,6 @@
           const gps = "12:00:00." + String(us).padStart(6, "0");
           PAUSA.painel(c, 790, 1360, "RELÓGIO DO GPS", gps, { a: v, cor: us > 0 ? PAUSA.LARANJA : PAUSA.AZUL, tam: 40, sub: corr > 0.5 ? "CORRIGIDO" : us > 0 ? "ADIANTADO" : "" });
           const [sx, sy, ok] = PAUSA.proj(sp, cam);
-          if (ok) PAUSA.tag(c, sx, sy, sx < 540 ? sx + 220 : sx - 220, sy < 760 ? Math.min(900, sy + 220) : 600, [["SATÉLITE GPS · 20.200 km", corr > 0.5 ? PAUSA.AZUL : PAUSA.LARANJA], [corr > 0.5 ? "−38 µs/dia" : "+38 µs/dia", "#fff"]], { a: PAUSA.vis(t, 4.6, 9.22), cor: corr > 0.5 ? PAUSA.AZUL : PAUSA.LARANJA });
+          if (ok && sx > 20 && sx < 1060 && sy > 200 && sy < 1800) PAUSA.tag(c, sx, sy, sx < 540 ? sx + 220 : sx - 220, sy < 760 ? Math.min(900, sy + 220) : 600, [["SATÉLITE GPS · 20.200 km", corr > 0.5 ? PAUSA.AZUL : PAUSA.LARANJA], [corr > 0.5 ? "−38 µs/dia" : "+38 µs/dia", "#fff"]], { a: PAUSA.vis(t, 4.6, 9.22), cor: corr > 0.5 ? PAUSA.AZUL : PAUSA.LARANJA });
           PAUSA.texto(c, "FORA DE ESCALA", 1000, 1560, { a: v * 0.6, cor: "#9fb3c8", tam: 20, alinha: "right", esp: 0.3 });
         }
