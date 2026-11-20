@@ -28,7 +28,7 @@
   </div>
   <script>
     (function () {
-      const CAPS = [[0.2, "O SUPERPODER"], [10.38, "O FILTRO"], [35.81, "A MULTIDÃO"], [49.28, "O BARULHO"], [58.04, "O SILÊNCIO"]], HUD = [{"rotulo": "MENTES OUVIDAS", "fmt": "int", "keys": [[0, 0], [2.3, 46], [39.1, 46], [41.3, 80000]], "max": 80000, "alerta": [[41.3, 49.3]], "de": 0.4}, {"rotulo": "VOZES SIMULTÂNEAS", "fmt": "int", "keys": [[25.97, 1], [28.2, 2], [28.7, 3]], "max": 3, "alerta": [[28.7, 31.86]], "de": 25.97, "ate": 35.81}, {"rotulo": "MENTE DIVAGANDO", "unid": "%", "fmt": "int", "keys": [[42.44, 0], [44.3, 47]], "max": 100, "alerta": [[44.3, 49.28]], "de": 42.44, "ate": 58.04}], D = 75.02;
+      const CAPS = [[0.2, "O SUPERPODER"], [10.38, "O FILTRO"], [35.81, "A MULTIDÃO"], [49.28, "O BARULHO"], [58.04, "O SILÊNCIO"]], HUD = [{"rotulo": "MENTES OUVIDAS", "fmt": "int", "keys": [[0, 0], [2.3, 46], [39.1, 46], [41.3, 80000]], "max": 80000, "alerta": [[41.3, 49.3]], "de": 0.4, "ate": 58.04}, {"rotulo": "VOZES SIMULTÂNEAS", "fmt": "int", "keys": [[25.97, 1], [28.2, 2], [28.7, 3]], "max": 3, "alerta": [[28.7, 31.86]], "de": 25.97, "ate": 35.81}, {"rotulo": "MENTE DIVAGANDO", "unid": "%", "fmt": "int", "keys": [[42.44, 0], [44.3, 47]], "max": 100, "alerta": [[44.3, 49.28]], "de": 42.44, "ate": 58.04}], D = 75.02;
       const $ = (id) => document.getElementById(id);
       const val = (h, t) => {
         const k = h.keys; if (h.fmt === "texto") { let s = k[0][1]; for (const [a, b] of k) if (t >= a) s = b; return s; }
