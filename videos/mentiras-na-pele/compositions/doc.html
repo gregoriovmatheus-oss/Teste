@@ -28,7 +28,7 @@
   </div>
   <script>
     (function () {
-      const CAPS = [[0.2, "A MARCA"], [12.12, "A CONTA"], [32.37, "OS DETECTORES"], [55.16, "O MUNDO EXPOSTO"], [63.67, "A ESCOLHA"]], HUD = [{"rotulo": "MARCAS NA PELE", "fmt": "int", "keys": [[2.6, 0], [4.4, 1], [17.9, 45], [60.4, 47], [63.2, 49]], "max": 60, "alerta": [[9.9, 11.5]], "de": 2.6}, {"rotulo": "DETECÇÃO HUMANA", "unid": "%", "fmt": "int", "keys": [[37.8, 0], [38.4, 54]], "max": 100, "alerta": [[37.8, 41.0]], "de": 34.3}, {"rotulo": "MUDANÇA DE COR (LULA)", "unid": "s", "fmt": "f2", "keys": [[50.77, 0], [51.25, 0.48]], "max": 0.5, "alerta": [[51.25, 53.1]], "de": 50.6}], D = 75.3;
+      const CAPS = [[0.2, "A MARCA"], [12.12, "A CONTA"], [32.37, "OS DETECTORES"], [55.16, "O MUNDO EXPOSTO"], [63.67, "A ESCOLHA"]], HUD = [{"rotulo": "MARCAS NA PELE", "fmt": "int", "keys": [[2.6, 0], [4.4, 1], [17.9, 45], [60.4, 47], [63.2, 49]], "max": 60, "alerta": [[9.9, 11.5]], "de": 2.6}, {"rotulo": "DETECÇÃO HUMANA", "unid": "%", "fmt": "int", "keys": [[37.8, 0], [38.4, 54]], "max": 100, "alerta": [[37.8, 41.0]], "de": 34.3, "ate": 46.0}, {"rotulo": "MUDANÇA DE COR (LULA)", "unid": "s", "fmt": "f2", "keys": [[50.77, 0], [51.25, 0.48]], "max": 0.5, "alerta": [[51.25, 53.1]], "de": 50.6, "ate": 55.16}], D = 75.3;
       const $ = (id) => document.getElementById(id);
       const val = (h, t) => {
         const k = h.keys; if (h.fmt === "texto") { let s = k[0][1]; for (const [a, b] of k) if (t >= a) s = b; return s; }
