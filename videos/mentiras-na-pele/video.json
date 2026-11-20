@@ -1,0 +1,116 @@
+{
+  "slug": "mentiras-na-pele",
+  "ref": "R09",
+  "duracao": 75.3,
+  "duracao_fixa": null,
+  "narracao": {
+    "arquivo": "assets/audio/narracao.mp3"
+  },
+  "cenas": [
+    {
+      "id": "f01",
+      "palavra": "Você diz:",
+      "inicio": 0,
+      "fim": 4.39
+    },
+    {
+      "id": "f02",
+      "palavra": "Neste mundo,",
+      "inicio": 4.39,
+      "fim": 12.12
+    },
+    {
+      "id": "f03",
+      "palavra": "Quantas marcas",
+      "inicio": 12.12,
+      "fim": 18.61
+    },
+    {
+      "id": "f04",
+      "palavra": "Mas a",
+      "inicio": 18.61,
+      "fim": 28.54
+    },
+    {
+      "id": "f05",
+      "palavra": "A maioria",
+      "inicio": 28.54,
+      "fim": 32.37
+    },
+    {
+      "id": "f06",
+      "palavra": "Hoje, quase",
+      "inicio": 32.37,
+      "fim": 41.08
+    },
+    {
+      "id": "f07",
+      "palavra": "Nem o",
+      "inicio": 41.08,
+      "fim": 45.64
+    },
+    {
+      "id": "f08",
+      "palavra": "O corpo",
+      "inicio": 45.64,
+      "fim": 50.12
+    },
+    {
+      "id": "f09",
+      "palavra": "Já a",
+      "inicio": 50.12,
+      "fim": 55.16
+    },
+    {
+      "id": "f10",
+      "palavra": "Políticos, vendedores,",
+      "inicio": 55.16,
+      "fim": 60.35
+    },
+    {
+      "id": "f11",
+      "palavra": "Mas também",
+      "inicio": 60.35,
+      "fim": 63.67
+    },
+    {
+      "id": "f12",
+      "palavra": "Talvez as",
+      "inicio": 63.67,
+      "fim": 68.23
+    },
+    {
+      "id": "f13",
+      "palavra": "Uma pele",
+      "inicio": 68.23,
+      "fim": 75.3
+    }
+  ],
+  "hud": {
+    "inicio": 0.5,
+    "fim": 6,
+    "rotulo": "O CALOR VOLTA EM",
+    "linha2": "AR −273 °C",
+    "contador": {
+      "de": 5,
+      "ate": 0,
+      "fim": 5.5,
+      "unidade": "s",
+      "casas": 2
+    }
+  },
+  "legendas": {
+    "juntar": [],
+    "numeros": {},
+    "ocultar": []
+  },
+  "trilha": {
+    "arquivo": "assets/audio/trilha.mp3",
+    "volume": 0.12
+  },
+  "sfx": [],
+  "doc": {
+    "capitulos": [],
+    "hud": []
+  }
+}

@@ -1,0 +1,116 @@
+{
+  "slug": "pensamentos-de-todos",
+  "ref": "R09",
+  "duracao": 75.02,
+  "duracao_fixa": null,
+  "narracao": {
+    "arquivo": "assets/audio/narracao.mp3"
+  },
+  "cenas": [
+    {
+      "id": "f01",
+      "palavra": "Você entra",
+      "inicio": 0,
+      "fim": 5.27
+    },
+    {
+      "id": "f02",
+      "palavra": "No começo,",
+      "inicio": 5.27,
+      "fim": 10.38
+    },
+    {
+      "id": "f03",
+      "palavra": "Mas a",
+      "inicio": 10.38,
+      "fim": 19.08
+    },
+    {
+      "id": "f04",
+      "palavra": "Seu cérebro",
+      "inicio": 19.08,
+      "fim": 25.97
+    },
+    {
+      "id": "f05",
+      "palavra": "Só que",
+      "inicio": 25.97,
+      "fim": 31.86
+    },
+    {
+      "id": "f06",
+      "palavra": "E a",
+      "inicio": 31.86,
+      "fim": 35.81
+    },
+    {
+      "id": "f07",
+      "palavra": "Num vagão",
+      "inicio": 35.81,
+      "fim": 42.44
+    },
+    {
+      "id": "f08",
+      "palavra": "E quase",
+      "inicio": 42.44,
+      "fim": 49.28
+    },
+    {
+      "id": "f09",
+      "palavra": "Você ouviria",
+      "inicio": 49.28,
+      "fim": 54.61
+    },
+    {
+      "id": "f10",
+      "palavra": "E o",
+      "inicio": 54.61,
+      "fim": 58.04
+    },
+    {
+      "id": "f11",
+      "palavra": "Aos poucos,",
+      "inicio": 58.04,
+      "fim": 63.66
+    },
+    {
+      "id": "f12",
+      "palavra": "E talvez",
+      "inicio": 63.66,
+      "fim": 67.77
+    },
+    {
+      "id": "f13",
+      "palavra": "Talvez o",
+      "inicio": 67.77,
+      "fim": 75.02
+    }
+  ],
+  "hud": {
+    "inicio": 0.5,
+    "fim": 6,
+    "rotulo": "O CALOR VOLTA EM",
+    "linha2": "AR −273 °C",
+    "contador": {
+      "de": 5,
+      "ate": 0,
+      "fim": 5.5,
+      "unidade": "s",
+      "casas": 2
+    }
+  },
+  "legendas": {
+    "juntar": [],
+    "numeros": {},
+    "ocultar": []
+  },
+  "trilha": {
+    "arquivo": "assets/audio/trilha.mp3",
+    "volume": 0.12
+  },
+  "sfx": [],
+  "doc": {
+    "capitulos": [],
+    "hud": []
+  }
+}

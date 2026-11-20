@@ -1,0 +1,116 @@
+{
+  "slug": "animais-inteligentes",
+  "ref": "R09",
+  "duracao": 77.32,
+  "duracao_fixa": null,
+  "narracao": {
+    "arquivo": "assets/audio/narracao.mp3"
+  },
+  "cenas": [
+    {
+      "id": "f01",
+      "palavra": "Um corvo",
+      "inicio": 0,
+      "fim": 4.79
+    },
+    {
+      "id": "f02",
+      "palavra": "Agora imagine:",
+      "inicio": 4.79,
+      "fim": 9.61
+    },
+    {
+      "id": "f03",
+      "palavra": "Cérebro grande",
+      "inicio": 9.61,
+      "fim": 19.2
+    },
+    {
+      "id": "f04",
+      "palavra": "Os corvos",
+      "inicio": 19.2,
+      "fim": 25.74
+    },
+    {
+      "id": "f05",
+      "palavra": "Os golfinhos",
+      "inicio": 25.74,
+      "fim": 30.78
+    },
+    {
+      "id": "f06",
+      "palavra": "O polvo",
+      "inicio": 30.78,
+      "fim": 37.57
+    },
+    {
+      "id": "f07",
+      "palavra": "Com uma",
+      "inicio": 37.57,
+      "fim": 41.9
+    },
+    {
+      "id": "f08",
+      "palavra": "E fariam",
+      "inicio": 41.9,
+      "fim": 46.12
+    },
+    {
+      "id": "f09",
+      "palavra": "Hoje, 60%",
+      "inicio": 46.12,
+      "fim": 54.19
+    },
+    {
+      "id": "f10",
+      "palavra": "Existem mais",
+      "inicio": 54.19,
+      "fim": 59.59
+    },
+    {
+      "id": "f11",
+      "palavra": "Fazendas, zoológicos",
+      "inicio": 59.59,
+      "fim": 63.84
+    },
+    {
+      "id": "f12",
+      "palavra": "Os cães,",
+      "inicio": 63.84,
+      "fim": 69.74
+    },
+    {
+      "id": "f13",
+      "palavra": "Talvez a",
+      "inicio": 69.74,
+      "fim": 77.32
+    }
+  ],
+  "hud": {
+    "inicio": 0.5,
+    "fim": 6,
+    "rotulo": "O CALOR VOLTA EM",
+    "linha2": "AR −273 °C",
+    "contador": {
+      "de": 5,
+      "ate": 0,
+      "fim": 5.5,
+      "unidade": "s",
+      "casas": 2
+    }
+  },
+  "legendas": {
+    "juntar": [],
+    "numeros": {},
+    "ocultar": []
+  },
+  "trilha": {
+    "arquivo": "assets/audio/trilha.mp3",
+    "volume": 0.12
+  },
+  "sfx": [],
+  "doc": {
+    "capitulos": [],
+    "hud": []
+  }
+}

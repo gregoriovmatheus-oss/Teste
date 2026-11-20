@@ -1,0 +1,116 @@
+{
+  "slug": "copia-de-voce",
+  "ref": "R09",
+  "duracao": 71.18,
+  "duracao_fixa": null,
+  "narracao": {
+    "arquivo": "assets/audio/narracao.mp3"
+  },
+  "cenas": [
+    {
+      "id": "f01",
+      "palavra": "Você acorda,",
+      "inicio": 0,
+      "fim": 3.42
+    },
+    {
+      "id": "f02",
+      "palavra": "Mesmo rosto,",
+      "inicio": 3.42,
+      "fim": 8.86
+    },
+    {
+      "id": "f03",
+      "palavra": "Seu corpo",
+      "inicio": 8.86,
+      "fim": 14.42
+    },
+    {
+      "id": "f04",
+      "palavra": "Então, quem",
+      "inicio": 14.42,
+      "fim": 18.62
+    },
+    {
+      "id": "f05",
+      "palavra": "O navio",
+      "inicio": 18.62,
+      "fim": 23.03
+    },
+    {
+      "id": "f06",
+      "palavra": "Você já",
+      "inicio": 23.03,
+      "fim": 30.08
+    },
+    {
+      "id": "f07",
+      "palavra": "Mas os",
+      "inicio": 30.08,
+      "fim": 35.02
+    },
+    {
+      "id": "f08",
+      "palavra": "E as",
+      "inicio": 35.02,
+      "fim": 41.43
+    },
+    {
+      "id": "f09",
+      "palavra": "Gêmeos idênticos",
+      "inicio": 41.43,
+      "fim": 47.14
+    },
+    {
+      "id": "f10",
+      "palavra": "Com a",
+      "inicio": 47.14,
+      "fim": 53.0
+    },
+    {
+      "id": "f11",
+      "palavra": "Mas quem",
+      "inicio": 53.0,
+      "fim": 55.86
+    },
+    {
+      "id": "f12",
+      "palavra": "O filósofo",
+      "inicio": 55.86,
+      "fim": 63.09
+    },
+    {
+      "id": "f13",
+      "palavra": "Se os",
+      "inicio": 63.09,
+      "fim": 71.18
+    }
+  ],
+  "hud": {
+    "inicio": 0.5,
+    "fim": 6,
+    "rotulo": "O CALOR VOLTA EM",
+    "linha2": "AR −273 °C",
+    "contador": {
+      "de": 5,
+      "ate": 0,
+      "fim": 5.5,
+      "unidade": "s",
+      "casas": 2
+    }
+  },
+  "legendas": {
+    "juntar": [],
+    "numeros": {},
+    "ocultar": []
+  },
+  "trilha": {
+    "arquivo": "assets/audio/trilha.mp3",
+    "volume": 0.12
+  },
+  "sfx": [],
+  "doc": {
+    "capitulos": [],
+    "hud": []
+  }
+}

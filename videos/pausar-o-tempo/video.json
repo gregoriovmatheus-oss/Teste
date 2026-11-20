@@ -1,0 +1,116 @@
+{
+  "slug": "pausar-o-tempo",
+  "ref": "R09",
+  "duracao": 78.5,
+  "duracao_fixa": null,
+  "narracao": {
+    "arquivo": "assets/audio/narracao.mp3"
+  },
+  "cenas": [
+    {
+      "id": "f01",
+      "palavra": "Você estala",
+      "inicio": 0,
+      "fim": 4.14
+    },
+    {
+      "id": "f02",
+      "palavra": "Ninguém se",
+      "inicio": 4.14,
+      "fim": 9.57
+    },
+    {
+      "id": "f03",
+      "palavra": "E a",
+      "inicio": 9.57,
+      "fim": 16.1
+    },
+    {
+      "id": "f04",
+      "palavra": "O ar,",
+      "inicio": 16.1,
+      "fim": 24.05
+    },
+    {
+      "id": "f05",
+      "palavra": "E o",
+      "inicio": 24.05,
+      "fim": 28.17
+    },
+    {
+      "id": "f06",
+      "palavra": "Digamos que,",
+      "inicio": 28.17,
+      "fim": 33.48
+    },
+    {
+      "id": "f07",
+      "palavra": "Seu coração",
+      "inicio": 33.48,
+      "fim": 41.57
+    },
+    {
+      "id": "f08",
+      "palavra": "A vida",
+      "inicio": 41.57,
+      "fim": 47.87
+    },
+    {
+      "id": "f09",
+      "palavra": "Um dia",
+      "inicio": 47.87,
+      "fim": 53.92
+    },
+    {
+      "id": "f10",
+      "palavra": "Seus amigos",
+      "inicio": 53.92,
+      "fim": 58.98
+    },
+    {
+      "id": "f11",
+      "palavra": "E o",
+      "inicio": 58.98,
+      "fim": 68.2
+    },
+    {
+      "id": "f12",
+      "palavra": "Então, quanto",
+      "inicio": 68.2,
+      "fim": 70.91
+    },
+    {
+      "id": "f13",
+      "palavra": "Você estala",
+      "inicio": 70.91,
+      "fim": 78.5
+    }
+  ],
+  "hud": {
+    "inicio": 0.5,
+    "fim": 6,
+    "rotulo": "O CALOR VOLTA EM",
+    "linha2": "AR −273 °C",
+    "contador": {
+      "de": 5,
+      "ate": 0,
+      "fim": 5.5,
+      "unidade": "s",
+      "casas": 2
+    }
+  },
+  "legendas": {
+    "juntar": [],
+    "numeros": {},
+    "ocultar": []
+  },
+  "trilha": {
+    "arquivo": "assets/audio/trilha.mp3",
+    "volume": 0.12
+  },
+  "sfx": [],
+  "doc": {
+    "capitulos": [],
+    "hud": []
+  }
+}
