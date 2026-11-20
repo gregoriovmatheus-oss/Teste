@@ -74,8 +74,8 @@
           V.sync();
           st.bloom = 0.8;
           const e = ease.inOutCubic(range(t, 0, 5.31));
-          const a = lerp(2.4, 3.6, e), d = lerp(3.2, 7.5, e);
-          cam.position.set(px + Math.sin(a) * d, lerp(0.35, 9.5, e), pz + Math.cos(a) * d);
+          const a = lerp(2.4, 3.6, e), d = lerp(3.2, 8.5, e);
+          cam.position.set(px + Math.sin(a) * d, lerp(0.35, 6.2, e), pz + Math.cos(a) * d);
           cam.lookAt(px, lerp(1.6, 0.8, e), pz);
           st.sol(0, 20, 50);
           st.draw(S, cam, { cor: "#000000", a: 1 - luz });

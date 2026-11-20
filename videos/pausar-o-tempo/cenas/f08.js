@@ -1,10 +1,10 @@
-/*META {"imports": ["pausa"], "rotulos": [{"de": 2.2, "ate": 3.9, "texto": "<span class=\"k\">VIDA MÉDIA NO PLANETA</span><br><span class=\"y\">73 anos</span>"}], "D0": 6.3} */
+/*META {"imports": ["pausa"], "rotulos": [{"de": 2.2, "ate": 4.15, "texto": "<span class=\"k\">VIDA MÉDIA NO PLANETA</span><br><span class=\"y\">73 anos</span>"}], "D0": 6.3} */
         // f08 — 73 anos ≈ 26.700 dias: uma parede de pontos, 1 coluna = 1 ano (366 linhas). Os dias acendem em ordem
         //       enquanto a câmera recua do primeiro dia até revelar a vida inteira.
         const st = T.createToyStage(canvas, { fov: 40, ceu: ["#04060c", "#0b1120"], nevoa: null, nuvens: 0, exposicao: 1.1 });
         const S = st.scene, cam = st.cam;
         st.key.castShadow = false;
-        const COL = 73, LIN = 366, N = 26700, sp = 0.12, G = PAUSA.pontos(S, N, { tam: 1, atenua: 300 });
+        const COL = 73, LIN = 366, N = 26700, sp = 0.12, G = PAUSA.pontos(S, N, { tam: 1, atenua: 3000 });
         const x0 = -(COL - 1) * sp / 2, y0 = -(LIN - 1) * sp / 2;
         for (let i = 0; i < N; i++) { const cx = Math.floor(i / LIN), ly = i % LIN; G.P.set([x0 + cx * sp, y0 + ly * sp, 0], i * 3); G.Z[i] = 0.075; }
         const ch = PAUSA.chuva(S, { n: 1600, seed: 88, caixa: [-30, 30, -30, 30, -40, 20], tam: 2 }); ch.update(1.17, 1); ch.mat.uniforms.uA.value = 0.35;

@@ -64,7 +64,7 @@
           P.setIdade(idade); P.pose(t, { cabeca: -0.05 });
           st.bloom = 0.7;
           const e = ease.inOutSine(range(t, 0, 5.06)), push = ease.inOutCubic(range(t, 2.6, 5.06));
-          const a = lerp(-1.9, -0.75, e) + 0.0, d = lerp(5.8, 1.15, push);
+          const a = lerp(-2.9, -1.7, e), d = lerp(5.8, 1.9, push);
           const hy = lerp(1.7, 1.66 - 0.12 * idade, push);
           cam.position.set(px + Math.sin(a) * d, lerp(2.3, 1.72, push), pz + Math.cos(a) * d);
           cam.lookAt(px, lerp(1.25, hy, push), pz);

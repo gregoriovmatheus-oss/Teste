@@ -1,7 +1,7 @@
-"""sfx-local.py: efeitos sintetizados localmente (sem API) para "humanos somem 100 anos".
-Whoosh em cada corte; brilho subindo quando as pessoas somem (f01) e reaparecem (f11); estalos da rede caindo (f03);
-água correndo no metrô (f04); asfalto rachando (f05); uivo (f06); concreto trincando (f07); telhado e ponte caindo (f08);
-rumor da represa (f09); cortina (f13) e respiro grave no fim (f14). Saída: assets/audio/sfx.wav (mono 48 kHz)."""
+"""sfx-local.py: efeitos sintetizados localmente (sem API) para "mentiras na pele".
+Whoosh em cada corte; chiado + brilho quando cada marca nasce na pele (f01, f02, f05, f10, f11); carimbos do calendário (f03);
+anéis e fichas empilhando (f04); varredura e moeda (f06); papel e agulhas do polígrafo (f07); coração e sangue (f08);
+mar e virada de cor da lula (f09); vento e casacos (f12); respiro grave no fim (f13). Saída: assets/audio/sfx.wav (mono 48 kHz)."""
 import json, numpy as np, wave
 SR = 48000
 v = json.load(open('video.json')); DUR = v['duracao']
@@ -56,53 +56,76 @@ def env(sig, a=0.3, r=0.6):
     n = len(sig); e = np.ones(n); na, nr = int(SR * a), int(SR * r)
     e[:na] = np.linspace(0, 1, na); e[n - nr:] = np.linspace(1, 0, nr); return sig * e
 
+def chiado(d=0.9):  # marca nascendo: ruído agudo que acende e esfria
+    n = int(SR * d); k = np.linspace(0, 1, n)
+    x = rng.standard_normal(n); x = x - lp(x, 0.2)
+    return x * np.sin(np.pi * k) ** 0.6 * (1 - k) * 0.6
+def moeda(d=2.5):  # anel metálico
+    n = int(SR * d); k = np.arange(n) / SR; s = np.zeros(n)
+    for f, a in [(2093, 1), (3520, 0.6), (5274, 0.4), (6645, 0.25)]:
+        s += a * np.sin(2 * np.pi * f * k) * np.exp(-k * (1.2 + f / 4000))
+    return s / 2.2
+def bip(f=1200, d=0.08):
+    n = int(SR * d); k = np.arange(n) / SR
+    return np.sin(2 * np.pi * f * k) * np.sin(np.pi * k / d)
+def coracao():
+    return thud(55, 0.35) + np.concatenate([np.zeros(int(SR * 0.16)), thud(48, 0.35)])[: int(SR * 0.35)] * 0.8
+
 # cortes
 for c in v['cenas'][1:]:
     add(c['inicio'] - 0.38, whoosh(), 0.5)
-# f01: mergulho da órbita (whoosh longo), piscar e pessoas virando poeira de luz em câmera lenta
-add(C['f01'] + 1.2, whoosh(1.0), 0.45)
-add(C['f01'] + 3.05, shimmer(1.8, True), 0.35)
-add(C['f01'] + 3.1, thud(55, 1.0), 0.35)
-# f02: semáforo trocando (clique seco) no silêncio
-for dt in [1.3, 3.3, 4.0]:
-    add(C['f02'] + dt, clique(0.1, 900), 0.15)
-# f03: rede caindo: zumbido morrendo + estalos de cada prédio apagando
-add(C['f03'] + 3.2, zumbido_cai(3.0), 0.5)
+# f01: a mancha nasce no pulso (câmera lenta)
+add(C['f01'] + 2.5, chiado(1.6), 0.45)
+add(C['f01'] + 2.55, shimmer(1.8, True), 0.3)
+add(C['f01'] + 2.6, thud(50, 1.2), 0.4)
+# f02: marcas pequenas (3 estalinhos) e a grande tomando o corpo
+for dt in [3.59, 4.16, 4.62]:
+    add(C['f02'] + dt, chiado(0.4), 0.3); add(C['f02'] + dt, clique(0.08, 1600), 0.12)
+add(C['f02'] + 5.4, env(chiado(2.0), 0.6, 0.6), 0.45)
+add(C['f02'] + 5.45, env(thud(42, 2.0), 0.4, 1.0), 0.45)
+# f03: carimbos das marcas no calendário
 r = np.random.default_rng(3)
-for dt in np.sort(r.uniform(3.3, 6.1, 14)):
-    add(C['f03'] + dt, clique(0.12, 120 + r.uniform(0, 80)), 0.35)
-# f04: goteiras e, sem as bombas, a água correndo forte
-for dt in np.arange(0.3, 7.4, 0.37):
-    add(C['f04'] + dt + r.uniform(0, 0.15), clique(0.05, 1400 + r.uniform(0, 900)), 0.08)
-add(C['f04'] + 0.5, env(agua(5.6, 0.05), 1.0, 0.4), 0.12)
-add(C['f04'] + 6.1, env(agua(1.5, 0.2), 0.3, 0.4), 0.4)
-for i in range(5):
-    add(C['f04'] + 6.12 + i * 0.12, clique(0.1, 300), 0.2)
-# f05: asfalto rachando (estalos em rajada)
-for dt in np.sort(r.uniform(1.6, 3.0, 22)):
-    add(C['f05'] + dt, estalo(), 0.25)
-# f06: uivo distante quando chegam os outros lobos
-add(C['f06'] + 3.2, uivo(1.8), 0.22)
-# f07: concreto trincando
-add(C['f07'] + 4.6, thud(90, 0.5), 0.4)
-for dt in np.sort(r.uniform(4.6, 5.5, 14)):
-    add(C['f07'] + dt, estalo(), 0.22)
-# f08: telhado cai, ponte desaba e respingo
-add(C['f08'] + 1.25, thud(60, 0.8), 0.7)
-add(C['f08'] + 2.6, estalo(), 0.3)
-add(C['f08'] + 3.15, thud(50, 0.8), 0.7)
-add(C['f08'] + 3.15, env(agua(0.7, 0.3), 0.02, 0.5), 0.35)
-# f09: rumor da represa (vertedouro)
-add(C['f09'], env(agua(4.4, 0.04), 0.4, 0.6), 0.25)
-# f11: flash do retorno
-add(C['f11'] + 0.55, whoosh(0.5), 0.5)
-add(C['f11'] + 0.7, shimmer(1.2, False), 0.4)
-add(C['f11'] + 0.72, thud(48, 1.2), 0.45)
-# f13: cortina passando
-add(C['f13'] + 0.3, whoosh(2.8), 0.3)
-# f14: corte para o espaço e respiro grave
-add(C['f14'] + 3.1, whoosh(0.7), 0.45)
-add(C['f14'] + 3.3, env(thud(40, 3.0), 0.05, 2.0), 0.4)
+for i in range(30):
+    add(C['f03'] + 2.0 + 4.2 * i / 30 + r.uniform(0, 0.03), clique(0.09, 220 + r.uniform(0, 80)), 0.22)
+# f04: anéis azuis (60%), 5% cobertos, fichas empilhando
+add(C['f04'] + 2.45, shimmer(1.2, True), 0.25)
+add(C['f04'] + 6.0, thud(50, 0.9), 0.45); add(C['f04'] + 6.0, chiado(1.0), 0.35)
+for i in range(24):
+    add(C['f04'] + 7.55 + i * 0.06, clique(0.05, 2200 + r.uniform(0, 600)), 0.1)
+# f05: três mentiras sociais, três marcas
+for dt in [1.76, 2.37, 3.02]:
+    add(C['f05'] + dt + 0.15, chiado(0.5), 0.3)
+# f06: varredura que não acha nada e a moeda girando
+for i in range(8):
+    add(C['f06'] + 2.0 + i * 0.2, bip(1400, 0.06), 0.08)
+add(C['f06'] + 4.35, moeda(3.5), 0.3)
+add(C['f06'] + 7.55, bip(900, 0.15), 0.12)
+# f07: papel correndo e agulhas; "não mede a mentira"
+add(C['f07'], env(agua(4.5, 0.5), 0.2, 0.3), 0.05)
+for dt in np.arange(0.2, 4.4, 0.21):
+    add(C['f07'] + dt, clique(0.03, 3000), 0.04)
+add(C['f07'] + 3.48, thud(45, 0.9), 0.45)
+# f08: coração batendo e os vasos se dilatando
+for dt in np.arange(0.2, 4.3, 0.75):
+    add(C['f08'] + dt, coracao(), 0.3)
+add(C['f08'] + 3.6, env(agua(0.9, 0.08), 0.3, 0.4), 0.3)
+# f09: fundo do mar, a lula muda de cor (0,65 s) e o corte para o braço
+add(C['f09'], env(agua(3.1, 0.015), 0.3, 0.5), 0.35)
+add(C['f09'] + 0.65, shimmer(0.6, False), 0.3)
+# f10: rua; marcas acendendo e a letra miúda
+add(C['f10'], env(agua(5.1, 0.03), 0.4, 0.4), 0.18)
+for dt in [0.1, 0.69, 1.34]:
+    add(C['f10'] + dt, chiado(0.6), 0.3)
+add(C['f10'] + 3.06, shimmer(1.0, True), 0.25)
+# f11: duas mentirinhas, duas marcas
+for dt in [1.74, 2.8]:
+    add(C['f11'] + dt, chiado(0.5), 0.35); add(C['f11'] + dt, clique(0.08, 1600), 0.12)
+# f12: vento na praça e casacos fechando
+add(C['f12'], env(agua(4.5, 0.02), 0.6, 0.6), 0.2)
+add(C['f12'] + 3.9, env(agua(0.5, 0.3), 0.05, 0.3), 0.25)
+# f13: corte para a pessoa e respiro grave no fim
+add(C['f13'] + 2.9, whoosh(0.6), 0.4)
+add(C['f13'] + 3.48, env(thud(40, 3.0), 0.05, 2.0), 0.4)
 
 out = out[: int(SR * DUR)]
 out = np.tanh(out * 1.2) * 0.8

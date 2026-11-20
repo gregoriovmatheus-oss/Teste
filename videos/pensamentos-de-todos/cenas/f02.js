@@ -1,5 +1,5 @@
 /*META {"imports": ["mente"], "rotulos": [{"de": 1.2, "ate": 3.05, "texto": "<span class=\"k\">NO COMEÇO</span><br>Parece um <span class=\"y\">superpoder</span>"}], "D0": 5.11} */
-        const st = T.createToyStage(canvas, { fov: 42, ceu: ["#05070d", "#0b0f18"], nevoa: [5, 22], corNevoa: "#0b0f18", nuvens: 0, exposicao: 0.95 });
+        const st = T.createToyStage(canvas, { fov: 50, ceu: ["#05070d", "#0b0f18"], nevoa: [5, 22], corNevoa: "#0b0f18", nuvens: 0, exposicao: 0.95 });
         const S = st.scene, cam = st.cam;
         const v = MENTE.vagao(S, st, { len: 20 });
         const L = MENTE.lugaresVagao({ len: 20, seed: 21, sent: 0.7, emPe: 3 });
@@ -21,8 +21,8 @@
           st.bloom = 0.7;
           // grua: do teto, em diagonal, descendo até a altura dos olhos de quem está em pé
           const e = ease.inOutSine(range(t, 0, 5.11));
-          cam.position.set(lerp(2.6, -1.4, e), lerp(2.15, 1.55, e), lerp(1.25, 1.0, e));
-          cam.lookAt(lerp(0.2, 0.1, e), lerp(0.9, 1.25, e), -1.15);
+          cam.position.set(lerp(3.4, -2.0, e), lerp(2.2, 1.7, e), 1.3);
+          cam.lookAt(lerp(0.8, -0.2, e), lerp(1.0, 1.25, e), -1.15);
           st.sol(0, 0, 12, 2);
           st.draw();
           const c = st.ctx, vv = MENTE.vis(st); MENTE.quadro();

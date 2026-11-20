@@ -46,7 +46,7 @@
         const D = D0;   // o corpo trabalha no tempo de autoria
         const canvas = document.getElementById("f01-canvas");
 
-        const st = T.createToyStage(canvas, { fov: 44, ceu: ["#05070d", "#0b0f18"], nevoa: [6, 24], corNevoa: "#0b0f18", nuvens: 0 });
+        const st = T.createToyStage(canvas, { fov: 44, ceu: ["#05070d", "#0b0f18"], nevoa: [6, 24], corNevoa: "#0b0f18", nuvens: 0, exposicao: 0.9 });
         const S = st.scene, cam = st.cam;
         const v = MENTE.vagao(S, st, { len: 20 });
         const L = MENTE.lugaresVagao({ len: 20, seed: 11, sent: 0.62, emPe: 7 });
@@ -74,7 +74,7 @@
           cam.lookAt(lerp(1, -4, e), lerp(1.5, 1.4, e), lerp(-0.25, 0.2, e));
           st.sol(0, 0, 14, 2);
           st.draw();
-          const c = st.ctx, vv = MENTE.vis(st);
+          const c = st.ctx, vv = MENTE.vis(st); MENTE.quadro();
           FR.forEach(([s, t0], k) => {
             const i = ord[k % ord.length]; if (i === undefined) return;
             const a = range(t, t0, t0 + 0.25) * vv;

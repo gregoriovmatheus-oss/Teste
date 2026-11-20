@@ -11,11 +11,11 @@
         const G = PELE.multidao(S, { pos, seed: 1012 });
         pos.forEach((p, i) => G.marca(i, 0.15 + 0.75 * Math.pow(R(), 1.6)));
         // político no palanque (genérico), vendedor na banca e outdoor
-        const pal = new THREE.Mesh(T.roundBox(3.2, 1.0, 2.2, 0.08), T.M(0x2a3550, 0.6)); pal.position.set(-6.8, 0.4, -6); S.add(pal);
-        const pult = new THREE.Mesh(T.roundBox(0.9, 1.15, 0.5, 0.05), T.M(0x6b5a48, 0.5)); pult.position.set(-6.8, 1.4, -5.2); S.add(pult);
+        const pal = new THREE.Mesh(T.roundBox(3.2, 1.0, 2.2, 0.08), T.M(0x2a3550, 0.6)); pal.position.set(-5.2, 0.4, -10); S.add(pal);
+        const pult = new THREE.Mesh(T.roundBox(0.9, 1.15, 0.5, 0.05), T.M(0x6b5a48, 0.5)); pult.position.set(-5.2, 1.4, -9.2); S.add(pult);
         const pol = PELE.corpo({ cor: 0x1e2230, cor2: 0x1e2230, cabelo: 0x8a8076, pele: 0xe0a87e, esc: 12 });
-        pol.group.position.set(-6.8, 0.9, -5.75); pol.group.rotation.y = 0.5; S.add(pol.group);
-        const banca = new THREE.Group(); banca.position.set(6.6, 0.4, -14); banca.rotation.y = -0.6; S.add(banca);
+        pol.group.position.set(-5.2, 0.9, -9.75); pol.group.rotation.y = 0.5; S.add(pol.group);
+        const banca = new THREE.Group(); banca.position.set(4.8, 0.4, -18); banca.rotation.y = -0.6; S.add(banca);
         const tb = new THREE.Mesh(T.roundBox(3.4, 1.0, 1.4, 0.05), T.M(0x8a5a3a, 0.7)); banca.add(tb);
         const tol = new THREE.Mesh(new THREE.BoxGeometry(3.8, 0.08, 1.9), T.M(0xd9583b, 0.8)); tol.position.y = 2.6; banca.add(tol);
         for (const s of [-1, 1]) { const pa = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 2.6, 6), T.M(0x333333, 0.5)); pa.position.set(s * 1.75, 1.3, 0.8); banca.add(pa); }
@@ -25,7 +25,7 @@
         // outdoor: canvas com propaganda genérica e letra miúda
         const CW = 1024, CH = 600, cv = document.createElement("canvas"); cv.width = CW; cv.height = CH; const g = cv.getContext("2d");
         const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace;
-        const out = new THREE.Group(); out.position.set(-6.5, 0, -28); out.rotation.y = 0.35; S.add(out);
+        const out = new THREE.Group(); out.position.set(-5.5, 0, -32); out.rotation.y = 0.35; S.add(out);
         const tela = new THREE.Mesh(new THREE.PlaneGeometry(8, 4.7), new THREE.MeshStandardMaterial({ map: tex, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: 0.55, roughness: 0.6 })); tela.position.y = 6.4; out.add(tela);
         const moldura = new THREE.Mesh(new THREE.BoxGeometry(8.3, 5.0, 0.2), T.M(0x22252b, 0.5)); moldura.position.set(0, 6.4, -0.12); out.add(moldura);
         const poste = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.22, 4.2, 10), T.M(0x22252b, 0.5)); poste.position.y = 2.1; out.add(poste);
@@ -55,7 +55,7 @@
           outdoor(t);
           // travelling pela rua ao entardecer, terminando colado na letra miúda do outdoor
           const e = ease.inOutSine(range(t, 0, 5.19)), f = ease.inOutCubic(range(t, 2.6, 4.6));
-          cam.position.set(lerp(0.5, -2.6, e), lerp(4.6, 5.2, e), lerp(12, -14, e));
+          cam.position.set(lerp(0.3, -2.4, e), lerp(4.2, 5.2, e), lerp(14, -16, e));
           const look = new THREE.Vector3(lerp(-0.8, 0, range(t, 0, 2.2)), 2.6, lerp(-14, -26, e));
           const fp = new THREE.Vector3(-1.0, -2.0, 0); tela.localToWorld(fp);
           look.lerp(fp, f); cam.lookAt(look);

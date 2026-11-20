@@ -70,7 +70,7 @@
             const [x, y, z, ph, f, mix] = CB[i], k = (ph + t * f) % 1, nova = Math.exp(-k * 18);
             CE.P.set([x, y, z], i * 3);
             const c = mix < 0.75 ? cA : cB; CE.C.set([lerp(c[0], 1, nova), lerp(c[1], 1, nova), lerp(c[2], 1, nova)], i * 3);
-            CE.Z[i] = 0.017 * (0.6 + 0.4 * Math.min(1, k * 8)) * (1 + nova * 0.8); CE.A[i] = corpo * (k > 0.88 ? (1 - k) / 0.12 : 1) * 0.7;
+            CE.Z[i] = 0.1 * (0.6 + 0.4 * Math.min(1, k * 8)) * (1 + nova * 0.8); CE.A[i] = corpo * (k > 0.88 ? (1 - k) / 0.12 : 1) * 0.7;
           }
           CE.sync();
           st.bloom = 0.75;

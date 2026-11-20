@@ -56,7 +56,7 @@
         const epi = camada(0.18, 1.71, 0xe2ad85, 0.5);
         const derme = camada(1.0, 1.12, 0xd98a7a, 0.75);
         const gord = camada(0.62, 0.31, 0xe9cf8e, 0.8);
-        derme.material.transparent = true; derme.material.opacity = 0.82;
+        derme.material.transparent = true; derme.material.opacity = 0.42; derme.material.depthWrite = false;
         // vasos sanguíneos ao longo de x (dentro da derme) + alças de capilares subindo até a superfície
         const mV = new THREE.MeshStandardMaterial({ color: 0xa31e22, roughness: 0.35, emissive: 0x5a0608, emissiveIntensity: 0.4 });
         const vasos = [[1.25, 0.9, 0.11], [0.85, 0.2, 0.15], [1.4, -0.75, 0.09], [0.95, -1.2, 0.12]].map(([y, z, r], i) => {

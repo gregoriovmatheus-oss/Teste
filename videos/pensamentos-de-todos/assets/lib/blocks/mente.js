@@ -262,7 +262,7 @@ export function txt(ctx, s, x, y, { tam = 40, cor = "#fff", fonte = "mono", peso
 const _pos = [];
 export function quadro() { _pos.length = 0; }   // chame uma vez por quadro, antes das frases
 // fragmento de pensamento: pílula escura com borda colorida, texto mono, fio fino até o ponto 3D
-export function frase(ctx, cam, v3, s, a, { cor = AZUL, tam = 30, dy = -40, dx = 0, esc = 1, rot = 0, ymin = 490, ymax = 995, linha = true } = {}) {
+export function frase(ctx, cam, v3, s, a, { cor = AZUL, tam = 30, dy = -40, dx = 0, esc = 1, rot = 0, ymin = 490, ymax = 995, linha = true, evita = null } = {}) {
   if (a <= 0.01) return;
   const [px, py, pz] = proj(v3, cam);
   if (pz > 1 || pz < -1) return;
@@ -276,6 +276,7 @@ export function frase(ctx, cam, v3, s, a, { cor = AZUL, tam = 30, dy = -40, dx =
     y = hit[1] + (y >= hit[1] ? 1 : -1) * ((hit[3] + h) / 2 + 8);
     if (y > ymax - h / 2 || y < ymin) { y = clamp(y, ymin, ymax - h / 2); x = clamp(hit[0] + (x >= hit[0] ? 1 : -1) * ((hit[2] + w) / 2 + 10), w / 2 + 24, 1080 - w / 2 - 24); }
   }
+  if (evita && y + h / 2 > evita[0] && y - h / 2 < evita[1]) y = y < (evita[0] + evita[1]) / 2 ? evita[0] - h / 2 : evita[1] + h / 2;
   _pos.push([x, y, w, h]);
   ctx.globalAlpha = Math.min(1, a);
   ctx.strokeStyle = cor; ctx.lineWidth = 2; ctx.globalAlpha = Math.min(1, a) * 0.6;
@@ -366,7 +367,7 @@ export function estadio(S, { n = 80000, seed = 77 } = {}) {
   const mat = new THREE.PointsMaterial({ map: glowTex(), size: 1.5, vertexColors: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false, fog: false });
   const pts = new THREE.Points(geo, mat); pts.frustumCulled = false; g.add(pts);
   // ondas: anéis saindo de lugares da torcida
-  const NR = 420, ring = new THREE.InstancedMesh(new THREE.RingGeometry(0.86, 1, 28), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide, toneMapped: false, fog: false }), NR);
+  const NR = 170, ring = new THREE.InstancedMesh(new THREE.RingGeometry(0.86, 1, 28), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide, toneMapped: false, fog: false }), NR);
   ring.frustumCulled = false; g.add(ring);
   const RI = Array.from({ length: NR }, () => [Math.floor(R() * n), R()]);
   // refletores
@@ -385,9 +386,9 @@ export function estadio(S, { n = 80000, seed = 77 } = {}) {
     }
     geo.attributes.color.needsUpdate = true;
     RI.forEach(([j, o], k) => {
-      const u = ((t * 0.8 + o) % 1 + 1) % 1, r = 0.5 + u * (5 + caos * 6);
+      const u = ((t * 0.8 + o) % 1 + 1) % 1, r = 0.5 + u * (3 + caos * 4);
       setM(ring, k, P0[j * 3], P0[j * 3 + 1] + 0.3, P0[j * 3 + 2], r, r, r, 0, -Math.PI / 2);
-      const e = onda * (1 - u) * 0.8, lar = k % 3 === 0 ? 1 : 0;
+      const e = onda * (1 - u) * 0.55, lar = k % 3 === 0 ? 1 : 0;
       ring.setColorAt(k, _c.setRGB(lerp(0.49, 1, lar) * e, lerp(0.78, 0.54, lar) * e, lerp(1, 0.3, lar) * e));
     });
     ring.instanceMatrix.needsUpdate = true; ring.instanceColor.needsUpdate = true;

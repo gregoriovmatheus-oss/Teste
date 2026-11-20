@@ -18,12 +18,17 @@
   <div id="root" data-composition-id="doc" data-width="1080" data-height="1920">
     <div id="chap"><span id="chapN">01</span><span id="chapT"></span></div>
     <div id="hud">
-
+    <div class="row" id="h0"><span class="lbl">NEURÔNIOS · BI</span><span class="val"><span id="h0v"></span> <span class="un"></span></span></div>
+    <div class="meter" id="h0m"><div id="h0b"></div></div>
+    <div class="row" id="h1"><span class="lbl">MAMÍFEROS · GADO %</span><span class="val"><span id="h1v"></span> <span class="un"></span></span></div>
+    <div class="meter" id="h1m"><div id="h1b"></div></div>
+    <div class="row" id="h2"><span class="lbl">GALINHAS · BI</span><span class="val"><span id="h2v"></span> <span class="un"></span></span></div>
+    <div class="meter" id="h2m"><div id="h2b"></div></div>
     </div>
   </div>
   <script>
     (function () {
-      const CAPS = [], HUD = [], D = 77.32;
+      const CAPS = [[0.2, "O CORVO"], [4.79, "O DESPERTAR"], [9.61, "AS MENTES"], [37.57, "A PERGUNTA"], [63.84, "O ESPELHO"]], HUD = [{"rotulo": "NEURÔNIOS · BI", "fmt": "f1", "keys": [[9.61, 0], [12.78, 0], [14.0, 257], [14.6, 257], [15.6, 86], [30.8, 86], [31.7, 0.5], [37.57, 0.5]], "max": 257, "alerta": [[16.7, 19.2]], "de": 9.61, "ate": 37.57}, {"rotulo": "MAMÍFEROS · GADO %", "fmt": "int", "keys": [[46.12, 0], [49.2, 60], [54.19, 60]], "max": 100, "alerta": [[49.2, 54.19]], "de": 46.12, "ate": 54.19}, {"rotulo": "GALINHAS · BI", "fmt": "int", "keys": [[54.19, 0], [56.6, 25], [59.59, 25]], "max": 30, "de": 54.19, "ate": 59.59}], D = 77.32;
       const $ = (id) => document.getElementById(id);
       const val = (h, t) => {
         const k = h.keys; if (h.fmt === "texto") { let s = k[0][1]; for (const [a, b] of k) if (t >= a) s = b; return s; }

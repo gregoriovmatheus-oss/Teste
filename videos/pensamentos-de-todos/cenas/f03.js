@@ -37,11 +37,11 @@
           for (let i = 0; i < NB; i++) {
             const x = (i / (NB - 1) - 0.5) * 5.0;
             // voz: envelope de sílabas lento (~2,5 sílabas/s), deslizando devagar
-            const s = Math.abs(Math.sin(x * 1.6 - t * 1.4)) * (0.55 + 0.45 * Math.sin(x * 0.7 - t * 0.6)) * 0.55 * aV;
-            voz.set(i, x, 1.25, 0, 0.02 + s, [0.49 * 1.6, 0.78 * 1.6, 1.6]);
+            const s = Math.abs(Math.sin(x * 1.6 - t * 1.4)) * (0.55 + 0.45 * Math.sin(x * 0.7 - t * 0.6)) * 0.42 * aV;
+            voz.set(i, x, 1.25, 0, 0.02 + s, [0.42, 0.72, 1]);
             // pensamento: rajadas curtas, rápidas e caóticas (troca 24×/s)
             const q = Math.floor(t * 24), r1 = hash(i, q), burst = hash(Math.floor(i / 6), Math.floor(t * 7)) > 0.45 ? 1 : 0.2;
-            pen.set(i, x, -1.95, 0, (0.03 + r1 * 1.25 * burst) * aP, [1.7, 0.92, 0.5]);
+            pen.set(i, x, -1.95, 0, (0.03 + r1 * 0.95 * burst) * aP, [1, 0.52, 0.28]);
           }
           voz.fim(); pen.fim();
           st.bloom = 0.85;
@@ -52,9 +52,9 @@
           st.draw();
           const c = st.ctx, vv = MENTE.vis(st);
           const [vx, vy] = MENTE.proj(new THREE.Vector3(-2.5, 1.25, 0), cam), [px, py] = MENTE.proj(new THREE.Vector3(-2.5, -1.95, 0), cam);
-          MENTE.txt(c, "FALA", vx, vy - 120, { tam: 28, cor: MENTE.AZUL, al: "left", a: aV * vv, esp: 0.3 });
-          MENTE.txt(c, "150 PALAVRAS/MIN", vx, vy + 120, { tam: 26, cor: "#cfe6ff", al: "left", a: range(t, 4.04, 4.3) * vv, esp: 0.15 });
-          MENTE.txt(c, "PENSAMENTO", px, py - 260, { tam: 28, cor: MENTE.LARANJA, al: "left", a: aP * vv, esp: 0.3 });
+          MENTE.txt(c, "FALA", 90, vy - 110, { tam: 28, cor: MENTE.AZUL, al: "left", a: aV * vv, esp: 0.3 });
+          MENTE.txt(c, "150 PALAVRAS/MIN", 90, vy + 110, { tam: 26, cor: "#cfe6ff", al: "left", a: range(t, 4.04, 4.3) * vv, esp: 0.15 });
+          MENTE.txt(c, "PENSAMENTO", 90, py - 220, { tam: 28, cor: MENTE.LARANJA, al: "left", a: aP * vv, esp: 0.3 });
           // palavras soltas do pensamento, embaralhadas, aparecendo e sumindo rápido
           if (t > 6.0) for (let k = 0; k < 9; k++) {
             const q = Math.floor(t * 6 + k * 0.37), r = mulberry32(q * 31 + k * 7);

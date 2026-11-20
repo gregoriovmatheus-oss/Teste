@@ -101,7 +101,7 @@
           st.vel = q > 0 ? Math.sin(Math.PI * range(q, 0, 0.6)) * 0.5 : 0; st.velT = t;
           // push-in com leve inclinação
           const e = ease.inOutSine(range(t, 0, 3.95));
-          cam.position.set(lerp(1.4, -0.3, e), lerp(0.4, -0.6, e), lerp(9.0, 6.6, e));
+          cam.position.set(lerp(1.4, -0.3, e), lerp(0.4, -0.6, e), lerp(11.5, 9.0, e));
           cam.lookAt(0, lerp(-0.6, -1.0, e), 0);
           cam.rotateZ(lerp(-0.05, 0.03, e));
           st.sol(0, 0, 6);

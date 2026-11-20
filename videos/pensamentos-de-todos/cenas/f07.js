@@ -33,7 +33,7 @@
             st.bloom = 0.6;
             // de cima: sobe, gira até ficar a pino e, no fim, dispara para o alto
             const e = ease.inOutSine(range(t, 0, 2.6)), up = ease.inCubic(range(t, 2.75, T1));
-            const h = lerp(4.2, 7.2, e) + up * 40;
+            const h = lerp(6.0, 9.6, e) + up * 40;
             cam.up.set(1, 0, 0);
             cam.position.set(lerp(-2.6, 0.2, e), h, lerp(1.6, 0.05, e));
             cam.lookAt(lerp(0.4, 0.3, e), 0, 0);

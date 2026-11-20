@@ -21,7 +21,7 @@
           const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; };
         const mOuro = new THREE.MeshStandardMaterial({ color: 0xd8b25a, metalness: 0.95, roughness: 0.28 });
         const moeda = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 0.12, 64), [mOuro,
-          new THREE.MeshStandardMaterial({ map: face("1"), metalness: 0.85, roughness: 0.3 }), new THREE.MeshStandardMaterial({ map: face("★"), metalness: 0.85, roughness: 0.3 })]);
+          new THREE.MeshStandardMaterial({ map: face("1"), metalness: 0.85, roughness: 0.3 }), new THREE.MeshStandardMaterial({ map: face("1"), metalness: 0.85, roughness: 0.3 })]);
         moeda.castShadow = true; S.add(moeda);
         const halo = PELE.brilho(0xffd59a, 7, "suave", 0.25); S.add(halo);
         const pts = PELE.bokeh(S, { n: 20, seed: 66, centro: [CX, 3, -14], area: [26, 14, 6], tam: [1.5, 4], cores: [0x7cc8ff, 0xffd49a], op: 0.3 });
@@ -40,11 +40,11 @@
           st.vel = 0.7 * Math.max(0, 1 - Math.abs(t - TC) / 0.25); st.velT = t;
           if (t < TC) {
             const e = ease.inOutSine(range(t, 0, TC));
-            cam.position.set(lerp(-1.6, 2.6, e), lerp(1.9, 1.6, e), lerp(4.6, 3.4, e));
+            cam.position.set(lerp(-1.2, 2.6, e), lerp(1.9, 1.6, e), lerp(5.8, 3.6, e));
             cam.lookAt(lerp(0, 0.5, e), 1.45, 0);
             st.sol(0, 0, 5);
           } else {
-            const e = ease.outCubic(range(u, 0, 8.71 - TC)), a = lerp(-0.5, 0.25, e), R = lerp(6.5, 4.6, e);
+            const e = ease.outCubic(range(u, 0, 8.71 - TC)), a = lerp(-0.5, 0.25, e), R = lerp(9.5, 7.0, e);
             cam.position.set(CX + Math.sin(a) * R, lerp(1.0, 1.5, e), Math.cos(a) * R);
             cam.lookAt(CX, 1.65, 0);
             st.sol(CX, 0, 5);

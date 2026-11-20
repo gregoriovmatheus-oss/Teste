@@ -388,6 +388,8 @@ export function texto(c, s, x, y, { a = 1, cor = "#fff", tam = 34, peso = 600, f
 // etiqueta com linha-guia: ponto âncora (ax, ay) -> caixa em (x, y). linhas = [[texto, cor], ...] (1ª = kicker pequeno)
 export function tag(c, ax, ay, x, y, linhas, { a = 1, cor = AZUL, tam = 40, larg = null } = {}) {
   if (a <= 0.01) return;
+  // fora do HUD (topo) e da faixa da legenda (1045–1215)
+  y = Math.max(520, Math.min(1700, y)); if (y > 960 && y < 1290) y = y < 1125 ? 960 : 1290;
   c.save(); c.globalAlpha = Math.min(1, a);
   c.strokeStyle = cor; c.lineWidth = 3; c.beginPath(); c.moveTo(ax, ay); c.lineTo(x, y); c.stroke();
   c.fillStyle = cor; c.beginPath(); c.arc(ax, ay, 7, 0, 6.283); c.fill();

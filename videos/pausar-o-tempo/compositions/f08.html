@@ -31,7 +31,7 @@
       const DR = durReal(), K = DR / D0;
       const tl = gsap.timeline({ paused: true });
       tl.fromTo("#f08-r1-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 2.2 * K);
-      tl.to("#f08-r1-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 3.6 * K);
+      tl.to("#f08-r1-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 3.85 * K);
       tl.set({}, {}, DR);
       window.__timelines = window.__timelines || {};
       window.__timelines["f08"] = tl;
@@ -51,7 +51,7 @@
         const st = T.createToyStage(canvas, { fov: 40, ceu: ["#04060c", "#0b1120"], nevoa: null, nuvens: 0, exposicao: 1.1 });
         const S = st.scene, cam = st.cam;
         st.key.castShadow = false;
-        const COL = 73, LIN = 366, N = 26700, sp = 0.12, G = PAUSA.pontos(S, N, { tam: 1, atenua: 300 });
+        const COL = 73, LIN = 366, N = 26700, sp = 0.12, G = PAUSA.pontos(S, N, { tam: 1, atenua: 3000 });
         const x0 = -(COL - 1) * sp / 2, y0 = -(LIN - 1) * sp / 2;
         for (let i = 0; i < N; i++) { const cx = Math.floor(i / LIN), ly = i % LIN; G.P.set([x0 + cx * sp, y0 + ly * sp, 0], i * 3); G.Z[i] = 0.075; }
         const ch = PAUSA.chuva(S, { n: 1600, seed: 88, caixa: [-30, 30, -30, 30, -40, 20], tam: 2 }); ch.update(1.17, 1); ch.mat.uniforms.uA.value = 0.35;
