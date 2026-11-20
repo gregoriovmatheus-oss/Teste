@@ -60,14 +60,14 @@
           for (let i = 0; i < N; i++) {
             const k = clamp(aceso - i), novo = Math.exp(-Math.max(0, aceso - i) / 120);
             G.C.set(k > 0 ? [lerp(1, 0.95, 1 - novo), lerp(0.93, 0.85, 1 - novo), lerp(0.8, 0.7, 1 - novo)] : [0.12, 0.2, 0.32], i * 3);
-            G.A[i] = k > 0 ? 0.75 + 0.6 * novo : 0.5; G.Z[i] = 0.075 * (1 + novo * 0.6);
+            G.A[i] = k > 0 ? 1.6 + 0.8 * novo : 0.6; G.Z[i] = 0.075 * (1 + novo * 0.6);
           }
           G.sync();
-          st.bloom = 0.6;
+          st.bloom = 0.85;
           // recua do 1º dia (canto de baixo, à esquerda) até ver a parede inteira
           const e = ease.inOutCubic(range(t, 0, 6.3));
           const tx = lerp(x0 + 0.6, 0, e), ty = lerp(y0 + 1.2, 0, e);
-          cam.position.set(tx + lerp(0.6, 6, e), ty + lerp(-0.4, -4, e), lerp(2.2, 66, e));
+          cam.position.set(tx + lerp(0.6, 6, e), ty + lerp(-0.4, -4, e), lerp(2.2, 58, e));
           cam.lookAt(tx, ty, 0);
           st.draw();
           const c = st.ctx;
