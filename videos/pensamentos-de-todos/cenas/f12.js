@@ -29,7 +29,7 @@
           const C = new THREE.Vector3(0, H + 1.1, 6.6);
           cam.position.set(C.x + Math.sin(a) * r, C.y + lerp(1.6, 0.6, e), C.z + Math.cos(a) * r);
           cam.lookAt(lerp(0, 4, e), lerp(H - 5, H - 6, e), C.z + 30);
-          st.sol(0, 6, 14, H);
+          st.sol(0, 6, 14, H); if (t > 2.8 && t < 2.9) console.warn("DBG12", cam.position.toArray().map(v=>v.toFixed(1)).join(","), JSON.stringify(p.L[0]));
           st.draw();
           const c = st.ctx, vv = MENTE.vis(st); MENTE.quadro();
           FR.forEach((s, k) => MENTE.frase(c, cam, src[k * 5].clone().add(new THREE.Vector3(0, 10, 0)), s, range(t, 0.4 + k * 0.25, 0.7 + k * 0.25) * vv * (1 - 0.5 * range(t, 1.9, 2.3)), { cor: k % 3 ? MENTE.AZUL : MENTE.LARANJA, tam: 24, linha: false }));

@@ -18,12 +18,15 @@
   <div id="root" data-composition-id="doc" data-width="1080" data-height="1920">
     <div id="chap"><span id="chapN">01</span><span id="chapT"></span></div>
     <div id="hud">
-
+    <div class="row" id="h0"><span class="lbl">AS DUAS MENTES</span><span class="val"><span id="h0v"></span> <span class="un"></span></span></div>
+    <div class="meter" id="h0m"><div id="h0b"></div></div>
+    <div class="row" id="h1"><span class="lbl">TÁBUAS TROCADAS</span><span class="val"><span id="h1v"></span> <span class="un"></span></span></div>
+    <div class="meter" id="h1m"><div id="h1b"></div></div>
     </div>
   </div>
   <script>
     (function () {
-      const CAPS = [], HUD = [], D = 71.18;
+      const CAPS = [[0.2, "O DESPERTAR"], [8.86, "A CÓPIA"], [18.62, "O NAVIO DE TESEU"], [35.02, "A DIVERGÊNCIA"], [53.0, "QUEM É VOCÊ"]], HUD = [{"rotulo": "AS DUAS MENTES", "fmt": "texto", "keys": [[0, "IDÊNTICAS"], [50.0, "DIVERGINDO"]], "alerta": [[50.0, 71.0]], "de": 3.42}, {"rotulo": "TÁBUAS TROCADAS", "fmt": "int", "keys": [[18.62, 0], [19.4, 0], [22.0, 120], [23.03, 120]], "max": 120, "alerta": [[22.0, 23.03]], "de": 18.62, "ate": 23.03}], D = 71.18;
       const $ = (id) => document.getElementById(id);
       const val = (h, t) => {
         const k = h.keys; if (h.fmt === "texto") { let s = k[0][1]; for (const [a, b] of k) if (t >= a) s = b; return s; }

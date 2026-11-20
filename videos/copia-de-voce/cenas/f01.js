@@ -1,4 +1,4 @@
-/*META {"imports": ["copia"], "rotulos": [{"de": 1.85, "ate": 3.42, "texto": "<span class=\"k\">UM EXPERIMENTO MENTAL</span><br>E se você acordasse com uma <span class=\"y\">cópia</span>?"}], "D0": 3.42} */
+/*META {"imports": ["copia"], "rotulos": [{"de": 1.2, "ate": 3.42, "texto": "<span class=\"k\">UM EXPERIMENTO MENTAL</span><br>E se você acordasse com uma <span class=\"y\">cópia</span>?"}], "D0": 3.42} */
         // Gancho: quarto na luz azul do amanhecer. Você abre os olhos, vira, e ao lado está você mesmo dormindo.
         const st = T.createToyStage(canvas, { ceu: "#081120", nevoa: [6, 22], fov: 50, nuvens: 0 });
         const S = st.scene, cam = st.cam;

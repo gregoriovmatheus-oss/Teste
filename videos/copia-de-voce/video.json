@@ -110,7 +110,81 @@
   },
   "sfx": [],
   "doc": {
-    "capitulos": [],
-    "hud": []
+    "capitulos": [
+      [
+        0.2,
+        "O DESPERTAR"
+      ],
+      [
+        8.86,
+        "A CÓPIA"
+      ],
+      [
+        18.62,
+        "O NAVIO DE TESEU"
+      ],
+      [
+        35.02,
+        "A DIVERGÊNCIA"
+      ],
+      [
+        53.0,
+        "QUEM É VOCÊ"
+      ]
+    ],
+    "hud": [
+      {
+        "rotulo": "AS DUAS MENTES",
+        "fmt": "texto",
+        "keys": [
+          [
+            0,
+            "IDÊNTICAS"
+          ],
+          [
+            50.0,
+            "DIVERGINDO"
+          ]
+        ],
+        "alerta": [
+          [
+            50.0,
+            71.0
+          ]
+        ],
+        "de": 3.42
+      },
+      {
+        "rotulo": "TÁBUAS TROCADAS",
+        "fmt": "int",
+        "keys": [
+          [
+            18.62,
+            0
+          ],
+          [
+            19.4,
+            0
+          ],
+          [
+            22.0,
+            120
+          ],
+          [
+            23.03,
+            120
+          ]
+        ],
+        "max": 120,
+        "alerta": [
+          [
+            22.0,
+            23.03
+          ]
+        ],
+        "de": 18.62,
+        "ate": 23.03
+      }
+    ]
   }
 }

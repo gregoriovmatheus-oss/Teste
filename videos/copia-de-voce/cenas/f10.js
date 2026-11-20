@@ -7,8 +7,8 @@
         await COPIA.fontes();
         const piso = new THREE.Mesh(new THREE.PlaneGeometry(14, 14), T.M(0x6b5240, 0.6)); piso.rotation.x = -Math.PI / 2; piso.receiveShadow = true; S.add(piso);
         const parede = new THREE.Mesh(new THREE.PlaneGeometry(14, 6), T.M(0xd8cbb4, 0.9)); parede.position.set(0, 3, -2.2); parede.receiveShadow = true; S.add(parede);
-        const jan = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 1.5), new THREE.MeshBasicMaterial({ color: 0xffe2b0, toneMapped: false })); jan.position.set(-0.9, 2.2, -2.19); S.add(jan);
-        for (const x of [-0.9]) { const b = T.mesh(T.roundBox(0.06, 1.55, 0.05, 0.02), 0xf0e8dc, S, 0.6); b.position.set(x, 1.45, -2.17); }
+        const jan = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 1.5), new THREE.MeshBasicMaterial({ color: 0xffe2b0, toneMapped: false })); jan.position.set(-1.9, 2.2, -2.19); S.add(jan);
+        for (const x of [-1.9]) { const b = T.mesh(T.roundBox(0.06, 1.55, 0.05, 0.02), 0xf0e8dc, S, 0.6); b.position.set(x, 1.45, -2.17); }
         const balcao = T.mesh(T.roundBox(4.5, 0.9, 0.7, 0.05), 0x7a5a42, S, 0.6); balcao.position.set(0, 0, -1.8);
         const mesa = T.mesh(T.roundBox(1.4, 0.06, 0.8, 0.03), 0x9a7454, S, 0.5); mesa.position.set(0, 0.92, 0);
         for (const [x, z] of [[-0.62, -0.32], [0.62, -0.32], [-0.62, 0.32], [0.62, 0.32]]) { const p = T.mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.92, 8), 0x3a2c20, S); p.position.set(x, 0.46, z); }
