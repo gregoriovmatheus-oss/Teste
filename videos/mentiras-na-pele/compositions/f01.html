@@ -1,57 +1,99 @@
-<!-- Modelo de cena 3D (R01). cenas.py --criar copia para compositions/fNN.html trocando os marcadores de id e duração.
-     Padrão: script clássico registra buildReady na hora; import dinâmico do kit e dos blocos;
-     K.bindSeek(canvas, render) dá o tempo LOCAL da cena (sem gambiarra de data-start). -->
+<!-- f01: cena 3D padrão documentário (R10 + doc). Lógica em cenas/f01.js (gerado por scripts/monta-cenas.py).
+     Tempos escritos para 4.39 s e esticados para a duração real do host (data-duration). -->
 <template>
   <style>
-    #root { position: absolute; inset: 0; overflow: hidden; background: #0b1018; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0b0a12; }
     #f01-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
-    #f01-titulo { position: absolute; left: 160px; right: 200px; top: 660px; text-align: center; }
-    #f01-titulo-in { display: block; font-family: "EB Garamond", serif; font-size: 84px; line-height: 1.05; color: #fff;
-      text-shadow: 0 4px 26px rgba(4, 10, 20, 0.75), 0 1px 4px rgba(4, 10, 20, 0.6); }
-    #f01-titulo-in .ice { color: #8fcbf2; }
+    /* rótulos 2D: y 680-980, acima da faixa da legenda (1005-1235) */
+    .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .rot-t { display: block; font-family: "Inter", sans-serif; font-weight: 300; font-size: 84px; line-height: 1.1; color: #fff; text-transform: none;
+      letter-spacing: -0.01em; text-shadow: 0 2px 30px rgba(0,0,0,0.7), 0 1px 3px rgba(0,0,0,0.6); opacity: 0; }
+    .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }
+    .rot-t .p { font-size: 64px; }
+    .rot-t .k { display: inline-block; font-family: "JetBrains Mono", monospace; font-weight: 600; font-size: 26px; letter-spacing: 0.32em; color: #7cc8ff; margin-bottom: 18px; }
+    .rot-t .n { font-family: "JetBrains Mono", monospace; font-weight: 600; color: #7cc8ff; }
+
   </style>
   <div id="root" data-composition-id="f01" data-width="1080" data-height="1920">
     <canvas id="f01-canvas" width="1080" height="1920"></canvas>
-    <div id="f01-titulo" class="clip" data-start="0.3" data-duration="2.2">
-      <span id="f01-titulo-in">Texto da <span class="ice">cena</span></span>
-    </div>
+    <div id="f01-r1" class="rot" style="top: 700px"><span id="f01-r1-in" class="rot-t"><span class="k">UM EXPERIMENTO MENTAL</span><br>E se cada mentira aparecesse <span class="y">na sua pele?</span></span></div>
   </div>
   <script>
     (function () {
-      /* 2D por cima (GSAP). Título entre y 640 e 1000: o HUD ocupa 290-620 e a legenda 1045-1195. */
+      const D0 = 4.39;
+      // duração real = data-duration do host da cena (muda quando a narração muda)
+      const durReal = () => {
+        for (let n = document.getElementById("f01-canvas"); n; n = n.parentElement) {
+          if (n.getAttribute && n.getAttribute("data-composition-id") === "f01" && n.hasAttribute("data-duration")) return parseFloat(n.getAttribute("data-duration")) || D0;
+        }
+        return D0;
+      };
+      const DR = durReal(), K = DR / D0;
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f01-titulo-in", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 0.3);
-      tl.to("#f01-titulo-in", { opacity: 0, duration: 0.2, ease: "power2.in" }, 2.3);
-      tl.set({}, {}, 4.39);
+      tl.fromTo("#f01-r1-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 0.0 * K);
+      tl.to("#f01-r1-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 1.75 * K);
+      tl.set({}, {}, DR);
       window.__timelines = window.__timelines || {};
       window.__timelines["f01"] = tl;
 
-      /* 3D */
       window.__hf = window.__hf || {};
       window.__hf.buildReady = window.__hf.buildReady || {};
       window.__hf.buildReady["f01"] = Promise.all([
-        import("./assets/lib/kit.js"),
-        import("./assets/lib/blocks/city.js"),
-        // import("./assets/lib/blocks/globe.js"), import("./assets/lib/blocks/particles.js"),
-        // import("./assets/lib/blocks/shockwave.js"), import("./assets/lib/blocks/counter.js"),
-      ]).then(async ([K, { createCity }]) => {
-        const { THREE, ease, range, lerp, clamp } = K;
+        import("./assets/lib/kit.js"), import("./assets/lib/blocks/toy.js"), import("./assets/lib/blocks/animals.js"), import("./assets/lib/blocks/pele.js")
+      ]).then(async ([K_, T, A, PELE]) => {
+        const K = K_;
+        const { THREE, ease, range, lerp, clamp, smoothstep, mulberry32 } = K;
+        const D = D0;   // o corpo trabalha no tempo de autoria
         const canvas = document.getElementById("f01-canvas");
-        const renderer = K.createRenderer(canvas);
-        const scene = new THREE.Scene();
-        const cam = new THREE.PerspectiveCamera(35, K.W / K.H, 1, 2000);
-        const city = createCity(scene, { seed: 7, geada: [4.39 * 0.6, 4.39 * 0.6 + 0.35], paraEm: 4.39 * 0.6 });
 
-        function render(t) {               // t = segundos locais da cena
-          const p = ease.outCubic(clamp(t / 4.39));
-          const h = lerp(300, 175, p), ang = lerp(-0.35, 0.05, p);
-          cam.position.set(Math.sin(ang) * 18, h, Math.cos(ang) * 18 + 10);
-          cam.up.set(Math.sin(ang), 0, -Math.cos(ang));
-          cam.lookAt(0, 0, 0);
-          city.update(t);
-          renderer.render(scene, cam);
+        await PELE.fontes();
+        const st = T.createToyStage(canvas, { fov: 30, ceu: ["#0d0909", "#2a1a13"], nevoa: null, nuvens: 0, luz: 0.8, exposicao: 1.05 });
+        const S = st.scene, cam = st.cam;
+        st.rim.color.set(0x8fc4ff); st.rim.intensity = 1.6; st.hemi.intensity = 0.35;
+        // sala à noite: parede escura ao fundo, abajur e luzes de festa desfocadas (bokeh)
+        const parede = new THREE.Mesh(new THREE.PlaneGeometry(400, 300), T.M(0x2a1d17, 0.95)); parede.position.set(0, 0, -90); S.add(parede);
+        PELE.bokeh(S, { n: 30, seed: 11, centro: [-8, 6, -60], area: [90, 70, 20], tam: [5, 13], op: 0.32 });
+        const ab = PELE.brilho(0xffb066, 60, "suave", 0.55); ab.position.set(-34, 22, -70); S.add(ab);
+        // braço segurando o presente, na diagonal do quadro vertical
+        const B = PELE.bracoClose({ pele: 0xd39a72, manga: 0x4d5b6c, papel: 0x8a1f2c });
+        B.group.rotation.set(0.25, -0.35, 0.62); B.group.position.set(1.5, -2.5, 0); S.add(B.group);
+        const O = B.PULSO;
+        const flash = PELE.brilho(0xff8a4c, 4, "suave", 0); S.add(flash);
+        // faíscas da marca em câmera lenta (Points determinísticos)
+        const NF = 60, fp = new Float32Array(NF * 3), rr = mulberry32(101), FV = Array.from({ length: NF }, () => [rr() - 0.5, rr() * 0.8 + 0.3, rr() - 0.5, rr()]);
+        const fg = new THREE.BufferGeometry(); fg.setAttribute("position", new THREE.BufferAttribute(fp, 3));
+        const fm = new THREE.PointsMaterial({ color: 0xffa36a, size: 0.12, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
+        const faisca = new THREE.Points(fg, fm); faisca.frustumCulled = false; B.group.add(faisca);
+        const vO = new THREE.Vector3();
+        function render(t) {
+          // a mentira (2,6 s): a mancha nasce no pulso e se espalha em tempo real
+          const k = range(t, 2.55, 4.39);
+          const r = k <= 0 ? 0 : 0.2 + 2.2 * ease.outQuad(k) + 2.4 * k * k;
+          B.pele.marca(0, O, r);
+          B.pele.u.uBri.value = 0.6 + 0.9 * Math.sin(Math.PI * range(t, 2.55, 3.6)) + 0.5 * k;
+          B.update(t);
+          vO.set(...O); B.group.localToWorld(vO);
+          flash.position.copy(vO); flash.material.opacity = 0.9 * Math.sin(Math.PI * range(t, 2.5, 3.5)); flash.scale.setScalar(3 + 6 * range(t, 2.5, 3.5));
+          const fk = range(t, 2.6, 4.39);
+          for (let i = 0; i < NF; i++) { const v = FV[i], e = ((fk * 1.3 + v[3]) % 1); fp[i * 3] = O[0] + v[0] * 3 * e; fp[i * 3 + 1] = O[1] + 0.3 + v[1] * 3.5 * e; fp[i * 3 + 2] = O[2] + v[2] * 3 * e; }
+          fg.attributes.position.needsUpdate = true; fm.opacity = fk > 0 ? 0.8 * (1 - range(t, 4.0, 4.39) * 0.5) : 0;
+          // dolly-in lento e pesado, com leve órbita (câmera lenta no evento)
+          const e = ease.inOutSine(range(t, 0, 4.39));
+          const a = lerp(-0.22, 0.08, e), R = lerp(26, 18, ease.outCubic(range(t, 0, 4.39)));
+          cam.position.set(vO.x + Math.sin(a) * R, vO.y + lerp(7.5, 4.2, e), vO.z + Math.cos(a) * R);
+          cam.lookAt(lerp(vO.x - 2.5, vO.x - 0.4, e), lerp(vO.y + 1.6, vO.y + 0.2, e), vO.z);
+          st.sol(0, 0, 18);
+          st.bloom = 0.55 + 0.3 * k;
+          st.draw();
+          const c = st.ctx;
+          const q = PELE.fade(t, 0.62, 2.45, 0.25);
+          PELE.txt(c, "“Adorei o presente.”", 470, 560, { fonte: "inter", peso: 300, italico: true, tam: 58, a: q, cor: "#fff4e8" });
+          const [px, py] = PELE.proj(vO, cam);
+          PELE.tag(c, px, py, 560, 600, "MENTIRA Nº 1", { cor: PELE.LARANJA, a: range(t, 3.0, 3.4) });
         }
-        await K.bindSeek(canvas, render, { warm: [{ renderer, scene, camera: cam }], duration: 4.39 });
+
+        // DR foi lido na hora em que o script rodou (depois do inline o host pode mudar de atributos)
+        await K.bindSeek(canvas, (t) => { st.T = t * D / DR; st.D = D; render(st.T); }, { warm: [st.warm, ...(st.extraWarm || [])], duration: DR });
       });
     })();
   </script>

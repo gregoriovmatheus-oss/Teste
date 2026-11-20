@@ -1,57 +1,96 @@
-<!-- Modelo de cena 3D (R01). cenas.py --criar copia para compositions/fNN.html trocando os marcadores de id e duração.
-     Padrão: script clássico registra buildReady na hora; import dinâmico do kit e dos blocos;
-     K.bindSeek(canvas, render) dá o tempo LOCAL da cena (sem gambiarra de data-start). -->
+<!-- f11: cena 3D padrão documentário (R10 + doc). Lógica em cenas/f11.js (gerado por scripts/monta-cenas.py).
+     Tempos escritos para 9.22 s e esticados para a duração real do host (data-duration). -->
 <template>
   <style>
-    #root { position: absolute; inset: 0; overflow: hidden; background: #0b1018; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0b0a12; }
     #f11-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
-    #f11-titulo { position: absolute; left: 160px; right: 200px; top: 660px; text-align: center; }
-    #f11-titulo-in { display: block; font-family: "EB Garamond", serif; font-size: 84px; line-height: 1.05; color: #fff;
-      text-shadow: 0 4px 26px rgba(4, 10, 20, 0.75), 0 1px 4px rgba(4, 10, 20, 0.6); }
-    #f11-titulo-in .ice { color: #8fcbf2; }
+    /* rótulos 2D: y 680-980, acima da faixa da legenda (1005-1235) */
+    .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .rot-t { display: block; font-family: "Inter", sans-serif; font-weight: 300; font-size: 84px; line-height: 1.1; color: #fff; text-transform: none;
+      letter-spacing: -0.01em; text-shadow: 0 2px 30px rgba(0,0,0,0.7), 0 1px 3px rgba(0,0,0,0.6); opacity: 0; }
+    .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }
+    .rot-t .p { font-size: 64px; }
+    .rot-t .k { display: inline-block; font-family: "JetBrains Mono", monospace; font-weight: 600; font-size: 26px; letter-spacing: 0.32em; color: #7cc8ff; margin-bottom: 18px; }
+    .rot-t .n { font-family: "JetBrains Mono", monospace; font-weight: 600; color: #7cc8ff; }
+
   </style>
   <div id="root" data-composition-id="f11" data-width="1080" data-height="1920">
     <canvas id="f11-canvas" width="1080" height="1920"></canvas>
-    <div id="f11-titulo" class="clip" data-start="0.3" data-duration="2.2">
-      <span id="f11-titulo-in">Texto da <span class="ice">cena</span></span>
-    </div>
+    <div id="f11-r1" class="rot" style="top: 700px"><span id="f11-r1-in" class="rot-t"><span class="k">RELATIVIDADE</span><br>O tempo não passa <span class="y">igual</span></span></div>
   </div>
   <script>
     (function () {
-      /* 2D por cima (GSAP). Título entre y 640 e 1000: o HUD ocupa 290-620 e a legenda 1045-1195. */
+      const D0 = 9.22;
+      // duração real = data-duration do host da cena (muda quando a narração muda)
+      const durReal = () => {
+        for (let n = document.getElementById("f11-canvas"); n; n = n.parentElement) {
+          if (n.getAttribute && n.getAttribute("data-composition-id") === "f11" && n.hasAttribute("data-duration")) return parseFloat(n.getAttribute("data-duration")) || D0;
+        }
+        return D0;
+      };
+      const DR = durReal(), K = DR / D0;
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f11-titulo-in", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 0.3);
-      tl.to("#f11-titulo-in", { opacity: 0, duration: 0.2, ease: "power2.in" }, 2.3);
-      tl.set({}, {}, 9.22);
+      tl.fromTo("#f11-r1-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 0.3 * K);
+      tl.to("#f11-r1-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 2.3 * K);
+      tl.set({}, {}, DR);
       window.__timelines = window.__timelines || {};
       window.__timelines["f11"] = tl;
 
-      /* 3D */
       window.__hf = window.__hf || {};
       window.__hf.buildReady = window.__hf.buildReady || {};
       window.__hf.buildReady["f11"] = Promise.all([
-        import("./assets/lib/kit.js"),
-        import("./assets/lib/blocks/city.js"),
-        // import("./assets/lib/blocks/globe.js"), import("./assets/lib/blocks/particles.js"),
-        // import("./assets/lib/blocks/shockwave.js"), import("./assets/lib/blocks/counter.js"),
-      ]).then(async ([K, { createCity }]) => {
-        const { THREE, ease, range, lerp, clamp } = K;
+        import("./assets/lib/kit.js"), import("./assets/lib/blocks/toy.js"), import("./assets/lib/blocks/animals.js"), import("./assets/lib/blocks/pausa.js"), import("./assets/lib/blocks/terra.js")
+      ]).then(async ([K_, T, A, PAUSA, TERRA]) => {
+        const K = K_;
+        const { THREE, ease, range, lerp, clamp, smoothstep, mulberry32 } = K;
+        const D = D0;   // o corpo trabalha no tempo de autoria
         const canvas = document.getElementById("f11-canvas");
-        const renderer = K.createRenderer(canvas);
-        const scene = new THREE.Scene();
-        const cam = new THREE.PerspectiveCamera(35, K.W / K.H, 1, 2000);
-        const city = createCity(scene, { seed: 7, geada: [9.22 * 0.6, 9.22 * 0.6 + 0.35], paraEm: 9.22 * 0.6 });
 
-        function render(t) {               // t = segundos locais da cena
-          const p = ease.outCubic(clamp(t / 9.22));
-          const h = lerp(300, 175, p), ang = lerp(-0.35, 0.05, p);
-          cam.position.set(Math.sin(ang) * 18, h, Math.cos(ang) * 18 + 10);
-          cam.up.set(Math.sin(ang), 0, -Math.cos(ang));
-          cam.lookAt(0, 0, 0);
-          city.update(t);
-          renderer.render(scene, cam);
+        // f11 — o tempo já não é igual para todos: satélite GPS a 20.200 km, relógio que adianta 38 µs por dia
+        //       (efeito gravitacional +45 µs, velocidade −7 µs) e precisa ser corrigido. Câmera: do satélite até a órbita inteira.
+        const st = T.createToyStage(canvas, { fov: 36, ceu: ["#000000", "#02030a"], nevoa: null, nuvens: 0, exposicao: 1.0 });
+        const S = st.scene, cam = st.cam;
+        st.hemi.intensity = 0.15; st.key.castShadow = false; st.key.color.set(0xffffff); st.key.intensity = 2.6; st.rim.intensity = 0.4;
+        S.add(TERRA.createCeu({ seed: 9, n: 5000, via: 0.5 }));
+        const E = await TERRA.createTerra({ raio: 1 }); S.add(E.group);
+        E.sol.set(1, 0.25, 0.5); E.u.luzes.value = 1.0; E.u.atmo.value = 1.2; E.aim(-50, -15);
+        const RO = 4.17; // raio da órbita GPS (26.571 km / 6.371 km)
+        const orb = new THREE.Mesh(new THREE.TorusGeometry(RO, 0.006, 6, 200), new THREE.MeshBasicMaterial({ color: 0x7cc8ff, transparent: true, opacity: 0.6, blending: THREE.AdditiveBlending, depthWrite: false }));
+        orb.rotation.x = Math.PI / 2 - 0.96; S.add(orb); // inclinação de 55°
+        const SAT = PAUSA.satelite(); SAT.scale.setScalar(0.035); S.add(SAT);
+        const outros = Array.from({ length: 5 }, (_, i) => { const g = PAUSA.glow(0xbfe3ff, 0.12, S); g.userData.a = (i + 1) * 1.05; return g; });
+        const pos = (a, out) => out.set(Math.cos(a) * RO, 0, Math.sin(a) * RO).applyEuler(orb.rotation);
+        const sp = new THREE.Vector3(), up0 = new THREE.Vector3();
+        function render(t) {
+          const a0 = 0.35 + t * 0.03;
+          pos(a0, sp); SAT.position.copy(sp); SAT.lookAt(0, 0, 0); SAT.rotateX(Math.PI / 2);
+          outros.forEach((g) => pos(a0 + g.userData.a, g.position));
+          E.nuv.rotation.y = t * 0.004;
+          const adianta = range(t, 4.1, 5.8), corr = range(t, 7.33, 8.3);
+          SAT.luz.material.color.set(corr > 0 ? 0x7cc8ff : adianta > 0 ? 0xff8a4c : 0x7cc8ff); SAT.luz.material.opacity = 0.6 + 0.4 * Math.sin(t * 6) ** 2;
+          st.bloom = 0.8;
+          // câmera: colada no satélite com a Terra atrás, depois recua até ver a órbita inteira
+          const e = ease.inOutCubic(range(t, 1.0, 8.6));
+          const dir = sp.clone().normalize();
+          const near = sp.clone().addScaledVector(dir, 0.28).add(new THREE.Vector3(0.12, 0.1, 0.05));
+          const far = new THREE.Vector3(3.5, 7.5, 15.5);
+          cam.position.lerpVectors(near, far, e);
+          const look = new THREE.Vector3().lerpVectors(sp, new THREE.Vector3(0, 0, 0), ease.inOutSine(range(t, 0.5, 6)));
+          cam.lookAt(look);
+          st.draw(S, cam);
+          const c = st.ctx;
+          // dois relógios: na Terra x no satélite
+          const v = PAUSA.vis(t, 0.6, 9.22), us = Math.round(38 * ease.inOutSine(adianta) * (1 - ease.inOutSine(corr)));
+          PAUSA.painel(c, 290, 1360, "RELÓGIO NA TERRA", "12:00:00.000000", { a: v, cor: PAUSA.AZUL, tam: 40 });
+          const gps = "12:00:00." + String(us).padStart(6, "0");
+          PAUSA.painel(c, 790, 1360, "RELÓGIO DO GPS", gps, { a: v, cor: us > 0 ? PAUSA.LARANJA : PAUSA.AZUL, tam: 40, sub: corr > 0.5 ? "CORRIGIDO" : us > 0 ? "ADIANTADO" : "" });
+          const [sx, sy, ok] = PAUSA.proj(sp, cam);
+          if (ok) PAUSA.tag(c, sx, sy, sx < 540 ? sx + 220 : sx - 220, Math.max(520, sy - 260), [["SATÉLITE GPS · 20.200 km", corr > 0.5 ? PAUSA.AZUL : PAUSA.LARANJA], [corr > 0.5 ? "−38 µs/dia" : "+38 µs/dia", "#fff"]], { a: PAUSA.vis(t, 4.6, 9.22), cor: corr > 0.5 ? PAUSA.AZUL : PAUSA.LARANJA });
+          PAUSA.texto(c, "FORA DE ESCALA", 1000, 1560, { a: v * 0.6, cor: "#9fb3c8", tam: 20, alinha: "right", esp: 0.3 });
         }
-        await K.bindSeek(canvas, render, { warm: [{ renderer, scene, camera: cam }], duration: 9.22 });
+
+        // DR foi lido na hora em que o script rodou (depois do inline o host pode mudar de atributos)
+        await K.bindSeek(canvas, (t) => { st.T = t * D / DR; st.D = D; render(st.T); }, { warm: [st.warm, ...(st.extraWarm || [])], duration: DR });
       });
     })();
   </script>

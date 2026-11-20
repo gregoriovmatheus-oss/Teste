@@ -1,57 +1,112 @@
-<!-- Modelo de cena 3D (R01). cenas.py --criar copia para compositions/fNN.html trocando os marcadores de id e duração.
-     Padrão: script clássico registra buildReady na hora; import dinâmico do kit e dos blocos;
-     K.bindSeek(canvas, render) dá o tempo LOCAL da cena (sem gambiarra de data-start). -->
+<!-- f03: cena 3D padrão documentário (R10 + doc). Lógica em cenas/f03.js (gerado por scripts/monta-cenas.py).
+     Tempos escritos para 6.49 s e esticados para a duração real do host (data-duration). -->
 <template>
   <style>
-    #root { position: absolute; inset: 0; overflow: hidden; background: #0b1018; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0b0a12; }
     #f03-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
-    #f03-titulo { position: absolute; left: 160px; right: 200px; top: 660px; text-align: center; }
-    #f03-titulo-in { display: block; font-family: "EB Garamond", serif; font-size: 84px; line-height: 1.05; color: #fff;
-      text-shadow: 0 4px 26px rgba(4, 10, 20, 0.75), 0 1px 4px rgba(4, 10, 20, 0.6); }
-    #f03-titulo-in .ice { color: #8fcbf2; }
+    /* rótulos 2D: y 680-980, acima da faixa da legenda (1005-1235) */
+    .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .rot-t { display: block; font-family: "Inter", sans-serif; font-weight: 300; font-size: 84px; line-height: 1.1; color: #fff; text-transform: none;
+      letter-spacing: -0.01em; text-shadow: 0 2px 30px rgba(0,0,0,0.7), 0 1px 3px rgba(0,0,0,0.6); opacity: 0; }
+    .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }
+    .rot-t .p { font-size: 64px; }
+    .rot-t .k { display: inline-block; font-family: "JetBrains Mono", monospace; font-weight: 600; font-size: 26px; letter-spacing: 0.32em; color: #7cc8ff; margin-bottom: 18px; }
+    .rot-t .n { font-family: "JetBrains Mono", monospace; font-weight: 600; color: #7cc8ff; }
+
   </style>
   <div id="root" data-composition-id="f03" data-width="1080" data-height="1920">
     <canvas id="f03-canvas" width="1080" height="1920"></canvas>
-    <div id="f03-titulo" class="clip" data-start="0.3" data-duration="2.2">
-      <span id="f03-titulo-in">Texto da <span class="ice">cena</span></span>
-    </div>
+    <div id="f03-r1" class="rot" style="top: 700px"><span id="f03-r1-in" class="rot-t">Quantas <span class="y">marcas</span><br>você teria?</span></div>
+    <div id="f03-r2" class="rot" style="top: 700px"><span id="f03-r2-in" class="rot-t"><span class="k">ESTUDOS COM DIÁRIOS</span><br><span class="y">1 a 2</span> mentiras<br>por dia</span></div>
   </div>
   <script>
     (function () {
-      /* 2D por cima (GSAP). Título entre y 640 e 1000: o HUD ocupa 290-620 e a legenda 1045-1195. */
+      const D0 = 6.49;
+      // duração real = data-duration do host da cena (muda quando a narração muda)
+      const durReal = () => {
+        for (let n = document.getElementById("f03-canvas"); n; n = n.parentElement) {
+          if (n.getAttribute && n.getAttribute("data-composition-id") === "f03" && n.hasAttribute("data-duration")) return parseFloat(n.getAttribute("data-duration")) || D0;
+        }
+        return D0;
+      };
+      const DR = durReal(), K = DR / D0;
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f03-titulo-in", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 0.3);
-      tl.to("#f03-titulo-in", { opacity: 0, duration: 0.2, ease: "power2.in" }, 2.3);
-      tl.set({}, {}, 6.49);
+      tl.fromTo("#f03-r1-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 0.1 * K);
+      tl.to("#f03-r1-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 1.7 * K);
+      tl.fromTo("#f03-r2-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 4.45 * K);
+      tl.to("#f03-r2-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 6.19 * K);
+      tl.set({}, {}, DR);
       window.__timelines = window.__timelines || {};
       window.__timelines["f03"] = tl;
 
-      /* 3D */
       window.__hf = window.__hf || {};
       window.__hf.buildReady = window.__hf.buildReady || {};
       window.__hf.buildReady["f03"] = Promise.all([
-        import("./assets/lib/kit.js"),
-        import("./assets/lib/blocks/city.js"),
-        // import("./assets/lib/blocks/globe.js"), import("./assets/lib/blocks/particles.js"),
-        // import("./assets/lib/blocks/shockwave.js"), import("./assets/lib/blocks/counter.js"),
-      ]).then(async ([K, { createCity }]) => {
-        const { THREE, ease, range, lerp, clamp } = K;
+        import("./assets/lib/kit.js"), import("./assets/lib/blocks/toy.js"), import("./assets/lib/blocks/animals.js"), import("./assets/lib/blocks/pele.js")
+      ]).then(async ([K_, T, A, PELE]) => {
+        const K = K_;
+        const { THREE, ease, range, lerp, clamp, smoothstep, mulberry32 } = K;
+        const D = D0;   // o corpo trabalha no tempo de autoria
         const canvas = document.getElementById("f03-canvas");
-        const renderer = K.createRenderer(canvas);
-        const scene = new THREE.Scene();
-        const cam = new THREE.PerspectiveCamera(35, K.W / K.H, 1, 2000);
-        const city = createCity(scene, { seed: 7, geada: [6.49 * 0.6, 6.49 * 0.6 + 0.35], paraEm: 6.49 * 0.6 });
 
-        function render(t) {               // t = segundos locais da cena
-          const p = ease.outCubic(clamp(t / 6.49));
-          const h = lerp(300, 175, p), ang = lerp(-0.35, 0.05, p);
-          cam.position.set(Math.sin(ang) * 18, h, Math.cos(ang) * 18 + 10);
-          cam.up.set(Math.sin(ang), 0, -Math.cos(ang));
-          cam.lookAt(0, 0, 0);
-          city.update(t);
-          renderer.render(scene, cam);
+        await PELE.fontes();
+        const st = T.createToyStage(canvas, { fov: 36, ceu: ["#0b0a0c", "#1d1714"], nevoa: null, nuvens: 0, luz: 0.9 });
+        const S = st.scene, cam = st.cam;
+        st.hemi.intensity = 0.4; st.rim.color.set(0x9fc8ff);
+        // mesa de madeira escura + calendário de papel com as marcas do mês (textura de canvas redesenhada por quadro)
+        const mesa = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), T.M(0x3a2618, 0.6)); mesa.rotation.x = -Math.PI / 2; mesa.receiveShadow = true; S.add(mesa);
+        const CW = 1024, CH = 860, cv = document.createElement("canvas"); cv.width = CW; cv.height = CH;
+        const g = cv.getContext("2d"), tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 4;
+        const BW = 7, BH = BW * CH / CW;
+        const base = new THREE.Mesh(T.roundBox(BW + 0.3, 0.12, BH + 0.3, 0.05), T.M(0x22262c, 0.7)); S.add(base); base.receiveShadow = base.castShadow = true;
+        const folha = new THREE.Mesh(new THREE.PlaneGeometry(BW, BH), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.85, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: 0.06 }));
+        folha.rotation.x = -Math.PI / 2; folha.position.y = 0.125; folha.receiveShadow = true; S.add(folha);
+        const caneta = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 2.6, 12), T.M(0x1d2a44, 0.3, { metalness: 0.4 })); caneta.rotation.set(Math.PI / 2, 0, 0.6); caneta.position.set(4.3, 0.07, 1.2); caneta.castShadow = true; S.add(caneta);
+        const R = mulberry32(303), DIAS = Array.from({ length: 30 }, (_, i) => ({ n: R() < 0.5 ? 1 : 2, s: [Math.floor(R() * 1e5), Math.floor(R() * 1e5)], o: [R(), R(), R(), R()] }));
+        const T0 = 2.0, T1 = 6.2; // os dias do mês passam
+        const tile = (i) => { const k = i + 2, c = k % 7, r = Math.floor(k / 7); return [16 + c * 142, 120 + r * 144]; };
+        function desenha(t) {
+          g.fillStyle = "#d9cfbf"; g.fillRect(0, 0, CW, CH);
+          g.fillStyle = "#1f2a3a"; g.font = '600 38px "JetBrains Mono"'; g.textAlign = "left"; g.textBaseline = "middle";
+          g.fillText("MÊS · DIÁRIO DE MENTIRAS", 24, 46);
+          g.font = '600 24px "JetBrains Mono"'; g.fillStyle = "#6a7480";
+          ["D", "S", "T", "Q", "Q", "S", "S"].forEach((d, c) => g.fillText(d, 30 + c * 142, 98));
+          let tot = 0;
+          DIAS.forEach((d, i) => {
+            const [x, y] = tile(i), td = lerp(T0, T1, i / 30);
+            g.strokeStyle = "rgba(30,40,55,0.25)"; g.lineWidth = 2; g.strokeRect(x, y, 136, 138);
+            g.fillStyle = "#3a4656"; g.font = '600 24px "JetBrains Mono"'; g.fillText(String(i + 1), x + 10, y + 22);
+            for (let j = 0; j < d.n; j++) {
+              const k = ease.outBack(range(t, td + j * 0.06, td + j * 0.06 + 0.3));
+              if (k <= 0) continue;
+              tot++;
+              const sz = 78 * k, cx = x + 44 + d.o[j * 2] * 48, cy = y + 60 + d.o[j * 2 + 1] * 44;
+              g.drawImage(PELE.mancha2D(d.s[j], 128), cx - sz / 2, cy - sz / 2, sz, sz);
+            }
+          });
+          tex.needsUpdate = true;
+          return tot;
         }
-        await K.bindSeek(canvas, render, { warm: [{ renderer, scene, camera: cam }], duration: 6.49 });
+        function render(t) {
+          const tot = desenha(t);
+          // grua: do alto, quase em planta, descendo e girando sobre o mês que se enche de marcas
+          const e = ease.inOutSine(range(t, 0, 6.49));
+          const a = lerp(-0.35, 0.3, e), h = lerp(11.5, 6.2, e), d = lerp(2.2, 5.6, e);
+          cam.position.set(Math.sin(a) * d, h, Math.cos(a) * d);
+          cam.lookAt(lerp(0, 0.4, e), 0, lerp(0.6, 0.2, e));
+          cam.rotateZ(lerp(0.2, 0.05, e));
+          st.sol(0, 0, 8);
+          st.bloom = 0.4;
+          st.draw();
+          const c = st.ctx, a2 = range(t, 1.9, 2.3);
+          PELE.veu(c, Math.max(PELE.fade(t, 0.0, 2.1, 0.3), PELE.fade(t, 4.35, 9, 0.3)) * 0.9);
+          PELE.pilula(c, 540, 1330, 520, 120, a2);
+          PELE.txt(c, "MARCAS NO MÊS", 540, 1300, { tam: 24, cor: PELE.AZUL, a: a2 });
+          PELE.txt(c, String(tot), 540, 1352, { tam: 54, cor: tot ? PELE.LARANJA : "#fff", a: a2, esp: 0.04 });
+        }
+
+        // DR foi lido na hora em que o script rodou (depois do inline o host pode mudar de atributos)
+        await K.bindSeek(canvas, (t) => { st.T = t * D / DR; st.D = D; render(st.T); }, { warm: [st.warm, ...(st.extraWarm || [])], duration: DR });
       });
     })();
   </script>

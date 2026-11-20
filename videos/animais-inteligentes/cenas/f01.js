@@ -1,0 +1,81 @@
+/*META {"imports": ["mente"], "rotulos": [{"de": 0.15, "ate": 2.6, "texto": "<span class=\"k\">UM EXPERIMENTO MENTAL</span><br><span class=\"p\">E se os animais fossem</span><br><span class=\"y\">inteligentes?</span>"}, {"de": 3.04, "ate": 4.79, "texto": "<span class=\"k\">NOVA CALEDÔNIA</span><br>Isso já <span class=\"y\">acontece</span>"}], "D0": 4.79} */
+        const st = T.createToyStage(canvas, { fov: 30, ceu: ["#2f4a3a", "#c9b27a"], nevoa: [2.5, 9], corNevoa: "#6f7550", luz: 0.9, nuvens: 0 });
+        const S = st.scene, cam = st.cam;
+        st.bloom = 0.55;
+        // ---------- mesa de laboratório de campo: tronco cortado, tubo de vidro, cestinho ----------
+        const tronco = T.mesh(new THREE.CylinderGeometry(0.9, 0.95, 0.6, 40), 0x6b4a32, S, 0.9); tronco.position.y = -0.3;
+        const topo = T.mesh(new THREE.CylinderGeometry(0.9, 0.9, 0.02, 40), 0xb08a5e, S, 0.85); topo.position.y = -0.005;
+        for (let i = 1; i < 6; i++) { const an = T.mesh(new THREE.TorusGeometry(i * 0.15, 0.004, 4, 48), 0x8d6a46, S, 0.9); an.rotation.x = Math.PI / 2; an.position.y = 0.006; }
+        const vidro = new THREE.MeshStandardMaterial({ color: 0xd8f0ff, roughness: 0.04, metalness: 0.0, transparent: true, opacity: 0.22, envMapIntensity: 2.2, side: THREE.DoubleSide, depthWrite: false });
+        const TX = 0.33, TZ = 0.0, TH = 0.3;
+        const tubo = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.055, TH, 32, 1, true), vidro); tubo.position.set(TX, TH / 2, TZ); S.add(tubo);
+        const aro = T.mesh(new THREE.TorusGeometry(0.055, 0.004, 8, 32), M_(0xeaf6ff), S); aro.rotation.x = Math.PI / 2; aro.position.set(TX, TH, TZ);
+        const base = T.mesh(new THREE.CylinderGeometry(0.075, 0.08, 0.02, 32), 0x3a3f46, S, 0.4); base.position.set(TX, 0.01, TZ);
+        function M_(c) { return T.M(c, 0.1, { metalness: 0.6 }); }
+        // cestinho com a comida (pedaço de carne)
+        const cesto = new THREE.Group(); S.add(cesto);
+        const balde = T.mesh(new THREE.CylinderGeometry(0.03, 0.024, 0.036, 20, 1, true), T.M(0xc9a15a, 0.7, { side: THREE.DoubleSide }), cesto); balde.position.y = 0.018;
+        T.mesh(new THREE.CircleGeometry(0.024, 20), 0xa37e44, cesto).rotation.x = -Math.PI / 2;
+        const alca = T.mesh(new THREE.TorusGeometry(0.027, 0.0025, 6, 24, Math.PI), M_(0xcfd4da), cesto); alca.position.y = 0.036;
+        const carne = T.mesh(T.SPH, T.M(0xc0503a, 0.45, { emissive: 0x5a1408, emissiveIntensity: 0.4 }), cesto); carne.scale.set(0.018, 0.012, 0.016); carne.position.y = 0.034;
+        // ---------- o corvo ----------
+        const cv = MENTE.corvo(); cv.group.position.set(0.02, 0, 0.02); cv.group.scale.setScalar(1.0); S.add(cv.group);
+        // ---------- arame (tubo dinâmico) ----------
+        const arameM = T.M(0xd9dde2, 0.18, { metalness: 0.95, envMapIntensity: 1.6 });
+        let arame = new THREE.Mesh(new THREE.BufferGeometry(), arameM); arame.castShadow = true; S.add(arame);
+        const L = 0.27, HK = 0.06;
+        const pb = new THREE.Vector3();
+        function caminho(topo, curva, giro) {
+          const pts = [], N = 26; let x = topo.x, y = topo.y, z = topo.z;
+          const ds = L / N;
+          for (let i = 0; i <= N; i++) {
+            pts.push(new THREE.Vector3(x, y, z));
+            const s = i * ds, u = clamp((s - (L - HK)) / HK), phi = curva * Math.PI * 1.05 * u + giro;
+            x += Math.sin(phi) * ds; y -= Math.cos(phi) * ds;
+          }
+          return pts;
+        }
+        // bokeh de fundo (mata desfocada, luz da manhã)
+        const rr = mulberry32(101);
+        for (let i = 0; i < 26; i++) { const b = MENTE.glow(rr() < 0.6 ? 0xffd9a0 : 0xbfe0a0, 0.25 + rr() * 0.6, 0.15 + rr() * 0.25); b.position.set(-3 + rr() * 6, 0.3 + rr() * 2.2, -3 - rr() * 3); S.add(b); }
+        for (let i = 0; i < 9; i++) { const a = T.arvore(0.8 + rr() * 0.6, 0x4f6f34, 200 + i); a.position.set(-6 + i * 1.5 + rr(), -0.6, -5.5 - rr() * 2); S.add(a); }
+        const sol = MENTE.glow(0xffe2b0, 3.2, 0.55); sol.position.set(2.2, 2.0, -6); S.add(sol);
+        function render(t) {
+          // ações: 0-1.1 segura o arame; 1.2-2.4 dobra a ponta contra o tronco; 2.5-3.1 leva ao tubo e desce; 3.2-4.8 puxa o cesto
+          const curva = ease.inOutCubic(range(t, 1.2, 2.3));
+          const leva = ease.inOutSine(range(t, 2.45, 3.05));
+          const desce = ease.inOutSine(range(t, 2.85, 3.25));
+          const puxa = ease.inOutCubic(range(t, 3.35, 4.6));
+          const empurra = Math.sin(Math.PI * range(t, 1.2, 2.3)) * 0.04;
+          // ponta do bico: ao lado do tubo (dobrando) → sobre o tubo → descendo → subindo com o cesto
+          const pA = new THREE.Vector3(0.27, 0.27 - empurra, 0.16);
+          const pB = new THREE.Vector3(TX - 0.02, TH + 0.06, TZ);
+          pb.lerpVectors(pA, pB, leva);
+          pb.y += -desce * 0.08 + puxa * 0.23;
+          pb.x += -puxa * 0.03;
+          // o corvo acompanha com a cabeça (aponta o bico para pb)
+          const hx = 0.14 + 0.02, hy = 0.37;
+          const dx = pb.x - (cv.group.position.x + hx), dy = pb.y - hy, dz = pb.z - cv.group.position.z;
+          const pitch = Math.atan2(dy, Math.hypot(dx, dz)) * 0.9, yaw = -Math.atan2(dz, dx) * 0.9;
+          cv.update(t, { cabeca: pitch * 0.75, pescoco: pitch * 0.25, vira: yaw, corpo: -0.08 + puxa * 0.12 + empurra * 2, bico: 0.15 });
+          cv.group.updateMatrixWorld(true);
+          const ponta = cv.ponta.getWorldPosition(new THREE.Vector3());
+          // arame: do bico para baixo, com o gancho se formando
+          const giro = -0.25 * (1 - leva) + 0.06;
+          const pts = caminho(ponta, curva, giro);
+          const gnew = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 40, 0.0028, 6, false);
+          arame.geometry.dispose(); arame.geometry = gnew;
+          // ponto mais baixo do gancho (onde a alça engata)
+          let low = pts[0]; for (const p of pts) if (p.y < low.y) low = p;
+          if (t < 3.3) cesto.position.set(TX, 0.021, TZ);
+          else { const k = range(t, 3.3, 3.45); cesto.position.set(lerp(TX, low.x, k), Math.max(0.021, low.y - 0.06), lerp(TZ, low.z, k)); }
+          cesto.rotation.z = Math.sin(t * 5) * 0.08 * puxa;
+          // câmera macro: órbita lenta e baixa, com leve push-in
+          const e = ease.inOutSine(range(t, 0, 4.79));
+          const a = lerp(1.05, 0.55, e), R = lerp(1.75, 1.3, e);
+          const alvo = new THREE.Vector3(lerp(0.22, 0.27, e), lerp(0.2, 0.26, e), 0.02);
+          cam.position.set(alvo.x + Math.sin(a) * R * 0.5, lerp(0.5, 0.4, e), alvo.z + Math.cos(a) * R);
+          cam.lookAt(alvo.x, alvo.y - 0.02, alvo.z);
+          st.sol(0.2, 0, 1.5, 0);
+          st.draw();
+        }

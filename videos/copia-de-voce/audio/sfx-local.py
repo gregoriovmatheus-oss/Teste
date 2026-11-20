@@ -1,7 +1,9 @@
-"""sfx-local.py: efeitos sintetizados localmente (sem API) para "humanos somem 100 anos".
-Whoosh em cada corte; brilho subindo quando as pessoas somem (f01) e reaparecem (f11); estalos da rede caindo (f03);
-água correndo no metrô (f04); asfalto rachando (f05); uivo (f06); concreto trincando (f07); telhado e ponte caindo (f08);
-rumor da represa (f09); cortina (f13) e respiro grave no fim (f14). Saída: assets/audio/sfx.wav (mono 48 kHz)."""
+"""sfx-local.py: efeitos sintetizados localmente (sem API) para "cópia de você".
+Whoosh em cada corte; lençol e pulso grave no despertar (f01); bipes da senha (f02); brilho das células (f03);
+bipes de "ORIGINAL?" (f04); batidas de madeira das tábuas (f05); coração no vaso e passagem para a pele (f06);
+tique dos anos (f07); peças se espalhando e voltando (f08); marcas surgindo (f09); açúcar na xícara (f10);
+estalos das rachaduras (f11); zumbido do fio (f12); e o pulso grave quando a cópia abre os olhos (f13).
+Saída: assets/audio/sfx.wav (mono 48 kHz)."""
 import json, numpy as np, wave
 SR = 48000
 v = json.load(open('video.json')); DUR = v['duracao']
@@ -59,50 +61,63 @@ def env(sig, a=0.3, r=0.6):
 # cortes
 for c in v['cenas'][1:]:
     add(c['inicio'] - 0.38, whoosh(), 0.5)
-# f01: mergulho da órbita (whoosh longo), piscar e pessoas virando poeira de luz em câmera lenta
-add(C['f01'] + 1.2, whoosh(1.0), 0.45)
-add(C['f01'] + 3.05, shimmer(1.8, True), 0.35)
-add(C['f01'] + 3.1, thud(55, 1.0), 0.35)
-# f02: semáforo trocando (clique seco) no silêncio
-for dt in [1.3, 3.3, 4.0]:
-    add(C['f02'] + dt, clique(0.1, 900), 0.15)
-# f03: rede caindo: zumbido morrendo + estalos de cada prédio apagando
-add(C['f03'] + 3.2, zumbido_cai(3.0), 0.5)
+def bipe(f=1200, d=0.09):
+    n = int(SR * d); k = np.arange(n) / SR
+    return np.sin(2 * np.pi * f * k) * np.exp(-k * 30) * np.minimum(1, k * 400)
 r = np.random.default_rng(3)
-for dt in np.sort(r.uniform(3.3, 6.1, 14)):
-    add(C['f03'] + dt, clique(0.12, 120 + r.uniform(0, 80)), 0.35)
-# f04: goteiras e, sem as bombas, a água correndo forte
-for dt in np.arange(0.3, 7.4, 0.37):
-    add(C['f04'] + dt + r.uniform(0, 0.15), clique(0.05, 1400 + r.uniform(0, 900)), 0.08)
-add(C['f04'] + 0.5, env(agua(5.6, 0.05), 1.0, 0.4), 0.12)
-add(C['f04'] + 6.1, env(agua(1.5, 0.2), 0.3, 0.4), 0.4)
-for i in range(5):
-    add(C['f04'] + 6.12 + i * 0.12, clique(0.1, 300), 0.2)
-# f05: asfalto rachando (estalos em rajada)
-for dt in np.sort(r.uniform(1.6, 3.0, 22)):
-    add(C['f05'] + dt, estalo(), 0.25)
-# f06: uivo distante quando chegam os outros lobos
-add(C['f06'] + 3.2, uivo(1.8), 0.22)
-# f07: concreto trincando
-add(C['f07'] + 4.6, thud(90, 0.5), 0.4)
-for dt in np.sort(r.uniform(4.6, 5.5, 14)):
-    add(C['f07'] + dt, estalo(), 0.22)
-# f08: telhado cai, ponte desaba e respingo
-add(C['f08'] + 1.25, thud(60, 0.8), 0.7)
-add(C['f08'] + 2.6, estalo(), 0.3)
-add(C['f08'] + 3.15, thud(50, 0.8), 0.7)
-add(C['f08'] + 3.15, env(agua(0.7, 0.3), 0.02, 0.5), 0.35)
-# f09: rumor da represa (vertedouro)
-add(C['f09'], env(agua(4.4, 0.04), 0.4, 0.6), 0.25)
-# f11: flash do retorno
-add(C['f11'] + 0.55, whoosh(0.5), 0.5)
-add(C['f11'] + 0.7, shimmer(1.2, False), 0.4)
-add(C['f11'] + 0.72, thud(48, 1.2), 0.45)
-# f13: cortina passando
-add(C['f13'] + 0.3, whoosh(2.8), 0.3)
-# f14: corte para o espaço e respiro grave
-add(C['f14'] + 3.1, whoosh(0.7), 0.45)
-add(C['f14'] + 3.3, env(thud(40, 3.0), 0.05, 2.0), 0.4)
+# f01: lençol (chiado), virar a cabeça e pulso grave ao ver a cópia
+add(C['f01'] + 0.6, env(agua(0.8, 0.08), 0.2, 0.4), 0.2)
+add(C['f01'] + 1.83, thud(45, 1.4), 0.55)
+add(C['f01'] + 1.9, shimmer(1.4, False), 0.15)
+# f02: fios subindo e os 4 dígitos da senha + desbloqueio
+add(C['f02'] + 0.6, shimmer(1.4, True), 0.22)
+for k in range(4):
+    add(C['f02'] + 1.92 + k * 0.18, bipe(1500, 0.07), 0.18)
+add(C['f02'] + 2.85, bipe(880, 0.12), 0.2); add(C['f02'] + 2.95, bipe(1320, 0.16), 0.2)
+# f03: mergulho no corpo e brilho das células
+add(C['f03'] + 0.4, whoosh(2.6), 0.35)
+add(C['f03'] + 1.63, shimmer(1.6, True), 0.3)
+for k in range(14):
+    add(C['f03'] + 3.45 + k * 0.11, bipe(2000 + k * 40, 0.05), 0.06)
+# f04: "ORIGINAL?" pulando de um para o outro
+for k in range(10):
+    add(C['f04'] + 0.99 + k * 0.32, bipe(660 if k % 2 else 520, 0.1), 0.14)
+# f05: mar e tábuas trocadas (batidas de madeira)
+add(C['f05'], env(agua(4.4, 0.03), 0.5, 0.6), 0.15)
+for dt in np.sort(r.uniform(0.9, 3.6, 26)):
+    add(C['f05'] + dt, clique(0.1, 160 + r.uniform(0, 90)), 0.28)
+# f06: coração no vaso e passagem para a pele
+for dt in np.arange(0.2, 4.8, 0.85):
+    add(C['f06'] + dt, thud(55, 0.35), 0.35); add(C['f06'] + dt + 0.2, thud(50, 0.3), 0.22)
+add(C['f06'] + 4.45, shimmer(0.6, False), 0.2)
+add(C['f06'] + 4.75, whoosh(0.6), 0.5)
+# f07: neurônios (brilho dourado) e tique dos anos
+add(C['f07'] + 0.5, shimmer(1.8, True), 0.2)
+for dt in np.arange(2.6, 4.6, 0.12):
+    add(C['f07'] + dt, clique(0.04, 2400), 0.07)
+# f08: a lembrança se espalha e volta
+add(C['f08'] + 2.37, shimmer(0.9, False), 0.3); add(C['f08'] + 2.37, whoosh(0.7), 0.35)
+add(C['f08'] + 3.36, shimmer(1.2, True), 0.3)
+add(C['f08'] + 5.28, bipe(740, 0.25), 0.12)
+# f09: marcas surgindo
+for dt in np.sort(r.uniform(2.6, 4.9, 16)):
+    add(C['f09'] + dt, bipe(1800 + r.uniform(0, 600), 0.05), 0.08)
+# f10: açúcar caindo na xícara + colher
+for k in range(2):
+    add(C['f10'] + 2.93 + k * 0.28, clique(0.08, 2600), 0.25)
+    add(C['f10'] + 2.95 + k * 0.28, env(agua(0.25, 0.3), 0.01, 0.2), 0.1)
+add(C['f10'] + 3.6, bipe(3100, 0.2), 0.08)
+# f11: cada objeto racha ao meio
+for dt in [1.23, 1.63, 2.18]:
+    add(C['f11'] + dt, thud(80, 0.4), 0.45)
+    for k in range(4): add(C['f11'] + dt + k * 0.03, estalo(), 0.18)
+# f12: zumbido do fio contínuo
+add(C['f12'] + 0.2, env(shimmer(6.8, True), 1.0, 1.5), 0.14)
+add(C['f12'] + 4.98, thud(42, 1.6), 0.35)
+# f13: fios se apagam; a cópia abre os olhos (pulso grave) e respiro final
+add(C['f13'] + 0.3, shimmer(1.6, True), 0.15)
+add(C['f13'] + 4.8, thud(38, 2.4), 0.6)
+add(C['f13'] + 4.85, env(shimmer(2.0, False), 0.05, 1.5), 0.12)
 
 out = out[: int(SR * DUR)]
 out = np.tanh(out * 1.2) * 0.8

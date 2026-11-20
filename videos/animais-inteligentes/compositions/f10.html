@@ -1,57 +1,88 @@
-<!-- Modelo de cena 3D (R01). cenas.py --criar copia para compositions/fNN.html trocando os marcadores de id e duração.
-     Padrão: script clássico registra buildReady na hora; import dinâmico do kit e dos blocos;
-     K.bindSeek(canvas, render) dá o tempo LOCAL da cena (sem gambiarra de data-start). -->
+<!-- f10: cena 3D padrão documentário (R10 + doc). Lógica em cenas/f10.js (gerado por scripts/monta-cenas.py).
+     Tempos escritos para 5.4 s e esticados para a duração real do host (data-duration). -->
 <template>
   <style>
-    #root { position: absolute; inset: 0; overflow: hidden; background: #0b1018; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0b0a12; }
     #f10-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
-    #f10-titulo { position: absolute; left: 160px; right: 200px; top: 660px; text-align: center; }
-    #f10-titulo-in { display: block; font-family: "EB Garamond", serif; font-size: 84px; line-height: 1.05; color: #fff;
-      text-shadow: 0 4px 26px rgba(4, 10, 20, 0.75), 0 1px 4px rgba(4, 10, 20, 0.6); }
-    #f10-titulo-in .ice { color: #8fcbf2; }
+    /* rótulos 2D: y 680-980, acima da faixa da legenda (1005-1235) */
+    .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .rot-t { display: block; font-family: "Inter", sans-serif; font-weight: 300; font-size: 84px; line-height: 1.1; color: #fff; text-transform: none;
+      letter-spacing: -0.01em; text-shadow: 0 2px 30px rgba(0,0,0,0.7), 0 1px 3px rgba(0,0,0,0.6); opacity: 0; }
+    .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }
+    .rot-t .p { font-size: 64px; }
+    .rot-t .k { display: inline-block; font-family: "JetBrains Mono", monospace; font-weight: 600; font-size: 26px; letter-spacing: 0.32em; color: #7cc8ff; margin-bottom: 18px; }
+    .rot-t .n { font-family: "JetBrains Mono", monospace; font-weight: 600; color: #7cc8ff; }
+
   </style>
   <div id="root" data-composition-id="f10" data-width="1080" data-height="1920">
     <canvas id="f10-canvas" width="1080" height="1920"></canvas>
-    <div id="f10-titulo" class="clip" data-start="0.3" data-duration="2.2">
-      <span id="f10-titulo-in">Texto da <span class="ice">cena</span></span>
-    </div>
+
   </div>
   <script>
     (function () {
-      /* 2D por cima (GSAP). Título entre y 640 e 1000: o HUD ocupa 290-620 e a legenda 1045-1195. */
+      const D0 = 5.4;
+      // duração real = data-duration do host da cena (muda quando a narração muda)
+      const durReal = () => {
+        for (let n = document.getElementById("f10-canvas"); n; n = n.parentElement) {
+          if (n.getAttribute && n.getAttribute("data-composition-id") === "f10" && n.hasAttribute("data-duration")) return parseFloat(n.getAttribute("data-duration")) || D0;
+        }
+        return D0;
+      };
+      const DR = durReal(), K = DR / D0;
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f10-titulo-in", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 0.3);
-      tl.to("#f10-titulo-in", { opacity: 0, duration: 0.2, ease: "power2.in" }, 2.3);
-      tl.set({}, {}, 5.4);
+
+      tl.set({}, {}, DR);
       window.__timelines = window.__timelines || {};
       window.__timelines["f10"] = tl;
 
-      /* 3D */
       window.__hf = window.__hf || {};
       window.__hf.buildReady = window.__hf.buildReady || {};
       window.__hf.buildReady["f10"] = Promise.all([
-        import("./assets/lib/kit.js"),
-        import("./assets/lib/blocks/city.js"),
-        // import("./assets/lib/blocks/globe.js"), import("./assets/lib/blocks/particles.js"),
-        // import("./assets/lib/blocks/shockwave.js"), import("./assets/lib/blocks/counter.js"),
-      ]).then(async ([K, { createCity }]) => {
-        const { THREE, ease, range, lerp, clamp } = K;
+        import("./assets/lib/kit.js"), import("./assets/lib/blocks/toy.js"), import("./assets/lib/blocks/animals.js"), import("./assets/lib/blocks/mente.js")
+      ]).then(async ([K_, T, A, MENTE]) => {
+        const K = K_;
+        const { THREE, ease, range, lerp, clamp, smoothstep, mulberry32 } = K;
+        const D = D0;   // o corpo trabalha no tempo de autoria
         const canvas = document.getElementById("f10-canvas");
-        const renderer = K.createRenderer(canvas);
-        const scene = new THREE.Scene();
-        const cam = new THREE.PerspectiveCamera(35, K.W / K.H, 1, 2000);
-        const city = createCity(scene, { seed: 7, geada: [5.4 * 0.6, 5.4 * 0.6 + 0.35], paraEm: 5.4 * 0.6 });
 
-        function render(t) {               // t = segundos locais da cena
-          const p = ease.outCubic(clamp(t / 5.4));
-          const h = lerp(300, 175, p), ang = lerp(-0.35, 0.05, p);
-          cam.position.set(Math.sin(ang) * 18, h, Math.cos(ang) * 18 + 10);
-          cam.up.set(Math.sin(ang), 0, -Math.cos(ang));
-          cam.lookAt(0, 0, 0);
-          city.update(t);
-          renderer.render(scene, cam);
+        await MENTE.fontes();
+        const st = T.createToyStage(canvas, { fov: 40, ceu: ["#4f6c9a", "#f0c48c"], nevoa: [10, 75], corNevoa: "#d9b58e", luz: 0.95, nuvens: 10 });
+        const S = st.scene, cam = st.cam;
+        st.bloom = 0.5;
+        const chao = T.mesh(new THREE.PlaneGeometry(400, 400), 0x8f7a52, S, 0.95); chao.rotation.x = -Math.PI / 2; chao.castShadow = false;
+        // perto: galinhas instanciadas; longe: um "mar" de pontos até o horizonte
+        const G = MENTE.galinhas(S, { n: 130, seed: 101, area: [-6, 6, -6, 6] });
+        const rr = mulberry32(102), NF = 9000, fp = new Float32Array(NF * 3);
+        for (let i = 0; i < NF; i++) { const a = rr() * 6.28, d = 6 + Math.pow(rr(), 0.6) * 90; fp[i * 3] = Math.cos(a) * d; fp[i * 3 + 1] = 0.22; fp[i * 3 + 2] = Math.sin(a) * d; }
+        const fg = new THREE.BufferGeometry(); fg.setAttribute("position", new THREE.BufferAttribute(fp, 3));
+        const far = new THREE.Points(fg, new THREE.PointsMaterial({ color: 0xf2ebdd, size: 0.42, map: MENTE.glowTex(), transparent: true, alphaTest: 0.05, depthWrite: false })); S.add(far);
+        // uma pessoa e as "suas" 3 galinhas
+        const hum = A.createAnimal("humano", { cor: 0x8a3a2e, cor2: 0x2c3550 }); hum.group.position.set(0.4, 0, 0.6); hum.group.rotation.y = -1.2; S.add(hum.group);
+        G.D.forEach((d) => { if (Math.hypot(d.x - 0.4, d.z - 0.6) < 0.9) d.x += 1.6; });
+        const tres = [[-0.3, 1.4], [0.9, 1.5], [1.3, 0.9]].map(([x, z], i) => { const d = G.D[i]; d.x = x; d.z = z; d.ry = 2.4 + i; return d; });
+        const aneis = tres.map(() => { const m = new THREE.Mesh(new THREE.RingGeometry(0.26, 0.31, 40), new THREE.MeshBasicMaterial({ color: 0xff8a4c, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide })); m.rotation.x = -Math.PI / 2; m.position.y = 0.03; S.add(m); return m; });
+        function render(t) {
+          G.update(t);
+          hum.update(t, { cabeca: -0.25 });
+          aneis.forEach((m, i) => { m.position.x = tres[i].x; m.position.z = tres[i].z; m.material.opacity = range(t, 3.3 + i * 0.25, 3.5 + i * 0.25) * 0.95; });
+          // grua: rente às galinhas → sobe revelando o mar de galinhas até o horizonte → volta a descer na pessoa
+          const up = ease.inOutSine(range(t, 0, 2.9)), dn = ease.inOutCubic(range(t, 2.9, 4.2));
+          const a = lerp(-0.8, 0.7, range(t, 0, 5.4));
+          const R = lerp(lerp(5.5, 12, up), 5.2, dn), y = lerp(lerp(0.95, 9.5, up), 3.4, dn);
+          cam.position.set(0.4 + Math.sin(a) * R, y, 0.6 + Math.cos(a) * R);
+          cam.lookAt(0.4, lerp(lerp(0.4, 0, up), 0.6, dn), lerp(lerp(0.6, -14, up), 0.6, dn));
+          st.sol(0, 0, 14);
+          st.draw();
+          const c = st.ctx;
+          const n = 25 * ease.outCubic(range(t, 1.31, 2.4));
+          const a1 = range(t, 1.2, 1.5) * (1 - range(t, 3.0, 3.25));
+          MENTE.texto(c, { x: 540, y: 620, k: "GALINHAS NO MUNDO", v: Math.round(n) + " bi" + (t > 2.2 ? "+" : ""), a: a1, tam: 170 });
+          const a2 = range(t, 3.27, 3.6);
+          MENTE.texto(c, { x: 540, y: 620, k: "POR PESSOA", v: "3+", u: "galinhas para cada humano", a: a2, tam: 170, corK: "#ff8a4c", grad: ["#ffffff", "#ffb08a"] });
         }
-        await K.bindSeek(canvas, render, { warm: [{ renderer, scene, camera: cam }], duration: 5.4 });
+
+        // DR foi lido na hora em que o script rodou (depois do inline o host pode mudar de atributos)
+        await K.bindSeek(canvas, (t) => { st.T = t * D / DR; st.D = D; render(st.T); }, { warm: [st.warm, ...(st.extraWarm || [])], duration: DR });
       });
     })();
   </script>

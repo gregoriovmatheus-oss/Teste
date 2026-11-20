@@ -1,57 +1,116 @@
-<!-- Modelo de cena 3D (R01). cenas.py --criar copia para compositions/fNN.html trocando os marcadores de id e duração.
-     Padrão: script clássico registra buildReady na hora; import dinâmico do kit e dos blocos;
-     K.bindSeek(canvas, render) dá o tempo LOCAL da cena (sem gambiarra de data-start). -->
+<!-- f07: cena 3D padrão documentário (R10 + doc). Lógica em cenas/f07.js (gerado por scripts/monta-cenas.py).
+     Tempos escritos para 4.56 s e esticados para a duração real do host (data-duration). -->
 <template>
   <style>
-    #root { position: absolute; inset: 0; overflow: hidden; background: #0b1018; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0b0a12; }
     #f07-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
-    #f07-titulo { position: absolute; left: 160px; right: 200px; top: 660px; text-align: center; }
-    #f07-titulo-in { display: block; font-family: "EB Garamond", serif; font-size: 84px; line-height: 1.05; color: #fff;
-      text-shadow: 0 4px 26px rgba(4, 10, 20, 0.75), 0 1px 4px rgba(4, 10, 20, 0.6); }
-    #f07-titulo-in .ice { color: #8fcbf2; }
+    /* rótulos 2D: y 680-980, acima da faixa da legenda (1005-1235) */
+    .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .rot-t { display: block; font-family: "Inter", sans-serif; font-weight: 300; font-size: 84px; line-height: 1.1; color: #fff; text-transform: none;
+      letter-spacing: -0.01em; text-shadow: 0 2px 30px rgba(0,0,0,0.7), 0 1px 3px rgba(0,0,0,0.6); opacity: 0; }
+    .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }
+    .rot-t .p { font-size: 64px; }
+    .rot-t .k { display: inline-block; font-family: "JetBrains Mono", monospace; font-weight: 600; font-size: 26px; letter-spacing: 0.32em; color: #7cc8ff; margin-bottom: 18px; }
+    .rot-t .n { font-family: "JetBrains Mono", monospace; font-weight: 600; color: #7cc8ff; }
+
   </style>
   <div id="root" data-composition-id="f07" data-width="1080" data-height="1920">
     <canvas id="f07-canvas" width="1080" height="1920"></canvas>
-    <div id="f07-titulo" class="clip" data-start="0.3" data-duration="2.2">
-      <span id="f07-titulo-in">Texto da <span class="ice">cena</span></span>
-    </div>
+    <div id="f07-r1" class="rot" style="top: 470px"><span id="f07-r1-in" class="rot-t">Nem o <span class="y">polígrafo</span><br>resolve</span></div>
   </div>
   <script>
     (function () {
-      /* 2D por cima (GSAP). Título entre y 640 e 1000: o HUD ocupa 290-620 e a legenda 1045-1195. */
+      const D0 = 4.56;
+      // duração real = data-duration do host da cena (muda quando a narração muda)
+      const durReal = () => {
+        for (let n = document.getElementById("f07-canvas"); n; n = n.parentElement) {
+          if (n.getAttribute && n.getAttribute("data-composition-id") === "f07" && n.hasAttribute("data-duration")) return parseFloat(n.getAttribute("data-duration")) || D0;
+        }
+        return D0;
+      };
+      const DR = durReal(), K = DR / D0;
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f07-titulo-in", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 0.3);
-      tl.to("#f07-titulo-in", { opacity: 0, duration: 0.2, ease: "power2.in" }, 2.3);
-      tl.set({}, {}, 4.56);
+      tl.fromTo("#f07-r1-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 0.3 * K);
+      tl.to("#f07-r1-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 1.55 * K);
+      tl.set({}, {}, DR);
       window.__timelines = window.__timelines || {};
       window.__timelines["f07"] = tl;
 
-      /* 3D */
       window.__hf = window.__hf || {};
       window.__hf.buildReady = window.__hf.buildReady || {};
       window.__hf.buildReady["f07"] = Promise.all([
-        import("./assets/lib/kit.js"),
-        import("./assets/lib/blocks/city.js"),
-        // import("./assets/lib/blocks/globe.js"), import("./assets/lib/blocks/particles.js"),
-        // import("./assets/lib/blocks/shockwave.js"), import("./assets/lib/blocks/counter.js"),
-      ]).then(async ([K, { createCity }]) => {
-        const { THREE, ease, range, lerp, clamp } = K;
+        import("./assets/lib/kit.js"), import("./assets/lib/blocks/toy.js"), import("./assets/lib/blocks/animals.js"), import("./assets/lib/blocks/pele.js")
+      ]).then(async ([K_, T, A, PELE]) => {
+        const K = K_;
+        const { THREE, ease, range, lerp, clamp, smoothstep, mulberry32 } = K;
+        const D = D0;   // o corpo trabalha no tempo de autoria
         const canvas = document.getElementById("f07-canvas");
-        const renderer = K.createRenderer(canvas);
-        const scene = new THREE.Scene();
-        const cam = new THREE.PerspectiveCamera(35, K.W / K.H, 1, 2000);
-        const city = createCity(scene, { seed: 7, geada: [4.56 * 0.6, 4.56 * 0.6 + 0.35], paraEm: 4.56 * 0.6 });
 
-        function render(t) {               // t = segundos locais da cena
-          const p = ease.outCubic(clamp(t / 4.56));
-          const h = lerp(300, 175, p), ang = lerp(-0.35, 0.05, p);
-          cam.position.set(Math.sin(ang) * 18, h, Math.cos(ang) * 18 + 10);
-          cam.up.set(Math.sin(ang), 0, -Math.cos(ang));
-          cam.lookAt(0, 0, 0);
-          city.update(t);
-          renderer.render(scene, cam);
+        await PELE.fontes();
+        const st = T.createToyStage(canvas, { fov: 34, ceu: ["#0a0b0e", "#1d1f24"], nevoa: null, nuvens: 0, luz: 0.9 });
+        const S = st.scene, cam = st.cam;
+        st.rim.color.set(0x9fc8ff); st.hemi.intensity = 0.4;
+        const mesa = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), T.M(0x2b2017, 0.55)); mesa.rotation.x = -Math.PI / 2; mesa.receiveShadow = true; S.add(mesa);
+        // aparelho: caixa, rolo de papel e 3 agulhas
+        const caixa = new THREE.Mesh(T.roundBox(7.4, 0.9, 3.6, 0.12), T.M(0x3a3f46, 0.5, { metalness: 0.35 })); caixa.position.set(0, 0, -0.3); S.add(caixa); caixa.castShadow = caixa.receiveShadow = true;
+        const CW = 1400, CH = 420, cv = document.createElement("canvas"); cv.width = CW; cv.height = CH; const g = cv.getContext("2d");
+        const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 4;
+        const PW = 7, PH = PW * CH / CW;
+        const papel = new THREE.Mesh(new THREE.PlaneGeometry(PW, PH), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.9 }));
+        papel.rotation.x = -Math.PI / 2; papel.position.set(0, 0.93, 0.35); papel.receiveShadow = true; S.add(papel);
+        for (const s of [-1, 1]) { const r = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, PH + 0.3, 24), T.M(0xd8d4cc, 0.6)); r.rotation.x = Math.PI / 2; r.position.set(s * 3.7, 1.0, 0.35); S.add(r); }
+        const XN = 0.62; // agulhas a 62% da largura do papel
+        const fx = [
+          (X) => 0.5 * Math.sin(X * 0.012) + 0.15 * Math.sin(X * 0.031),                                        // respiração
+          (X) => 0.25 * Math.sin(X * 0.004) + 0.55 * clamp((X - 1500) / 260) - 0.3,                            // suor (pele conduz mais)
+          (X) => { const p = (X % 70) / 70; return (p < 0.08 ? Math.sin(p / 0.08 * Math.PI) * 1.4 : 0) - (p > 0.08 && p < 0.14 ? 0.4 : 0) + 0.12 * Math.sin(X * 0.05); }, // pulso
+        ];
+        const yT = [95, 215, 335];
+        const agulhas = yT.map((y, i) => {
+          const a = new THREE.Group(); const b = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.05, 2.0), T.M(0x1b1d22, 0.4, { metalness: 0.6 })); b.position.z = -1.0; a.add(b);
+          const ponta = new THREE.Mesh(new THREE.SphereGeometry(0.05, 10, 8), T.M(i === 1 ? 0xff8a4c : 0x7cc8ff, 0.4, { emissive: i === 1 ? 0xff8a4c : 0x7cc8ff, emissiveIntensity: 0.8 })); a.add(ponta);
+          S.add(a); return a;
+        });
+        const vel = 330; // px de papel por segundo
+        function render(t) {
+          const s = t * vel + 1000;
+          g.fillStyle = "#ece6da"; g.fillRect(0, 0, CW, CH);
+          g.strokeStyle = "rgba(124,160,200,0.35)"; g.lineWidth = 1;
+          for (let x = -(s % 40); x < CW; x += 40) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x, CH); g.stroke(); }
+          for (let y = 20; y < CH; y += 40) { g.beginPath(); g.moveTo(0, y); g.lineTo(CW, y); g.stroke(); }
+          const xn = CW * XN;
+          fx.forEach((f, i) => {
+            g.strokeStyle = i === 1 ? "#c4501e" : "#1d2b44"; g.lineWidth = 3.5; g.beginPath();
+            for (let x = 0; x <= xn; x += 3) { const y = yT[i] - f(s - (xn - x)) * 48; x ? g.lineTo(x, y) : g.moveTo(x, y); } g.stroke();
+          });
+          g.fillStyle = "#3a4656"; g.font = '600 22px "JetBrains Mono"'; ["RESPIRAÇÃO", "SUOR", "PULSO"].forEach((n, i) => g.fillText(n, 14, yT[i] - 52));
+          tex.needsUpdate = true;
+          // pontas das agulhas acompanham o traço
+          agulhas.forEach((a, i) => {
+            const y = yT[i] - fx[i](s) * 48;
+            const px = (xn / CW - 0.5) * PW, pz = 0.35 + (y / CH - 0.5) * PH;
+            a.position.set(px, 0.97, pz); a.rotation.y = -0.5 + (pz - 0.35) * 0.2;
+          });
+          // dolly baixo ao longo do papel
+          const e = ease.inOutSine(range(t, 0, 4.56));
+          cam.position.set(lerp(3.6, -0.6, e), lerp(3.2, 4.4, e), lerp(5.8, 4.4, e));
+          cam.lookAt(lerp(0.4, 0.6, e), 0.9, 0.3);
+          st.sol(0, 0, 6);
+          st.bloom = 0.35;
+          st.draw();
+          const c = st.ctx, v = new THREE.Vector3();
+          [[1, "SUOR", 2.42], [2, "PULSO", 2.86]].forEach(([i, n, t0], k) => {
+            agulhas[i].getWorldPosition(v); const [x, y] = PELE.proj(v, cam);
+            PELE.tag(c, x, y, 640, 1290 + k * 80, n, { cor: PELE.AZUL, a: range(t, t0, t0 + 0.3), tam: 36 });
+          });
+          const aN = range(t, 3.48, 3.75);
+          PELE.veu(c, aN * 0.9, 640, 500, 150);
+          PELE.txt(c, "NÃO MEDE", 540, 600, { tam: 64, cor: PELE.LARANJA, a: aN, esp: 0.08 });
+          PELE.txt(c, "A MENTIRA", 540, 680, { tam: 64, cor: PELE.LARANJA, a: aN, esp: 0.08 });
         }
-        await K.bindSeek(canvas, render, { warm: [{ renderer, scene, camera: cam }], duration: 4.56 });
+
+        // DR foi lido na hora em que o script rodou (depois do inline o host pode mudar de atributos)
+        await K.bindSeek(canvas, (t) => { st.T = t * D / DR; st.D = D; render(st.T); }, { warm: [st.warm, ...(st.extraWarm || [])], duration: DR });
       });
     })();
   </script>

@@ -1,57 +1,122 @@
-<!-- Modelo de cena 3D (R01). cenas.py --criar copia para compositions/fNN.html trocando os marcadores de id e duração.
-     Padrão: script clássico registra buildReady na hora; import dinâmico do kit e dos blocos;
-     K.bindSeek(canvas, render) dá o tempo LOCAL da cena (sem gambiarra de data-start). -->
+<!-- f10: cena 3D padrão documentário (R10 + doc). Lógica em cenas/f10.js (gerado por scripts/monta-cenas.py).
+     Tempos escritos para 5.86 s e esticados para a duração real do host (data-duration). -->
 <template>
   <style>
-    #root { position: absolute; inset: 0; overflow: hidden; background: #0b1018; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0b0a12; }
     #f10-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
-    #f10-titulo { position: absolute; left: 160px; right: 200px; top: 660px; text-align: center; }
-    #f10-titulo-in { display: block; font-family: "EB Garamond", serif; font-size: 84px; line-height: 1.05; color: #fff;
-      text-shadow: 0 4px 26px rgba(4, 10, 20, 0.75), 0 1px 4px rgba(4, 10, 20, 0.6); }
-    #f10-titulo-in .ice { color: #8fcbf2; }
+    /* rótulos 2D: y 680-980, acima da faixa da legenda (1005-1235) */
+    .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .rot-t { display: block; font-family: "Inter", sans-serif; font-weight: 300; font-size: 84px; line-height: 1.1; color: #fff; text-transform: none;
+      letter-spacing: -0.01em; text-shadow: 0 2px 30px rgba(0,0,0,0.7), 0 1px 3px rgba(0,0,0,0.6); opacity: 0; }
+    .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }
+    .rot-t .p { font-size: 64px; }
+    .rot-t .k { display: inline-block; font-family: "JetBrains Mono", monospace; font-weight: 600; font-size: 26px; letter-spacing: 0.32em; color: #7cc8ff; margin-bottom: 18px; }
+    .rot-t .n { font-family: "JetBrains Mono", monospace; font-weight: 600; color: #7cc8ff; }
+
   </style>
   <div id="root" data-composition-id="f10" data-width="1080" data-height="1920">
     <canvas id="f10-canvas" width="1080" height="1920"></canvas>
-    <div id="f10-titulo" class="clip" data-start="0.3" data-duration="2.2">
-      <span id="f10-titulo-in">Texto da <span class="ice">cena</span></span>
-    </div>
+    <div id="f10-r1" class="rot" style="top: 700px"><span id="f10-r1-in" class="rot-t">Com a cópia, seria <span class="y">igual</span></span></div>
+    <div id="f10-r2" class="rot" style="top: 700px"><span id="f10-r2-in" class="rot-t"><span class="k">DIA 1</span><br>O primeiro <span class="y">café</span></span></div>
+    <div id="f10-r3" class="rot" style="top: 700px"><span id="f10-r3-in" class="rot-t">Pessoas <span class="y">diferentes</span></span></div>
   </div>
   <script>
     (function () {
-      /* 2D por cima (GSAP). Título entre y 640 e 1000: o HUD ocupa 290-620 e a legenda 1045-1195. */
+      const D0 = 5.86;
+      // duração real = data-duration do host da cena (muda quando a narração muda)
+      const durReal = () => {
+        for (let n = document.getElementById("f10-canvas"); n; n = n.parentElement) {
+          if (n.getAttribute && n.getAttribute("data-composition-id") === "f10" && n.hasAttribute("data-duration")) return parseFloat(n.getAttribute("data-duration")) || D0;
+        }
+        return D0;
+      };
+      const DR = durReal(), K = DR / D0;
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f10-titulo-in", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 0.3);
-      tl.to("#f10-titulo-in", { opacity: 0, duration: 0.2, ease: "power2.in" }, 2.3);
-      tl.set({}, {}, 5.86);
+      tl.fromTo("#f10-r1-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 0.1 * K);
+      tl.to("#f10-r1-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 1.45 * K);
+      tl.fromTo("#f10-r2-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 1.81 * K);
+      tl.to("#f10-r2-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 3.0 * K);
+      tl.fromTo("#f10-r3-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 4.4 * K);
+      tl.to("#f10-r3-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 5.56 * K);
+      tl.set({}, {}, DR);
       window.__timelines = window.__timelines || {};
       window.__timelines["f10"] = tl;
 
-      /* 3D */
       window.__hf = window.__hf || {};
       window.__hf.buildReady = window.__hf.buildReady || {};
       window.__hf.buildReady["f10"] = Promise.all([
-        import("./assets/lib/kit.js"),
-        import("./assets/lib/blocks/city.js"),
-        // import("./assets/lib/blocks/globe.js"), import("./assets/lib/blocks/particles.js"),
-        // import("./assets/lib/blocks/shockwave.js"), import("./assets/lib/blocks/counter.js"),
-      ]).then(async ([K, { createCity }]) => {
-        const { THREE, ease, range, lerp, clamp } = K;
+        import("./assets/lib/kit.js"), import("./assets/lib/blocks/toy.js"), import("./assets/lib/blocks/animals.js"), import("./assets/lib/blocks/copia.js")
+      ]).then(async ([K_, T, A, COPIA]) => {
+        const K = K_;
+        const { THREE, ease, range, lerp, clamp, smoothstep, mulberry32 } = K;
+        const D = D0;   // o corpo trabalha no tempo de autoria
         const canvas = document.getElementById("f10-canvas");
-        const renderer = K.createRenderer(canvas);
-        const scene = new THREE.Scene();
-        const cam = new THREE.PerspectiveCamera(35, K.W / K.H, 1, 2000);
-        const city = createCity(scene, { seed: 7, geada: [5.86 * 0.6, 5.86 * 0.6 + 0.35], paraEm: 5.86 * 0.6 });
 
-        function render(t) {               // t = segundos locais da cena
-          const p = ease.outCubic(clamp(t / 5.86));
-          const h = lerp(300, 175, p), ang = lerp(-0.35, 0.05, p);
-          cam.position.set(Math.sin(ang) * 18, h, Math.cos(ang) * 18 + 10);
-          cam.up.set(Math.sin(ang), 0, -Math.cos(ang));
-          cam.lookAt(0, 0, 0);
-          city.update(t);
-          renderer.render(scene, cam);
+        // Cozinha na luz dourada da manhã: duas xícaras; uma recebe açúcar, a outra não. Os fios de memória começam a se separar.
+        const st = T.createToyStage(canvas, { ceu: "#1a1410", nevoa: [6, 24], corNevoa: "#1a1410", fov: 46, nuvens: 0 });
+        const S = st.scene, cam = st.cam;
+        S.environment = null; st.bloom = 0.65;
+        st.key.color.set(0xffc98a); st.key.intensity = 3.0; st.rim.color.set(0xffa868); st.hemi.color.set(0xd9b48a); st.hemi.intensity = 0.6;
+        await COPIA.fontes();
+        const piso = new THREE.Mesh(new THREE.PlaneGeometry(14, 14), T.M(0x6b5240, 0.6)); piso.rotation.x = -Math.PI / 2; piso.receiveShadow = true; S.add(piso);
+        const parede = new THREE.Mesh(new THREE.PlaneGeometry(14, 6), T.M(0xd8cbb4, 0.9)); parede.position.set(0, 3, -2.2); parede.receiveShadow = true; S.add(parede);
+        const jan = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 1.5), new THREE.MeshBasicMaterial({ color: 0xffe2b0, toneMapped: false })); jan.position.set(-0.9, 2.2, -2.19); S.add(jan);
+        for (const x of [-0.9]) { const b = T.mesh(T.roundBox(0.06, 1.55, 0.05, 0.02), 0xf0e8dc, S, 0.6); b.position.set(x, 1.45, -2.17); }
+        const balcao = T.mesh(T.roundBox(4.5, 0.9, 0.7, 0.05), 0x7a5a42, S, 0.6); balcao.position.set(0, 0, -1.8);
+        const mesa = T.mesh(T.roundBox(1.4, 0.06, 0.8, 0.03), 0x9a7454, S, 0.5); mesa.position.set(0, 0.92, 0);
+        for (const [x, z] of [[-0.62, -0.32], [0.62, -0.32], [-0.62, 0.32], [0.62, 0.32]]) { const p = T.mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.92, 8), 0x3a2c20, S); p.position.set(x, 0.46, z); }
+        const xic = (x) => {
+          const g = new THREE.Group(); g.position.set(x, 0.98, 0.05); S.add(g);
+          T.mesh(new THREE.CylinderGeometry(0.075, 0.06, 0.15, 20, 1, true), 0xf2efe8, g, 0.3).position.y = 0.075;
+          T.mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.01, 16), 0xf2efe8, g, 0.3).position.y = 0.005;
+          const cafe = T.mesh(new THREE.CircleGeometry(0.07, 20), 0x3a2014, g, 0.2); cafe.rotation.x = -Math.PI / 2; cafe.position.y = 0.13;
+          const asa = T.mesh(new THREE.TorusGeometry(0.04, 0.012, 6, 12), 0xf2efe8, g, 0.3); asa.position.set(x < 0 ? -0.085 : 0.085, 0.08, 0);
+          T.mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.012, 24), 0xf2efe8, g, 0.3);
+          return g;
+        };
+        const xA = xic(-0.3), xB = xic(0.3);
+        const cubos = [0, 1].map((k) => { const m = T.mesh(T.roundBox(0.04, 0.04, 0.04, 0.008), 0xfbf8f2, S, 0.6); return m; });
+        const pote = T.mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.12, 16), 0xc9d8e8, S, 0.3); pote.position.set(-0.52, 0.95, -0.22);
+        // vapor
+        const NV = 120, vp = new Float32Array(NV * 2 * 3), vg = new THREE.BufferGeometry(); vg.setAttribute("position", new THREE.BufferAttribute(vp, 3));
+        const vap = new THREE.Points(vg, new THREE.PointsMaterial({ size: 0.05, map: COPIA.glowTex(), color: 0xffffff, transparent: true, opacity: 0.25, depthWrite: false, toneMapped: false }));
+        vap.frustumCulled = false; S.add(vap);
+        const EU = COPIA.pessoa({ fase: 0.1 }), CO = COPIA.pessoa({ fase: 0.1 });
+        EU.emPe(-0.95, 0.05, 0); CO.emPe(0.95, 0.05, Math.PI); S.add(EU.p, CO.p); EU.olhos(1); CO.olhos(1);
+        const F = COPIA.fios(S, { n: 14, k: 40, seed: 21, alt: 1.6, tam: 0.06 });
+        const rr = mulberry32(1010), VP = Array.from({ length: NV * 2 }, () => [rr(), (rr() - 0.5) * 0.06, (rr() - 0.5) * 0.06, rr() * 6]);
+        const v = new THREE.Vector3();
+        function render(t) {
+          EU.update(t, {}); CO.update(t, {});
+          EU.arms[0].rotation.z = 0.75; CO.arms[0].rotation.z = 0.75; EU.arms[1].rotation.z = 0.75; CO.arms[1].rotation.z = 0.75;
+          EU.olha(0, lerp(0, -0.35, range(t, 1.8, 2.4))); CO.olha(0, lerp(0, -0.35, range(t, 1.8, 2.4)));
+          // dois cubos de açúcar caem só na xícara da esquerda
+          cubos.forEach((m, k) => {
+            const t0 = 2.55 + k * 0.28, q = range(t, t0, t0 + 0.38);
+            m.position.set(lerp(-0.5, -0.3, ease.outCubic(range(t, t0 - 0.3, t0))), q < 1 ? 1.45 - q * q * 0.38 : 1.0, 0.05);
+            m.rotation.set(q * 3, q * 2, 0); m.visible = t > t0 - 0.3 && q < 1;
+          });
+          for (let i = 0; i < NV * 2; i++) { const [f, dx, dz, ph] = VP[i], s = (t * 0.35 + f) % 1, x0 = i < NV ? -0.3 : 0.3;
+            vp[i * 3] = x0 + dx + Math.sin(s * 6 + ph) * 0.03 * (1 + s * 3); vp[i * 3 + 1] = 1.12 + s * 0.6; vp[i * 3 + 2] = 0.05 + dz; }
+          vg.attributes.position.needsUpdate = true;
+          const div = ease.inOutSine(range(t, 3.3, 5.86));
+          F.update(t, { A: EU.cabeca(0.3), B: CO.cabeca(0.3), div, a: range(t, 0.2, 0.7) });
+          // dolly: rente às xícaras, sobe até as duas cabeças e os fios separando
+          const e1 = ease.inOutCubic(range(t, 0, 3.4)), e2 = ease.inOutCubic(range(t, 3.4, 5.86));
+          const p = v.set(lerp(-0.6, -0.15, e1), lerp(1.75, 1.3, e1), lerp(2.6, 1.6, e1));
+          p.lerp(new THREE.Vector3(0.1, 2.3, 4.6), e2);
+          cam.position.copy(p);
+          cam.lookAt(lerp(0, 0, e1), lerp(1.3, 1.03, e1) + e2 * 0.9, 0);
+          st.sol(-1, 0, 4);
+          st.draw();
+          const c = st.ctx, a = COPIA.vis(st);
+          COPIA.tag(c, cam, xA.position.clone().add(v.set(0, 0.15, 0)), "COM AÇÚCAR", { cor: COPIA.LARANJA, a: a * range(t, 2.6, 2.85) * (1 - range(t, 4.2, 4.4)), dx: -120, dy: -260 });
+          COPIA.tag(c, cam, xB.position.clone().add(v.set(0, 0.15, 0)), "SEM AÇÚCAR", { a: a * range(t, 2.9, 3.15) * (1 - range(t, 4.2, 4.4)), dx: 120, dy: -260 });
+          if (div > 0.05) COPIA.txt(c, "MEMÓRIAS EM COMUM " + (100 - div * 0.4).toFixed(1) + "%", 540, 560, { tam: 26, cor: div > 0.3 ? COPIA.LARANJA : COPIA.AZUL, a: a * range(t, 3.4, 3.7) });
         }
-        await K.bindSeek(canvas, render, { warm: [{ renderer, scene, camera: cam }], duration: 5.86 });
+
+        // DR foi lido na hora em que o script rodou (depois do inline o host pode mudar de atributos)
+        await K.bindSeek(canvas, (t) => { st.T = t * D / DR; st.D = D; render(st.T); }, { warm: [st.warm, ...(st.extraWarm || [])], duration: DR });
       });
     })();
   </script>

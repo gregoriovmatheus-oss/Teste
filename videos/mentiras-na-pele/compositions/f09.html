@@ -1,57 +1,120 @@
-<!-- Modelo de cena 3D (R01). cenas.py --criar copia para compositions/fNN.html trocando os marcadores de id e duração.
-     Padrão: script clássico registra buildReady na hora; import dinâmico do kit e dos blocos;
-     K.bindSeek(canvas, render) dá o tempo LOCAL da cena (sem gambiarra de data-start). -->
+<!-- f09: cena 3D padrão documentário (R10 + doc). Lógica em cenas/f09.js (gerado por scripts/monta-cenas.py).
+     Tempos escritos para 5.04 s e esticados para a duração real do host (data-duration). -->
 <template>
   <style>
-    #root { position: absolute; inset: 0; overflow: hidden; background: #0b1018; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0b0a12; }
     #f09-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
-    #f09-titulo { position: absolute; left: 160px; right: 200px; top: 660px; text-align: center; }
-    #f09-titulo-in { display: block; font-family: "EB Garamond", serif; font-size: 84px; line-height: 1.05; color: #fff;
-      text-shadow: 0 4px 26px rgba(4, 10, 20, 0.75), 0 1px 4px rgba(4, 10, 20, 0.6); }
-    #f09-titulo-in .ice { color: #8fcbf2; }
+    /* rótulos 2D: y 680-980, acima da faixa da legenda (1005-1235) */
+    .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .rot-t { display: block; font-family: "Inter", sans-serif; font-weight: 300; font-size: 84px; line-height: 1.1; color: #fff; text-transform: none;
+      letter-spacing: -0.01em; text-shadow: 0 2px 30px rgba(0,0,0,0.7), 0 1px 3px rgba(0,0,0,0.6); opacity: 0; }
+    .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }
+    .rot-t .p { font-size: 64px; }
+    .rot-t .k { display: inline-block; font-family: "JetBrains Mono", monospace; font-weight: 600; font-size: 26px; letter-spacing: 0.32em; color: #7cc8ff; margin-bottom: 18px; }
+    .rot-t .n { font-family: "JetBrains Mono", monospace; font-weight: 600; color: #7cc8ff; }
+
   </style>
   <div id="root" data-composition-id="f09" data-width="1080" data-height="1920">
     <canvas id="f09-canvas" width="1080" height="1920"></canvas>
-    <div id="f09-titulo" class="clip" data-start="0.3" data-duration="2.2">
-      <span id="f09-titulo-in">Texto da <span class="ice">cena</span></span>
-    </div>
+    <div id="f09-r1" class="rot" style="top: 470px"><span id="f09-r1-in" class="rot-t"><span class="k">LULA · CROMATÓFOROS</span><br>Muda de cor em <span class="y">&lt; 0,5 s</span></span></div>
+    <div id="f09-r2" class="rot" style="top: 470px"><span id="f09-r2-in" class="rot-t">Imagine essa pele<br><span class="y">em nós</span></span></div>
   </div>
   <script>
     (function () {
-      /* 2D por cima (GSAP). Título entre y 640 e 1000: o HUD ocupa 290-620 e a legenda 1045-1195. */
+      const D0 = 5.04;
+      // duração real = data-duration do host da cena (muda quando a narração muda)
+      const durReal = () => {
+        for (let n = document.getElementById("f09-canvas"); n; n = n.parentElement) {
+          if (n.getAttribute && n.getAttribute("data-composition-id") === "f09" && n.hasAttribute("data-duration")) return parseFloat(n.getAttribute("data-duration")) || D0;
+        }
+        return D0;
+      };
+      const DR = durReal(), K = DR / D0;
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f09-titulo-in", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 0.3);
-      tl.to("#f09-titulo-in", { opacity: 0, duration: 0.2, ease: "power2.in" }, 2.3);
-      tl.set({}, {}, 5.04);
+      tl.fromTo("#f09-r1-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 1.79 * K);
+      tl.to("#f09-r1-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 2.7 * K);
+      tl.fromTo("#f09-r2-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 3.2 * K);
+      tl.to("#f09-r2-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 4.74 * K);
+      tl.set({}, {}, DR);
       window.__timelines = window.__timelines || {};
       window.__timelines["f09"] = tl;
 
-      /* 3D */
       window.__hf = window.__hf || {};
       window.__hf.buildReady = window.__hf.buildReady || {};
       window.__hf.buildReady["f09"] = Promise.all([
-        import("./assets/lib/kit.js"),
-        import("./assets/lib/blocks/city.js"),
-        // import("./assets/lib/blocks/globe.js"), import("./assets/lib/blocks/particles.js"),
-        // import("./assets/lib/blocks/shockwave.js"), import("./assets/lib/blocks/counter.js"),
-      ]).then(async ([K, { createCity }]) => {
-        const { THREE, ease, range, lerp, clamp } = K;
+        import("./assets/lib/kit.js"), import("./assets/lib/blocks/toy.js"), import("./assets/lib/blocks/animals.js"), import("./assets/lib/blocks/pele.js")
+      ]).then(async ([K_, T, A, PELE]) => {
+        const K = K_;
+        const { THREE, ease, range, lerp, clamp, smoothstep, mulberry32 } = K;
+        const D = D0;   // o corpo trabalha no tempo de autoria
         const canvas = document.getElementById("f09-canvas");
-        const renderer = K.createRenderer(canvas);
-        const scene = new THREE.Scene();
-        const cam = new THREE.PerspectiveCamera(35, K.W / K.H, 1, 2000);
-        const city = createCity(scene, { seed: 7, geada: [5.04 * 0.6, 5.04 * 0.6 + 0.35], paraEm: 5.04 * 0.6 });
 
-        function render(t) {               // t = segundos locais da cena
-          const p = ease.outCubic(clamp(t / 5.04));
-          const h = lerp(300, 175, p), ang = lerp(-0.35, 0.05, p);
-          cam.position.set(Math.sin(ang) * 18, h, Math.cos(ang) * 18 + 10);
-          cam.up.set(Math.sin(ang), 0, -Math.cos(ang));
-          cam.lookAt(0, 0, 0);
-          city.update(t);
-          renderer.render(scene, cam);
+        await PELE.fontes();
+        const st = T.createToyStage(canvas, { fov: 36, ceu: ["#02101c", "#0a3550"], nevoa: [6, 40], corNevoa: "#06233a", nuvens: 0, luz: 0.8 });
+        const S = st.scene, cam = st.cam;
+        st.key.color.set(0xbfe4ff); st.rim.color.set(0x7cc8ff); st.rim.intensity = 2.2; st.hemi.color.set(0x7cc8ff); st.hemi.intensity = 0.6;
+        // lula: manto, nadadeiras, cabeça, olhos e 10 braços (primitivas arredondadas, pele de cromatóforos)
+        const mL = PELE.cromoMat({ cs: 0.075 });
+        const lula = new THREE.Group(); S.add(lula);
+        const prof = []; for (let i = 0; i <= 20; i++) { const k = i / 20; prof.push(new THREE.Vector2(Math.max(0.001, 0.42 * Math.sin(Math.PI * Math.pow(k, 0.7)) * (1 - 0.35 * k)), k * 2.6)); }
+        const manto = new THREE.Mesh(new THREE.LatheGeometry(prof, 32), mL); manto.rotation.z = -Math.PI / 2; manto.position.x = 0.1; lula.add(manto);
+        for (const s of [1, -1]) { const nad = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 10), mL); nad.scale.set(0.55, 0.03, 0.42); nad.position.set(2.35, 0, s * 0.3); nad.rotation.y = s * 0.5; lula.add(nad); }
+        const cab = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 16), mL); cab.scale.set(0.42, 0.3, 0.3); cab.position.x = -0.15; lula.add(cab);
+        for (const s of [1, -1]) {
+          const o = new THREE.Mesh(new THREE.SphereGeometry(0.12, 16, 12), new THREE.MeshStandardMaterial({ color: 0x0a0c10, roughness: 0.1, metalness: 0.3 })); o.position.set(-0.15, 0.06, s * 0.27); lula.add(o);
+          const b = PELE.brilho(0xffffff, 0.08, "suave", 0.8); b.position.set(-0.2, 0.12, s * 0.37); lula.add(b);
         }
-        await K.bindSeek(canvas, render, { warm: [{ renderer, scene, camera: cam }], duration: 5.04 });
+        const bracos = [];
+        for (let i = 0; i < 10; i++) {
+          const a = (i / 10) * Math.PI * 2, L = i >= 8 ? 2.2 : 1.3;
+          const p = new THREE.Group(); p.position.set(-0.45, Math.sin(a) * 0.12, Math.cos(a) * 0.12); lula.add(p);
+          const m = new THREE.Mesh(PELE.capGeo(i >= 8 ? 0.03 : 0.05, L, 3, 8), mL); m.rotation.z = Math.PI / 2; p.add(m);
+          bracos.push({ p, a, L });
+        }
+        // neve marinha + raios de luz
+        const NP = 500, pp = new Float32Array(NP * 3), rr = mulberry32(909);
+        for (let i = 0; i < NP; i++) { pp[i * 3] = (rr() - 0.5) * 20; pp[i * 3 + 1] = (rr() - 0.5) * 14; pp[i * 3 + 2] = (rr() - 0.5) * 14; }
+        const pg = new THREE.BufferGeometry(); pg.setAttribute("position", new THREE.BufferAttribute(pp, 3));
+        S.add(new THREE.Points(pg, new THREE.PointsMaterial({ color: 0xbfe4ff, size: 0.035, transparent: true, opacity: 0.6, depthWrite: false })));
+        for (let i = 0; i < 4; i++) { const r = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 30), new THREE.MeshBasicMaterial({ color: 0x9fd6ff, transparent: true, opacity: 0.05, blending: THREE.AdditiveBlending, depthWrite: false })); r.position.set(-4 + i * 2.8, 8, -6); r.rotation.z = 0.3; S.add(r); }
+        // 2ª parte: o braço humano com a mesma pele (cromatóforos em ondas)
+        const B = PELE.bracoClose({ pele: 0xe8c8b0 });
+        B.gift.visible = false;
+        const mH = PELE.cromoMat({ cs: 0.32, base: 0xe9cdb6, onda: 1 });
+        B.group.traverse((o) => { if (o.isMesh && o.material === B.pele) o.material = mH; });
+        B.group.scale.setScalar(0.1); B.group.position.set(0, -30, 0); S.add(B.group);
+        const TC = 3.11;
+        function render(t) {
+          // 0,65 → 1,13 s: de pálida a escura em 0,48 s
+          const k = range(t, 0.65, 1.13);
+          mL.u.uExp.value = t < 2.3 ? lerp(0.12, 1, ease.inOutCubic(k)) : lerp(1, 0.4, range(t, 2.3, 2.9)) ;
+          mL.u.uOnda.value = range(t, 2.3, 2.9) * 0.8; mL.u.uT.value = t;
+          mH.u.uT.value = t;
+          bracos.forEach((b, i) => { b.p.rotation.set(0, Math.sin(b.a) * 0.25 + Math.sin(t * 2 + i) * 0.12, Math.cos(b.a) * 0.25 + Math.sin(t * 2.3 + i * 1.7) * 0.15); });
+          lula.position.set(-t * 0.25, Math.sin(t * 1.2) * 0.08, 0);
+          lula.rotation.set(0.15, 0.25, Math.sin(t * 0.8) * 0.05);
+          st.vel = 0.7 * Math.max(0, 1 - Math.abs(t - TC) / 0.22); st.velT = t;
+          if (t < TC) {
+            const e = ease.inOutSine(range(t, 0, TC)), a = lerp(0.9, 0.2, e), R = lerp(4.2, 3.2, e);
+            cam.position.set(lula.position.x + 1 + Math.sin(a) * R, lerp(1.2, 0.5, e), Math.cos(a) * R);
+            cam.lookAt(lula.position.x + 0.9, 0, 0);
+          } else {
+            const u = range(t, TC, 5.04), e = ease.outCubic(u);
+            B.group.rotation.set(0.2, -0.3, 0.55);
+            cam.position.set(lerp(-0.2, 0.3, e), -30 + lerp(1.2, 0.7, e), lerp(2.6, 1.9, e));
+            cam.lookAt(0.1, -30.05, 0);
+          }
+          st.sol(t < TC ? 0 : 0, 0, 5, t < TC ? 0 : -30);
+          st.bloom = 0.5;
+          st.draw();
+          const c = st.ctx, aT = PELE.fade(t, 0.55, 1.75, 0.15);
+          PELE.pilula(c, 540, 1330, 360, 110, aT);
+          PELE.txt(c, "MUDANÇA DE COR", 540, 1305, { tam: 22, cor: PELE.AZUL, a: aT });
+          PELE.txt(c, (0.48 * k).toFixed(2).replace(".", ",") + " s", 540, 1352, { tam: 48, cor: k >= 1 ? PELE.LARANJA : "#fff", a: aT, esp: 0.04 });
+        }
+
+        // DR foi lido na hora em que o script rodou (depois do inline o host pode mudar de atributos)
+        await K.bindSeek(canvas, (t) => { st.T = t * D / DR; st.D = D; render(st.T); }, { warm: [st.warm, ...(st.extraWarm || [])], duration: DR });
       });
     })();
   </script>

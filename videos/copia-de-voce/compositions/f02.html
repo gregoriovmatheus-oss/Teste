@@ -1,57 +1,102 @@
-<!-- Modelo de cena 3D (R01). cenas.py --criar copia para compositions/fNN.html trocando os marcadores de id e duração.
-     Padrão: script clássico registra buildReady na hora; import dinâmico do kit e dos blocos;
-     K.bindSeek(canvas, render) dá o tempo LOCAL da cena (sem gambiarra de data-start). -->
+<!-- f02: cena 3D padrão documentário (R10 + doc). Lógica em cenas/f02.js (gerado por scripts/monta-cenas.py).
+     Tempos escritos para 5.44 s e esticados para a duração real do host (data-duration). -->
 <template>
   <style>
-    #root { position: absolute; inset: 0; overflow: hidden; background: #0b1018; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0b0a12; }
     #f02-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
-    #f02-titulo { position: absolute; left: 160px; right: 200px; top: 660px; text-align: center; }
-    #f02-titulo-in { display: block; font-family: "EB Garamond", serif; font-size: 84px; line-height: 1.05; color: #fff;
-      text-shadow: 0 4px 26px rgba(4, 10, 20, 0.75), 0 1px 4px rgba(4, 10, 20, 0.6); }
-    #f02-titulo-in .ice { color: #8fcbf2; }
+    /* rótulos 2D: y 680-980, acima da faixa da legenda (1005-1235) */
+    .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .rot-t { display: block; font-family: "Inter", sans-serif; font-weight: 300; font-size: 84px; line-height: 1.1; color: #fff; text-transform: none;
+      letter-spacing: -0.01em; text-shadow: 0 2px 30px rgba(0,0,0,0.7), 0 1px 3px rgba(0,0,0,0.6); opacity: 0; }
+    .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }
+    .rot-t .p { font-size: 64px; }
+    .rot-t .k { display: inline-block; font-family: "JetBrains Mono", monospace; font-weight: 600; font-size: 26px; letter-spacing: 0.32em; color: #7cc8ff; margin-bottom: 18px; }
+    .rot-t .n { font-family: "JetBrains Mono", monospace; font-weight: 600; color: #7cc8ff; }
+
   </style>
   <div id="root" data-composition-id="f02" data-width="1080" data-height="1920">
     <canvas id="f02-canvas" width="1080" height="1920"></canvas>
-    <div id="f02-titulo" class="clip" data-start="0.3" data-duration="2.2">
-      <span id="f02-titulo-in">Texto da <span class="ice">cena</span></span>
-    </div>
+    <div id="f02-r1" class="rot" style="top: 700px"><span id="f02-r1-in" class="rot-t"><span class="k">MESMO ROSTO</span><br>Mesmas <span class="y">memórias</span></span></div>
+    <div id="f02-r2" class="rot" style="top: 700px"><span id="f02-r2-in" class="rot-t">A mesma <span class="y">senha</span></span></div>
+    <div id="f02-r3" class="rot" style="top: 700px"><span id="f02-r3-in" class="rot-t">Ela acredita ser <span class="y">você</span></span></div>
   </div>
   <script>
     (function () {
-      /* 2D por cima (GSAP). Título entre y 640 e 1000: o HUD ocupa 290-620 e a legenda 1045-1195. */
+      const D0 = 5.44;
+      // duração real = data-duration do host da cena (muda quando a narração muda)
+      const durReal = () => {
+        for (let n = document.getElementById("f02-canvas"); n; n = n.parentElement) {
+          if (n.getAttribute && n.getAttribute("data-composition-id") === "f02" && n.hasAttribute("data-duration")) return parseFloat(n.getAttribute("data-duration")) || D0;
+        }
+        return D0;
+      };
+      const DR = durReal(), K = DR / D0;
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f02-titulo-in", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 0.3);
-      tl.to("#f02-titulo-in", { opacity: 0, duration: 0.2, ease: "power2.in" }, 2.3);
-      tl.set({}, {}, 5.44);
+      tl.fromTo("#f02-r1-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 0.8 * K);
+      tl.to("#f02-r1-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 1.55 * K);
+      tl.fromTo("#f02-r2-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 1.92 * K);
+      tl.to("#f02-r2-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 3.2 * K);
+      tl.fromTo("#f02-r3-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 3.6 * K);
+      tl.to("#f02-r3-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 5.14 * K);
+      tl.set({}, {}, DR);
       window.__timelines = window.__timelines || {};
       window.__timelines["f02"] = tl;
 
-      /* 3D */
       window.__hf = window.__hf || {};
       window.__hf.buildReady = window.__hf.buildReady || {};
       window.__hf.buildReady["f02"] = Promise.all([
-        import("./assets/lib/kit.js"),
-        import("./assets/lib/blocks/city.js"),
-        // import("./assets/lib/blocks/globe.js"), import("./assets/lib/blocks/particles.js"),
-        // import("./assets/lib/blocks/shockwave.js"), import("./assets/lib/blocks/counter.js"),
-      ]).then(async ([K, { createCity }]) => {
-        const { THREE, ease, range, lerp, clamp } = K;
+        import("./assets/lib/kit.js"), import("./assets/lib/blocks/toy.js"), import("./assets/lib/blocks/animals.js"), import("./assets/lib/blocks/copia.js")
+      ]).then(async ([K_, T, A, COPIA]) => {
+        const K = K_;
+        const { THREE, ease, range, lerp, clamp, smoothstep, mulberry32 } = K;
+        const D = D0;   // o corpo trabalha no tempo de autoria
         const canvas = document.getElementById("f02-canvas");
-        const renderer = K.createRenderer(canvas);
-        const scene = new THREE.Scene();
-        const cam = new THREE.PerspectiveCamera(35, K.W / K.H, 1, 2000);
-        const city = createCity(scene, { seed: 7, geada: [5.44 * 0.6, 5.44 * 0.6 + 0.35], paraEm: 5.44 * 0.6 });
 
-        function render(t) {               // t = segundos locais da cena
-          const p = ease.outCubic(clamp(t / 5.44));
-          const h = lerp(300, 175, p), ang = lerp(-0.35, 0.05, p);
-          cam.position.set(Math.sin(ang) * 18, h, Math.cos(ang) * 18 + 10);
-          cam.up.set(Math.sin(ang), 0, -Math.cos(ang));
-          cam.lookAt(0, 0, 0);
-          city.update(t);
-          renderer.render(scene, cam);
+        // Fios de memória idênticos saem das duas cabeças; os dois celulares abrem com a mesma senha.
+        const st = T.createToyStage(canvas, { ceu: "#081120", nevoa: [6, 22], fov: 46, nuvens: 0 });
+        const S = st.scene, cam = st.cam;
+        COPIA.amanhecer(st); st.bloom = 0.75;
+        await COPIA.fontes();
+        const Q = COPIA.quarto(S);
+        const EU = COPIA.pessoa({ fase: 0.1 }), CO = COPIA.pessoa({ fase: 0.6 });
+        EU.deitar(-0.47, 0.9); CO.deitar(0.47, 0.9); S.add(EU.p, CO.p);
+        // os celulares saem do criado-mudo e ficam sobre o edredom, ao lado de cada mão
+        Q.celA.group.position.set(-0.14, 1.125, 0.36); Q.celA.group.rotation.y = 0.12;
+        Q.celB.group.position.set(0.14, 1.125, 0.36); Q.celB.group.rotation.y = 0.12;
+        const F = COPIA.fios(S, { n: 16, k: 44, seed: 21, alt: 2.0 });
+        const v3 = (x, y, z) => new THREE.Vector3(x, y, z);
+        const P = [[0, v3(1.25, 2.2, 0.75), v3(0, 1.1, -0.7)], [1.75, v3(0.55, 3.5, 1.0), v3(0, 2.0, -0.75)],
+          [2.15, v3(0.0, 1.9, 0.95), v3(0, 1.08, 0.5)], [3.35, v3(0.02, 1.82, 0.9), v3(0, 1.08, 0.52)], [5.44, v3(-0.3, 3.9, 1.75), v3(0, 1.4, -0.55)]];
+        function camPath(t) {
+          let i = 0; while (i < P.length - 2 && t > P[i + 1][0]) i++;
+          const [t0, a0, b0] = P[i], [t1, a1, b1] = P[i + 1], e = ease.inOutCubic(range(t, t0, t1));
+          return [a0.clone().lerp(a1, e), b0.clone().lerp(b1, e)];
         }
-        await K.bindSeek(canvas, render, { warm: [{ renderer, scene, camera: cam }], duration: 5.44 });
+        function render(t) {
+          EU.olhos(1); CO.olhos(0); EU.olha(0.9, 0); CO.olha(-0.15, 0);
+          EU.update(t, {}); CO.update(t, {});
+          // a senha: 4 dígitos entre "mesma" e "senha", desbloqueia em "celular"
+          const k = t < 1.92 ? 0 : t < 2.85 ? 1 + Math.min(3, Math.floor((t - 1.92) / 0.18)) : 5;
+          Q.celA.tela(k); Q.celB.tela(k);
+          F.update(t, { A: EU.cabeca(0.1), B: CO.cabeca(0.1), div: 0, a: range(t, 0.5, 1.1) * (t > 1.9 && t < 3.4 ? 0.5 : 1) });
+          const [p, l] = camPath(t);
+          cam.position.copy(p); cam.lookAt(l);
+          st.sol(0, 0, 4);
+          st.draw();
+          const c = st.ctx, a = COPIA.vis(st);
+          const r1 = range(t, 0.1, 0.4) * (1 - range(t, 0.75, 0.95));
+          COPIA.tag(c, cam, EU.cabeca(0.04, 0.2), "ROSTO A", { a: a * r1, dx: -120, dy: -130 });
+          COPIA.tag(c, cam, CO.cabeca(0.04, 0.2), "ROSTO B", { a: a * r1, dx: 120, dy: -130 });
+          const r2 = range(t, 2.85, 3.0) * (1 - range(t, 3.3, 3.45));
+          COPIA.tag(c, cam, Q.celA.group.position.clone().add(v3(0, 0.02, -0.12)), "4816", { a: a * r2, dx: -150, dy: -260 });
+          COPIA.tag(c, cam, Q.celB.group.position.clone().add(v3(0, 0.02, -0.12)), "4816", { a: a * r2, dx: 150, dy: -260 });
+          const r3 = range(t, 3.7, 4.0);
+          COPIA.tag(c, cam, CO.cabeca(0.3), "\"EU SOU EU\"", { cor: COPIA.LARANJA, a: a * r3, dx: 150, dy: -170 });
+          COPIA.tag(c, cam, EU.cabeca(0.3), "\"EU SOU EU\"", { a: a * r3, dx: -150, dy: -170 });
+        }
+
+        // DR foi lido na hora em que o script rodou (depois do inline o host pode mudar de atributos)
+        await K.bindSeek(canvas, (t) => { st.T = t * D / DR; st.D = D; render(st.T); }, { warm: [st.warm, ...(st.extraWarm || [])], duration: DR });
       });
     })();
   </script>

@@ -1,57 +1,97 @@
-<!-- Modelo de cena 3D (R01). cenas.py --criar copia para compositions/fNN.html trocando os marcadores de id e duração.
-     Padrão: script clássico registra buildReady na hora; import dinâmico do kit e dos blocos;
-     K.bindSeek(canvas, render) dá o tempo LOCAL da cena (sem gambiarra de data-start). -->
+<!-- f05: cena 3D padrão documentário (R10 + doc). Lógica em cenas/f05.js (gerado por scripts/monta-cenas.py).
+     Tempos escritos para 4.12 s e esticados para a duração real do host (data-duration). -->
 <template>
   <style>
-    #root { position: absolute; inset: 0; overflow: hidden; background: #0b1018; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0b0a12; }
     #f05-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
-    #f05-titulo { position: absolute; left: 160px; right: 200px; top: 660px; text-align: center; }
-    #f05-titulo-in { display: block; font-family: "EB Garamond", serif; font-size: 84px; line-height: 1.05; color: #fff;
-      text-shadow: 0 4px 26px rgba(4, 10, 20, 0.75), 0 1px 4px rgba(4, 10, 20, 0.6); }
-    #f05-titulo-in .ice { color: #8fcbf2; }
+    /* rótulos 2D: y 680-980, acima da faixa da legenda (1005-1235) */
+    .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .rot-t { display: block; font-family: "Inter", sans-serif; font-weight: 300; font-size: 84px; line-height: 1.1; color: #fff; text-transform: none;
+      letter-spacing: -0.01em; text-shadow: 0 2px 30px rgba(0,0,0,0.7), 0 1px 3px rgba(0,0,0,0.6); opacity: 0; }
+    .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }
+    .rot-t .p { font-size: 64px; }
+    .rot-t .k { display: inline-block; font-family: "JetBrains Mono", monospace; font-weight: 600; font-size: 26px; letter-spacing: 0.32em; color: #7cc8ff; margin-bottom: 18px; }
+    .rot-t .n { font-family: "JetBrains Mono", monospace; font-weight: 600; color: #7cc8ff; }
+
   </style>
   <div id="root" data-composition-id="f05" data-width="1080" data-height="1920">
     <canvas id="f05-canvas" width="1080" height="1920"></canvas>
-    <div id="f05-titulo" class="clip" data-start="0.3" data-duration="2.2">
-      <span id="f05-titulo-in">Texto da <span class="ice">cena</span></span>
-    </div>
+    <div id="f05-r1" class="rot" style="top: 700px"><span id="f05-r1-in" class="rot-t"><span class="k">O SOM</span><br>Uma <span class="y">onda</span> no ar</span></div>
   </div>
   <script>
     (function () {
-      /* 2D por cima (GSAP). Título entre y 640 e 1000: o HUD ocupa 290-620 e a legenda 1045-1195. */
+      const D0 = 4.12;
+      // duração real = data-duration do host da cena (muda quando a narração muda)
+      const durReal = () => {
+        for (let n = document.getElementById("f05-canvas"); n; n = n.parentElement) {
+          if (n.getAttribute && n.getAttribute("data-composition-id") === "f05" && n.hasAttribute("data-duration")) return parseFloat(n.getAttribute("data-duration")) || D0;
+        }
+        return D0;
+      };
+      const DR = durReal(), K = DR / D0;
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f05-titulo-in", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 0.3);
-      tl.to("#f05-titulo-in", { opacity: 0, duration: 0.2, ease: "power2.in" }, 2.3);
-      tl.set({}, {}, 4.12);
+      tl.fromTo("#f05-r1-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 0.3 * K);
+      tl.to("#f05-r1-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 1.65 * K);
+      tl.set({}, {}, DR);
       window.__timelines = window.__timelines || {};
       window.__timelines["f05"] = tl;
 
-      /* 3D */
       window.__hf = window.__hf || {};
       window.__hf.buildReady = window.__hf.buildReady || {};
       window.__hf.buildReady["f05"] = Promise.all([
-        import("./assets/lib/kit.js"),
-        import("./assets/lib/blocks/city.js"),
-        // import("./assets/lib/blocks/globe.js"), import("./assets/lib/blocks/particles.js"),
-        // import("./assets/lib/blocks/shockwave.js"), import("./assets/lib/blocks/counter.js"),
-      ]).then(async ([K, { createCity }]) => {
-        const { THREE, ease, range, lerp, clamp } = K;
+        import("./assets/lib/kit.js"), import("./assets/lib/blocks/toy.js"), import("./assets/lib/blocks/animals.js"), import("./assets/lib/blocks/pausa.js")
+      ]).then(async ([K_, T, A, PAUSA]) => {
+        const K = K_;
+        const { THREE, ease, range, lerp, clamp, smoothstep, mulberry32 } = K;
+        const D = D0;   // o corpo trabalha no tempo de autoria
         const canvas = document.getElementById("f05-canvas");
-        const renderer = K.createRenderer(canvas);
-        const scene = new THREE.Scene();
-        const cam = new THREE.PerspectiveCamera(35, K.W / K.H, 1, 2000);
-        const city = createCity(scene, { seed: 7, geada: [4.12 * 0.6, 4.12 * 0.6 + 0.35], paraEm: 4.12 * 0.6 });
 
-        function render(t) {               // t = segundos locais da cena
-          const p = ease.outCubic(clamp(t / 4.12));
-          const h = lerp(300, 175, p), ang = lerp(-0.35, 0.05, p);
-          cam.position.set(Math.sin(ang) * 18, h, Math.cos(ang) * 18 + 10);
-          cam.up.set(Math.sin(ang), 0, -Math.cos(ang));
-          cam.lookAt(0, 0, 0);
-          city.update(t);
-          renderer.render(scene, cam);
+        // f05 — o som como onda de pressão: moléculas se comprimindo em anéis a partir de um alto-falante.
+        //       Com o ar parado (2,2 s) as frentes de onda congelam e o osciloscópio vira uma linha reta: silêncio.
+        const st = T.createToyStage(canvas, { fov: 42, ceu: ["#04060c", "#0c1322"], nevoa: [10, 46], corNevoa: "#060911", nuvens: 0, exposicao: 1.1 });
+        const S = st.scene, cam = st.cam;
+        st.key.castShadow = false; st.hemi.intensity = 0.5; st.rim.color.set(0x7cc8ff);
+        // alto-falante
+        const fal = new THREE.Group(); S.add(fal); fal.position.set(-7, 0, 0);
+        T.mesh(T.roundBox(1.6, 3.2, 1.6, 0.15), 0x1b1e24, fal, 0.4).position.y = -1.6;
+        const cone = T.mesh(new THREE.ConeGeometry(0.62, 0.45, 28, 1, true), new THREE.MeshStandardMaterial({ color: 0x2c3038, roughness: 0.6, side: THREE.DoubleSide }), fal); cone.rotation.z = Math.PI / 2; cone.position.set(0.95, 0.3, 0);
+        const membr = PAUSA.glow(0x7cc8ff, 2.2, fal); membr.position.set(1.0, 0.3, 0);
+        // campo de moléculas em pontos: deslocamento radial a partir da fonte (onda longitudinal)
+        const NX = 120, NY = 70, NZ = 3, N = NX * NY * NZ, W = PAUSA.pontos(S, N, { tam: 1, atenua: 260 });
+        const rr = mulberry32(505), B = [];
+        for (let i = 0; i < N; i++) { const x = -6 + rr() * 22, y = -4.5 + rr() * 9.5, z = (rr() - 0.5) * 2.4; B.push([x, y, z, Math.hypot(x + 6, y - 0.3, z)]); W.Z[i] = 0.12 + rr() * 0.06; }
+        const TS = 2.2, k = 2.4, w = 9;
+        function render(t) {
+          const te = PAUSA.tMundo(t, TS, 0.2);
+          for (let i = 0; i < N; i++) {
+            const [x, y, z, r] = B[i], ph = k * r - w * te, d = 0.16 * Math.sin(ph) * Math.exp(-r * 0.03), f = (r + d) / r;
+            W.P.set([-6 + (x + 6) * f, 0.3 + (y - 0.3) * f, z * f], i * 3);
+            const comp = 0.5 + 0.5 * Math.cos(ph), frente = r < w / k * te + 0.5 ? 1 : 0.15;
+            W.C.set([lerp(0.25, 0.6, comp), lerp(0.45, 0.85, comp), 1], i * 3); W.A[i] = (0.25 + 0.75 * comp * comp) * frente;
+          }
+          W.sync();
+          const vib = t < TS ? Math.sin(t * w) : 0; cone.position.x = 0.95 + vib * 0.05; membr.material.opacity = 0.35 + 0.35 * Math.abs(vib);
+          st.bloom = 0.75;
+          const e = ease.inOutSine(range(t, 0, 4.12));
+          cam.position.set(lerp(-1, 3.5, e), lerp(6.5, 3.0, e), lerp(12.5, 10.5, e));
+          cam.lookAt(lerp(1, 0.5, e), lerp(-0.6, 0.2, e), 0);
+          st.sol(0, 0, 20);
+          st.draw();
+          // osciloscópio (pressão num ponto do ar): onda até 2,2 s, depois linha reta
+          const c = st.ctx, gx = 140, gy = 1370, gw = 800, gh = 150, ga = PAUSA.vis(t, 0.4, 4.12);
+          if (ga > 0) {
+            c.save(); c.globalAlpha = ga; c.fillStyle = "rgba(4,10,20,0.55)"; c.fillRect(gx - 24, gy - gh / 2 - 60, gw + 48, gh + 100);
+            c.strokeStyle = "rgba(124,200,255,0.25)"; c.lineWidth = 1; c.beginPath(); c.moveTo(gx, gy); c.lineTo(gx + gw, gy); c.stroke();
+            c.strokeStyle = t < TS + 0.4 ? PAUSA.AZUL : PAUSA.LARANJA; c.lineWidth = 4; c.beginPath();
+            for (let px = 0; px <= gw; px += 3) { const tt = te - (1 - px / gw) * 1.2; const v = tt < te && te < TS + 0.3 ? Math.sin(tt * w * 1.0) * (1 - range(t, TS, TS + 0.3)) : 0; c.lineTo(gx + px, gy - v * gh * 0.42); }
+            c.stroke(); c.restore();
+            PAUSA.texto(c, "PRESSÃO DO AR", gx, gy - gh / 2 - 30, { a: ga, cor: PAUSA.AZUL, tam: 22, esp: 0.3 });
+            PAUSA.texto(c, t < 2.84 ? "" : "SILÊNCIO · 0 dB", gx + gw, gy - gh / 2 - 30, { a: ga * range(t, 2.84, 3.0), cor: PAUSA.LARANJA, tam: 30, alinha: "right", esp: 0.2 });
+          }
         }
-        await K.bindSeek(canvas, render, { warm: [{ renderer, scene, camera: cam }], duration: 4.12 });
+
+        // DR foi lido na hora em que o script rodou (depois do inline o host pode mudar de atributos)
+        await K.bindSeek(canvas, (t) => { st.T = t * D / DR; st.D = D; render(st.T); }, { warm: [st.warm, ...(st.extraWarm || [])], duration: DR });
       });
     })();
   </script>

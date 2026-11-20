@@ -1,57 +1,116 @@
-<!-- Modelo de cena 3D (R01). cenas.py --criar copia para compositions/fNN.html trocando os marcadores de id e duração.
-     Padrão: script clássico registra buildReady na hora; import dinâmico do kit e dos blocos;
-     K.bindSeek(canvas, render) dá o tempo LOCAL da cena (sem gambiarra de data-start). -->
+<!-- f08: cena 3D padrão documentário (R10 + doc). Lógica em cenas/f08.js (gerado por scripts/monta-cenas.py).
+     Tempos escritos para 6.41 s e esticados para a duração real do host (data-duration). -->
 <template>
   <style>
-    #root { position: absolute; inset: 0; overflow: hidden; background: #0b1018; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0b0a12; }
     #f08-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
-    #f08-titulo { position: absolute; left: 160px; right: 200px; top: 660px; text-align: center; }
-    #f08-titulo-in { display: block; font-family: "EB Garamond", serif; font-size: 84px; line-height: 1.05; color: #fff;
-      text-shadow: 0 4px 26px rgba(4, 10, 20, 0.75), 0 1px 4px rgba(4, 10, 20, 0.6); }
-    #f08-titulo-in .ice { color: #8fcbf2; }
+    /* rótulos 2D: y 680-980, acima da faixa da legenda (1005-1235) */
+    .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .rot-t { display: block; font-family: "Inter", sans-serif; font-weight: 300; font-size: 84px; line-height: 1.1; color: #fff; text-transform: none;
+      letter-spacing: -0.01em; text-shadow: 0 2px 30px rgba(0,0,0,0.7), 0 1px 3px rgba(0,0,0,0.6); opacity: 0; }
+    .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }
+    .rot-t .p { font-size: 64px; }
+    .rot-t .k { display: inline-block; font-family: "JetBrains Mono", monospace; font-weight: 600; font-size: 26px; letter-spacing: 0.32em; color: #7cc8ff; margin-bottom: 18px; }
+    .rot-t .n { font-family: "JetBrains Mono", monospace; font-weight: 600; color: #7cc8ff; }
+
   </style>
   <div id="root" data-composition-id="f08" data-width="1080" data-height="1920">
     <canvas id="f08-canvas" width="1080" height="1920"></canvas>
-    <div id="f08-titulo" class="clip" data-start="0.3" data-duration="2.2">
-      <span id="f08-titulo-in">Texto da <span class="ice">cena</span></span>
-    </div>
+    <div id="f08-r1" class="rot" style="top: 700px"><span id="f08-r1-in" class="rot-t">E as <span class="y">memórias?</span></span></div>
+    <div id="f08-r2" class="rot" style="top: 700px"><span id="f08-r2-in" class="rot-t">O cérebro <span class="y">reconstrói</span></span></div>
+    <div id="f08-r3" class="rot" style="top: 700px"><span id="f08-r3-in" class="rot-t">E ela <span class="y">muda</span> um pouco</span></div>
   </div>
   <script>
     (function () {
-      /* 2D por cima (GSAP). Título entre y 640 e 1000: o HUD ocupa 290-620 e a legenda 1045-1195. */
+      const D0 = 6.41;
+      // duração real = data-duration do host da cena (muda quando a narração muda)
+      const durReal = () => {
+        for (let n = document.getElementById("f08-canvas"); n; n = n.parentElement) {
+          if (n.getAttribute && n.getAttribute("data-composition-id") === "f08" && n.hasAttribute("data-duration")) return parseFloat(n.getAttribute("data-duration")) || D0;
+        }
+        return D0;
+      };
+      const DR = durReal(), K = DR / D0;
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f08-titulo-in", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 0.3);
-      tl.to("#f08-titulo-in", { opacity: 0, duration: 0.2, ease: "power2.in" }, 2.3);
-      tl.set({}, {}, 6.41);
+      tl.fromTo("#f08-r1-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 0.4 * K);
+      tl.to("#f08-r1-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 2.0 * K);
+      tl.fromTo("#f08-r2-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 3.3 * K);
+      tl.to("#f08-r2-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 4.55 * K);
+      tl.fromTo("#f08-r3-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 4.9 * K);
+      tl.to("#f08-r3-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 6.11 * K);
+      tl.set({}, {}, DR);
       window.__timelines = window.__timelines || {};
       window.__timelines["f08"] = tl;
 
-      /* 3D */
       window.__hf = window.__hf || {};
       window.__hf.buildReady = window.__hf.buildReady || {};
       window.__hf.buildReady["f08"] = Promise.all([
-        import("./assets/lib/kit.js"),
-        import("./assets/lib/blocks/city.js"),
-        // import("./assets/lib/blocks/globe.js"), import("./assets/lib/blocks/particles.js"),
-        // import("./assets/lib/blocks/shockwave.js"), import("./assets/lib/blocks/counter.js"),
-      ]).then(async ([K, { createCity }]) => {
-        const { THREE, ease, range, lerp, clamp } = K;
+        import("./assets/lib/kit.js"), import("./assets/lib/blocks/toy.js"), import("./assets/lib/blocks/animals.js"), import("./assets/lib/blocks/copia.js")
+      ]).then(async ([K_, T, A, COPIA]) => {
+        const K = K_;
+        const { THREE, ease, range, lerp, clamp, smoothstep, mulberry32 } = K;
+        const D = D0;   // o corpo trabalha no tempo de autoria
         const canvas = document.getElementById("f08-canvas");
-        const renderer = K.createRenderer(canvas);
-        const scene = new THREE.Scene();
-        const cam = new THREE.PerspectiveCamera(35, K.W / K.H, 1, 2000);
-        const city = createCity(scene, { seed: 7, geada: [6.41 * 0.6, 6.41 * 0.6 + 0.35], paraEm: 6.41 * 0.6 });
 
-        function render(t) {               // t = segundos locais da cena
-          const p = ease.outCubic(clamp(t / 6.41));
-          const h = lerp(300, 175, p), ang = lerp(-0.35, 0.05, p);
-          cam.position.set(Math.sin(ang) * 18, h, Math.cos(ang) * 18 + 10);
-          cam.up.set(Math.sin(ang), 0, -Math.cos(ang));
-          cam.lookAt(0, 0, 0);
-          city.update(t);
-          renderer.render(scene, cam);
+        // Uma lembrança (casa, árvore, sol) feita de peças: se desfaz ao lembrar e se remonta um pouco diferente.
+        const st = T.createToyStage(canvas, { ceu: "#05070e", nevoa: [5, 18], corNevoa: "#05070e", fov: 44, nuvens: 0 });
+        const S = st.scene, cam = st.cam;
+        S.environment = null; st.bloom = 0.7;
+        st.key.color.set(0xfff0dc); st.key.intensity = 2.2; st.hemi.intensity = 0.7; st.rim.color.set(0x7cc8ff); st.rim.intensity = 1.4;
+        await COPIA.fontes();
+        const W = 26, Hh = 20, sz = 0.12;
+        // a lembrança desenhada em pixels; v = 0 (original) ou 1 (versão reconstruída: sol mais baixo, árvore mais perto, telhado mais claro)
+        function pic(i, j, v) {
+          const sx = 19 - v * 2, sy = 15 - v * 3, tx = 5 + v * 2;
+          if ((i - sx) ** 2 + (j - sy) ** 2 < 6.5) return v ? 0xffb347 : 0xffd84a;
+          if (j <= 3) return v ? 0x5d9c48 : 0x4f8f45;
+          if (i >= 10 && i <= 17 && j >= 4 && j <= 9) return (i === 13 || i === 14) && j <= 7 ? 0x6b3f2a : (i === 16 && j === 7 ? 0x9fd6ff : 0xeee2c8);
+          if (j >= 10 && j <= 13 && i >= 9 + (j - 10) && i <= 18 - (j - 10)) return v ? 0xe2774a : 0xc9452f;
+          if (i === tx && j >= 4 && j <= 6) return 0x5e4330;
+          if ((i - tx) ** 2 + (j - 9) ** 2 < 6) return v ? 0x7dbb5a : 0x3d7a34;
+          return null;
         }
-        await K.bindSeek(canvas, render, { warm: [{ renderer, scene, camera: cam }], duration: 6.41 });
+        const cells = [];
+        for (let i = 0; i < W; i++) for (let j = 0; j < Hh; j++) {
+          const c0 = pic(i, j, 0), c1 = pic(i, j, 1);
+          if (c0 !== null || c1 !== null) cells.push({ i, j, c0, c1 });
+        }
+        const N = cells.length, rr = mulberry32(808);
+        cells.forEach((c) => { const a = rr() * 6.283, b = (rr() - 0.5) * 2.4, R = 1.6 + rr() * 2.2; c.s = new THREE.Vector3(Math.cos(a) * R, b + 1.2, Math.sin(a) * R * 0.7); c.d = rr(); c.rx = rr() * 8; c.ry = rr() * 8; });
+        const box = new THREE.InstancedMesh(new THREE.BoxGeometry(sz * 0.92, sz * 0.92, sz * 0.92), new THREE.MeshStandardMaterial({ roughness: 0.45, emissive: 0x111111 }), N);
+        box.frustumCulled = false; S.add(box);
+        const fundoC = new THREE.Color(0x9fc7ee);
+        const O = new THREE.Object3D(), cA = new THREE.Color(), cB = new THREE.Color(), v = new THREE.Vector3();
+        const pos0 = (c) => v.set((c.i - W / 2) * sz, c.j * sz + 0.3, 0);
+        function render(t) {
+          const sai = ease.inOutCubic(range(t, 2.37, 3.1)), volta = ease.inOutCubic(range(t, 3.36, 4.6)), muda = ease.inOutSine(range(t, 5.0, 5.9));
+          cells.forEach((c, k) => {
+            const p0 = pos0(c).clone(), ex = c.s;
+            const sd = ease.inOutCubic(range(sai, c.d * 0.3, c.d * 0.3 + 0.7)), vd = ease.inOutCubic(range(volta, c.d * 0.35, c.d * 0.35 + 0.65));
+            const p = p0.clone().lerp(ex, sd * (1 - vd));
+            p.add(v.set(Math.sin(t * 1.3 + c.rx) * 0.08, Math.cos(t * 1.1 + c.ry) * 0.08, 0).multiplyScalar(sd * (1 - vd)));
+            O.position.copy(p); O.rotation.set(c.rx * sd * (1 - vd), c.ry * sd * (1 - vd), 0);
+            // na reconstrução, peças que não existiam aparecem e outras somem
+            const temA = c.c0 !== null, temB = c.c1 !== null, sc = temA && temB ? 1 : temA ? 1 - muda : muda;
+            O.scale.setScalar(Math.max(0.0001, sc)); O.updateMatrix(); box.setMatrixAt(k, O.matrix);
+            cA.set(c.c0 ?? c.c1); cB.set(c.c1 ?? c.c0); cA.lerp(cB, muda);
+            if (sd * (1 - vd) > 0.05) cA.lerp(fundoC, 0.35 * sd * (1 - vd));
+            box.setColorAt(k, cA);
+          });
+          box.instanceMatrix.needsUpdate = true; box.instanceColor.needsUpdate = true;
+          // órbita lenta em volta da lembrança; afasta na explosão e volta
+          const a = lerp(-0.5, 0.45, ease.inOutSine(range(t, 0, 6.41))), R = 6.2 + Math.sin(Math.PI * range(t, 2.2, 4.8)) * 2.0;
+          cam.position.set(Math.sin(a) * R, 1.6, Math.cos(a) * R); cam.lookAt(0.05, 0.8, 0);
+          st.sol(0, 0, 4);
+          st.draw();
+          const c = st.ctx, A2 = COPIA.vis(st);
+          COPIA.tag(c, cam, v.set(0.9, 2.4, 0), "LEMBRANÇA", { a: A2 * range(t, 0.5, 0.8) * (1 - range(t, 2.2, 2.4)), dx: -120, dy: -170, sub: "VERSÃO 1" });
+          COPIA.tag(c, cam, v.set(0.9, 2.2, 0), "LEMBRANÇA", { cor: COPIA.LARANJA, a: A2 * range(t, 5.28, 5.55), dx: -120, dy: -190, sub: "VERSÃO 2" });
+          if (t > 2.37 && t < 4.6) COPIA.txt(c, "LEMBRANDO…", 540, 600, { tam: 26, cor: COPIA.AZUL, a: A2 * Math.sin(Math.PI * range(t, 2.37, 4.6)) });
+        }
+
+        // DR foi lido na hora em que o script rodou (depois do inline o host pode mudar de atributos)
+        await K.bindSeek(canvas, (t) => { st.T = t * D / DR; st.D = D; render(st.T); }, { warm: [st.warm, ...(st.extraWarm || [])], duration: DR });
       });
     })();
   </script>

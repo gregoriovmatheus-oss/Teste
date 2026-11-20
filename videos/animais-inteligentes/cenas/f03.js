@@ -1,0 +1,52 @@
+/*META {"imports": ["mente"], "rotulos": [{"de": 0.1, "ate": 1.95, "texto": "Cérebro grande<br><span class=\"y\">não basta</span>"}], "D0": 9.59} */
+        await MENTE.fontes();
+        const st = T.createToyStage(canvas, { fov: 38, ceu: ["#03050b", "#0c1626"], nevoa: [6, 22], corNevoa: "#07101c", luz: 0.6, nuvens: 0 });
+        const S = st.scene, cam = st.cam;
+        st.bloom = 0.85;
+        const pal = MENTE.palcoDiagrama(st, { y: -1.6 });
+        // 10 pontos por bilhão de neurônios (Herculano-Houzel 2014; Azevedo 2009)
+        // elefante: 257 bi = 5,6 córtex + 251 cerebelo (+ resto) | humano: 86 bi = 16 córtex + 69 cerebelo
+        const E = MENTE.cerebro(S, { tipo: "elefante", pontos: { cortex: 56, cerebelo: 2510 }, seed: 31, tam: 0.07 });
+        const H = MENTE.cerebro(S, { tipo: "humano", pontos: { cortex: 160, cerebelo: 690 }, seed: 32, tam: 0.06 });
+        E.group.position.set(0, 0.35, 0);
+        H.group.position.set(0.95, -1.05, 0.9); H.group.scale.setScalar(0.62);
+        const LAR = "#ff8a4c";
+        const cE = new THREE.Vector3(), cH = new THREE.Vector3(), cCb = new THREE.Vector3(), cCx = new THREE.Vector3();
+        function render(t) {
+          pal.update(t);
+          // contagem: elefante enche em 3,17-4,3 s; humano em 5,06-6,4 s; cerebelo do elefante vira "anomalia" em 7,1 s
+          const fE = ease.inOutSine(range(t, 3.1, 4.4)), fH = ease.inOutSine(range(t, 5.0, 6.3));
+          const foco = ease.inOutSine(range(t, 7.1, 8.0));
+          E.update(t, { fill: { cortex: fE, cerebelo: fE }, cor: { cerebelo: foco > 0.5 ? 0xff8a4c : 0x7cc8ff }, brilho: { cortex: 1 + foco * 1.5, cerebelo: 1 }, casca: lerp(0.3, 1, range(t, 0, 1.2)) });
+          H.update(t, { fill: { cortex: fH, cerebelo: fH }, casca: range(t, 4.7, 5.3) * (1 - foco * 0.5) });
+          H.group.visible = t > 4.6;
+          E.group.rotation.y = t * 0.12; H.group.rotation.y = -0.3 + t * 0.1;
+          // câmera: órbita; recua para incluir o humano; avança no cerebelo
+          const ab = ease.inOutSine(range(t, 4.6, 6.0)), av = ease.inOutCubic(range(t, 6.9, 8.4));
+          const a = lerp(-0.5, 0.35, range(t, 0, 9.59));
+          let R = lerp(lerp(6.2, 5.4, range(t, 0, 4.6)), 7.2, ab); R = lerp(R, 5.0, av);
+          const alvo = new THREE.Vector3(lerp(0, 0.45, ab) * (1 - av) + av * -0.6, lerp(0.25, -0.2, ab) * (1 - av) + av * 0.0, lerp(0, 0.4, ab) * (1 - av));
+          cam.position.set(alvo.x + Math.sin(a) * R, alvo.y + lerp(0.9, 1.4, ab), alvo.z + Math.cos(a) * R);
+          cam.lookAt(alvo);
+          st.sol(0, 0, 6);
+          st.draw();
+          // números presos aos cérebros
+          const c = st.ctx;
+          E.group.updateMatrixWorld(true); H.group.updateMatrixWorld(true);
+          cE.set(0.1, 0.75, 0).applyMatrix4(E.group.matrixWorld); cCb.set(-0.7, -0.38, 0).applyMatrix4(E.group.matrixWorld); cCx.set(0.2, 0.4, 0).applyMatrix4(E.group.matrixWorld);
+          cH.set(0, -0.6, 0).applyMatrix4(H.group.matrixWorld);
+          const pE = MENTE.proj(cE, cam), pH = MENTE.proj(cH, cam);
+          const nE = Math.round(257 * fE), aE = range(t, 2.1, 2.5) * (1 - range(t, 6.9, 7.2));
+          MENTE.texto(c, { x: 540, y: Math.min(700, pE[1] - 150), k: "ELEFANTE", v: (t < 3.1 ? "?" : nE + " bi"), u: "neurônios", a: aE, tam: 120 });
+          const aH = range(t, 5.0, 5.4) * (1 - range(t, 6.9, 7.2));
+          MENTE.texto(c, { x: Math.min(820, Math.max(260, pH[0])), y: Math.max(1290, pH[1] + 120), k: "HUMANO", v: Math.round(86 * fH) + " bi", a: aH, tam: 92 });
+          MENTE.texto(c, { x: 540, y: 1340, v: "3× mais", u: "que nós", a: range(t, 5.44, 5.8) * (1 - range(t, 6.9, 7.2)), tam: 70, grad: ["#ffffff", "#ffd2b8"] });
+          // depois: onde eles estão
+          const pCb = MENTE.proj(cCb, cam), pCx = MENTE.proj(cCx, cam);
+          const aF = range(t, 7.9, 8.4);
+          MENTE.chamada(c, [pCb[0], pCb[1]], [pCb[0] + 40, 1320], aF, "rgba(255,138,76,0.95)");
+          MENTE.texto(c, { x: Math.min(760, Math.max(320, pCb[0] + 40)), y: 1370, k: "CEREBELO", v: "97%", u: "251 bi neurônios", a: aF, tam: 120, corK: LAR, grad: ["#ffffff", "#ffb08a"] });
+          const aC = range(t, 8.5, 8.9);
+          MENTE.chamada(c, [pCx[0], pCx[1]], [pCx[0], 690], aC);
+          MENTE.texto(c, { x: Math.min(800, Math.max(280, pCx[0])), y: 610, k: "CÓRTEX", v: "5,6 bi", a: aC, tam: 70 });
+        }

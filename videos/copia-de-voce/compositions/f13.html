@@ -1,57 +1,92 @@
-<!-- Modelo de cena 3D (R01). cenas.py --criar copia para compositions/fNN.html trocando os marcadores de id e duração.
-     Padrão: script clássico registra buildReady na hora; import dinâmico do kit e dos blocos;
-     K.bindSeek(canvas, render) dá o tempo LOCAL da cena (sem gambiarra de data-start). -->
+<!-- f13: cena 3D padrão documentário (R10 + doc). Lógica em cenas/f13.js (gerado por scripts/monta-cenas.py).
+     Tempos escritos para 8.09 s e esticados para a duração real do host (data-duration). -->
 <template>
   <style>
-    #root { position: absolute; inset: 0; overflow: hidden; background: #0b1018; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0b0a12; }
     #f13-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
-    #f13-titulo { position: absolute; left: 160px; right: 200px; top: 660px; text-align: center; }
-    #f13-titulo-in { display: block; font-family: "EB Garamond", serif; font-size: 84px; line-height: 1.05; color: #fff;
-      text-shadow: 0 4px 26px rgba(4, 10, 20, 0.75), 0 1px 4px rgba(4, 10, 20, 0.6); }
-    #f13-titulo-in .ice { color: #8fcbf2; }
+    /* rótulos 2D: y 680-980, acima da faixa da legenda (1005-1235) */
+    .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .rot-t { display: block; font-family: "Inter", sans-serif; font-weight: 300; font-size: 84px; line-height: 1.1; color: #fff; text-transform: none;
+      letter-spacing: -0.01em; text-shadow: 0 2px 30px rgba(0,0,0,0.7), 0 1px 3px rgba(0,0,0,0.6); opacity: 0; }
+    .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }
+    .rot-t .p { font-size: 64px; }
+    .rot-t .k { display: inline-block; font-family: "JetBrains Mono", monospace; font-weight: 600; font-size: 26px; letter-spacing: 0.32em; color: #7cc8ff; margin-bottom: 18px; }
+    .rot-t .n { font-family: "JetBrains Mono", monospace; font-weight: 600; color: #7cc8ff; }
+
   </style>
   <div id="root" data-composition-id="f13" data-width="1080" data-height="1920">
     <canvas id="f13-canvas" width="1080" height="1920"></canvas>
-    <div id="f13-titulo" class="clip" data-start="0.3" data-duration="2.2">
-      <span id="f13-titulo-in">Texto da <span class="ice">cena</span></span>
-    </div>
+    <div id="f13-r1" class="rot" style="top: 700px"><span id="f13-r1-in" class="rot-t">Os dois lembram de <span class="y">tudo</span></span></div>
+    <div id="f13-r2" class="rot" style="top: 700px"><span id="f13-r2-in" class="rot-t">O mesmo direito de ser <span class="y">você</span></span></div>
   </div>
   <script>
     (function () {
-      /* 2D por cima (GSAP). Título entre y 640 e 1000: o HUD ocupa 290-620 e a legenda 1045-1195. */
+      const D0 = 8.09;
+      // duração real = data-duration do host da cena (muda quando a narração muda)
+      const durReal = () => {
+        for (let n = document.getElementById("f13-canvas"); n; n = n.parentElement) {
+          if (n.getAttribute && n.getAttribute("data-composition-id") === "f13" && n.hasAttribute("data-duration")) return parseFloat(n.getAttribute("data-duration")) || D0;
+        }
+        return D0;
+      };
+      const DR = durReal(), K = DR / D0;
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f13-titulo-in", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 0.3);
-      tl.to("#f13-titulo-in", { opacity: 0, duration: 0.2, ease: "power2.in" }, 2.3);
-      tl.set({}, {}, 8.09);
+      tl.fromTo("#f13-r1-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 0.3 * K);
+      tl.to("#f13-r1-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 1.4 * K);
+      tl.fromTo("#f13-r2-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 1.75 * K);
+      tl.to("#f13-r2-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 3.9 * K);
+      tl.set({}, {}, DR);
       window.__timelines = window.__timelines || {};
       window.__timelines["f13"] = tl;
 
-      /* 3D */
       window.__hf = window.__hf || {};
       window.__hf.buildReady = window.__hf.buildReady || {};
       window.__hf.buildReady["f13"] = Promise.all([
-        import("./assets/lib/kit.js"),
-        import("./assets/lib/blocks/city.js"),
-        // import("./assets/lib/blocks/globe.js"), import("./assets/lib/blocks/particles.js"),
-        // import("./assets/lib/blocks/shockwave.js"), import("./assets/lib/blocks/counter.js"),
-      ]).then(async ([K, { createCity }]) => {
-        const { THREE, ease, range, lerp, clamp } = K;
+        import("./assets/lib/kit.js"), import("./assets/lib/blocks/toy.js"), import("./assets/lib/blocks/animals.js"), import("./assets/lib/blocks/copia.js")
+      ]).then(async ([K_, T, A, COPIA]) => {
+        const K = K_;
+        const { THREE, ease, range, lerp, clamp, smoothstep, mulberry32 } = K;
+        const D = D0;   // o corpo trabalha no tempo de autoria
         const canvas = document.getElementById("f13-canvas");
-        const renderer = K.createRenderer(canvas);
-        const scene = new THREE.Scene();
-        const cam = new THREE.PerspectiveCamera(35, K.W / K.H, 1, 2000);
-        const city = createCity(scene, { seed: 7, geada: [8.09 * 0.6, 8.09 * 0.6 + 0.35], paraEm: 8.09 * 0.6 });
 
-        function render(t) {               // t = segundos locais da cena
-          const p = ease.outCubic(clamp(t / 8.09));
-          const h = lerp(300, 175, p), ang = lerp(-0.35, 0.05, p);
-          cam.position.set(Math.sin(ang) * 18, h, Math.cos(ang) * 18 + 10);
-          cam.up.set(Math.sin(ang), 0, -Math.cos(ang));
-          cam.lookAt(0, 0, 0);
-          city.update(t);
-          renderer.render(scene, cam);
+        // Fechamento: de volta ao quarto. Os mesmos fios nos dois; e agora a cópia abre os olhos e olha para a câmera.
+        const st = T.createToyStage(canvas, { ceu: "#081120", nevoa: [6, 22], fov: 46, nuvens: 0 });
+        const S = st.scene, cam = st.cam;
+        COPIA.amanhecer(st, { forca: 1.1 }); st.bloom = 0.7;
+        await COPIA.fontes();
+        const Q = COPIA.quarto(S);
+        const EU = COPIA.pessoa({ fase: 0.1 }), CO = COPIA.pessoa({ fase: 0.6 });
+        EU.deitar(-0.47, 0.9); CO.deitar(0.47, 0.9); S.add(EU.p, CO.p);
+        const F = COPIA.fios(S, { n: 18, k: 44, seed: 21, alt: 2.4 });
+        const v3 = (x, y, z) => new THREE.Vector3(x, y, z);
+        function render(t) {
+          // abre os olhos em "ela" (4,75 s) e vira o rosto para a câmera
+          const abre = t > 4.8;
+          CO.olhos(abre ? 1 : 0);
+          const vira = ease.inOutCubic(range(t, 5.0, 6.0));
+          CO.olha(lerp(-0.15, 0.32, vira), lerp(0, 0.12, vira));
+          EU.olhos(1); EU.olha(0.95 + Math.sin(t * 0.8) * 0.03, 0);
+          EU.update(t, {}); CO.update(t, {});
+          Q.celA.tela(0); Q.celB.tela(0);
+          F.update(t, { A: EU.cabeca(0.1), B: CO.cabeca(0.1), div: 0, a: range(t, 0.1, 0.6) * (1 - range(t, 4.4, 5.0)) });
+          // grua: do alto (os dois e os fios) descendo até o rosto da cópia
+          const e1 = ease.inOutSine(range(t, 0, 4.6)), e2 = ease.inOutCubic(range(t, 4.6, 8.09));
+          const p = v3(-0.1, 5.2, 1.3).lerp(v3(0.3, 3.4, 0.4), e1).lerp(v3(0.78, 2.05, -0.62), e2);
+          const l = v3(0, 1.4, -0.4).lerp(v3(0.2, 0.95, -0.55), e1).lerp(v3(0.47, 0.98, -0.86), e2);
+          cam.position.copy(p); cam.lookAt(l);
+          st.sol(0, 0, 4);
+          st.draw();
+          const c = st.ctx, a = COPIA.vis(st);
+          const r = range(t, 1.9, 2.2) * (1 - range(t, 4.0, 4.3));
+          COPIA.tag(c, cam, EU.cabeca(0.04, 0.2), "VOCÊ", { a: a * r, dx: -150, dy: -160 });
+          COPIA.tag(c, cam, CO.cabeca(0.04, 0.2), "VOCÊ", { a: a * r, dx: 150, dy: -160 });
+          // vinheta extra fechando no olhar
+          const v = range(t, 6.2, 8.0);
+          if (v > 0) { const g = c.createRadialGradient(540, 760, 200, 540, 900, 1100); g.addColorStop(0, "rgba(0,0,0,0)"); g.addColorStop(1, `rgba(3,4,10,${0.6 * v})`); c.fillStyle = g; c.fillRect(0, 0, 1080, 1920); }
         }
-        await K.bindSeek(canvas, render, { warm: [{ renderer, scene, camera: cam }], duration: 8.09 });
+
+        // DR foi lido na hora em que o script rodou (depois do inline o host pode mudar de atributos)
+        await K.bindSeek(canvas, (t) => { st.T = t * D / DR; st.D = D; render(st.T); }, { warm: [st.warm, ...(st.extraWarm || [])], duration: DR });
       });
     })();
   </script>
