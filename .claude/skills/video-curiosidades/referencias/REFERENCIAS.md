@@ -19,6 +19,7 @@ Servem só como estilo. Nunca use nos vídeos personagens, marcas, logotipos, ce
 | Gancho, listas, números | R07 | tipografia; kinetic (camada sobre qualquer ref) |
 | Química, biologia, medicina | R08 | 3D vidro (1 a 3 objetos); particles |
 | Animais, personagens, histórias, emoção | R09 | anime cel-shaded (toon + contorno); legenda R01 |
+| Histórias de sobrevivência, personagem com emoção (principal desde 21/11) | R11 | 3D low-poly facetado, câmera colada no rosto; HUD de barras; legenda caixa alta |
 | Animais e cidade com cara de filme, "mais realista" | R10 | cinema 3D realista (PBR, sem contorno, grão e vinheta); legenda R01 |
 
 - **Gancho no frame 0:** pergunta inteira na tela, palavra-chave na cor de destaque, câmera já em movimento.
@@ -194,3 +195,14 @@ Usado em humanos-viram-animais v3. Código em `toy.js` (createToyStage) e `anima
 - Corte padrão: dip escuro de 5 quadros. Velocidade vira desfoque de movimento (sem linhas de velocidade).
 - Títulos: Anton branco, destaque #FFC56B, sombra suave, entrada subindo com desfoque. Legenda R01.
 - Som: whoosh nos cortes e "puf" nas transformações, sintetizados local (`audio/sfx-local.py`).
+
+### R11: "acordar enterrado vivo" (3D low-poly ilustrado, principal)
+Arquivos: `R11-*.jpg`. Engajamento alto (34,5 mil curtidas, 2.484 salvos). Mídia gerada por IA.
+- **Tipo:** 3D estilizado low-poly facetado (flat shading, facetas visíveis no rosto, nas mãos e nas roupas), com contorno escuro fino e acabamento de ilustração pintada.
+- **Personagem:** um protagonista fixo (jaqueta amarela #D9A21E, calça jeans #23324F, pele #B0785A), olhos grandes e expressivos, sobrancelha marcada. A emoção carrega a cena.
+- **Câmera:** close extremo no rosto e nas mãos (detalhe do objeto, ex. isqueiro), alternado com corte lateral em seção (caixa sob a terra) e plano aberto do cenário. Corte a cada 1–2 s.
+- **Luz:** chave fria azulada de cima (#6E8FB8), preenchimento quente na pele, fundo escuro #14100C. Noite, chão molhado com reflexos.
+- **HUD:** canto superior esquerdo, faixa escura translúcida com filete laranja à esquerda; rótulo em caixa alta ("CALMO · 2 H") e barra de progresso abaixo (azul-gelo #A8D8E8 → vermelho #F05A4A em "EM PÂNICO · 20 MIN").
+- **Título de regra:** "REGRA 3" pequeno vermelho + frase em caixa alta branca, no topo (y ≈ 230).
+- **Legenda:** sans pesada em caixa alta (equivalente Google: Archivo Black; no kit, Anton), ~95 px, branca com contorno preto, 2–4 palavras por vez, palavra-chave amarela #F5C518 ou vermelha #E8463A, y ≈ 1180.
+- **Gancho:** rosto em pânico em close, com a premissa na legenda.

@@ -606,6 +606,22 @@ export const PRESETS = /* PRESETS:INICIO */ {
       "globe"
     ],
     "nota": "MeshToonMaterial de 3 tons + contorno por casco invertido (toy.js/animals.js). Legenda igual à R01."
+  },
+  "R11": {
+    "nome": "3D low-poly ilustrado, personagem com emoção (principal)",
+    "modo": "3d",
+    "fundo": "#14100C",
+    "fontes": ["Anton", "Montserrat"],
+    "paleta": {"texto": "#FFFFFF", "destaque": "#F5C518", "alerta": "#E8463A", "fundo": "#14100C", "luz_fria": "#6E8FB8", "pele": "#B0785A", "jaqueta": "#D9A21E", "contorno": "#120C08"},
+    "legenda": {"fonte": "\"Anton\", sans-serif", "estilo": "normal", "peso": 400, "tamanho": 96, "caixa": "uppercase", "cor": "#FFFFFF", "numero": "#F5C518", "y": 1110, "altura": 150,
+      "sombra": "0 4px 0 #000, 0 0 3px #000, 0 6px 18px rgba(0,0,0,0.6)", "contorno": "3px #000", "faixa": ""},
+    "hud": {"ativo": true, "topo": 230,
+      "rotulo": {"fonte": "\"Anton\", sans-serif", "peso": 400, "tamanho": 44, "espaco": "0.04em", "cor": "#FFFFFF"},
+      "numero": {"fonte": "\"Anton\", sans-serif", "tamanho": 44, "cor": "#A8D8E8", "cor_fim": "#F05A4A"},
+      "linha2": {"cor": "#F05A4A"}, "status": {"tamanho": 32, "cor": "#F05A4A"}},
+    "titulo": {"fonte": "\"Anton\", sans-serif", "tamanho": 72, "caixa": "uppercase", "topo": 230},
+    "blocos": ["toy", "animals"],
+    "nota": "flatShading + geometria de baixa subdivisão, contorno por casco invertido fino, luz fria de cima e quente na pele. HUD de barras no canto superior esquerdo."
   }
 } /* PRESETS:FIM */;
 

@@ -27,6 +27,8 @@ O usuário pode mudar qualquer padrão. A mudança vale para aquele vídeo; se e
 
 **Referências do usuário:** leia só a seção "Padrão atual" de `referencias/REFERENCIAS.md`. Ela vale mais que esta seção. Escolha a ref pelo tema na tabela "Escolha por tema" e comece com `novo-video.sh <slug> --ref Rnn`. Nunca abra as imagens da pasta. Para adicionar referências, o comando é `/ref`.
 
+**Principal (desde 21/11):** R11, 3D low-poly facetado com personagem expressivo, em pelo menos 85% das cenas; o resto mescla R10/R01 (HUD, dados).
+
 O vídeo alterna entre **2D flat** e **3D estilizado**. Nunca usa 3D fotorrealista. O 3D com cara de maquete de arquitetura, limpo e com pouco detalhe, é permitido (ver R01).
 
 - **2D flat:** formas vetoriais simples, cores saturadas, fundo chapado ou com grão leve. Serve para dados, mapas, comparações e diagramas.
