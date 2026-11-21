@@ -2,8 +2,8 @@
         const LP = LOWPOLY;
         const st = LP.palco(canvas, { foco: 2.6, faixa: 0.9, desfoque: 26 });
         const { S, cam } = st;
-        const m = LP.pessoa({ seed: 12, longo: true, barba: false, pele: 0xc89478, cabelo: 0x2a1810, jaqueta: 0x3d6a8a, camisa: 0xe8e2d6, iris: 0x3a5a3a });
-        const v = LP.pessoa({ seed: 15, barba: 0xb8b8b8, pele: 0x9a6a52, cabelo: 0xc8c8c8, jaqueta: 0x6a4a3a, camisa: 0x8a8a7a });
+        const m = LP.pessoa({ seed: 12, longo: true, barba: false, pele: 0xc89478, cabelo: 0x2a1810, jaqueta: 0x3d6a8a, camisa: 0x8a3a4a, iris: 0x3a5a3a });
+        const v = LP.pessoa({ seed: 15, barba: 0xb8b8b8, pele: 0x9a6a52, cabelo: 0xc8c8c8, jaqueta: 0x6a4a3a, camisa: 0x4a5058 });
         m.root.position.set(-0.2, 0, 0.35); m.root.rotation.y = 0.35; m.root.scale.setScalar(0.94); m.emocao("triste", [0.2, -0.1]);
         v.root.position.set(0.24, 0, -0.45); v.root.rotation.y = -0.35; v.emocao("foco", [-0.3, 0]); S.add(m.root, v.root);
         const vag = new THREE.Mesh(new THREE.BoxGeometry(10, 3, 0.1), LP.mat(0x8a96a6, 0.7)); vag.position.set(0, 1.5, -1.6); S.add(vag);

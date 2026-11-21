@@ -120,8 +120,9 @@ function cabecaR11({ seed, pele, cabelo, barba, iris = COR.iris }) {
   const cm = mat(cabelo, 0.85);
   const cap = new THREE.Mesh(recorte(geoCranio(seed), (x, y, z) => y > 0.36 + 0.24 * z - 0.12 * Math.abs(x) || (z < -0.3 && y > -0.45), 1.07), cm); contorno(cap, 0.015); H.add(cap);
   const rr = mulberry32(seed * 7 + 3);
-  for (let i = 0; i < 34; i++) {
-    const a = rr() * Math.PI * 2, rad = 0.12 + rr() * 0.68;
+  const claro = new THREE.Color(cabelo).getHSL({}).l > 0.5;
+  for (let i = 0; i < (claro ? 12 : 34); i++) {
+    const a = rr() * Math.PI * 2, rad = claro ? 0.45 + rr() * 0.35 : 0.12 + rr() * 0.68;
     const m = new THREE.Mesh(facetado(1, (v) => { v.y *= 1.7; v.z *= 0.55; if (v.y > 0) { v.x *= 1 - v.y * 0.35; v.z *= 1 - v.y * 0.35; } }, seed + 60 + i, 0.25), cm); contorno(m, 0.04);
     const px = Math.cos(a) * rad * 0.85, pz = Math.sin(a) * rad * 0.85;
     m.position.set(px, 1.08 - rad * 0.3, pz); m.scale.setScalar(0.23 + rr() * 0.07);
@@ -147,7 +148,7 @@ export function pessoa({ longo = false, seed = 1, pele = COR.pele, cabelo = COR.
   const tronco = new THREE.Group(); R.add(tronco);
   const pesc = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.065, 0.16, 7), mat(pele)); pesc.position.y = 1.47; tronco.add(pesc);
   const tor = contorno(new THREE.Mesh(facetado(2, (v) => { v.y *= 1.5; v.x *= 1.05; v.z *= 0.62; if (v.y > 0.6) { v.x *= 1 - (v.y - 0.6) * 0.5; } }, seed + 20, 0.08), mat(camisa)), 0.02);
-  tor.scale.set(0.21, 0.24, 0.2); tor.position.y = 1.15; tronco.add(tor);
+  tor.scale.set(0.2, 0.235, 0.196); tor.position.set(0, 1.15, -0.004); tronco.add(tor);
   const jm = mat(jaqueta, 0.7);
   for (const s of [1, -1]) {
     const lado = contorno(new THREE.Mesh(facetado(2, (v) => { v.y *= 1.5; v.z *= 0.62; if (v.x * s < -0.25) v.x = -0.25 * s; if (v.y > 0.8) v.y = 0.8 + (v.y - 0.8) * 0.5 - 0.12 * Math.abs(v.x); }, seed + 30 + s, 0.09), jm), 0.02);
@@ -166,6 +167,7 @@ export function pessoa({ longo = false, seed = 1, pele = COR.pele, cabelo = COR.
     const mao = contorno(new THREE.Mesh(facetado(1, (v) => { v.y *= 1.3; v.z *= 0.6; }, seed + 50 + s, 0.15), mat(pele)), 0.05); mao.scale.set(0.05, 0.05, 0.045); mao.position.y = -0.33; cot.add(mao);
     for (let f = 0; f < 4; f++) { const d = contorno(new THREE.Mesh(new THREE.BoxGeometry(0.018, 0.07, 0.02), mat(pele)), 0.12); d.position.set((f - 1.5) * 0.02, -0.39, 0.01); d.rotation.x = 0.25; cot.add(d); }
     const pol = contorno(new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.055, 0.02), mat(pele)), 0.12); pol.position.set(-s * 0.035, -0.34, 0.025); pol.rotation.z = s * 0.6; cot.add(pol);
+    om.rotation.z = s * 0.08; cot.rotation.x = -0.18;
     return { om, cot, mao };
   });
   const pernas = [1, -1].map((s) => {
@@ -192,7 +194,7 @@ function T_box(w, h, d) { return new THREE.BoxGeometry(w, h, d, 1, 1, 1); }
 
 // Corvo low-poly: corpo em gota, pescoço grosso, cabeça com testa plana, bico longo, penas em lâminas
 export function corvo(seed = 3) {
-  const R = new THREE.Group(), preto = mat(0x232a3c, 0.5), azul = mat(0x34405e, 0.42), bm = mat(0x2c2f36, 0.35);
+  const R = new THREE.Group(), preto = mat(0x2a3246, 0.45), azul = mat(0x3c4a6c, 0.38), bm = mat(0x2c2f36, 0.35);
   const corpo = contorno(new THREE.Mesh(facetado(2, (v) => { v.z *= 1.55; v.x *= 0.85; if (v.z < 0) { const k = -v.z / 1.55; v.y *= 1 - 0.45 * k; v.x *= 1 - 0.35 * k; } if (v.y < 0) v.y *= 0.85; }, seed, 0.1), preto), 0.015);
   corpo.scale.setScalar(0.42); corpo.rotation.x = -0.45; R.add(corpo);
   const pes = contorno(new THREE.Mesh(facetado(2, (v) => { v.y *= 1.3; }, seed + 2, 0.15), azul), 0.02); pes.scale.set(0.27, 0.3, 0.28); pes.position.set(0, 0.32, 0.42); pes.rotation.x = 0.5; R.add(pes);
@@ -204,7 +206,7 @@ export function corvo(seed = 3) {
   const bi = new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.3, 4), bm); bi.rotation.set(Math.PI / 2 - 0.1, Math.PI / 4, 0); bi.position.set(0, -0.05, 0.36); cab.add(bi);
   // cerdas do bico
   const cer = new THREE.Mesh(facetado(1, (v) => { v.z *= 1.6; }, seed + 8, 0.3), azul); cer.scale.set(0.1, 0.07, 0.1); cer.position.set(0, 0.03, 0.24); cab.add(cer);
-  const olhos = [1, -1].map((s) => { const o = olhoR11(0.055, 0x5a3a12, 0x26304a); o.g.position.set(s * 0.15, 0.06, 0.13); o.g.rotation.y = s * 1.05; o.abrir(0.95); cab.add(o.g); return o; });
+  const olhos = [1, -1].map((s) => { const o = olhoR11(0.068, 0x5a3a12, 0x26304a); o.g.position.set(s * 0.15, 0.06, 0.14); o.g.rotation.y = s * 1.05; o.abrir(0.95); cab.add(o.g); return o; });
   // asas: lâminas de pena sobrepostas
   const asas = [1, -1].map((s) => {
     const g = new THREE.Group(); g.position.set(s * 0.33, 0.12, 0.05); g.rotation.set(0.45, s * 0.12, s * -0.1); R.add(g);
