@@ -21,7 +21,8 @@ canvas{position:absolute;inset:0;width:1080px;height:1920px}
 import * as THREE from "./assets/lib/three.module.js";
 import * as LP from "./assets/lib/lowpoly.js";
 const q = +(new URLSearchParams(location.search).get("c") || 1);
-const P = LP.palco(document.getElementById("c"));
+const FOC = { 5: [2.75, 0.7, 30], 6: [2.7, 0.9, 26], 7: [3.4, 1.0, 26], 1: [1.25, 0.5, 30], 2: [2.4, 0.9, 26], 3: [3.7, 1.6, 22], 4: [4.0, 1.0, 24] }[q];
+const P = LP.palco(document.getElementById("c"), { foco: FOC[0], faixa: FOC[1], desfoque: FOC[2] });
 const { S, cam } = P, ui = document.getElementById("ui");
 const madeira = (w, h, d, c = 0x5b4a3a) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), LP.mat(c, 0.9)); return m; };
 
@@ -31,50 +32,95 @@ if (q === 1) { // pensamentos: close no rosto, olhando de lado, com medo
   // multidão desfocada atrás
   const rr = LP.mulberry32(9);
   for (let i = 0; i < 9; i++) { const o = LP.pessoa({ seed: 20 + i, jaqueta: [0x3d5a80, 0x7a3b3b, 0x4a6b4a, 0x6b5a7a][i % 4], cabelo: [0x1a1410, 0x5a3a20, 0x2a2a2a][i % 3], barba: i % 3 === 0 }); o.root.position.set(-2.4 + i * 0.6 + rr() * 0.2, 0, -2.5 - rr() * 2); o.root.rotation.y = (rr() - 0.5) * 1.5; S.add(o.root); }
-  S.fog = new THREE.Fog(0x14100c, 2.5, 6.5);
-  cam.fov = 24; cam.updateProjectionMatrix(); cam.position.set(0.25, 1.62, 1.45); cam.lookAt(0.0, 1.55, 0);
+  S.background = new THREE.Color(0x10141c); LP.bokeh(S, { n: 60, seed: 3, y: [0.5, 4], z: [-14, -4] });
+  const metro = new THREE.Mesh(new THREE.BoxGeometry(12, 0.15, 0.4), LP.mat(0x3a4250)); metro.position.set(0, 2.6, -3.5); S.add(metro);
+  cam.fov = 26; cam.updateProjectionMatrix(); cam.position.set(0.3, 1.64, 1.25); cam.lookAt(0.02, 1.55, 0);
   ui.innerHTML = `<div class="leg">80 MIL <span class="y">PENSAMENTOS</span></div>
-   <div class="tag" style="left:620px;top:520px">"ELA VAI LIGAR?"</div><div class="tag" style="left:120px;top:700px">"O ALUGUEL…"</div>`;
+   <div class="tag" style="left:600px;top:330px">"ELA VAI LIGAR?"</div><div class="tag" style="left:70px;top:420px">"O ALUGUEL…"</div><div class="tag" style="left:640px;top:880px;opacity:.7">"ESQUECI O GÁS"</div>`;
 }
-if (q === 2) { // animais: corvo pensando, close
-  const c = LP.corvo(); S.add(c.root); c.root.rotation.y = -0.6; c.root.position.y = 0.6;
-  c.olhos.forEach((o) => { o.abrir(0.95); o.olhar(-0.2, 0.05); });
-  const galho = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.09, 5, 6), LP.mat(0x3a2a1c)); galho.rotation.z = Math.PI / 2 - 0.08; galho.position.set(0, -0.08, 0); S.add(galho);
-  S.background = new THREE.Color(0x1c2534);
-  const lua = new THREE.Mesh(new THREE.CircleGeometry(1.4, 12), new THREE.MeshBasicMaterial({ color: 0xdfe7f0 })); lua.position.set(1.8, 3.2, -8); S.add(lua);
-  cam.fov = 30; cam.updateProjectionMatrix(); cam.position.set(-2.0, 1.5, 3.6); cam.lookAt(0.1, 0.75, 0.2);
+if (q === 2) { // animais: corvo num poste à noite, olhando para a câmera
+  const c = LP.corvo(); S.add(c.root); c.root.rotation.y = -1.45; c.root.scale.setScalar(0.55); c.root.position.y = 0.37; c.cab.rotation.set(0.05, 0.55, 0.08);
+  c.olhos.forEach((o) => o.olhar(-0.15, 0.05));
+  const fio = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 9, 6), LP.mat(0x222428, 0.4)); fio.rotation.z = Math.PI / 2 - 0.05; fio.position.set(0, 0.0, 0); S.add(fio);
+  const fio2 = fio.clone(); fio2.position.set(0, 0.4, -1.5); S.add(fio2);
+  S.background = new THREE.Color(0x1a2333); LP.bokeh(S, { n: 50, seed: 7, y: [-2, 3], z: [-16, -6], cores: [0xffb35a, 0xffd28a, 0x7fb6ff] });
+  const lua = new THREE.Mesh(new THREE.CircleGeometry(1.6, 14), new THREE.MeshBasicMaterial({ color: new THREE.Color(0xdfe7f0).multiplyScalar(1.6) })); lua.position.set(2.6, 4.8, -14); S.add(lua);
+  cam.fov = 30; cam.updateProjectionMatrix(); cam.position.set(-1.0, 0.85, 2.15); cam.lookAt(0.0, 0.42, 0.0);
   ui.innerHTML = `<div class="leg">ELE <span class="y">LEMBRA</span> DO SEU ROSTO</div>`;
 }
-if (q === 3) { // pausar o tempo: pessoa andando na rua molhada, mundo parado
-  const p = LP.pessoa({ seed: 4 }); S.add(p.root); p.emocao("foco", [0.05, 0]);
+if (q === 3) { // pausar o tempo: você anda, o mundo parado, chuva suspensa
+  const p = LP.pessoa({ seed: 4 }); S.add(p.root); p.emocao("foco", [-0.15, 0]);
   p.pernas[0].q.rotation.x = -0.45; p.pernas[0].j.rotation.x = 0.3; p.pernas[1].q.rotation.x = 0.35; p.pernas[1].j.rotation.x = 0.6;
-  p.bracos[0].om.rotation.x = 0.4; p.bracos[1].om.rotation.x = -0.4; p.root.rotation.y = 0.5;
-  for (let i = 0; i < 3; i++) { const o = LP.pessoa({ seed: 30 + i, jaqueta: [0x3d5a80, 0x7a3b3b, 0x4a6b4a][i] }); o.root.position.set(-1.6 + i * 1.5, 0, -2.5 - i); o.root.rotation.y = 1.2 - i; o.pernas[0].q.rotation.x = -0.4; o.pernas[1].q.rotation.x = 0.4; S.add(o.root); }
-  const chao = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), new THREE.MeshStandardMaterial({ color: 0x1e2228, roughness: 0.18, metalness: 0.6 })); chao.rotation.x = -Math.PI / 2; S.add(chao);
-  const marq = new THREE.Mesh(new THREE.BoxGeometry(7, 0.35, 3.5), LP.mat(0xcfd3d8)); marq.position.set(0.5, 3.6, -4); S.add(marq);
-  for (const x of [-2.2, 3.2]) { const col = new THREE.Mesh(new THREE.BoxGeometry(0.3, 3.6, 0.3), LP.mat(0xdfe2e6)); col.position.set(x, 1.8, -4); S.add(col); }
-  for (let i = 0; i < 3; i++) { const l = new THREE.PointLight(0xfff0d8, 6, 9, 1.6); l.position.set(-1.5 + i * 2.2, 3.3, -4); S.add(l); const pl = new THREE.Mesh(new THREE.BoxGeometry(1, 0.04, 0.5), new THREE.MeshBasicMaterial({ color: 0xffffff })); pl.position.set(-1.5 + i * 2.2, 3.42, -4); S.add(pl); }
-  const loja = new THREE.Mesh(new THREE.BoxGeometry(5, 2.8, 2), LP.mat(0x5a5048)); loja.position.set(-3.5, 1.4, -8); S.add(loja);
-  const vit = new THREE.Mesh(new THREE.PlaneGeometry(3.6, 1.6), new THREE.MeshBasicMaterial({ color: 0xffb860 })); vit.position.set(-3.5, 1.3, -6.99); S.add(vit);
-  const vl = new THREE.PointLight(0xffa850, 5, 8, 1.5); vl.position.set(-3.5, 1.3, -6); S.add(vl);
-  // gotas de chuva paradas no ar
-  const rr = LP.mulberry32(5), gp = [];
-  for (let i = 0; i < 500; i++) gp.push((rr() - 0.5) * 10, rr() * 5, -rr() * 8 + 1.5);
-  const gg = new THREE.BufferGeometry(); gg.setAttribute("position", new THREE.Float32BufferAttribute(gp, 3));
-  S.add(new THREE.Points(gg, new THREE.PointsMaterial({ color: 0xcfe6ff, size: 0.035, transparent: true, opacity: 0.8 })));
-  S.background = new THREE.Color(0x0e1420); S.fog = new THREE.Fog(0x0e1420, 6, 18);
-  cam.fov = 36; cam.updateProjectionMatrix(); cam.position.set(1.6, 1.3, 3.6); cam.lookAt(-0.1, 1.1, -0.6);
-  ui.innerHTML = `<div class="hud"><b>MUNDO · PAUSADO</b><div class="bar"><i style="width:2%;background:#A8D8E8"></i></div><b style="color:#F05A4A;margin-top:18px">SUA IDADE · CONTINUA</b><div class="bar"><i style="width:46%;background:#F05A4A"></i></div></div>
+  p.bracos[0].om.rotation.x = 0.4; p.bracos[1].om.rotation.x = -0.4; p.bracos[0].cot.rotation.x = -0.3; p.bracos[1].cot.rotation.x = -0.5; p.root.rotation.y = 0.55;
+  const cores = [0x3d5a80, 0x7a3b3b, 0x4a6b4a, 0x6b5a7a];
+  for (let i = 0; i < 4; i++) { const o = LP.pessoa({ seed: 30 + i, jaqueta: cores[i], cabelo: [0x1a1410, 0x5a3a20, 0x2a2a2a, 0x6a6a6a][i], barba: i % 2 === 0 }); o.root.position.set(-2.2 + i * 1.5, 0, -2.2 - (i % 2) * 1.4); o.root.rotation.y = 1.3 - i * 0.8; o.pernas[0].q.rotation.x = -0.4; o.pernas[1].q.rotation.x = 0.4; o.emocao("calmo"); S.add(o.root); }
+  const env = new THREE.Scene(); env.background = new THREE.Color(0x10141e);
+  [[0, 6, -4, 0xffffff, 4], [-4, 2, -6, 0xffa850, 3], [5, 3, 2, 0x6f9fff, 2]].forEach(([x, y, z, c, k]) => { const m = new THREE.Mesh(new THREE.BoxGeometry(3, 0.6, 2), new THREE.MeshBasicMaterial({ color: new THREE.Color(c).multiplyScalar(k) })); m.position.set(x, y, z); env.add(m); });
+  const pm = new THREE.PMREMGenerator(P.r); const envT = pm.fromScene(env, 0.02).texture;
+  const chao = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.MeshStandardMaterial({ color: 0x23272e, roughness: 0.22, metalness: 0.5, envMap: envT, envMapIntensity: 0.9, flatShading: true })); chao.rotation.x = -Math.PI / 2; S.add(chao);
+  const faixa = new THREE.Mesh(new THREE.PlaneGeometry(0.25, 14), LP.mat(0xd8d8d0, 0.4)); faixa.rotation.set(-Math.PI / 2, 0, 0.5); faixa.position.set(2.6, 0.005, -2); S.add(faixa);
+  const marq = new THREE.Mesh(new THREE.BoxGeometry(8, 0.45, 4), LP.mat(0xd2d5da, 0.6)); marq.position.set(0.5, 4.1, -5); S.add(marq);
+  for (const x of [-2.6, 3.6]) { const col = new THREE.Mesh(new THREE.BoxGeometry(0.35, 4.1, 0.35), LP.mat(0xe2e4e8, 0.6)); col.position.set(x, 2.05, -5); S.add(col); }
+  for (let i = 0; i < 3; i++) { const l = new THREE.PointLight(0xfff0d8, 9, 10, 1.4); l.position.set(-1.6 + i * 2.4, 3.7, -5); S.add(l); const pl = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.04, 0.5), new THREE.MeshBasicMaterial({ color: new THREE.Color(0xffffff).multiplyScalar(3) })); pl.position.set(-1.6 + i * 2.4, 3.86, -5); S.add(pl); }
+  for (const x of [-0.6, 1.8]) { const b = new THREE.Mesh(new THREE.BoxGeometry(0.6, 1.5, 0.5), LP.mat(0xeceef0, 0.5)); b.position.set(x, 0.75, -5); S.add(b); const t = new THREE.Mesh(new THREE.PlaneGeometry(0.4, 0.3), new THREE.MeshBasicMaterial({ color: 0x223040 })); t.position.set(x, 1.1, -4.74); S.add(t); }
+  const loja = new THREE.Mesh(new THREE.BoxGeometry(6, 3, 2.5), LP.mat(0x6a5e52, 0.9)); loja.position.set(-4.5, 1.5, -10); S.add(loja);
+  const vit = new THREE.Mesh(new THREE.PlaneGeometry(4.4, 1.8), new THREE.MeshBasicMaterial({ color: new THREE.Color(0xffb860).multiplyScalar(1.6) })); vit.position.set(-4.5, 1.4, -8.74); S.add(vit);
+  const vl = new THREE.PointLight(0xffa850, 8, 10, 1.4); vl.position.set(-4.5, 1.4, -7.5); S.add(vl);
+  const rr = LP.mulberry32(5), NG = 1600, gotas = new THREE.InstancedMesh(new THREE.BoxGeometry(0.008, 0.11, 0.008), new THREE.MeshBasicMaterial({ color: new THREE.Color(0xcfe6ff).multiplyScalar(1.3), transparent: true, opacity: 0.75 }), NG);
+  const o3 = new THREE.Object3D(); for (let i = 0; i < NG; i++) { o3.position.set((rr() - 0.5) * 12, rr() * 5.5, -rr() * 12 + 2.8); o3.rotation.z = 0.12; o3.updateMatrix(); gotas.setMatrixAt(i, o3.matrix); } S.add(gotas);
+  S.background = new THREE.Color(0x0c111c); LP.bokeh(S, { n: 30, seed: 21, y: [1, 5], z: [-24, -14] });
+  cam.fov = 34; cam.updateProjectionMatrix(); cam.position.set(1.5, 1.05, 3.4); cam.lookAt(-0.1, 1.25, -0.6);
+  ui.innerHTML = `<div class="hud"><b>MUNDO · PAUSADO</b><div class="bar"><i style="width:2%;background:#A8D8E8"></i></div><b style="color:#F05A4A;margin-top:18px">VOCÊ · ENVELHECENDO</b><div class="bar"><i style="width:46%;background:#F05A4A"></i></div></div>
     <div class="leg">A CHUVA <span class="y">PARA</span> NO AR</div>`;
 }
-if (q === 4) { // zoom: moléculas do ar congeladas
+if (q === 4) { // zoom: moléculas do ar paradas no tempo
   const rr = LP.mulberry32(11);
-  for (let i = 0; i < 70; i++) { const m = LP.molecula(rr() < 0.78 ? "N2" : "O2", i); m.position.set((rr() - 0.5) * 9, (rr() - 0.5) * 14, -rr() * 14 + 1); m.rotation.set(rr() * 6, rr() * 6, rr() * 6); m.scale.setScalar(0.5 + rr() * 0.3); S.add(m); }
-  const big = LP.molecula("O2", 99); big.position.set(0.3, 0.6, 0.3); big.rotation.set(0.3, 0.6, 0.2); S.add(big);
-  S.background = new THREE.Color(0x0a0e18); S.fog = new THREE.Fog(0x0a0e18, 3, 15);
+  for (let i = 0; i < 160; i++) { const m = LP.molecula(rr() < 0.78 ? "N2" : "O2", i, 0.35); m.position.set((rr() - 0.5) * 12, (rr() - 0.5) * 18, -rr() * 18 - 1); m.rotation.set(rr() * 6, rr() * 6, rr() * 6); m.scale.setScalar(0.35 + rr() * 0.15); S.add(m); }
+  const o2 = LP.molecula("O2", 99, 0.7); o2.position.set(0.35, 0.15, 1.2); o2.rotation.set(0.3, 0.7, 0.35); o2.scale.setScalar(0.8); S.add(o2);
+  const n2 = LP.molecula("N2", 98, 0.7); n2.position.set(-0.75, -1.5, 0.5); n2.rotation.set(-0.2, -0.5, 0.6); n2.scale.setScalar(0.7); S.add(n2);
+  S.background = new THREE.Color(0x070b14); LP.bokeh(S, { n: 40, seed: 12, x: [-8, 8], y: [-10, 10], z: [-25, -12], cores: [0x5f8fff, 0x9fd0ff] });
   cam.fov = 40; cam.updateProjectionMatrix(); cam.position.set(0, 0, 5); cam.lookAt(0, 0, 0);
-  ui.innerHTML = `<div class="tag" style="left:560px;top:760px">O₂ · OXIGÊNIO</div><div class="tag" style="left:110px;top:520px">N₂ · NITROGÊNIO</div>
+  ui.innerHTML = `<div class="tag" style="left:640px;top:690px">O₂ · OXIGÊNIO</div><div class="tag" style="left:80px;top:1330px">N₂ · NITROGÊNIO</div>
+    <div class="hud"><b>VELOCIDADE · 500 M/S</b><div class="bar"><i style="width:100%;background:#A8D8E8"></i></div><b style="color:#F05A4A;margin-top:18px">AGORA · 0 M/S</b><div class="bar"><i style="width:0%"></i></div></div>
     <div class="leg">O AR VIRA <span class="r">CONCRETO</span></div>`;
+}
+if (q === 5) { // cópia de você: duas versões idênticas, frente a frente
+  const a = LP.pessoa({ seed: 4 }), b = LP.pessoa({ seed: 4 }); S.add(a.root, b.root);
+  a.root.position.set(-0.32, 0, 0.9); a.root.rotation.y = 2.6; a.emocao("panico", [0.05, 0.05]);
+  b.root.position.set(0.12, 0, -0.4); b.root.rotation.y = -0.25; b.emocao("calmo", [-0.05, 0.05]);
+  
+  const cama = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.45, 1.8), LP.mat(0x6a7488, 0.9)); cama.position.set(-1.6, 0.22, -1.6); S.add(cama);
+  const jan = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 1.8), new THREE.MeshBasicMaterial({ color: new THREE.Color(0x9fc4ff).multiplyScalar(1.4) })); jan.position.set(1.2, 1.9, -3); S.add(jan);
+  const parede = new THREE.Mesh(new THREE.PlaneGeometry(14, 8), LP.mat(0x2e3444, 0.95)); parede.position.set(0, 3, -3.05); S.add(parede);
+  const chao = new THREE.Mesh(new THREE.PlaneGeometry(14, 14), LP.mat(0x4a3a2e, 0.8)); chao.rotation.x = -Math.PI / 2; S.add(chao);
+  S.background = new THREE.Color(0x141824);
+  cam.fov = 30; cam.updateProjectionMatrix(); cam.position.set(-0.45, 1.68, 2.3); cam.lookAt(0.08, 1.5, -0.4);
+  ui.innerHTML = `<div class="leg">ELE <span class="y">É VOCÊ</span></div>`;
+}
+if (q === 6) { // pessoas variadas: mulher e idoso no metrô
+  const m = LP.pessoa({ seed: 12, longo: true, barba: false, pele: 0xc89478, cabelo: 0x2a1810, jaqueta: 0x3d6a8a, camisa: 0xe8e2d6, iris: 0x3a5a3a });
+  const v = LP.pessoa({ seed: 15, barba: 0xb8b8b8, pele: 0x9a6a52, cabelo: 0xc8c8c8, jaqueta: 0x6a4a3a, camisa: 0x8a8a7a });
+  m.root.position.set(-0.2, 0, 0.35); m.root.rotation.y = 0.35; m.emocao("triste", [0.2, -0.1]); m.root.scale.setScalar(0.94);
+  v.root.position.set(0.24, 0, -0.45); v.root.rotation.y = -0.35; v.emocao("foco", [-0.3, 0]);
+  S.add(m.root, v.root);
+  const vag = new THREE.Mesh(new THREE.BoxGeometry(10, 3, 0.1), LP.mat(0x8a96a6, 0.7)); vag.position.set(0, 1.5, -1.6); S.add(vag);
+  for (let i = 0; i < 4; i++) { const j = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 0.8), new THREE.MeshBasicMaterial({ color: new THREE.Color(0x1a2a40) })); j.position.set(-3 + i * 2, 1.9, -1.54); S.add(j); }
+  const barra = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 3, 6), LP.mat(0xc8ccd2, 0.3)); barra.position.set(1.05, 1.5, 0.3); S.add(barra);
+  for (let i = 0; i < 5; i++) { const l = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.05, 0.2), new THREE.MeshBasicMaterial({ color: new THREE.Color(0xfff6e0).multiplyScalar(2) })); l.position.set(-3 + i * 1.6, 2.9, -0.6); S.add(l); }
+  P.hemi.intensity = 0.8; S.background = new THREE.Color(0x202630);
+  cam.fov = 32; cam.updateProjectionMatrix(); cam.position.set(0.1, 1.66, 2.7); cam.lookAt(0.05, 1.42, 0);
+  ui.innerHTML = `<div class="tag" style="left:90px;top:330px">"SERÁ QUE ELE SABE?"</div><div class="tag" style="left:560px;top:430px">"MAIS DUAS PARADAS"</div><div class="leg">TODO MUNDO <span class="y">PENSA</span></div>`;
+}
+if (q === 7) { // polvo inteligente
+  const o = LP.polvo(); o.root.rotation.y = -0.5; S.add(o.root); o.olhos.forEach((e) => e.olhar(0.35, -0.05));
+  const pote = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.45, 8), new THREE.MeshStandardMaterial({ color: 0xbfe0ff, transparent: true, opacity: 0.35, roughness: 0.1, flatShading: true })); pote.position.set(0.7, 0.22, 0.45); S.add(pote);
+  const tampa = new THREE.Mesh(new THREE.CylinderGeometry(0.235, 0.235, 0.07, 8), LP.mat(0xd8c25a, 0.4)); tampa.position.set(0.7, 0.48, 0.45); S.add(tampa);
+  const chao = new THREE.Mesh(new THREE.PlaneGeometry(20, 20), LP.mat(0xb8a27a, 0.95)); chao.rotation.x = -Math.PI / 2; S.add(chao);
+  const rr = LP.mulberry32(3); for (let i = 0; i < 14; i++) { const r = new THREE.Mesh(new THREE.DodecahedronGeometry(0.15 + rr() * 0.35, 0), LP.mat([0x6a6a70, 0x7a6a5a, 0x5a6a6a][i % 3])); r.position.set((rr() - 0.5) * 6, 0.1, -1 - rr() * 5); S.add(r); }
+  S.background = new THREE.Color(0x0e3a52); S.fog = new THREE.Fog(0x0e3a52, 3, 12); P.fria.color.setHex(0x9fe0ff); P.hemi.color.setHex(0x6fc8e8);
+  LP.bokeh(S, { n: 30, seed: 9, x: [-5, 5], y: [1, 6], z: [-14, -6], cores: [0xbfe8ff, 0x8fd8ff] });
+  cam.fov = 34; cam.updateProjectionMatrix(); cam.position.set(-0.8, 1.15, 3.2); cam.lookAt(0.25, 0.4, 0);
+  ui.innerHTML = `<div class="hud"><b>NEURÔNIOS · 500 MILHÕES</b><div class="bar"><i style="width:58%;background:#A8D8E8"></i></div></div><div class="leg">ELE <span class="y">ABRE</span> O POTE</div>`;
 }
 P.draw();
 document.fonts.ready.then(() => (window.PRONTO = true));
