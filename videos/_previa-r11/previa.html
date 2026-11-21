@@ -21,7 +21,7 @@ canvas{position:absolute;inset:0;width:1080px;height:1920px}
 import * as THREE from "./assets/lib/three.module.js";
 import * as LP from "./assets/lib/lowpoly.js";
 const q = +(new URLSearchParams(location.search).get("c") || 1);
-const FOC = { 5: [2.75, 0.7, 30], 6: [2.7, 0.9, 26], 7: [3.4, 1.0, 26], 1: [1.25, 0.5, 30], 2: [2.4, 0.9, 26], 3: [3.7, 1.6, 22], 4: [4.0, 1.0, 24] }[q];
+const FOC = { 5: [2.75, 0.7, 30], 6: [2.7, 0.9, 26], 7: [3.4, 1.0, 26], 1: [1.38, 0.5, 30], 2: [2.4, 0.9, 26], 3: [3.7, 1.6, 22], 4: [4.0, 1.0, 24] }[q];
 const P = LP.palco(document.getElementById("c"), { foco: FOC[0], faixa: FOC[1], desfoque: FOC[2] });
 const { S, cam } = P, ui = document.getElementById("ui");
 const madeira = (w, h, d, c = 0x5b4a3a) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), LP.mat(c, 0.9)); return m; };
@@ -34,7 +34,7 @@ if (q === 1) { // pensamentos: close no rosto, olhando de lado, com medo
   for (let i = 0; i < 9; i++) { const o = LP.pessoa({ seed: 20 + i, jaqueta: [0x3d5a80, 0x7a3b3b, 0x4a6b4a, 0x6b5a7a][i % 4], cabelo: [0x1a1410, 0x5a3a20, 0x2a2a2a][i % 3], barba: i % 3 === 0 }); o.root.position.set(-2.4 + i * 0.6 + rr() * 0.2, 0, -2.5 - rr() * 2); o.root.rotation.y = (rr() - 0.5) * 1.5; S.add(o.root); }
   S.background = new THREE.Color(0x10141c); LP.bokeh(S, { n: 60, seed: 3, y: [0.5, 4], z: [-14, -4] });
   const metro = new THREE.Mesh(new THREE.BoxGeometry(12, 0.15, 0.4), LP.mat(0x3a4250)); metro.position.set(0, 2.6, -3.5); S.add(metro);
-  cam.fov = 26; cam.updateProjectionMatrix(); cam.position.set(0.3, 1.64, 1.25); cam.lookAt(0.02, 1.55, 0);
+  cam.fov = 26; cam.updateProjectionMatrix(); cam.position.set(0.22, 1.66, 1.4); cam.lookAt(0.02, 1.56, 0);
   ui.innerHTML = `<div class="leg">80 MIL <span class="y">PENSAMENTOS</span></div>
    <div class="tag" style="left:600px;top:330px">"ELA VAI LIGAR?"</div><div class="tag" style="left:70px;top:420px">"O ALUGUEL…"</div><div class="tag" style="left:640px;top:880px;opacity:.7">"ESQUECI O GÁS"</div>`;
 }

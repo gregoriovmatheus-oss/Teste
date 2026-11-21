@@ -3,14 +3,27 @@
 import * as THREE from "./three.module.js";
 
 export const COR = {
-  pele: 0xb07c62, peleSombra: 0x8a5a42, cabelo: 0x3a2618, barba: 0x4a3020,
+  pele: 0xb07c62, peleSombra: 0x8a5a42, cabelo: 0x4a2c18, barba: 0x3e2818,
   jaqueta: 0xd9a21e, camisa: 0x2c3442, jeans: 0x23324f, tenis: 0x1c1c22,
   esclera: 0xf2ede4, iris: 0x6b4423, pupila: 0x0d0805, contorno: 0x120c08,
 };
 
 export function mulberry32(a) { return () => { a |= 0; a = (a + 0x6d2b79f5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
 
-export const mat = (c, rough = 0.78, extra = {}) => new THREE.MeshStandardMaterial({ color: c, roughness: rough, metalness: 0, flatShading: true, ...extra });
+// facetas com variação de tom estável (hash da normal da faceta no espaço do objeto), como pintura
+function pintado(m, k = 0.16) {
+  m.onBeforeCompile = (sh) => {
+    sh.vertexShader = sh.vertexShader.replace("#include <common>", "#include <common>\nvarying vec3 vObj;").replace("#include <begin_vertex>", "#include <begin_vertex>\nvObj = position;");
+    sh.fragmentShader = sh.fragmentShader.replace("#include <common>", "#include <common>\nvarying vec3 vObj;")
+      .replace("#include <normal_fragment_maps>", `#include <normal_fragment_maps>
+        { vec3 fn = normalize(cross(dFdx(vObj), dFdy(vObj))); fn *= sign(fn.y + fn.x * 0.37 + fn.z * 0.11 + 1e-4);
+          float hz = fract(sin(dot(floor(fn * 9.0 + 0.5), vec3(12.9898, 78.233, 37.719))) * 43758.5453);
+          diffuseColor.rgb *= 1.0 + (hz - 0.5) * ${k.toFixed(3)}; }`);
+  };
+  m.customProgramCacheKey = () => "pintado" + k;
+  return m;
+}
+export const mat = (c, rough = 0.78, extra = {}) => pintado(new THREE.MeshStandardMaterial({ color: c, roughness: rough, metalness: 0, flatShading: true, ...extra }));
 const matContorno = new THREE.MeshBasicMaterial({ color: COR.contorno, side: THREE.BackSide });
 
 // casco invertido = traço de ilustração
@@ -38,7 +51,7 @@ const gauss = (d2, s) => Math.exp(-d2 / (s * s));
 function geoCranio(seed) {
   return facetado(2, (v) => {
     const { x, y, z } = v;
-    v.x *= 0.84; v.y *= 1.14; v.z *= 0.98;
+    v.x *= 0.83; v.y *= 1.16; v.z *= 0.98;
     if (y < -0.1) { const k = Math.min(1, (-y - 0.1) / 0.9); v.x *= 1 - 0.42 * k ** 1.1; if (z < 0.2) v.z *= 1 - 0.45 * k; }
     if (z > 0.55) v.z = 0.55 + (v.z - 0.55) * 0.6;                                           // rosto mais plano
     if (z > 0) {
@@ -70,20 +83,20 @@ function olhoR11(r, cIris = COR.iris, cPele = COR.pele) {
   sup.add(new THREE.Mesh(new THREE.SphereGeometry(r * 1.07, 12, 6, 0, Math.PI * 2, 0, Math.PI / 2), mat(cPele)));
   const cil = new THREE.Mesh(new THREE.TorusGeometry(r * 1.07, r * 0.09, 3, 14, Math.PI), new THREE.MeshBasicMaterial({ color: 0x140a06 }));
   cil.rotation.x = Math.PI / 2; sup.add(cil);
-  const inf = new THREE.Mesh(new THREE.SphereGeometry(r * 1.05, 12, 4, 0, Math.PI * 2, Math.PI * 0.72, Math.PI * 0.28), mat(cPele)); g.add(inf);
+  const inf = new THREE.Mesh(new THREE.SphereGeometry(r * 1.05, 12, 4, 0, Math.PI * 2, Math.PI * 0.62, Math.PI * 0.38), mat(cPele)); g.add(inf);
   return { g, globo, sup, olhar(ax, ay) { globo.rotation.set(-ay, ax, 0); }, abrir(k) { sup.rotation.x = -0.25 - 1.15 * k; } };
 }
 function cabecaR11({ seed, pele, cabelo, barba, iris = COR.iris }) {
   const H = new THREE.Group(), pm = mat(pele, 0.72);
   const cr = new THREE.Mesh(geoCranio(seed), pm); contorno(cr, 0.012); H.add(cr);
   // nariz: pirâmide com aresta para frente + asas
-  const nz = new THREE.Mesh(new THREE.ConeGeometry(0.17, 0.52, 4, 1), pm); nz.rotation.set(-0.32, Math.PI / 4, 0); nz.scale.set(0.9, 1, 1.25); nz.position.set(0, -0.08, 0.7); H.add(nz);
+  const nz = new THREE.Mesh(new THREE.ConeGeometry(0.17, 0.6, 4, 1), pm); nz.rotation.set(-0.3, Math.PI / 4, 0); nz.scale.set(0.85, 1, 1.4); nz.position.set(0, -0.1, 0.7); H.add(nz);
   for (const s of [1, -1]) { const a = new THREE.Mesh(facetado(1, () => {}, seed + s, 0.1), pm); a.scale.set(0.09, 0.07, 0.08); a.position.set(s * 0.11, -0.32, 0.74); H.add(a); }
   const narina = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.02, 0.06), new THREE.MeshBasicMaterial({ color: 0x3a1a10 })); narina.position.set(0, -0.37, 0.76); H.add(narina);
   // orelhas
   for (const s of [1, -1]) { const o = new THREE.Mesh(facetado(1, (v) => { v.x *= 0.35; v.y *= 1.35; v.z *= 0.9; }, seed + 9 + s), pm); contorno(o, 0.04); o.scale.setScalar(0.24); o.position.set(s * 0.83, 0.0, -0.08); o.rotation.y = s * 0.25; H.add(o); }
   // olhos
-  const olhos = [1, -1].map((s) => { const o = olhoR11(0.175, iris, pele); o.g.position.set(s * 0.33, 0.1, 0.64); o.g.rotation.y = s * 0.16; H.add(o.g); return o; });
+  const olhos = [1, -1].map((s) => { const o = olhoR11(0.15, iris, pele); o.g.position.set(s * 0.32, 0.1, 0.62); o.g.rotation.y = s * 0.16; H.add(o.g); return o; });
   // sobrancelhas grossas (2 prismas cada)
   const bm = mat(cabelo, 0.95), somb = [1, -1].map((s) => {
     const g = new THREE.Group(); g.position.set(s * 0.33, 0.36, 0.74); H.add(g);
@@ -93,24 +106,24 @@ function cabecaR11({ seed, pele, cabelo, barba, iris = COR.iris }) {
   });
   // boca: lábios + abertura + dentes
   const boca = new THREE.Group(); boca.position.set(0, -0.53, 0.72); H.add(boca);
-  const lab = new THREE.Mesh(facetado(1, () => {}, seed + 3, 0.1), mat(0xa8665a, 0.55)); lab.scale.set(0.19, 0.04, 0.055); boca.add(lab);
+  const lab = new THREE.Mesh(facetado(1, () => {}, seed + 3, 0.1), mat(0xb8705e, 0.5)); lab.scale.set(0.18, 0.045, 0.06); boca.add(lab);
   const abre = new THREE.Mesh(new THREE.CircleGeometry(1, 8), new THREE.MeshBasicMaterial({ color: 0x1e0806 })); abre.position.z = 0.072; boca.add(abre);
   const dentes = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.05, 0.02), mat(0xeee6d8, 0.4)); dentes.position.set(0, 0.03, 0.074); boca.add(dentes);
   // barba por fazer + bigode
   if (barba) {
     const bc = barba === true ? COR.barba : barba;
     const st = new THREE.Mesh(recorte(geoCranio(seed), (x, y, z) => z > -0.15 && y < -0.28 - 0.25 * Math.max(0, z - 0.3) + 0.0 && !(Math.abs(x) < 0.2 && y > -0.5 && y < -0.38), 1.012), mat(bc, 0.95, { transparent: true, opacity: 0.72 })); H.add(st);
-    const big = new THREE.Mesh(facetado(1, (v) => { v.y *= 0.25; }, seed + 5, 0.2), mat(bc, 0.95, { transparent: true, opacity: 0.85 })); big.scale.set(0.22, 0.13, 0.06); big.position.set(0, -0.43, 0.74); H.add(big);
+    const big = new THREE.Mesh(facetado(1, (v) => { v.y *= 0.25; }, seed + 5, 0.2), mat(bc, 0.95, { transparent: true, opacity: 0.85 })); big.scale.set(0.24, 0.1, 0.06); big.position.set(0, -0.42, 0.75); H.add(big);
   }
   // cabelo: casca acima da linha do cabelo + mechas facetadas
   const cm = mat(cabelo, 0.85);
-  const cap = new THREE.Mesh(recorte(geoCranio(seed), (x, y, z) => y > 0.5 + 0.2 * z - 0.1 * Math.abs(x) || (z < -0.3 && y > -0.4), 1.07), cm); contorno(cap, 0.015); H.add(cap);
+  const cap = new THREE.Mesh(recorte(geoCranio(seed), (x, y, z) => y > 0.36 + 0.24 * z - 0.12 * Math.abs(x) || (z < -0.3 && y > -0.45), 1.07), cm); contorno(cap, 0.015); H.add(cap);
   const rr = mulberry32(seed * 7 + 3);
-  for (let i = 0; i < 26; i++) {
-    const a = rr() * Math.PI * 2, rad = 0.15 + rr() * 0.6;
+  for (let i = 0; i < 34; i++) {
+    const a = rr() * Math.PI * 2, rad = 0.12 + rr() * 0.68;
     const m = new THREE.Mesh(facetado(1, (v) => { v.y *= 1.7; v.z *= 0.55; if (v.y > 0) { v.x *= 1 - v.y * 0.35; v.z *= 1 - v.y * 0.35; } }, seed + 60 + i, 0.25), cm); contorno(m, 0.04);
     const px = Math.cos(a) * rad * 0.85, pz = Math.sin(a) * rad * 0.85;
-    m.position.set(px, 1.02 - rad * 0.32, pz); m.scale.setScalar(0.2 + rr() * 0.06);
+    m.position.set(px, 1.08 - rad * 0.3, pz); m.scale.setScalar(0.23 + rr() * 0.07);
     m.rotation.set(1.25 + pz * 0.25 + rr() * 0.25, Math.atan2(px, pz) * 0.2 + (rr() - 0.5) * 0.5, -px * 0.7 + (rr() - 0.5) * 0.4); H.add(m);
   }
   function rosto(e, olhar) {
@@ -136,8 +149,8 @@ export function pessoa({ longo = false, seed = 1, pele = COR.pele, cabelo = COR.
   tor.scale.set(0.21, 0.24, 0.2); tor.position.y = 1.15; tronco.add(tor);
   const jm = mat(jaqueta, 0.7);
   for (const s of [1, -1]) {
-    const lado = contorno(new THREE.Mesh(facetado(2, (v) => { v.y *= 1.5; v.z *= 0.68; if (v.x * s < -0.25) v.x = -0.25 * s; }, seed + 30 + s, 0.09), jm), 0.02);
-    lado.scale.set(0.225, 0.25, 0.215); lado.position.set(s * 0.035, 1.14, -0.005); tronco.add(lado);
+    const lado = contorno(new THREE.Mesh(facetado(2, (v) => { v.y *= 1.5; v.z *= 0.62; if (v.x * s < -0.25) v.x = -0.25 * s; if (v.y > 0.8) v.y = 0.8 + (v.y - 0.8) * 0.5 - 0.12 * Math.abs(v.x); }, seed + 30 + s, 0.09), jm), 0.02);
+    lado.scale.set(0.215, 0.255, 0.2); lado.position.set(s * 0.035, 1.14, -0.005); tronco.add(lado);
     const gola = contorno(new THREE.Mesh(new THREE.ConeGeometry(0.07, 0.17, 4), jm), 0.04);
     gola.position.set(s * 0.085, 1.42, 0.08); gola.rotation.set(0.5, 0, s * 0.45); tronco.add(gola);
   }
@@ -149,7 +162,9 @@ export function pessoa({ longo = false, seed = 1, pele = COR.pele, cabelo = COR.
     const sup = contorno(new THREE.Mesh(new THREE.CylinderGeometry(0.062, 0.055, 0.32, 6), jm), 0.04); sup.position.y = -0.16; om.add(sup);
     const cot = new THREE.Group(); cot.position.y = -0.32; om.add(cot);
     const inf = contorno(new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.048, 0.3, 6), jm), 0.04); inf.position.y = -0.15; cot.add(inf);
-    const mao = contorno(new THREE.Mesh(facetado(1, (v) => { v.y *= 1.3; v.z *= 0.6; }, seed + 50 + s, 0.15), mat(pele)), 0.05); mao.scale.setScalar(0.055); mao.position.y = -0.34; cot.add(mao);
+    const mao = contorno(new THREE.Mesh(facetado(1, (v) => { v.y *= 1.3; v.z *= 0.6; }, seed + 50 + s, 0.15), mat(pele)), 0.05); mao.scale.set(0.05, 0.05, 0.045); mao.position.y = -0.33; cot.add(mao);
+    for (let f = 0; f < 4; f++) { const d = contorno(new THREE.Mesh(new THREE.BoxGeometry(0.018, 0.07, 0.02), mat(pele)), 0.12); d.position.set((f - 1.5) * 0.02, -0.39, 0.01); d.rotation.x = 0.25; cot.add(d); }
+    const pol = contorno(new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.055, 0.02), mat(pele)), 0.12); pol.position.set(-s * 0.035, -0.34, 0.025); pol.rotation.z = s * 0.6; cot.add(pol);
     return { om, cot, mao };
   });
   const pernas = [1, -1].map((s) => {
@@ -162,9 +177,9 @@ export function pessoa({ longo = false, seed = 1, pele = COR.pele, cabelo = COR.
   });
   if (!corpo) pernas.forEach((p) => (p.q.visible = false));
   const EM = {
-    calmo: { br: 0.0, by: 0.34, bo: [1, 0.3], ab: 0.7, ol: [0, 0.05] },
-    medo: { br: -0.28, by: 0.41, bo: [0.85, 1.2], ab: 0.86, ol: [0.1, 0.05] },
-    panico: { br: -0.42, by: 0.45, bo: [1.1, 2.4], ab: 1.12, ol: [0.3, 0.1] },
+    calmo: { br: 0.0, by: 0.31, bo: [1, 0.3], ab: 0.62, ol: [0, 0.05] },
+    medo: { br: -0.28, by: 0.38, bo: [0.85, 1.2], ab: 0.78, ol: [0.1, 0.05] },
+    panico: { br: -0.42, by: 0.42, bo: [1.1, 2.4], ab: 1.12, ol: [0.3, 0.1] },
     triste: { br: -0.32, by: 0.36, bo: [0.8, 0.4], ab: 0.5, ol: [0, -0.25] },
     foco: { br: 0.22, by: 0.31, bo: [0.8, 0.2], ab: 0.55, ol: [0, 0] },
   };
@@ -219,11 +234,13 @@ export function molecula(tipo = "N2", seed = 1, nuvem = 0.5) {
 export function palco(canvas, { fov = 32, fundo = 0x14100c, foco = 1.5, faixa = 1.2, desfoque = 14, grao = 0.05, sat = 0.9 } = {}) {
   const W = 1080, Hh = 1920;
   const r = new THREE.WebGLRenderer({ canvas, antialias: false, preserveDrawingBuffer: true });
+  r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFSoftShadowMap;
   r.setPixelRatio(1); r.setSize(W, Hh, false); r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.1; r.outputColorSpace = THREE.SRGBColorSpace;
   const S = new THREE.Scene(); S.background = new THREE.Color(fundo);
   const cam = new THREE.PerspectiveCamera(fov, W / Hh, 0.01, 400);
   const hemi = new THREE.HemisphereLight(0x9fb4d8, 0x2a1a10, 0.5); S.add(hemi);
   const fria = new THREE.DirectionalLight(0xa9c6ee, 2.6); fria.position.set(-1.2, 4, 1.2); S.add(fria);
+  fria.castShadow = true; fria.shadow.mapSize.set(2048, 2048); fria.shadow.bias = -0.0004; fria.shadow.normalBias = 0.01; fria.shadow.radius = 4; Object.assign(fria.shadow.camera, { left: -4, right: 4, top: 4, bottom: -4, near: 0.1, far: 20 });
   const quente = new THREE.DirectionalLight(0xffd2aa, 1.7); quente.position.set(1.2, 1.6, 3); S.add(quente);
   const rim = new THREE.DirectionalLight(0x8fb4ff, 2.4); rim.position.set(1.5, 1.5, -3); S.add(rim);
   const rim2 = new THREE.DirectionalLight(0xffa860, 1.2); rim2.position.set(-2, 0.5, -2.5); S.add(rim2);
@@ -256,7 +273,7 @@ export function palco(canvas, { fov = 32, fundo = 0x14100c, foco = 1.5, faixa = 
       }` });
   const quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), pos); quad.frustumCulled = false;
   const S2 = new THREE.Scene(); S2.add(quad); const cam2 = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-  return { r, S, cam, hemi, fria, quente, rim, rim2, U, draw() { U.near.value = cam.near; U.far.value = cam.far; r.setRenderTarget(rt); r.render(S, cam); r.setRenderTarget(null); r.render(S2, cam2); } };
+  return { r, S, cam, hemi, fria, quente, rim, rim2, U, draw() { if (!this._s) { this._s = 1; S.traverse((o) => { if (o.isMesh && o.material && o.material.type !== "MeshBasicMaterial") { o.castShadow = o.material.side !== THREE.BackSide; o.receiveShadow = true; } }); } U.near.value = cam.near; U.far.value = cam.far; r.setRenderTarget(rt); r.render(S, cam); r.setRenderTarget(null); r.render(S2, cam2); } };
 }
 function olho(r) { const o = olhoR11(r); o.palp = o.sup.children[0]; return o; }
 
