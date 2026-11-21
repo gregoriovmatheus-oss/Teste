@@ -1,0 +1,45 @@
+<template>
+  <!-- Gerado por scripts/gera-hud-legendas.py (ref R11). Não edite à mão. -->
+  <style>
+    #root { position: absolute; inset: 0; pointer-events: none; }
+    .cap { position: absolute; left: 130px; right: 310px; top: 1110px; height: 150px; display: flex; align-items: center;
+      justify-content: center; text-align: center; overflow: visible; }
+    .cap-t { display: block; font-family: "Anton", sans-serif; font-weight: 400; font-size: 96px; line-height: 1.05; color: #FFFFFF; text-transform: uppercase; letter-spacing: 0.01em; -webkit-text-stroke: 5px #000; paint-order: stroke fill; text-shadow: 0 6px 0 #000, 0 10px 24px rgba(0,0,0,0.6); }
+    #cap-faixa { position: absolute; left: 40px; right: 220px; top: 1070px; height: 230px; background: none; }
+    .cap-t .num { font-family: "Anton", sans-serif; color: #F5C518; }
+  </style>
+  <div id="root" data-composition-id="captions" data-width="1080" data-height="1920">
+
+    <div id="cap-000" class="clip cap" data-start="0.15" data-duration="0.78"><span class="cap-t">E se você pudesse</span></div>
+    <div id="cap-001" class="clip cap" data-start="0.93" data-duration="1.005"><span class="cap-t">ouvir o pensamento</span></div>
+    <div id="cap-002" class="clip cap" data-start="1.935" data-duration="1.109"><span class="cap-t">de todo mundo?</span></div>
+    <div id="cap-003" class="clip cap" data-start="3.044" data-duration="1.14"><span class="cap-t">Num vagão de metrô,</span></div>
+    <div id="cap-004" class="clip cap" data-start="4.184" data-duration="1.411"><span class="cap-t">seriam dezenas de vozes</span></div>
+    <div id="cap-005" class="clip cap" data-start="5.595" data-duration="1.245"><span class="cap-t">ao mesmo tempo.</span></div>
+    <div id="cap-006" class="clip cap" data-start="6.84" data-duration="0.831"><span class="cap-t">E até o corvo</span></div>
+    <div id="cap-007" class="clip cap" data-start="7.671" data-duration="1.011"><span class="cap-t">lá fora lembraria</span></div>
+    <div id="cap-008" class="clip cap" data-start="8.682" data-duration="1.203"><span class="cap-t">do seu rosto.</span></div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      function cap(sel, s, e) {
+        tl.fromTo(sel, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.12, ease: "power2.out" }, s);
+        tl.to(sel, { opacity: 0, duration: 0.1, ease: "power2.in" }, Math.max(s + 0.13, e - 0.1));
+        tl.set(sel, { opacity: 0, visibility: "hidden" }, e);
+      }
+      cap("#cap-000 .cap-t", 0.15, 0.93);
+      cap("#cap-001 .cap-t", 0.93, 1.935);
+      cap("#cap-002 .cap-t", 1.935, 3.044);
+      cap("#cap-003 .cap-t", 3.044, 4.184);
+      cap("#cap-004 .cap-t", 4.184, 5.595);
+      cap("#cap-005 .cap-t", 5.595, 6.84);
+      cap("#cap-006 .cap-t", 6.84, 7.671);
+      cap("#cap-007 .cap-t", 7.671, 8.682);
+      cap("#cap-008 .cap-t", 8.682, 9.885);
+      tl.set({}, {}, 10.88);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["captions"] = tl;
+    })();
+  </script>
+</template>

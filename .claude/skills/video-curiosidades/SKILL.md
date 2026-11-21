@@ -3,101 +3,75 @@ name: video-curiosidades
 description: Fluxo enxuto para vídeos curtos animados de curiosidades e explicações em português, no formato vertical 9:16 de 60 a 80 segundos (TikTok, Reels, Shorts). Use quando o usuário pedir um vídeo, animação, storyboard ou roteiro do tipo "e se...", "curiosidades sobre...", "explica em vídeo...", ou quiser ajustar um vídeo desse tipo já em andamento.
 ---
 
-# Vídeo de curiosidades (9:16, PT-BR)
+# Vídeo de curiosidades (9:16, PT-BR) — versão 2.0 (21/11)
 
-Esta skill fixa as decisões que o usuário já tomou, para não perguntar de novo, e organiza as outras skills na ordem certa, gastando o mínimo de tokens. Os detalhes técnicos continuam nas skills do HyperFrames e da ElevenLabs: aqui só fica o que é específico deste formato.
+Fixa o que o usuário já decidiu, para não perguntar de novo. O fluxo abaixo é o que de fato produziu os 11 vídeos (`videos/`); o kit em `kit/template` é cópia dele. Antes de planejar um vídeo novo, leia `AUTOCRITICA.md` (1 min): lista os erros que já cometi e não posso repetir.
 
 ## Padrões (não pergunte de novo)
 
 | Item | Padrão |
 | --- | --- |
-| Formato | 1080×1920, 30 fps |
-| Duração | 60 a 80 s. O alvo é cerca de 72 s. |
-| Idioma | Português do Brasil, na narração e nas legendas |
-| Público | Geral, redes sociais, muitas pessoas assistindo sem som |
-| Tom | Curioso e envolvente, com tensão crescente e um fechamento que gera reflexão |
-| Narração | ElevenLabs `text-to-speech`, modelo `eleven_v4`, voz grave estilo documentário |
-| Legendas | Palavra por palavra, grandes e centralizadas, com destaque nos números |
-| Som | Trilha crescente mais efeitos sonoros nas ações visíveis |
-| Arco | Gancho → escala → mergulho pessoal → consequências → contraste → fechamento |
+| Formato | 1080×1920, 30 fps, 60–80 s (alvo ~75 s) |
+| Idioma | PT-BR na narração e nas legendas |
+| Arco | Gancho → escala → mergulho pessoal → consequências **humanas e do cotidiano** → contraste → fechamento que volta à imagem do começo |
+| Estilo | **R11 em ≥ 85% das cenas** (ver `referencias/REFERENCIAS.md`, "Padrão atual"). R10/R01/R08/R03 só em cenas de dado, escala ou "dentro da mente" |
+| Narração | Kokoro local e grátis (voz `pm_alex`), velocidade **1.08** (~200 palavras ≈ 75 s). ElevenLabs só se o usuário pedir; clonagem de voz foi abandonada |
+| Legendas | Palavra por palavra (`palavras.json`). R11: Anton caixa alta, contorno preto, números em amarelo |
+| Som | Trilha em loop + `sfx.mp3` único gerado local (whoosh nos cortes, efeitos nas ações) |
+| Entrega | MP4 crf23 com `git add -f`, commit e push no branch e no `main` |
 
-O usuário pode mudar qualquer padrão. A mudança vale para aquele vídeo; se ele disser que é permanente, atualize esta tabela.
+O usuário pode mudar qualquer padrão para um vídeo; se disser que é permanente, atualize esta tabela.
 
-## Estilo visual (decidido)
+## Como o usuário trabalha (aprendido)
 
-**Referências do usuário:** leia só a seção "Padrão atual" de `referencias/REFERENCIAS.md`. Ela vale mais que esta seção. Escolha a ref pelo tema na tabela "Escolha por tema" e comece com `novo-video.sh <slug> --ref Rnn`. Nunca abra as imagens da pasta. Para adicionar referências, o comando é `/ref`.
+- Quer **ver imagens antes** (personagens, animais, zooms) e aprovar; mande **uma folha de contato**, nunca cada rodada.
+- Pede **rapidez e pouco gasto de tokens**: rodadas grandes, prévias pequenas, sem repetir texto no chat.
+- Referências dele são **só estilo**: nunca personagem, marca, logo ou cena de terceiros.
+- Gosta de consequências **concretas para pessoas** (energia, comida, GPS, trabalho), não só física.
+- Quando pede "só a legenda", é o texto corrido, sem cena nem tempo.
+- Se o limite de uso acabar, **volte ao trabalho sozinho** quando liberar.
 
-**Principal (desde 21/11):** R11, 3D low-poly facetado com personagem expressivo, em pelo menos 85% das cenas; o resto mescla R10/R01 (HUD, dados).
+## Fluxo 2.0 (comandos)
 
-O vídeo alterna entre **2D flat** e **3D estilizado**. Nunca usa 3D fotorrealista. O 3D com cara de maquete de arquitetura, limpo e com pouco detalhe, é permitido (ver R01).
+```bash
+bash .claude/skills/video-curiosidades/kit/scripts/novo-video.sh <slug>          # ref padrão R11
+cd videos/<slug>
+# 1. SCRIPT.md: uma linha por cena depois do "---" (12–13 cenas, ~200 palavras). Mostre tabela tempo|visual|fala e espere aprovação.
+bash scripts/narrar.sh                     # instala o Kokoro na 1ª vez (~350 MB em ~/.cache/kokoro)
+python3 scripts/cenas.py "<2 primeiras palavras de cada linha>"... --cauda 1.4 --criar
+python3 scripts/gera-hud-legendas.py --sem-hud
+# 2. cenas/fNN.js (ver abaixo) + audio/sfx-local.py reescrito para as cenas -> assets/audio/sfx.mp3
+python3 scripts/monta-cenas.py && python3 scripts/doc.py && python3 scripts/cenas.py <mesmas palavras> --cauda 1.4   # cenas.py repõe a tag do sfx
+npx --yes hyperframes@0.9.52 check --json
+npx --yes hyperframes@0.9.52 snapshot . --at <t1,t2,...> --no-end -o renders/snap    # folha de contato; NUNCA durante um render
+setsid nohup bash ../../.claude/skills/video-curiosidades/kit/scripts/fila-render.sh <slug> > /tmp/fila.out 2>&1 &   # ~35–47 min/vídeo
+```
 
-- **2D flat:** formas vetoriais simples, cores saturadas, fundo chapado ou com grão leve. Serve para dados, mapas, comparações e diagramas.
-- **3D estilizado:** segue a gramática dos vídeos virais de curiosidade, sem copiar nenhum criador:
-  - **Visual de brinquedo:** massinha ou miniatura, material fosco (roughness ≥ 0,45), cantos arredondados, paleta pastel ou saturada, sombra de contato macia.
-  - **Iluminação:** luz principal quente, contorno frio e bloom só nos pontos mais claros.
-  - **Câmera:** zoom-in constante, mergulho dentro do objeto (corpo, planeta, célula), vistas explodidas e diorama isométrico com tilt-shift.
-  - **Personagens:** simples e estilizados, sem rosto realista.
-- **Quando usar cada um:** 3D nos momentos de impacto (gancho, mergulho, consequências). 2D quando o número ou a comparação são o centro da cena.
-- **Mistura:** o 3D é o palco no centro. Rótulos, setas, números e legendas ficam por cima em 2D HTML, nunca inclinados em 3D.
-- **Transições entre 2D e 3D:** blocos `transitions-3d`, `cinematic-zoom`, `whip-pan` e `parallax-zoom` do `hyperframes-registry`.
-
-**Implementação do 3D no HyperFrames:**
-- **Padrão:** Three.js desenhado só no evento `hf-seek`, sem `requestAnimationFrame` e com aleatoriedade por seed. Ver `hyperframes/references/runtimes.md` e `references/types/3d.md`, e o template Three.js em `hyperframes-registry/references/templates.md`.
-- **Não existe bloco pronto de massinha nem de diorama.** A cena 3D é feita à mão.
-- **Path tracing** (`--example path-traced-3d`) dá a melhor luz de massinha, mas é cerca de 75× mais lento e precisa de GPU. Só use se o usuário pedir.
-- **Conferência:** `npx hyperframes snapshot --at 4,0,4 --no-end`. Os dois quadros em 4 s precisam sair idênticos.
-- **Blocos úteis:** `camera-shake`, `grain-overlay`, `ui-3d-reveal`, `caption-editorial-emphasis`.
-
-## Kit rápido (`kit/`)
-
-1. **Projeto:** `bash .claude/skills/video-curiosidades/kit/scripts/novo-video.sh <slug> --ref Rnn` cria `videos/<slug>/` com libs, fontes, presets e `scripts/`.
-2. **Áudio:** `python3 scripts/audio.py --dry-run`, depois sem a flag (`--alvo <s>` ajusta a duração com atempo; `--so-tempo` reajusta sem gastar). Efeitos vêm de `video.json` → `sfx`.
-3. **Cenas:** `python3 scripts/cenas.py "<1ª palavra>" ... --criar` gera a tabela, `index.html` e as `fNN.html` a partir de `modelos/`. Depois `python3 scripts/gera-hud-legendas.py` (status do HUD = linha `- status:` de cada Frame do STORYBOARD).
-4. **Montagem:** um único agente de build, partindo dos blocos em `assets/lib/blocks/` (globe, city, particles, shockwave, counter, tiles, primitives, kinetic). Leia o cabeçalho do bloco, não a cena antiga.
-5. **Prévia:** `bash scripts/previa.sh` e mostre `renders/previa-folha.jpg` ao usuário antes do render de entrega.
-6. **Entrega:** `./render-rapido.sh` (já vem no template).
-
-**Lições:**
-- Plano grátis da ElevenLabs: sem API de música e sem vozes da biblioteca. Use voz premade e trilha como efeito longo em loop.
-- Tempo local da cena: use `K.bindSeek(canvas, render)`. O `sceneStart` antigo dava 0 depois da 1ª cena (o host perde `data-composition-src` ao ser embutido).
-- Legenda sobre cena clara perde contraste: mantenha a faixa escura do preset ou escureça a cena atrás.
-- Título da cena não pode cruzar a legenda (y 1045–1215) nem o HUD (y 290–620): título em y 640–1000, ou só antes do HUD aparecer.
-- Globo: ordem XYZ, `rotation.y = -lon`, `rotation.x = +lat` (`globe.aim`). Abaixo de alt 0,3 a câmera entra nas nuvens: corte ali.
-- WebGL por software é lento: prefira renderizar na máquina do usuário com GPU, se houver.
-
-## Fluxo
-
-1. **Briefing (1 rodada no máximo).** Pergunte só o que não está nos padrões: tema, estilo visual se ainda não houver, e algum dado obrigatório. Se o pedido já trouxer tudo, pule. Não carregue `brainstorming` nem `grilling` para este formato.
-2. **Pesquisa e checagem.** Mande um único subagente levantar 10 a 15 curiosidades com fonte e grau de confiança. Ele devolve só uma tabela no formato `fato | número | fonte | confiança`. Descarte o que for fraco ou viral sem fonte. Hipóteses entram como "alguns cientistas acham que...".
-3. **Roteiro e storyboard.** Escreva em arquivos, não no chat:
-   - `SCRIPT.md`: a narração. O orçamento é de cerca de 2,5 palavras por segundo, então 150 palavras para 60 s e 200 para 80 s.
-   - `STORYBOARD.md`: no formato de `hyperframes/references/storyboard-format.md`, com `format: 1080x1920`.
-   - No chat, mostre só uma tabela resumida: `tempo | visual | fala` com no máximo uma linha por cena.
-4. **Aprovação.** Espere o usuário aprovar o roteiro antes de gerar áudio, porque cada geração gasta créditos da ElevenLabs.
-5. **Áudio.** Narração com `text-to-speech`. Trilha (efeito longo em loop: o plano grátis não tem `music`) e efeitos com `sound-effects`, só depois que a narração estiver aprovada, para que a duração já esteja fechada.
-6. **Montagem.** Siga `hyperframes` (contrato de render e fluxo de trabalho) e `hyperframes/references/types/vertical.md`. Antes de criar à mão qualquer efeito, título ou transição com nome, procure no `hyperframes-registry`. A mixagem segue `media-use`.
-7. **Legendas.** Use o tempo de cada palavra. Se transcrever com o HyperFrames, passe sempre `--model small --language pt`. O padrão `small.en` **traduz para o inglês**.
-8. **Revisão e render.** Rode `npx hyperframes check --json` e o snapshot de revisão, abra o preview e só renderize quando o usuário aprovar ou pedir o arquivo. Aplique `verification-before-completion` antes de dizer que está pronto.
+- **`video.json → doc`:** `capitulos [[t,"NOME"]]` + `hud [{rotulo, unid, fmt, keys, max, alerta, de, ate}]`. Sem `ate`, o medidor some no fim do capítulo; `"ate": "fim"` mantém.
+- **Cena (`cenas/fNN.js`):** cabeçalho `/*META {"imports": ["lowpoly"], "rotulos": [{de, ate, top, texto, sai}], "D0": dur} */`, depois o corpo, que cria `st` e `render(t)`. O tempo é local à cena; use `D`, `range`, `ease` e `lerp` do kit.
+- **R11 (`assets/lib/blocks/lowpoly.js`):**
+  - `palco(canvas, {foco, faixa, desfoque})` usa o renderizador compartilhado: um contexto WebGL só para o vídeo inteiro.
+  - Personagens e cenário: `pessoa({seed, longo, barba, pele, cabelo, jaqueta, camisa, iris})` com `.emocao("calmo|medo|panico|triste|foco", [olharX, olharY])`; `corvo()`, `polvo()`, `molecula("N2"|"O2")`, `bokeh(S)`.
+  - Texto: `etiqueta(ctx, txt, pos3d, cam, alfa)` já fica dentro da área segura.
+  - Foco: `foco` é a distância da câmera ao rosto, e o fundo desfoca sozinho.
+- **Delegar a montagem:** um agente por vídeo, no máximo 2 ao mesmo tempo (5 juntos estouraram o limite). O brief tem que dizer: sem render, sem commit, sem rodar `cenas.py`/`doc.py`, e devolver os capítulos e o HUD.
 
 ## Regras de cena (9:16)
 
-- **Gancho no frame 0:** uma imagem forte ou uma pergunta já na tela. O frame 0 é a miniatura. Nunca uma tela preta.
-- **O gancho funciona sem som.**
-- **Ritmo:** um corte ou movimento a cada 2 a 3 s, e uma ideia nova a cada 4 a 8 s.
-- **Áreas seguras:** nada importante acima de 168 px nem abaixo de 1330 px, e nenhum texto sob a coluna de botões à direita.
-- **Texto:** no máximo 5 palavras por linha numa afirmação, e nada menor que 28 px. Corte palavras em vez de diminuir a fonte.
-- **Números:** cada número citado na narração aparece na tela como contador ou destaque.
-- **Fechamento:** volte ao começo do vídeo (por exemplo, o mesmo objeto do gancho) com uma frase curta.
+- **Frame 0** é a miniatura: rosto expressivo e premissa na legenda. Nunca tela preta.
+- **Ritmo:** corte a cada 1,5–3 s e câmera sempre em movimento. A R11 alterna close extremo (rosto, mão, objeto), corte lateral e plano aberto.
+- **Zonas, em y:**
+  - HUD: 190–520.
+  - Títulos e rótulos: 640–1000.
+  - Legenda: 1045–1215.
+  - Nada abaixo de 1330 e nada sob a coluna de botões à direita (x > 960).
+  - **Confira no snapshot se o título cobre o rosto ou o objeto principal.** Isso já aconteceu três vezes.
+- **Números:** cada número narrado aparece na tela na hora em que é dito.
+- **Determinismo:** sem `Math.random`, `Date` nem `requestAnimationFrame` (use `mulberry32`). Os quadros em `--at X,…,X` precisam ser idênticos.
+- **Limite:** ≤ 40 mil triângulos visíveis por cena (WebGL por software).
 
-## Ajustes depois da primeira versão (economia de tokens)
+## Ajustes depois da 1ª versão
 
-- Edite só a cena afetada, no `STORYBOARD.md` ou na composição dela. Não reescreva o storyboard inteiro.
-- No chat, mostre só as linhas que mudaram, nunca o storyboard completo de novo.
-- Use `snapshot --range` na cena alterada, não no vídeo todo.
-- Uma mudança no texto da narração exige regerar só aquele trecho de áudio e reajustar as legendas daquela cena.
-- Junte vários ajustes num único pedido antes de rodar ferramentas.
-- Carregue só as referências do HyperFrames que a etapa atual precisa. `story.md`, `film.md` e `look.md` só quando for montar do zero.
-
-## Templates de estilo
-
-Os templates do `style-sampling` são recurso pago (HyperFrames Pro) e saem em inglês ou chinês. Para vídeo em português, não use. Monte com `hyperframes` direto, usando a gramática visual escolhida, sem copiar personagens, logotipos ou identidade de nenhum canal.
+- Edite só a cena afetada e rode `monta-cenas.py fNN` e um snapshot dessa cena. No chat, diga só o que mudou.
+- Mudou o texto: rode `narrar.sh` de novo e depois `cenas.py` com as mesmas palavras. As cenas se esticam sozinhas, porque o `D0` fica guardado no META.
+- Junte vários ajustes num único render.

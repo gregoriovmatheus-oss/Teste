@@ -1,7 +1,7 @@
 {
-  "slug": "novo-video",
-  "ref": "R01",
-  "duracao": 6,
+  "slug": "pausar-o-tempo",
+  "ref": "R09",
+  "duracao": 78.5,
   "duracao_fixa": null,
   "narracao": {
     "arquivo": "assets/audio/narracao.mp3"
@@ -9,15 +9,81 @@
   "cenas": [
     {
       "id": "f01",
-      "palavra": "E se",
+      "palavra": "Você estala",
       "inicio": 0,
-      "fim": 3
+      "fim": 4.14
     },
     {
       "id": "f02",
-      "palavra": "Primeiro",
-      "inicio": 3,
-      "fim": 6
+      "palavra": "Ninguém se",
+      "inicio": 4.14,
+      "fim": 9.57
+    },
+    {
+      "id": "f03",
+      "palavra": "E a",
+      "inicio": 9.57,
+      "fim": 16.1
+    },
+    {
+      "id": "f04",
+      "palavra": "O ar,",
+      "inicio": 16.1,
+      "fim": 24.05
+    },
+    {
+      "id": "f05",
+      "palavra": "E o",
+      "inicio": 24.05,
+      "fim": 28.17
+    },
+    {
+      "id": "f06",
+      "palavra": "Digamos que,",
+      "inicio": 28.17,
+      "fim": 33.48
+    },
+    {
+      "id": "f07",
+      "palavra": "Seu coração",
+      "inicio": 33.48,
+      "fim": 41.57
+    },
+    {
+      "id": "f08",
+      "palavra": "A vida",
+      "inicio": 41.57,
+      "fim": 47.87
+    },
+    {
+      "id": "f09",
+      "palavra": "Um dia",
+      "inicio": 47.87,
+      "fim": 53.92
+    },
+    {
+      "id": "f10",
+      "palavra": "Seus amigos",
+      "inicio": 53.92,
+      "fim": 58.98
+    },
+    {
+      "id": "f11",
+      "palavra": "E o",
+      "inicio": 58.98,
+      "fim": 68.2
+    },
+    {
+      "id": "f12",
+      "palavra": "Então, quanto",
+      "inicio": 68.2,
+      "fim": 70.91
+    },
+    {
+      "id": "f13",
+      "palavra": "Você estala",
+      "inicio": 70.91,
+      "fim": 78.5
     }
   ],
   "hud": {
@@ -39,23 +105,101 @@
     "ocultar": []
   },
   "trilha": {
-    "arquivo": "assets/audio/drone.mp3",
-    "volume": 0.25,
-    "loop": 20
+    "arquivo": "assets/audio/trilha.mp3",
+    "volume": 0.12
   },
-  "sfx": [
-    {
-      "nome": "whoosh",
-      "prompt": "fast cinematic whoosh through clouds",
-      "duracao": 2.5,
-      "em": null,
-      "volume": 0.7
-    },
-    {
-      "nome": "drone",
-      "prompt": "low dark cinematic drone, rising tension, seamless loop",
-      "duracao": 20,
-      "em": null
-    }
-  ]
+  "sfx": [],
+  "doc": {
+    "capitulos": [
+      [
+        0.2,
+        "O ESTALO"
+      ],
+      [
+        9.57,
+        "A FÍSICA"
+      ],
+      [
+        28.17,
+        "O PREÇO"
+      ],
+      [
+        41.57,
+        "A CONTA DA VIDA"
+      ],
+      [
+        68.2,
+        "O RETORNO"
+      ]
+    ],
+    "hud": [
+      {
+        "rotulo": "VELOCIDADE DO MUNDO",
+        "unid": "×",
+        "fmt": "f2",
+        "keys": [
+          [
+            0,
+            1
+          ],
+          [
+            0.85,
+            1
+          ],
+          [
+            1.7,
+            0
+          ],
+          [
+            71.9,
+            0
+          ],
+          [
+            72.6,
+            1
+          ]
+        ],
+        "max": 1,
+        "alerta": [
+          [
+            1.7,
+            71.9
+          ]
+        ],
+        "de": 0.4
+      },
+      {
+        "rotulo": "GPS ADIANTA",
+        "unid": "µs/dia",
+        "fmt": "int",
+        "keys": [
+          [
+            63.1,
+            0
+          ],
+          [
+            64.8,
+            38
+          ],
+          [
+            66.3,
+            38
+          ],
+          [
+            67.3,
+            0
+          ]
+        ],
+        "max": 38,
+        "alerta": [
+          [
+            64.8,
+            66.3
+          ]
+        ],
+        "de": 58.98,
+        "ate": 68.2
+      }
+    ]
+  }
 }

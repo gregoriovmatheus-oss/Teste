@@ -126,7 +126,7 @@ Pule as etapas que a tarefa não precisa: uma correção de uma linha vai direto
 
 ## Fluxo típico de um vídeo
 
-Siga `video-curiosidades`: briefing curto, pesquisa por subagente, `SCRIPT.md` e `STORYBOARD.md` em arquivo, aprovação, áudio da ElevenLabs, montagem no HyperFrames, legendas, revisão e render.
+Siga `video-curiosidades` (fluxo 2.0): leia `AUTOCRITICA.md`, roteiro em `SCRIPT.md` com aprovação, narração local Kokoro (`scripts/narrar.sh`), cenas R11 com `lowpoly.js`, `monta-cenas.py` + `doc.py`, snapshot e `fila-render.sh`.
 
 ## Manutenção
 

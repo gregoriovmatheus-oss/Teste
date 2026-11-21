@@ -11,21 +11,16 @@ Servem só como estilo. Nunca use nos vídeos personagens, marcas, logotipos, ce
 | Tema / tom | Ref | Preset e blocos |
 | --- | --- | --- |
 | Catástrofe, física, "e se" (sério) | R01 | 3D maquete + HUD; globe, city, particles, shockwave |
-| Sociedade, economia, humor (popular) | R02 | 2D flat, legenda Anton; counter |
 | Tech, IA, ideias abstratas | R03 | 3D; primitives |
-| Geografia, lugares, comparar países | R04 | 3D diorama; tiles, city |
-| Corpo humano, cotidiano, reação | R05 | 3D cartoon simplificado |
-| Trabalho, dinheiro, tutorial | R06 | 2D flat roxo; counter |
 | Gancho, listas, números | R07 | tipografia; kinetic (camada sobre qualquer ref) |
 | Química, biologia, medicina | R08 | 3D vidro (1 a 3 objetos); particles |
-| Animais, personagens, histórias, emoção | R09 | anime cel-shaded (toon + contorno); legenda R01 |
 | Histórias de sobrevivência, personagem com emoção (principal desde 21/11) | R11 | 3D low-poly facetado, câmera colada no rosto; HUD de barras; legenda caixa alta |
 | Animais e cidade com cara de filme, "mais realista" | R10 | cinema 3D realista (PBR, sem contorno, grão e vinheta); legenda R01 |
 
 - **Gancho no frame 0:** pergunta inteira na tela, palavra-chave na cor de destaque, câmera já em movimento.
-- **Legenda em y ≈ 1045–1215:** sério → serifa itálica com sombra suave; popular → Anton caixa alta com sombra preta dura.
-- **3D** sempre estilizado (maquete, massinha, toy), fosco, um só elemento de cor forte. Vidro só em poucos objetos.
-- **Números** em destaque na cor da ref. Fontes só as do kit: EB Garamond, Montserrat 600, Anton.
+- **Padrão (21/11): R11 em ≥ 85% das cenas** (personagem low-poly facetado, close no rosto, HUD de barras, legenda Anton caixa alta com contorno, destaque amarelo). R10/R01/R08/R03 só em cenas de dado, escala ou "dentro da mente".
+- **Removidas em 21/11** (conflitavam com o padrão; estão no histórico do git): R02 e R06 (2D flat), R04 (diorama), R05 (cartoon simples), R09 (anime cel-shaded).
+- **Números** em amarelo #F5C518; alerta em #E8463A. Fontes do kit: Anton, Inter, JetBrains Mono, Montserrat, EB Garamond.
 - Precisa de mais detalhe? Leia só o cartão da ref escolhida.
 
 ## Cartões
@@ -45,20 +40,6 @@ Arquivos: `R01-*.jpg`. Engajamento baixo (579 curtidas). Vale pelo visual, não 
 - **Câmera:** drone sobre avenida (diagonal), close de árvore, contra-plongée de prédio. Corte a cada 1,5–3 s.
 - **Cena:** cidade em maquete clara, de dia, que congela progressivamente (névoa fria, partículas de neve, geada branca nas superfícies, rachaduras brancas ramificadas nos vidros).
 
-### R02: "emprego em 2050" (2D flat, tom popular)
-
-Arquivo: `R02-2d-fila.jpg`. Engajamento alto (45,4 mil curtidas, 3,8 mil salvamentos).
-
-- **Visual:** 2D flat com leve sombreado. Fila de personagens com capuz em cores sóbrias (cinza, vermelho, azul, marrom). Chuva em traços finos, fachada com janelas amarelas e placa grande com texto ("SEM VAGAS").
-- **Legenda:** Anton ou similar, cerca de 80 px, caixa alta, branca com sombra preta dura, em y ≈ 1120. Frase curta com ponto final para dar impacto ("NÃO EXISTE.").
-- **Paleta:**
-
-  | Uso | Hex |
-  | --- | --- |
-  | Fundo | `#3B423F` |
-  | Janelas | `#F2C94C` |
-  | Pele | `#E8A86B` |
-  | Chuva | `#C9C27A` |
 
 ### R03: formas abstratas 3D (tech, conceitos)
 
@@ -78,58 +59,8 @@ Arquivo: `R03-formas-abstratas.jpg`. Imagem solta, sem dados de engajamento.
 
 - **Uso:** IA, internet, matemática, ideias abstratas, aberturas e transições. Leve no Three.js (vidro com `transmission` só em 1 ou 2 objetos).
 
-### R04: diorama de massinha (geografia, lugares)
 
-Arquivo: `R04-diorama-massinha.jpg`. Sem dados de engajamento.
 
-- **Visual:** blocos isométricos de 3×3 com cantos arredondados e base em camadas, cada bloco com um mini-mundo (fazenda, farol, cidade, pista com avião, ilha, balão). Massinha, água com textura ondulada, fundo preto.
-- **Paleta:**
-
-  | Uso | Hex |
-  | --- | --- |
-  | Laranja | `#F08A3C` |
-  | Turquesa | `#3FB6C8` |
-  | Verde | `#7CC54A` |
-  | Vermelho | `#E5463A` |
-  | Creme | `#F3D9A4` |
-  | Fundo | `#111111` |
-
-- **Câmera:** isométrica de cima, zoom num bloco, troca de bloco por cena.
-- **Uso:** países, cidades, economia, "como seria o mundo se...", comparar lugares, ciclos (água, energia).
-
-### R05: personagem 3D estilo animação (reação, corpo humano)
-
-Arquivo: `R05-personagem-3d.jpg`. Sem dados de engajamento.
-
-- **Visual:** menino cartoon de cabeça grande, olhos enormes e boca aberta de espanto, camiseta amarela, rua com luz de fim de tarde e fundo desfocado.
-- **Paleta:**
-
-  | Uso | Hex |
-  | --- | --- |
-  | Pele | `#F2B48A` |
-  | Camiseta | `#F2B53A` |
-  | Tijolo | `#D9583B` |
-  | Céu | `#8CC7D8` |
-
-- **Uso:** narrador ou reação, corpo humano, cotidiano, humor.
-- **Limite:** no Three.js à mão sai simplificado (esferas e cápsulas de massinha). Qualidade igual à imagem só com geração de imagem ou vídeo, que é paga.
-
-### R06: 2D flat explicativo (sociedade, trabalho)
-
-Arquivo: `R06-2d-explainer.jpg`. Imagem de anúncio, sem dados.
-
-- **Visual:** pessoas em vetor flat com roupas monocromáticas roxas, cartões de interface com barras e check, plantas e pontos decorativos.
-- **Paleta:**
-
-  | Uso | Hex |
-  | --- | --- |
-  | Fundo | `#1B1747` |
-  | Roxo | `#6C4BF0` |
-  | Lilás | `#9B8CFF` |
-  | Branco | `#FFFFFF` |
-
-- **Título:** sans extra-negrito branca, mais um rótulo branco em caixa com texto roxo.
-- **Uso:** trabalho, dinheiro, tecnologia, tutorial, dados sociais. Combina com a legenda do R02.
 
 ### R07: tipografia cinética (gancho, listas, números)
 
@@ -164,26 +95,6 @@ Arquivo: `R08-ciencia-vidro.jpg`. Sem dados de engajamento.
 
 - **Uso:** química, biologia, medicina, física de partículas.
 - **Limite:** vidro com `transmission` é pesado sem placa de vídeo. Use em 1 a 3 objetos e bloom só nas moléculas.
-
-### R09: anime cel-shaded (personagens, histórias)
-
-Sem imagem: veio de um prompt do usuário. Sem dados de engajamento.
-
-- **Prompt base:** "[ASSUNTO] in a modern anime style: expressive large eyes, clean cel-shaded coloring, detailed hair with highlight sheen, dynamic composition, cinematic anime lighting and background, in the style of a high-quality modern animated film."
-- **No Three.js:** `MeshToonMaterial` com 3 tons (gradientMap), contorno preto por casco invertido, olhos grandes com brilho branco, céu em degradê com nuvens volumosas, luz de fim de tarde com contorno quente, speed lines nos movimentos rápidos e composição dinâmica (câmera baixa, diagonais).
-- **Paleta:**
-
-  | Uso | Hex |
-  | --- | --- |
-  | Céu alto | `#3A7BD5` |
-  | Céu baixo | `#FFC88A` |
-  | Contorno | `#1A1A2E` |
-  | Brilho | `#FFF4D6` |
-  | Destaque | `#FF5A5F` |
-
-- **Legenda:** a mesma da R01 (serifa itálica com sombra suave), acompanhando cada fala.
-- **Uso:** animais, personagens, histórias com emoção, "e se" narrativo.
-- **Limite:** sai como anime 3D simplificado. Qualidade de filme só com geração de imagem ou vídeo, que é paga. Nunca copie personagens ou estúdios específicos.
 
 
 ### R10: cinema 3D realista (padrão único de animação)

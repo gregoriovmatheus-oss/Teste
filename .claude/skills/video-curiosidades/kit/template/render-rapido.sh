@@ -17,7 +17,7 @@ OUT="renders/$(basename "$PWD").mp4"
 mkdir -p renders
 
 start=$(date +%s)
-npx hyperframes render -q delivery -w "$WORKERS" --no-browser-gpu -o "$OUT"
+HF_SEGMENTED_CAPTURE=true npx hyperframes render --resume -q delivery -w "$WORKERS" --no-browser-gpu --player-ready-timeout 240000 -o "$OUT"
 end=$(date +%s)
 
 dur=$(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 "$OUT")

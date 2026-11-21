@@ -88,8 +88,8 @@ export function createGlobe(scene, {
   const geo = new THREE.IcosahedronGeometry(1, detalhe);
   const pos = geo.attributes.position;
   const cols = new Float32Array(pos.count * 3);
-  const cOcean = [new THREE.Color(0x2b4a66), new THREE.Color(0x325574)];
-  const cLand = [new THREE.Color(0x6f8578), new THREE.Color(0x768b7e)];
+  const cOcean = [new THREE.Color(0x1d4e82), new THREE.Color(0x24598f)];
+  const cLand = [new THREE.Color(0x5d7a3c), new THREE.Color(0x8a8458)];
   const cDest = new THREE.Color(corDestaque), cIce = new THREE.Color(PALETTE.frost);
   const polys = Object.values(LAND);
   const rnd = mulberry32(11);

@@ -1,0 +1,86 @@
+{
+  "slug": "teste-kit2",
+  "ref": "R11",
+  "duracao": 10.88,
+  "duracao_fixa": null,
+  "narracao": {
+    "arquivo": "assets/audio/narracao.mp3"
+  },
+  "cenas": [
+    {
+      "id": "f01",
+      "palavra": "E se",
+      "inicio": 0,
+      "fim": 2.99
+    },
+    {
+      "id": "f02",
+      "palavra": "Num vagão",
+      "inicio": 2.99,
+      "fim": 6.79
+    },
+    {
+      "id": "f03",
+      "palavra": "E até",
+      "inicio": 6.79,
+      "fim": 10.88
+    }
+  ],
+  "hud": {
+    "inicio": 0.5,
+    "fim": 6,
+    "rotulo": "O CALOR VOLTA EM",
+    "linha2": "AR −273 °C",
+    "contador": {
+      "de": 5,
+      "ate": 0,
+      "fim": 5.5,
+      "unidade": "s",
+      "casas": 2
+    }
+  },
+  "legendas": {
+    "juntar": [],
+    "numeros": {},
+    "ocultar": []
+  },
+  "trilha": {
+    "arquivo": "assets/audio/trilha.mp3",
+    "volume": 0.12
+  },
+  "sfx": [],
+  "doc": {
+    "capitulos": [
+      [
+        0.2,
+        "O SUPERPODER"
+      ],
+      [
+        2.99,
+        "O METRÔ"
+      ],
+      [
+        6.79,
+        "O CORVO"
+      ]
+    ],
+    "hud": [
+      {
+        "rotulo": "MENTES OUVIDAS",
+        "fmt": "int",
+        "keys": [
+          [
+            0.5,
+            1
+          ],
+          [
+            3.5,
+            40
+          ]
+        ],
+        "max": 40,
+        "de": 3.0
+      }
+    ]
+  }
+}

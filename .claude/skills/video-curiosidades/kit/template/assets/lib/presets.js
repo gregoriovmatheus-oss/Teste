@@ -76,72 +76,6 @@ export const PRESETS = /* PRESETS:INICIO */ {
       "counter"
     ]
   },
-  "R02": {
-    "nome": "2D flat, tom popular",
-    "modo": "2d",
-    "fundo": "#3B423F",
-    "fontes": [
-      "Anton",
-      "Montserrat"
-    ],
-    "paleta": {
-      "texto": "#FFFFFF",
-      "destaque": "#F2C94C",
-      "status": "#F2C94C",
-      "fundo": "#3B423F",
-      "pele": "#E8A86B",
-      "chuva": "#C9C27A",
-      "acento": "#D8432F"
-    },
-    "legenda": {
-      "fonte": "\"Anton\", sans-serif",
-      "estilo": "normal",
-      "peso": 400,
-      "tamanho": 80,
-      "caixa": "uppercase",
-      "cor": "#FFFFFF",
-      "numero": "#F2C94C",
-      "y": 1045,
-      "altura": 170,
-      "sombra": "5px 5px 0 #000, 0 0 2px #000",
-      "contorno": "3px #000",
-      "faixa": ""
-    },
-    "hud": {
-      "ativo": false,
-      "topo": 290,
-      "rotulo": {
-        "fonte": "\"Montserrat\", sans-serif",
-        "peso": 600,
-        "tamanho": 30,
-        "espaco": "0.2em",
-        "cor": "#FFFFFF"
-      },
-      "numero": {
-        "fonte": "\"Anton\", sans-serif",
-        "tamanho": 150,
-        "cor": "#FFFFFF",
-        "cor_fim": "#F2C94C"
-      },
-      "linha2": {
-        "cor": "#F2C94C"
-      },
-      "status": {
-        "tamanho": 32,
-        "cor": "#F2C94C"
-      }
-    },
-    "titulo": {
-      "fonte": "\"Anton\", sans-serif",
-      "tamanho": 110,
-      "caixa": "uppercase",
-      "topo": 330
-    },
-    "blocos": [
-      "counter",
-      "kinetic"
-    ]
-  },
   "R03": {
     "nome": "formas abstratas 3D (tech, IA)",
     "modo": "3d",
@@ -205,204 +139,6 @@ export const PRESETS = /* PRESETS:INICIO */ {
     },
     "blocos": [
       "primitives",
-      "kinetic"
-    ]
-  },
-  "R04": {
-    "nome": "diorama de massinha (geografia, lugares)",
-    "modo": "3d",
-    "fundo": "#111111",
-    "fontes": [
-      "Anton",
-      "Montserrat"
-    ],
-    "paleta": {
-      "texto": "#FFFFFF",
-      "destaque": "#F08A3C",
-      "fundo": "#111111",
-      "laranja": "#F08A3C",
-      "turquesa": "#3FB6C8",
-      "verde": "#7CC54A",
-      "vermelho": "#E5463A",
-      "creme": "#F3D9A4"
-    },
-    "legenda": {
-      "fonte": "\"Anton\", sans-serif",
-      "estilo": "normal",
-      "peso": 400,
-      "tamanho": 76,
-      "caixa": "uppercase",
-      "cor": "#FFFFFF",
-      "numero": "#F08A3C",
-      "y": 1045,
-      "altura": 170,
-      "sombra": "4px 4px 0 #000, 0 0 2px #000",
-      "contorno": "2px #000",
-      "faixa": ""
-    },
-    "hud": {
-      "ativo": false,
-      "topo": 290,
-      "rotulo": {
-        "fonte": "\"Montserrat\", sans-serif",
-        "peso": 600,
-        "tamanho": 30,
-        "espaco": "0.2em",
-        "cor": "#FFFFFF"
-      },
-      "numero": {
-        "fonte": "\"Anton\", sans-serif",
-        "tamanho": 150,
-        "cor": "#FFFFFF",
-        "cor_fim": "#F08A3C"
-      },
-      "linha2": {
-        "cor": "#F08A3C"
-      },
-      "status": {
-        "tamanho": 32,
-        "cor": "#F08A3C"
-      }
-    },
-    "titulo": {
-      "fonte": "\"Anton\", sans-serif",
-      "tamanho": 104,
-      "caixa": "uppercase",
-      "topo": 330
-    },
-    "blocos": [
-      "tiles",
-      "city",
-      "counter"
-    ]
-  },
-  "R05": {
-    "nome": "personagem 3D cartoon (reação, corpo)",
-    "modo": "3d",
-    "fundo": "#8CC7D8",
-    "fontes": [
-      "Anton",
-      "Montserrat"
-    ],
-    "paleta": {
-      "texto": "#FFFFFF",
-      "destaque": "#F2B53A",
-      "fundo": "#8CC7D8",
-      "pele": "#F2B48A",
-      "camiseta": "#F2B53A",
-      "tijolo": "#D9583B"
-    },
-    "legenda": {
-      "fonte": "\"Anton\", sans-serif",
-      "estilo": "normal",
-      "peso": 400,
-      "tamanho": 80,
-      "caixa": "uppercase",
-      "cor": "#FFFFFF",
-      "numero": "#F2B53A",
-      "y": 1045,
-      "altura": 170,
-      "sombra": "5px 5px 0 #000, 0 0 2px #000",
-      "contorno": "3px #000",
-      "faixa": ""
-    },
-    "hud": {
-      "ativo": false,
-      "topo": 290,
-      "rotulo": {
-        "fonte": "\"Montserrat\", sans-serif",
-        "peso": 600,
-        "tamanho": 30,
-        "espaco": "0.2em",
-        "cor": "#FFFFFF"
-      },
-      "numero": {
-        "fonte": "\"Anton\", sans-serif",
-        "tamanho": 150,
-        "cor": "#FFFFFF",
-        "cor_fim": "#F2B53A"
-      },
-      "linha2": {
-        "cor": "#F2B53A"
-      },
-      "status": {
-        "tamanho": 32,
-        "cor": "#F2B53A"
-      }
-    },
-    "titulo": {
-      "fonte": "\"Anton\", sans-serif",
-      "tamanho": 110,
-      "caixa": "uppercase",
-      "topo": 330
-    },
-    "blocos": [
-      "city",
-      "counter"
-    ],
-    "nota": "Personagem à mão: esferas e cápsulas de massinha (maqueteMaterial). Qualidade da referência só com geração paga."
-  },
-  "R06": {
-    "nome": "2D flat explicativo roxo (sociedade, trabalho)",
-    "modo": "2d",
-    "fundo": "#1B1747",
-    "fontes": [
-      "Anton",
-      "Montserrat"
-    ],
-    "paleta": {
-      "texto": "#FFFFFF",
-      "destaque": "#9B8CFF",
-      "fundo": "#1B1747",
-      "roxo": "#6C4BF0",
-      "lilas": "#9B8CFF"
-    },
-    "legenda": {
-      "fonte": "\"Anton\", sans-serif",
-      "estilo": "normal",
-      "peso": 400,
-      "tamanho": 80,
-      "caixa": "uppercase",
-      "cor": "#FFFFFF",
-      "numero": "#9B8CFF",
-      "y": 1045,
-      "altura": 170,
-      "sombra": "5px 5px 0 #000, 0 0 2px #000",
-      "contorno": "3px #000",
-      "faixa": ""
-    },
-    "hud": {
-      "ativo": false,
-      "topo": 290,
-      "rotulo": {
-        "fonte": "\"Montserrat\", sans-serif",
-        "peso": 600,
-        "tamanho": 30,
-        "espaco": "0.2em",
-        "cor": "#FFFFFF"
-      },
-      "numero": {
-        "fonte": "\"Anton\", sans-serif",
-        "tamanho": 150,
-        "cor": "#FFFFFF",
-        "cor_fim": "#9B8CFF"
-      },
-      "linha2": {
-        "cor": "#9B8CFF"
-      },
-      "status": {
-        "tamanho": 32,
-        "cor": "#9B8CFF"
-      }
-    },
-    "titulo": {
-      "fonte": "\"Anton\", sans-serif",
-      "tamanho": 104,
-      "caixa": "uppercase",
-      "topo": 330
-    },
-    "blocos": [
-      "counter",
       "kinetic"
     ]
   },
@@ -538,23 +274,90 @@ export const PRESETS = /* PRESETS:INICIO */ {
     ],
     "nota": "Vidro (transmission) só em 1 a 3 objetos: é pesado sem GPU."
   },
-  "R09": {
-    "nome": "anime cel-shaded (personagens, histórias)",
+  "R11": {
+    "nome": "3D low-poly ilustrado, personagem com emoção (principal)",
     "modo": "3d",
-    "fundo": "#3A7BD5",
+    "fundo": "#14100C",
     "fontes": [
-      "EB Garamond",
       "Anton",
       "Montserrat"
     ],
     "paleta": {
       "texto": "#FFFFFF",
-      "destaque": "#FF5A5F",
-      "fundo": "#3A7BD5",
-      "ceu_alto": "#3A7BD5",
-      "ceu_baixo": "#FFC88A",
-      "contorno": "#1A1A2E",
-      "brilho": "#FFF4D6"
+      "destaque": "#F5C518",
+      "alerta": "#E8463A",
+      "fundo": "#14100C",
+      "luz_fria": "#6E8FB8",
+      "pele": "#B0785A",
+      "jaqueta": "#D9A21E",
+      "contorno": "#120C08"
+    },
+    "legenda": {
+      "fonte": "\"Anton\", sans-serif",
+      "estilo": "normal",
+      "peso": 400,
+      "tamanho": 96,
+      "caixa": "uppercase",
+      "cor": "#FFFFFF",
+      "numero": "#F5C518",
+      "y": 1110,
+      "altura": 150,
+      "sombra": "0 4px 0 #000, 0 0 3px #000, 0 6px 18px rgba(0,0,0,0.6)",
+      "contorno": "3px #000",
+      "faixa": ""
+    },
+    "hud": {
+      "ativo": true,
+      "topo": 230,
+      "rotulo": {
+        "fonte": "\"Anton\", sans-serif",
+        "peso": 400,
+        "tamanho": 44,
+        "espaco": "0.04em",
+        "cor": "#FFFFFF"
+      },
+      "numero": {
+        "fonte": "\"Anton\", sans-serif",
+        "tamanho": 44,
+        "cor": "#A8D8E8",
+        "cor_fim": "#F05A4A"
+      },
+      "linha2": {
+        "cor": "#F05A4A"
+      },
+      "status": {
+        "tamanho": 32,
+        "cor": "#F05A4A"
+      }
+    },
+    "titulo": {
+      "fonte": "\"Anton\", sans-serif",
+      "tamanho": 72,
+      "caixa": "uppercase",
+      "topo": 230
+    },
+    "blocos": [
+      "toy",
+      "animals"
+    ],
+    "nota": "flatShading + geometria de baixa subdivisão, contorno por casco invertido fino, luz fria de cima e quente na pele. HUD de barras no canto superior esquerdo."
+  },
+  "R10": {
+    "nome": "cinema 3D realista + doc (HUD mono, legenda Inter)",
+    "modo": "3d",
+    "fundo": "#0b1018",
+    "fontes": [
+      "EB Garamond",
+      "Montserrat",
+      "Anton"
+    ],
+    "paleta": {
+      "texto": "#FFFFFF",
+      "destaque": "#8FCBF2",
+      "status": "#E8B24A",
+      "fundo": "#8D96A2",
+      "geada": "#EEF2F6",
+      "acento": "#D8432F"
     },
     "legenda": {
       "fonte": "\"EB Garamond\", serif",
@@ -563,7 +366,7 @@ export const PRESETS = /* PRESETS:INICIO */ {
       "tamanho": 70,
       "caixa": "none",
       "cor": "#FFFFFF",
-      "numero": "#FFF4D6",
+      "numero": "#8FCBF2",
       "y": 1045,
       "altura": 150,
       "sombra": "0 0 2px rgba(0,0,0,0.9), 0 0 2px rgba(0,0,0,0.9), 0 2px 12px rgba(0,0,0,0.65), 0 4px 28px rgba(0,0,0,0.45)",
@@ -571,57 +374,43 @@ export const PRESETS = /* PRESETS:INICIO */ {
       "faixa": "radial-gradient(ellipse at 50% 50%, rgba(6,12,22,0.5) 0%, rgba(6,12,22,0.3) 50%, rgba(6,12,22,0) 76%)"
     },
     "hud": {
-      "ativo": false,
+      "ativo": true,
       "topo": 290,
       "rotulo": {
         "fonte": "\"Montserrat\", sans-serif",
         "peso": 600,
         "tamanho": 30,
-        "espaco": "0.2em",
+        "espaco": "0.3em",
         "cor": "#FFFFFF"
       },
       "numero": {
-        "fonte": "\"Anton\", sans-serif",
+        "fonte": "\"EB Garamond\", serif",
         "tamanho": 150,
         "cor": "#FFFFFF",
-        "cor_fim": "#FF5A5F"
+        "cor_fim": "#E8B24A"
       },
       "linha2": {
-        "cor": "#FFF4D6"
+        "cor": "#8FCBF2"
       },
       "status": {
         "tamanho": 32,
-        "cor": "#FF5A5F"
+        "cor": "#E8B24A"
       }
     },
     "titulo": {
-      "fonte": "\"Anton\", sans-serif",
-      "tamanho": 110,
-      "caixa": "uppercase",
-      "topo": 330
+      "fonte": "\"EB Garamond\", serif",
+      "tamanho": 90,
+      "caixa": "none",
+      "topo": 345
     },
     "blocos": [
-      "toy",
-      "animals",
-      "globe"
+      "globe",
+      "city",
+      "particles",
+      "shockwave",
+      "counter"
     ],
-    "nota": "MeshToonMaterial de 3 tons + contorno por casco invertido (toy.js/animals.js). Legenda igual à R01."
-  },
-  "R11": {
-    "nome": "3D low-poly ilustrado, personagem com emoção (principal)",
-    "modo": "3d",
-    "fundo": "#14100C",
-    "fontes": ["Anton", "Montserrat"],
-    "paleta": {"texto": "#FFFFFF", "destaque": "#F5C518", "alerta": "#E8463A", "fundo": "#14100C", "luz_fria": "#6E8FB8", "pele": "#B0785A", "jaqueta": "#D9A21E", "contorno": "#120C08"},
-    "legenda": {"fonte": "\"Anton\", sans-serif", "estilo": "normal", "peso": 400, "tamanho": 96, "caixa": "uppercase", "cor": "#FFFFFF", "numero": "#F5C518", "y": 1110, "altura": 150,
-      "sombra": "0 4px 0 #000, 0 0 3px #000, 0 6px 18px rgba(0,0,0,0.6)", "contorno": "3px #000", "faixa": ""},
-    "hud": {"ativo": true, "topo": 230,
-      "rotulo": {"fonte": "\"Anton\", sans-serif", "peso": 400, "tamanho": 44, "espaco": "0.04em", "cor": "#FFFFFF"},
-      "numero": {"fonte": "\"Anton\", sans-serif", "tamanho": 44, "cor": "#A8D8E8", "cor_fim": "#F05A4A"},
-      "linha2": {"cor": "#F05A4A"}, "status": {"tamanho": 32, "cor": "#F05A4A"}},
-    "titulo": {"fonte": "\"Anton\", sans-serif", "tamanho": 72, "caixa": "uppercase", "topo": 230},
-    "blocos": ["toy", "animals"],
-    "nota": "flatShading + geometria de baixa subdivisão, contorno por casco invertido fino, luz fria de cima e quente na pele. HUD de barras no canto superior esquerdo."
+    "nota": "toy.js createToyStage (PBR, grão, vinheta, bloom); doc.py aplica HUD/legenda doc."
   }
 } /* PRESETS:FIM */;
 
