@@ -6,6 +6,6 @@ ROOT="$(git -C "$(dirname "$0")" rev-parse --show-toplevel)"
 for s in "$@"; do
   while pgrep -f "hyperframes render" >/dev/null; do sleep 20; done
   cd "$ROOT/videos/$s" && rm -rf renders/work-* renders/.h* renders/snap && ./render-rapido.sh > renders/render.log 2>&1
-  ffmpeg -y -loglevel error -i "renders/$s.mp4" -c:v libx264 -crf 23 -preset medium -c:a aac -b:a 160k -movflags +faststart "renders/$s-crf23.mp4"
+  ffmpeg -y -loglevel error -i "renders/$s.mp4" -c:v libx264 -preset medium -b:v 8500k -maxrate 10M -bufsize 16M -c:a aac -b:a 160k -movflags +faststart "renders/$s-crf23.mp4"
   echo "$s pronto $(date -u +%H:%M)" >> /tmp/fila.log
 done
