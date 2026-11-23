@@ -110,7 +110,78 @@
   },
   "sfx": [],
   "doc": {
-    "capitulos": [],
-    "hud": []
+    "capitulos": [
+      [
+        0,
+        "O CORTE"
+      ],
+      [
+        11.97,
+        "OS SENSORES"
+      ],
+      [
+        24.94,
+        "SEM ALARME"
+      ],
+      [
+        39.48,
+        "O PREÇO"
+      ],
+      [
+        54.07,
+        "O ALARME"
+      ]
+    ],
+    "hud": [
+      {
+        "rotulo": "SINAL DE DOR",
+        "fmt": "texto",
+        "keys": [
+          [
+            0,
+            "AUSENTE"
+          ]
+        ],
+        "alerta": [
+          [
+            0,
+            6
+          ]
+        ],
+        "de": 0
+      },
+      {
+        "rotulo": "REFLEXO",
+        "fmt": "texto",
+        "keys": [
+          [
+            11.97,
+            "ATIVO"
+          ],
+          [
+            24.94,
+            "DESLIGADO"
+          ]
+        ],
+        "alerta": [
+          [
+            24.94,
+            29.78
+          ]
+        ],
+        "de": 11.97
+      },
+      {
+        "rotulo": "GENE",
+        "fmt": "texto",
+        "keys": [
+          [
+            54.07,
+            "SCN9A · Nav1.7"
+          ]
+        ],
+        "de": 54.07
+      }
+    ]
   }
 }

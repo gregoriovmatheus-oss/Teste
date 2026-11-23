@@ -1,0 +1,57 @@
+/*META {"imports": ["dor"], "css": "    [data-composition-id=\"f06\"] .rot-t { font-family: \"Inter\", sans-serif; font-weight: 300; font-size: 84px; line-height: 1.1; text-transform: none; letter-spacing: -0.01em; -webkit-text-stroke: 0; text-shadow: 0 2px 30px rgba(0,0,0,0.7), 0 1px 3px rgba(0,0,0,0.6); }\n    [data-composition-id=\"f06\"] .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }\n    [data-composition-id=\"f06\"] .rot-t .r { font-weight: 800; color: #ff8a4c; }\n    [data-composition-id=\"f06\"] .rot-t .k { font-family: \"JetBrains Mono\", monospace; font-weight: 600; font-size: 26px; letter-spacing: 0.32em; color: #7cc8ff; margin-bottom: 18px; -webkit-text-stroke: 0; text-shadow: 0 2px 12px rgba(0,0,0,0.8); }\n    [data-composition-id=\"f06\"] .rot-t .n { font-family: \"JetBrains Mono\", monospace; font-weight: 600; color: #7cc8ff; }\n", "rotulos": [], "D0": 6.03} */
+        const st = T.createToyStage(canvas, { fov: 40, ceu: ["#1a2232", "#3a3438"], nevoa: [5, 22], corNevoa: "#262630", nuvens: 0, exposicao: 1.05 });
+        const S = st.scene, cam = st.cam;
+        st.renderer.localClippingEnabled = true;
+        st.hemi.intensity = 0.55; st.key.intensity = 2.2;
+        const chao = new THREE.Mesh(new THREE.PlaneGeometry(40, 12).rotateX(-Math.PI / 2), M0(0x4a4644, 0.6)); S.add(chao);
+        function M0(c, r) { return new THREE.MeshStandardMaterial({ color: c, roughness: r }); }
+        const par = new THREE.Mesh(new THREE.PlaneGeometry(40, 5), M0(0x5a5e66, 0.9)); par.position.set(0, 2.5, -2.2); S.add(par);
+        for (let i = 0; i < 8; i++) { const j = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 1.4), DOR.emiss(0xffd8a0, 1.1)); j.position.set(-6 + i * 2.2, 1.7, -2.18); S.add(j); }
+        const PN = new THREE.Plane(new THREE.Vector3(-1, 0, 0), 0), PX = new THREE.Plane(new THREE.Vector3(1, 0, 0), 0);
+        // criança (silhueta) e a mesma criança em raio-X
+        const h = A.createAnimal("humano", { cor: 0xd9663a, cor2: 0x2f4a6a, cabelo: 0x2a1a12 }); h.group.scale.setScalar(0.62); S.add(h.group);
+        h.group.traverse((o) => { if (o.isMesh) { o.material = o.material.clone(); o.material.clippingPlanes = [PN]; } });
+        const x = A.createAnimal("humano", {}); x.group.scale.setScalar(0.62); S.add(x.group);
+        const ghost = new THREE.MeshBasicMaterial({ color: 0x3a7cb8, transparent: true, opacity: 0.22, blending: THREE.AdditiveBlending, depthWrite: false, clippingPlanes: [PX] });
+        x.group.traverse((o) => { if (o.isMesh) o.material = ghost; });
+        const om = new THREE.MeshBasicMaterial({ color: new THREE.Color(0xd8f0ff).multiplyScalar(1.2), toneMapped: false, clippingPlanes: [PX] });
+        const bone = (len, r, par, y) => { const b = new THREE.Mesh(DOR.osso(len, r), om); b.position.y = y; par.add(b); return b; };
+        x.legs.forEach((L, i) => { bone(0.42, 0.035, L, -0.22);
+          if (i === 0) { const a = bone(0.2, 0.03, L, -0.56); a.scale.y = 1; const b2 = bone(0.2, 0.03, L, -0.78); b2.position.x = 0.012; b2.rotation.z = 0.08; }
+          else bone(0.42, 0.03, L, -0.66); });
+        x.arms.forEach((L) => bone(0.6, 0.025, L, -0.32));
+        bone(0.6, 0.03, x.body, 1.25);
+        const cranio = new THREE.Mesh(new THREE.SphereGeometry(0.15, 16, 12), om); cranio.position.set(0.01, 1.76, 0); x.body.add(cranio);
+        const fra = DOR.glowSprite(0xff8a4c, 0.35, 0); x.legs[0].add(fra); fra.position.y = -0.67;
+        const barra = new THREE.Mesh(new THREE.PlaneGeometry(0.02, 2.2), DOR.emiss(0x7cc8ff, 2)); S.add(barra);
+        const bg = DOR.glowSprite(0x7cc8ff, 1.6, 0); bg.scale.set(0.6, 2.4, 1); S.add(bg);
+        const v = new THREE.Vector3();
+        function render(t) {
+          const cx = -1.2 + t * 0.42;
+          h.update(t, { passo: 1.5 }); x.update(t, { passo: 1.5 });
+          h.group.position.x = x.group.position.x = cx;
+          // varredura de raio-X em "andam dias" (3,94 s): linha corre da frente para trás
+          const sw = ease.inOutSine(range(t, 3.85, 4.45));
+          const lx = t < 3.85 ? cx + 5 : lerp(cx + 0.45, cx - 0.5, sw);
+          PN.constant = lx; PX.constant = -lx;
+          barra.position.set(lx, 0.9, 0.15); barra.visible = sw > 0 && sw < 1; bg.position.copy(barra.position); bg.material.opacity = barra.visible ? 0.7 : 0;
+          const xr = range(t, 3.85, 4.2);
+          S.background.offset && 0;
+          st.hemi.intensity = lerp(0.55, 0.2, xr); st.key.intensity = lerp(2.2, 0.6, xr);
+          fra.material.opacity = range(t, 4.95, 5.1) * (0.7 + 0.3 * Math.sin(t * 10));
+          // travelling lateral acompanhando a criança
+          const e = ease.inOutSine(range(t, 0, 6.03));
+          cam.position.set(cx + lerp(0.6, 0.1, e), lerp(0.95, 0.8, e), lerp(3.5, 3.0, e));
+          cam.lookAt(cx + 0.15, lerp(0.45, 0.4, e), 0);
+          st.bloom = 0.45 + xr * 0.3;
+          st.sol(cx, 0, 4);
+          st.draw(undefined, undefined, xr > 0 ? { cor: "#06142a", a: xr * 0.35 } : null);
+          const c = st.ctx, vv = DOR.vis(st); DOR.quadro();
+          h.head.getWorldPosition(v); v.x += 0.12; v.y -= 0.06;
+          DOR.frase(c, cam, v, "LÍNGUA MORDIDA", range(t, 2.03, 2.2) * (1 - range(t, 3.6, 3.8)) * vv, { cor: DOR.LARANJA, tam: 28, dy: 140 });
+          h.arms[0].updateMatrixWorld(true); v.set(0, -0.66, 0).applyMatrix4(h.arms[0].matrixWorld);
+          DOR.frase(c, cam, v, "DEDOS", range(t, 2.7, 2.85) * (1 - range(t, 3.6, 3.8)) * vv, { cor: DOR.LARANJA, tam: 28, dy: 60 });
+          fra.getWorldPosition(v);
+          DOR.frase(c, cam, v, "OSSO QUEBRADO", range(t, 4.99, 5.15) * vv, { cor: DOR.LARANJA, tam: 30, dy: 40 });
+          if (t > 4.28) { const dia = 1 + Math.min(4, Math.floor((t - 4.28) * 2.6)); DOR.txt(c, "RAIO-X · DIA " + dia, 540, 990, { tam: 34, cor: DOR.AZUL, a: range(t, 4.28, 4.45) * vv, esp: 0.2 }); }
+        }

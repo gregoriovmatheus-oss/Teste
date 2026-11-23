@@ -110,7 +110,106 @@
   },
   "sfx": [],
   "doc": {
-    "capitulos": [],
-    "hud": []
+    "capitulos": [
+      [
+        0.2,
+        "O DESPERTAR"
+      ],
+      [
+        5.84,
+        "OS SISTEMAS DUPLOS"
+      ],
+      [
+        17.72,
+        "A NOITE QUE SOME"
+      ],
+      [
+        35.22,
+        "A VIDA SEM NOITE"
+      ],
+      [
+        66.14,
+        "O PRESENTE RARO"
+      ]
+    ],
+    "hud": [
+      {
+        "rotulo": "ENERGIA RECEBIDA",
+        "unid": "×",
+        "fmt": "f1",
+        "keys": [
+          [
+            17.72,
+            1
+          ],
+          [
+            21.0,
+            1
+          ],
+          [
+            21.4,
+            2
+          ]
+        ],
+        "max": 2,
+        "alerta": [
+          [
+            21.4,
+            24.11
+          ]
+        ],
+        "de": 17.72,
+        "ate": 24.11
+      },
+      {
+        "rotulo": "NOITE",
+        "fmt": "texto",
+        "keys": [
+          [
+            29.06,
+            "EXISTE"
+          ],
+          [
+            33.1,
+            "SOME"
+          ]
+        ],
+        "alerta": [
+          [
+            33.1,
+            35.22
+          ]
+        ],
+        "de": 29.06,
+        "ate": 41.91
+      },
+      {
+        "rotulo": "SOMBRAS",
+        "fmt": "int",
+        "keys": [
+          [
+            43.17,
+            2
+          ],
+          [
+            46.9,
+            2
+          ],
+          [
+            47.0,
+            1
+          ]
+        ],
+        "max": 2,
+        "alerta": [
+          [
+            46.8,
+            47.98
+          ]
+        ],
+        "de": 43.1,
+        "ate": 47.98
+      }
+    ]
   }
 }

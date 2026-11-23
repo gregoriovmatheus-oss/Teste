@@ -1,0 +1,36 @@
+/*META {"imports": ["dor"], "css": "    [data-composition-id=\"f02\"] .rot-t { font-family: \"Inter\", sans-serif; font-weight: 300; font-size: 84px; line-height: 1.1; text-transform: none; letter-spacing: -0.01em; -webkit-text-stroke: 0; text-shadow: 0 2px 30px rgba(0,0,0,0.7), 0 1px 3px rgba(0,0,0,0.6); }\n    [data-composition-id=\"f02\"] .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }\n    [data-composition-id=\"f02\"] .rot-t .r { font-weight: 800; color: #ff8a4c; }\n    [data-composition-id=\"f02\"] .rot-t .k { font-family: \"JetBrains Mono\", monospace; font-weight: 600; font-size: 26px; letter-spacing: 0.32em; color: #7cc8ff; margin-bottom: 18px; -webkit-text-stroke: 0; text-shadow: 0 2px 12px rgba(0,0,0,0.8); }\n    [data-composition-id=\"f02\"] .rot-t .n { font-family: \"JetBrains Mono\", monospace; font-weight: 600; color: #7cc8ff; }\n", "rotulos": [{"de": 0.1, "ate": 1.6, "texto": "Parece um <span class=\"y\">superpoder</span>"}, {"de": 4.5, "ate": 5.97, "sai": false, "texto": "<span class=\"k\">1 ÚNICO GENE</span><br><span class=\"y\">SCN9A</span>"}], "D0": 5.97} */
+        const st = T.createToyStage(canvas, { fov: 46, ceu: ["#03060c", "#0a1424"], nevoa: [3, 16], corNevoa: "#050a14", nuvens: 0, exposicao: 1.0 });
+        const S = st.scene, cam = st.cam;
+        st.hemi.intensity = 0.35; st.key.intensity = 2.2; st.rim.color.set(0x7cc8ff); st.rim.intensity = 2.0;
+        const d = DOR.dna(S, { n: 64, raio: 0.55, passo: 0.17, gira: 0.5 });
+        d.g.rotation.z = -Math.PI / 2 + 0.28;   // eixo quase horizontal, subindo para a direita
+        const R = mulberry32(202), NP = 500, pp = new Float32Array(NP * 3);
+        for (let i = 0; i < NP; i++) { pp[i * 3] = (R() - 0.5) * 14; pp[i * 3 + 1] = (R() - 0.5) * 8; pp[i * 3 + 2] = (R() - 0.5) * 8 - 1; }
+        const pg = new THREE.BufferGeometry(); pg.setAttribute("position", new THREE.BufferAttribute(pp, 3));
+        const pts = new THREE.Points(pg, new THREE.PointsMaterial({ color: 0x7cc8ff, size: 0.03, transparent: true, opacity: 0.5, depthWrite: false })); S.add(pts);
+        const H0 = 34, H1 = 38;   // o trecho do gene
+        const alvo = new THREE.Vector3(), tmp = new THREE.Vector3();
+        const halo = DOR.glowSprite(0xff8a4c, 2.2, 0); S.add(halo);
+        function render(t) {
+          const liga = ease.outCubic(range(t, 4.5, 5.2));
+          d.set(t, { destaque: liga > 0 ? [H0, H1] : [-1, -1], brilho: 0.4 + liga * 0.9 + 0.15 * Math.sin(t * 6), cresce: liga });
+          // centro do gene no mundo
+          tmp.set(0, ((H0 + H1) / 2) * d.passo - d.meio, 0).applyEuler(d.g.rotation); alvo.copy(tmp);
+          halo.position.copy(alvo); halo.material.opacity = liga * 0.55;
+          // 0–1,6 s: voo por dentro da hélice; depois recua para o lado e sobe até o gene
+          const a = ease.inOutCubic(range(t, 1.3, 3.2)), b = ease.inOutSine(range(t, 3.2, 5.97));
+          const ax = new THREE.Vector3(Math.cos(0.28), Math.sin(0.28), 0);
+          const voo = alvo.clone().addScaledVector(ax, -4.2 + t * 1.4);
+          const lado = new THREE.Vector3(alvo.x - 0.9, alvo.y - 1.35, 4.6 - b * 1.1);
+          cam.position.lerpVectors(voo, lado, a);
+          const olhaVoo = voo.clone().addScaledVector(ax, 3), olhaLado = new THREE.Vector3(alvo.x - 0.25, alvo.y - 0.95 + b * 0.1, 0);
+          cam.lookAt(olhaVoo.lerp(olhaLado, a));
+          cam.rotateZ(Math.sin(t * 0.7) * 0.03 + (1 - a) * t * 0.08);
+          pts.rotation.y = t * 0.03;
+          st.vel = (1 - a) * 0.35; st.velT = t;
+          st.bloom = 0.6 + liga * 0.3;
+          st.sol(alvo.x, alvo.z, 8, alvo.y);
+          st.draw();
+          const c = st.ctx, vv = DOR.vis(st); DOR.quadro();
+          DOR.frase(c, cam, alvo, "CANAL Nav1.7", range(t, 5.35, 5.6) * vv, { cor: DOR.LARANJA, tam: 26, ymin: 560, ymax: 690, dy: -60 });
+        }

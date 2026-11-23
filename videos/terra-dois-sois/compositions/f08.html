@@ -1,57 +1,98 @@
-<!-- Modelo de cena 3D (R01). cenas.py --criar copia para compositions/fNN.html trocando os marcadores de id e duração.
-     Padrão: script clássico registra buildReady na hora; import dinâmico do kit e dos blocos;
-     K.bindSeek(canvas, render) dá o tempo LOCAL da cena (sem gambiarra de data-start). -->
+<!-- f08: cena 3D padrão documentário (R10 + doc). Lógica em cenas/f08.js (gerado por scripts/monta-cenas.py).
+     Tempos escritos para 6.07 s e esticados para a duração real do host (data-duration). -->
 <template>
   <style>
-    #root { position: absolute; inset: 0; overflow: hidden; background: #0b1018; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0b0a12; }
     #f08-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
-    #f08-titulo { position: absolute; left: 160px; right: 200px; top: 660px; text-align: center; }
-    #f08-titulo-in { display: block; font-family: "EB Garamond", serif; font-size: 84px; line-height: 1.05; color: #fff;
-      text-shadow: 0 4px 26px rgba(4, 10, 20, 0.75), 0 1px 4px rgba(4, 10, 20, 0.6); }
-    #f08-titulo-in .ice { color: #8fcbf2; }
+    /* rótulos 2D: y 680-980, acima da faixa da legenda (1005-1235) */
+    .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .rot-t { display: block; font-family: "Anton", sans-serif; font-weight: 400; font-size: 92px; line-height: 1.05; color: #fff; text-transform: uppercase;
+      -webkit-text-stroke: 5px #000; paint-order: stroke fill; text-shadow: 0 6px 0 #000, 0 10px 24px rgba(0,0,0,0.6); opacity: 0; }
+    .rot-t .y { color: #F5C518; } .rot-t .r { color: #E8463A; } .rot-t .p { font-size: 70px; }
+    .rot-t .k { display: inline-block; font-size: 34px; letter-spacing: 0.12em; color: #F05A4A; -webkit-text-stroke: 0; text-shadow: 0 3px 0 #000; margin-bottom: 10px; }
+    .rot-t .n { color: #F5C518; }
+
   </style>
   <div id="root" data-composition-id="f08" data-width="1080" data-height="1920">
     <canvas id="f08-canvas" width="1080" height="1920"></canvas>
-    <div id="f08-titulo" class="clip" data-start="0.3" data-duration="2.2">
-      <span id="f08-titulo-in">Texto da <span class="ice">cena</span></span>
-    </div>
+    <div id="f08-r1" class="rot" style="top: 600px"><span id="f08-r1-in" class="rot-t"><span class="y">2</span> sóis, <span class="y">2</span> sombras</span></div>
+    <div id="f08-r2" class="rot" style="top: 700px"><span id="f08-r2-in" class="rot-t">eclipse <span class="y">duplo</span></span></div>
   </div>
   <script>
     (function () {
-      /* 2D por cima (GSAP). Título entre y 640 e 1000: o HUD ocupa 290-620 e a legenda 1045-1195. */
+      const D0 = 6.07;
+      // duração real = data-duration do host da cena (muda quando a narração muda)
+      const durReal = () => {
+        for (let n = document.getElementById("f08-canvas"); n; n = n.parentElement) {
+          if (n.getAttribute && n.getAttribute("data-composition-id") === "f08" && n.hasAttribute("data-duration")) return parseFloat(n.getAttribute("data-duration")) || D0;
+        }
+        return D0;
+      };
+      const DR = durReal(), K = DR / D0;
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f08-titulo-in", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 0.3);
-      tl.to("#f08-titulo-in", { opacity: 0, duration: 0.2, ease: "power2.in" }, 2.3);
-      tl.set({}, {}, 6.07);
+      tl.fromTo("#f08-r1-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 1.25 * K);
+      tl.to("#f08-r1-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 2.3 * K);
+      tl.fromTo("#f08-r2-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 4.8 * K);
+      tl.to("#f08-r2-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 5.77 * K);
+      tl.set({}, {}, DR);
       window.__timelines = window.__timelines || {};
       window.__timelines["f08"] = tl;
 
-      /* 3D */
       window.__hf = window.__hf || {};
       window.__hf.buildReady = window.__hf.buildReady || {};
       window.__hf.buildReady["f08"] = Promise.all([
-        import("./assets/lib/kit.js"),
-        import("./assets/lib/blocks/city.js"),
-        // import("./assets/lib/blocks/globe.js"), import("./assets/lib/blocks/particles.js"),
-        // import("./assets/lib/blocks/shockwave.js"), import("./assets/lib/blocks/counter.js"),
-      ]).then(async ([K, { createCity }]) => {
-        const { THREE, ease, range, lerp, clamp } = K;
+        import("./assets/lib/kit.js"), import("./assets/lib/blocks/toy.js"), import("./assets/lib/blocks/animals.js"), import("./assets/lib/blocks/doissois.js")
+      ]).then(async ([K_, T, A, DOISSOIS]) => {
+        const K = K_;
+        const { THREE, ease, range, lerp, clamp, smoothstep, mulberry32 } = K;
+        const D = D0;   // o corpo trabalha no tempo de autoria
         const canvas = document.getElementById("f08-canvas");
-        const renderer = K.createRenderer(canvas);
-        const scene = new THREE.Scene();
-        const cam = new THREE.PerspectiveCamera(35, K.W / K.H, 1, 2000);
-        const city = createCity(scene, { seed: 7, geada: [6.07 * 0.6, 6.07 * 0.6 + 0.35], paraEm: 6.07 * 0.6 });
 
-        function render(t) {               // t = segundos locais da cena
-          const p = ease.outCubic(clamp(t / 6.07));
-          const h = lerp(300, 175, p), ang = lerp(-0.35, 0.05, p);
-          cam.position.set(Math.sin(ang) * 18, h, Math.cos(ang) * 18 + 10);
-          cam.up.set(Math.sin(ang), 0, -Math.cos(ang));
-          cam.lookAt(0, 0, 0);
-          city.update(t);
-          renderer.render(scene, cam);
+        const DS = DOISSOIS;
+        await DS.fontes();
+        const st = T.createToyStage(canvas, { fov: 40, ceu: ["#4f74ad", "#f2c28e"], nevoa: [30, 260], corNevoa: "#e9b98c", nuvens: 0, exposicao: 1.0 });
+        const S = st.scene, cam = st.cam;
+        // praça de pedra clara ao entardecer, poucas pedras
+        const chao = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), T.M(0xa8906e, 0.9)); chao.rotation.x = -Math.PI / 2; chao.receiveShadow = true; S.add(chao);
+        const R = mulberry32(808);
+        for (let i = 0; i < 14; i++) { const r = new THREE.Mesh(new THREE.DodecahedronGeometry(0.4 + R() * 1.2, 0), T.M(0x9a8268, 0.9)); const a = R() * 6.28, d = 9 + R() * 30;
+          r.position.set(Math.cos(a) * d, 0.1, Math.sin(a) * d - 8); r.scale.y = 0.5 + R() * 0.4; r.castShadow = true; S.add(r); }
+        const h = A.createAnimal("humano", { cor: 0x2f4f6f, cor2: 0x2a2a30 }); A.face(h.group, 0, 1); S.add(h.group);
+        h.group.traverse((m) => { if (m.isMesh) m.castShadow = true; });
+        // segunda sombra (sol vermelho) por projeção planar
+        const sMat = new THREE.MeshBasicMaterial({ color: 0x3a2a40, transparent: true, opacity: 0.34, depthWrite: false });
+        const h2 = A.createAnimal("humano", {}); A.face(h2.group, 0, 1); DS.barato(h2.group, sMat);
+        const somb = new THREE.Group(); somb.matrixAutoUpdate = false; somb.add(h2.group); S.add(somb);
+        // céu: sol amarelo e sol vermelho (que vai passar na frente do amarelo)
+        const L1 = new THREE.Vector3(-0.42, 0.5, -1).normalize(), L2a = new THREE.Vector3(0.5, 0.36, -1).normalize(), L2 = new THREE.Vector3();
+        const SA = DS.estrela(S, { r: 5.5, tipo: "amarelo", halo: 7 }); SA.group.position.copy(L1).multiplyScalar(150);
+        const SV = DS.estrela(S, { r: 3.0, tipo: "vermelho", halo: 7 });
+        st.sol(0, 0, 8);
+        st.key.color.set(0xffe2b0); st.key.position.copy(L1).multiplyScalar(30); st.key.target.position.set(0, 0, 0);
+        st.rim.color.set(0xff5a3a); st.rim.target.position.set(0, 0, 0); st.hemi.intensity = 0.45;
+        const alvo = new THREE.Vector3(), olho = new THREE.Vector3();
+        function render(t) {
+          h.update(t, {}); h2.update(t, {});
+          // o sol vermelho desliza até cobrir o amarelo (eclipse em ~5,1 s); as duas sombras viram uma
+          const k = ease.inOutSine(range(t, 1.9, 5.15));
+          L2.copy(L2a).lerp(L1, k).normalize();
+          SV.group.position.copy(L2).multiplyScalar(118);
+          const ecl = Math.max(0, 1 - SV.group.position.clone().normalize().distanceTo(L1) / 0.06);
+          SA.set(1 - 0.35 * ecl, t); SV.set(1, t * 1.2);
+          st.key.intensity = 2.3 * (1 - 0.5 * ecl); st.rim.intensity = 1.6;
+          st.rim.position.copy(L2).multiplyScalar(30);
+          somb.matrix.copy(DS.sombraPlanar(L2)); sMat.opacity = 0.34 * (1 - ecl);
+          // câmera: de frente, baixa, com as sombras vindo em direção à lente -> sobe até os sóis
+          const e = ease.inOutSine(range(t, 0, 2.9)), u = ease.inOutCubic(range(t, 2.9, 4.9));
+          olho.set(lerp(2.6, 1.2, e), lerp(3.4, 2.4, e) - u * 1.2, lerp(8.5, 7.0, e) + u * 1.5); cam.position.copy(olho);
+          alvo.set(lerp(0, 0, e), lerp(0.3, 0.9, e), lerp(1.8, 0.5, e)).lerp(SA.group.position.clone().lerp(SV.group.position, 0.5).add(new THREE.Vector3(0, -38, 0)), u);
+          cam.lookAt(alvo);
+          st.bloom = 0.55 + 0.35 * u;
+          st.draw(S, cam, ecl > 0 ? { cor: "#1a0c14", a: ecl * 0.25 } : null);
         }
-        await K.bindSeek(canvas, render, { warm: [{ renderer, scene, camera: cam }], duration: 6.07 });
+
+        // DR foi lido na hora em que o script rodou (depois do inline o host pode mudar de atributos)
+        await K.bindSeek(canvas, (t) => { st.T = t * D / DR; st.D = D; render(st.T); }, { warm: [st.warm, ...(st.extraWarm || [])], duration: DR });
       });
     })();
   </script>

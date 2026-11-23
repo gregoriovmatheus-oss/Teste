@@ -1,6 +1,7 @@
-"""sfx-local.py: efeitos sintetizados localmente (sem API) para "pausar o tempo".
-Whoosh em cada corte; chuva e estalo de dedos (f01/f13), passos (f02), lâmpada (f03), ar (f04),
-tom que corta (f05), batidas do coração (f07), tiques dos dias (f08), areia (f09), bipes do GPS (f11). Saída: assets/audio/sfx.wav (mono 48 kHz)."""
+"""sfx-local.py: efeitos sintetizados localmente (sem API) para "sem dor".
+Whoosh em cada corte; faca na tábua (f01/f13), brilho do gene (f02), sensores (f03), chiado da panela e puxão (f04),
+chiado contínuo (f05), passos e varredura do raio-X (f06), rangido (f07), estouro (f08), grave (f09),
+cliques do painel (f10), íons e encaixe (f11), bipe do detector (f12), grito/impacto (f13). Saída: assets/audio/sfx.wav (mono 48 kHz)."""
 import json, numpy as np, wave
 SR = 48000
 v = json.load(open('video.json')); DUR = v['duracao']
@@ -69,59 +70,76 @@ def batida():  # tum-tum do coração
 def tique(f=2400):
     n = int(SR * 0.03); k = np.arange(n) / SR
     return np.sin(2 * np.pi * f * k) * np.exp(-k * 220)
-# f01: chuva caindo até o estalo; estalo + anel (whoosh reverso) e a chuva some em câmera lenta
-add(C['f01'], env(chuva(1.25), 0.05, 0.4), 0.35)
-add(C['f01'] + 0.83, estalar(), 0.9)
-add(C['f01'] + 0.85, shimmer(1.6, False), 0.35)
-add(C['f01'] + 0.86, thud(42, 1.4), 0.5)
-add(C['f01'] + 0.9, whoosh(0.9), 0.4)
-# f02: passos do protagonista no asfalto molhado (o único som)
-for i in range(7):
-    add(C['f02'] + 0.3 + i * 0.69, clique(0.08, 160), 0.22)
-for i in range(3):
-    add(C['f02'] + 2.95 + i * 1.0, tique(), 0.18)
-# f03: zumbido da lâmpada que para; escurecer com grave
-add(C['f03'] + 0.2, env(zumbido_cai(3.2), 0.3, 0.2), 0.35)
-add(C['f03'] + 3.1, shimmer(0.9, False), 0.25)
-add(C['f03'] + 4.2, env(thud(38, 2.0), 0.4, 1.4), 0.4)
-# f04: ar sibilando (moléculas) até travar; inspiração bloqueada
-add(C['f04'] + 0.2, env(agua(4.2, 0.5), 0.6, 0.3), 0.12)
-add(C['f04'] + 4.4, thud(60, 0.4), 0.4)
-add(C['f04'] + 5.6, env(agua(1.0, 0.08), 0.6, 0.2), 0.25)
-add(C['f04'] + 6.6, estalo(), 0.25)
-# f05: tom do alto-falante que corta seco em 2,2 s (silêncio)
-n = int(SR * 2.2); k = np.arange(n) / SR
-add(C['f05'] + 0.1, np.sin(2 * np.pi * 220 * k) * (0.6 + 0.4 * np.sin(2 * np.pi * 3 * k)) * np.minimum(1, k * 8), 0.22)
-# f06: luz voltando (brilho subindo) e respiração
-add(C['f06'] + 0.5, shimmer(2.2, True), 0.35)
-add(C['f06'] + 1.9, env(agua(1.3, 0.1), 0.5, 0.6), 0.22)
-# f07: batidas do coração (1,16/s) e células estalando
+def chiado(d, a=0.55):  # frigideira: ruído agudo com estalinhos
+    n = int(SR * d); x = rng.standard_normal(n) - lp(rng.standard_normal(n), a)
+    x *= 0.7 + 0.3 * (rng.random(n) > 0.995) * 4
+    return x / (np.abs(x).max() + 1e-9)
+def bipe(f=3100, d=0.12):
+    n = int(SR * d); k = np.arange(n) / SR
+    return np.sign(np.sin(2 * np.pi * f * k)) * 0.5 * np.minimum(1, (d - k) * 60) * np.minimum(1, k * 400)
+def faca(n_ch, t0, freq=2.2, g=0.3):
+    for i in range(n_ch):
+        add(t0 + i / freq, clique(0.06, 260), g)
+# f01: faca picando (2,2/s) e o corte seco, sem reação
+for i in range(13):
+    add(C['f01'] + 0.33 + i / 2.2, clique(0.06, 260), 0.28)
+add(C['f01'] + 2.1, estalo(), 0.18)
+add(C['f01'] + 2.15, env(thud(48, 1.2), 0.02, 0.8), 0.25)
+# f02: voo pela hélice e o gene acendendo
+add(C['f02'] + 0.0, whoosh(1.4), 0.35)
+add(C['f02'] + 4.5, shimmer(1.5, True), 0.35)
+add(C['f02'] + 5.35, tique(1500), 0.25)
+# f03: sensores acendendo e os três estímulos
+for i in range(8):
+    add(C['f03'] + 1.8 + i * 0.08, tique(2600 + i * 120), 0.06)
+for dt, f in [(4.99, 900), (5.34, 1300), (5.81, 700)]:
+    add(C['f03'] + dt, tique(f), 0.3); add(C['f03'] + dt, shimmer(0.6, False), 0.12)
+# f04: panela chiando, sinal sobe, mão puxada
+add(C['f04'] + 0.2, env(chiado(5.2), 0.5, 0.6), 0.1)
+add(C['f04'] + 1.95, shimmer(0.5, True), 0.2)
+add(C['f04'] + 2.88, whoosh(0.35), 0.5)
+add(C['f04'] + 2.9, thud(80, 0.3), 0.35)
+add(C['f04'] + 4.48, tique(1100), 0.2)
+# f05: chiado contínuo crescendo; o sinal que morre
+add(C['f05'] + 0.2, env(chiado(4.6), 1.2, 0.3), 0.16)
+add(C['f05'] + 0.7, shimmer(0.8, False), 0.15)
+# f06: passos de criança, varredura do raio-X, estalo do osso
 for i in range(9):
-    add(C['f07'] + 0.05 + i / 1.16, batida(), 0.5)
-r = np.random.default_rng(3)
-for dt in np.sort(r.uniform(3.0, 7.8, 30)):
-    add(C['f07'] + dt, tique(3000 + r.uniform(0, 1500)), 0.05)
-# f08: dias acendendo (tiques acelerando)
-for dt in 0.25 + 5.3 * np.sqrt(np.linspace(0, 1, 40)):
-    add(C['f08'] + dt, tique(1800), 0.09)
-# f09: areia escorrendo, rajada de 1 ano
-add(C['f09'] + 0.1, env(agua(5.8, 0.3), 0.4, 0.6), 0.1)
-add(C['f09'] + 2.4, env(agua(1.0, 0.45), 0.1, 0.6), 0.3)
-# f10: grave ao envelhecer
-add(C['f10'] + 1.8, env(thud(36, 2.6), 0.6, 1.8), 0.35)
-# f11: bipes do satélite e correção
-for i in range(9):
-    add(C['f11'] + 0.8 + i * 0.9, tique(1200), 0.12)
-add(C['f11'] + 4.6, clique(0.12, 700), 0.25)
-add(C['f11'] + 7.4, shimmer(0.8, False), 0.25)
-# f12: o segundo luminoso
-add(C['f12'] + 0.2, shimmer(2.4, True), 0.3)
-add(C['f12'] + 1.4, tique(2200), 0.25)
-# f13: estalo, a chuva volta a cair
-add(C['f13'] + 0.98, estalar(), 0.9)
-add(C['f13'] + 1.0, whoosh(0.9), 0.45)
-add(C['f13'] + 1.0, thud(42, 1.2), 0.4)
-add(C['f13'] + 1.2, env(chuva(6.4), 0.8, 1.5), 0.4)
+    add(C['f06'] + 0.2 + i * 0.33, clique(0.05, 140), 0.16)
+add(C['f06'] + 3.85, env(zumbido_cai(0.8), 0.05, 0.3), 0.3)
+add(C['f06'] + 3.85, shimmer(0.7, True), 0.2)
+add(C['f06'] + 4.99, estalo(), 0.25)
+for i in range(4):
+    add(C['f06'] + 4.28 + i * 0.38, tique(1800), 0.12)
+# f07: rangido da junta a cada passo
+for i in range(4):
+    add(C['f07'] + 0.3 + i * 0.98, env(lp(rng.standard_normal(int(SR * 0.25)), 0.25), 0.05, 0.15), 0.12)
+add(C['f07'] + 2.7, thud(60, 0.4), 0.3)
+# f08: pulsação crescendo e o estouro
+for i in range(6):
+    add(C['f08'] + 2.3 + i * 0.45, batida(), 0.15 + i * 0.04)
+add(C['f08'] + 5.07, thud(40, 1.2), 0.6)
+add(C['f08'] + 5.07, estalo(), 0.4)
+# f09: grave sério
+add(C['f09'] + 0.2, env(thud(34, 3.0), 0.5, 2.0), 0.35)
+# f10: cliques do painel nos três itens e a varredura diária
+for dt in [2.69, 2.99, 3.66]:
+    add(C['f10'] + dt, clique(0.08, 900), 0.25); add(C['f10'] + dt + 0.05, tique(2200), 0.15)
+add(C['f10'] + 4.12, shimmer(0.9, True), 0.2)
+# f11: íons correndo, encaixe do remédio, silêncio
+add(C['f11'] + 0.2, env(agua(3.3, 0.4), 0.4, 0.3), 0.1)
+add(C['f11'] + 3.55, clique(0.14, 520), 0.4)
+add(C['f11'] + 3.56, shimmer(0.8, False), 0.2)
+# f12: bipe do detector de fumaça
+for i in range(4):
+    add(C['f12'] + 2.72 + i * 0.2, bipe(), 0.18)
+# f13: faca, o corte que dói, impacto do grito
+for i in range(4):
+    add(C['f13'] + 0.4 + i / 2.2, clique(0.06, 260), 0.28)
+add(C['f13'] + 1.75, estalo(), 0.3)
+add(C['f13'] + 2.05, thud(55, 0.9), 0.55)
+add(C['f13'] + 2.05, whoosh(0.5), 0.4)
+add(C['f13'] + 3.5, env(shimmer(3.0, True), 0.8, 1.5), 0.2)
 
 out = out[: int(SR * DUR)]
 out = np.tanh(out * 1.2) * 0.8
