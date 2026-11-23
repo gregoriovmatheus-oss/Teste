@@ -1,0 +1,79 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:Anton;src:url(assets/fonts/anton-latin-400-normal.woff2)}
+@font-face{font-family:Montserrat;font-weight:600;src:url(assets/fonts/montserrat-latin-600-normal.woff2)}
+html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#000}
+canvas{position:absolute;inset:0;width:1080px;height:1920px}
+.tag{position:absolute;left:0;right:0;top:1560px;text-align:center;font:400 92px Anton;color:#fff;text-transform:uppercase;-webkit-text-stroke:5px #000;paint-order:stroke fill}
+.tag small{display:block;font:600 40px Montserrat;color:#F5C518;-webkit-text-stroke:0;letter-spacing:.12em;margin-top:8px}
+</style></head><body><canvas id="c"></canvas><div id="ui"></div>
+<script type="module">
+import * as THREE from "./assets/lib/three.module.js";
+import * as LP from "./assets/lib/blocks/lowpoly.js";
+import * as CI from "./assets/lib/blocks/cinema.js";
+const U = new URLSearchParams(location.search), c = U.get("c"), a = U.get("a") || "", t = +(U.get("t") || 1);
+const P = LP.palco(null, { webgl: document.getElementById("c"), foco: 3, faixa: 1.4, desfoque: 18 }); const { S, cam } = P;
+let tag = "", sub = "";
+const v3 = (x, y, z) => new THREE.Vector3(x, y, z);
+if (c === "elenco") { // personagens variados lado a lado
+  LP.luz(P, "interior"); CI.cenario(S, "escritorio");
+  const el = [LP.pessoa({ seed: 31, feminina: true, roupa: "camiseta", camisa: 0xc84a6a, oculos: true, pele: 0xd9a07e, cabelo: 0x2a1a10 }),
+    LP.pessoa({ seed: 32, idade: "idoso", roupa: "casaco", bone: 0x3a4a6a, pele: 0xc89478 }),
+    LP.pessoa({ seed: 33, idade: "crianca", roupa: "camiseta", camisa: 0x3ab0a0, mochila: 0xe0a030, pele: 0x8a5a40 }),
+    LP.pessoa({ seed: 34, roupa: "jaleco", oculos: true, pele: 0xe0b898, barba: false, cabelo: 0x6a4a2a }),
+    LP.pessoa({ seed: 35, feminina: true, roupa: "uniforme", pele: 0x7a4e36 })];
+  const em = ["alegre", "calmo", "alegre", "duvida", "foco"];
+  el.forEach((p, i) => { S.add(p.root); p.reset(); p.root.position.set(-1.6 + i * 0.8, 0, -0.6 + (i % 2) * 0.3); p.root.rotation.y = 0.15 - i * 0.07; p.emocao(em[i]); LP.vida(p, t + i, { seed: 30 + i, piscar: false }); if (i === 2) LP.gesticular(p, t, { seed: 3 }); });
+  cam.fov = 40; cam.updateProjectionMatrix(); cam.position.set(0.0, 1.25, 4.6); cam.lookAt(-0.2, 1.0, -0.5); LP.focar(P, v3(0, 1.3, -0.4)); P.U.faixa.value = 2.5;
+  tag = "elenco"; sub = "mulher · idoso · criança · roupas";
+} else if (c === "rosto") {
+  LP.luz(P, "dramatica"); P.fria.position.set(1.5, 2, 2); const fem = a === "choro" || a === "vergonha";
+  const p = LP.pessoa({ seed: fem ? 37 : 4, feminina: fem, pele: fem ? 0xd9a07e : undefined }); S.add(p.root); p.reset(); p.emocao(a); LP.vida(p, 1, { seed: 4, piscar: false, olhos: false });
+  LP.bokeh(S, { n: 40, seed: 3, y: [1, 3], z: [-10, -4] }); CI.preenche(P, v3(0, 1.65, 0), { forca: 0.6 });
+  cam.position.set(0.2, 1.67, 0.95); cam.lookAt(0, 1.63, 0); LP.focar(P, v3(0, 1.66, 0.1)); P.U.faixa.value = 0.25; P.U.desf.value = 26;
+  tag = a; sub = "expressão nova";
+} else if (c === "corpo") {
+  LP.luz(P, a === "correr" ? "dia" : "interior"); if (a === "correr") CI.ceu(S, { topo: 0x4a8ad0, horizonte: 0xcfe2f0, nuvens: 6 }); const chao = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), LP.mat(a === "correr" ? 0x6a8a4a : 0x5a4a3a)); chao.rotation.x = -Math.PI / 2; S.add(chao);
+  const p = LP.pessoa({ seed: 6, jaqueta: 0x2f6f8f }); S.add(p.root); p.reset();
+  if (a === "correr") { LP.correr(p, t); p.emocao("foco"); p.root.rotation.y = 0.3; CI.movimento(P, 0.006, 0); cam.position.set(2.2, 1.1, 1.4); cam.lookAt(0, 1, 0); tag = "correr"; }
+  if (a === "cair") { LP.cair(p, 0.55); p.emocao("panico"); p.root.rotation.y = 1.2; cam.position.set(2.8, 1.2, 2.4); cam.lookAt(0.3, 0.7, 0.4); tag = "tropeçar"; }
+  if (a === "abraco") { const q = LP.pessoa({ seed: 37, feminina: true, roupa: "casaco", pele: 0xd9a07e }); S.add(q.root); q.reset(); q.root.position.z = 0.42; q.root.rotation.y = Math.PI; p.root.position.z = 0; LP.abracar(p, q, 1); p.emocao("choro"); q.emocao("triste"); cam.position.set(1.6, 1.55, 0.9); cam.lookAt(0, 1.4, 0.2); tag = "abraço"; }
+  if (a === "aperto") { const q = LP.pessoa({ seed: 38, roupa: "uniforme" }); S.add(q.root); q.reset(); q.root.position.set(0, 0, 0.9); q.root.rotation.y = Math.PI; LP.apertoMao(p, q, t, 1); p.emocao("alegre"); q.emocao("alegre"); cam.position.set(3.0, 1.45, 0.45); cam.lookAt(0, 1.25, 0.45); tag = "aperto de mão"; }
+  if (a === "segurar") { const cx = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.16, 0.16), LP.mat(0xb08a5a)); S.add(cx); LP.pose(p, "apontar", 0.0); LP.alcancar(p, 0, v3(0.05, 1.2, 0.4), 1, { maoGira: 0.0 }); LP.segurar(p, 0, cx, { pos: [0, -0.17, 0.05] }); p.emocao("surpresa"); p.root.rotation.y = -0.4; cam.position.set(0.8, 1.35, 2.2); cam.lookAt(0, 1.2, 0); tag = "segurar objeto"; }
+  if (a === "falar") { LP.gesticular(p, t, { seed: 2 }); p.emocao("alegre"); LP.falar(p, t); p.root.rotation.y = -0.3; cam.position.set(0.7, 1.4, 2.0); cam.lookAt(0, 1.3, 0); tag = "gestos de fala"; }
+  LP.vida(p, t, { seed: 6, balanco: 0.3, piscar: false }); LP.focar(P, p.cab.getWorldPosition(v3(0, 0, 0))); sub = "corpo";
+} else if (c === "bicho") {
+  LP.luz(P, a === "peixe" ? "frio" : "dia"); CI.ceu(S, a === "peixe" ? { topo: 0x0a3a5a, horizonte: 0x2a7a9a } : { topo: 0x4a8ad0, horizonte: 0xd8e8f0, nuvens: 5 });
+  if (a !== "peixe" && a !== "passaro") { const chao = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), LP.mat(0x6a8a4a)); chao.rotation.x = -Math.PI / 2; S.add(chao); for (let i = 0; i < 6; i++) CI.arvore(S, { pos: [-4 + i * 1.8, 0, -5 - (i % 2) * 2], seed: i }); }
+  if (a === "cachorro") { const d = CI.cachorro(); S.add(d.root); d.andar(t); d.abanar(t); d.emocao("feliz"); d.root.rotation.y = 0.6; cam.position.set(1.4, 0.65, 1.7); cam.lookAt(0, 0.4, 0); tag = "cachorro"; }
+  if (a === "gato") { const g = CI.gato(); S.add(g.root); g.respira(0.5); g.emocao("alerta"); g.abanar(t, 0.3); g.root.rotation.y = -0.7; cam.position.set(-0.9, 0.5, 1.2); cam.lookAt(0, 0.25, 0); tag = "gato"; }
+  if (a === "passaro") { const b = CI.passaro(); S.add(b.root); b.voar(t); b.root.rotation.y = 0.9; b.root.position.y = 1.5; cam.position.set(0.5, 1.6, 0.8); cam.lookAt(0, 1.5, 0); tag = "pássaro"; }
+  if (a === "peixe") { S.fog = null; const b = CI.peixe({ baleia: true, tam: 3, cor: 0x3a4a5a, corB: 0xcfd8dc }); S.add(b.root); b.nadar(t); b.root.position.set(1, 1.5, -6); b.root.rotation.y = 1.3;
+    for (let i = 0; i < 6; i++) { const f = CI.peixe({ seed: 50 + i, tam: 0.25 }); S.add(f.root); f.nadar(t + i); f.root.position.set(-0.6 + i * 0.25, 1.2 + (i % 3) * 0.2, -1 - i * 0.3); f.root.rotation.y = -1.2; }
+    LP.poeira(S, { n: 120, centro: [0, 1.5, -2], raio: [3, 2, 3], cor: 0xbfe8ff }).update(t); P.sol(v3(2, 12, -8), 1.2); cam.position.set(0, 1.5, 1.5); cam.lookAt(0, 1.6, -4); tag = "fundo do mar"; }
+  LP.focar(P, v3(0, cam.position.y - 0.1, 0)); sub = "bichos";
+} else if (c === "amb") {
+  if (a === "chuva") { LP.luz(P, "noite"); CI.cenario(S, "rua"); const p = LP.pessoa({ seed: 6, roupa: "casaco" }); S.add(p.root); p.reset(); LP.andar(p, t); p.emocao("triste"); LP.vida(p, t, { seed: 6, piscar: false }); p.root.position.z = -1;
+    const w = CI.chaoMolhado(S, p.root, { opac: 0.6 }); w.update(); const po = CI.luzPratica(S, "poste", [-2.2, 0, -2.5]); CI.chuva(S, { centro: [0, 0, -2] }).update(t);
+    cam.position.set(0.9, 1.1, 1.6); cam.lookAt(0, 1.2, -1.5); LP.camMao(cam, t); LP.focar(P, v3(0, 1.5, -1)); tag = "chuva"; sub = "chão molhado · poste"; }
+  if (a === "fogo") { LP.luz(P, "noite"); CI.ceu(S, { topo: 0x05070f, horizonte: 0x1a1a30, estrelas: 400 }); const chao = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), LP.mat(0x2a2620)); chao.rotation.x = -Math.PI / 2; S.add(chao);
+    const f = CI.fogo(S, { pos: [0, 0, 0] }); f.update(t); for (let i = 0; i < 3; i++) { const p = LP.pessoa({ seed: 40 + i, feminina: i === 1, roupa: "casaco" }); S.add(p.root); p.reset(); const an = -0.9 + i * 0.9; p.root.position.set(Math.sin(an) * 1.1, 0, Math.cos(an) * 1.1 - 0.0); p.root.rotation.y = an + Math.PI; LP.sentar(p, 1); p.root.position.y = 0.0; p.emocao(i === 1 ? "alegre" : "calmo"); LP.vida(p, t + i, { seed: 40 + i, piscar: false }); if (i === 1) LP.gesticular(p, t, { lados: 0 }); }
+    cam.position.set(1.2, 1.7, 4.2); cam.lookAt(0, 0.5, 0); LP.focar(P, v3(0, 0.8, 0)); tag = "fogueira"; sub = "fogo · brasas · estrelas"; }
+  if (a === "agua") { LP.luz(P, "por-do-sol"); CI.ceu(S, { topo: 0x2a2a5a, horizonte: 0xffa070, nuvens: 6, corNuvem: 0xffc0a0 }); const sol = new THREE.Mesh(new THREE.SphereGeometry(4, 16, 10), new THREE.MeshBasicMaterial({ color: new THREE.Color(0xffb060).multiplyScalar(4) })); sol.position.set(0, 6, -90); S.add(sol);
+    CI.agua(S, { tam: 120, seg: 60, cor: 0x2a3a5a }).update(t); P.sol(sol.position, 0.6); const b = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.25, 2.2), LP.mat(0x6a4a30)); b.position.set(0.6, 0.08, -3); b.rotation.y = 0.4; S.add(b);
+    cam.position.set(0, 1.3, 2); cam.lookAt(0, 2.5, -40); LP.focar(P, v3(0, 1, -30)); tag = "mar"; sub = "ondas · flare · nuvens"; }
+  if (a === "quarto") { LP.luz(P, "noite"); P.hemi.intensity = 0.1; const sc = CI.cenario(S, "quarto"); const ab = CI.luzPratica(S, "abajur", [-0.3, 0.5, -2.6]); const cel = CI.luzPratica(S, "celular", [0.62, 0.95, -1.15]); cel.g.rotation.x = -0.8;
+    const p = LP.pessoa({ seed: 44, roupa: "pijama", feminina: true }); S.add(p.root); p.reset(); LP.deitar(p, 1); p.root.position.set(0.8, 0.55, -1.0); p.root.rotation.y = Math.PI; p.emocao("nervoso", [0, 0.3]); LP.alcancar(p, 0, cel.g.position, 1);
+    CI.gobo(S, { pos: [-2.5, 2.2, -0.6], girar: Math.PI / 2 }); cam.position.set(1.9, 1.5, 0.4); cam.lookAt(0.7, 0.75, -1.4); LP.focar(P, v3(0.7, 0.8, -1.2)); tag = "quarto à noite"; sub = "abajur · celular no rosto"; }
+  if (a === "hospital") { LP.luz(P, "dia"); P.hemi.intensity = 0.6; const sc = CI.cenario(S, "hospital"); CI.clima(P, "hospital");
+    const p = LP.pessoa({ seed: 45, roupa: "pijama", jaqueta: 0x9ab8c8 }); S.add(p.root); p.reset(); LP.deitar(p, 1); p.root.position.set(0.5, 0.82, -0.6); p.root.rotation.y = Math.PI; p.emocao("dormindo");
+    const m = LP.pessoa({ seed: 46, roupa: "jaleco", feminina: true, oculos: true }); S.add(m.root); m.reset(); m.root.position.set(-0.6, 0, -0.6); m.root.rotation.y = 1.0; m.emocao("foco"); LP.alcancar(m, 0, v3(-0.3, 1.38, -2.2), 1); LP.vida(m, t, { seed: 46, piscar: false });
+    cam.position.set(1.2, 1.7, 2.6); cam.lookAt(-0.1, 1.0, -1.0); LP.focar(P, v3(-0.6, 1.5, -0.6)); tag = "hospital"; sub = "cenário pronto · clima"; }
+  if (a === "lab") { LP.luz(P, "dramatica"); P.hemi.intensity = 0.3; CI.cenario(S, "laboratorio"); CI.clima(P, "sonho"); const f = CI.fumaca(S, { pos: [-0.1, 1.15, -2.3], cor: 0x9affc8, opac: 0.4 }); f.update(t);
+    const p = LP.pessoa({ seed: 47, roupa: "jaleco", oculos: true }); S.add(p.root); p.reset(); p.root.position.set(0, 0, -1.4); p.emocao("surpresa", [0, -0.3]); LP.alcancar(p, 0, v3(-0.1, 1.08, -2.25), 1); LP.vida(p, t, { seed: 47, piscar: false });
+    cam.position.set(0.9, 1.45, 0.1); cam.lookAt(-0.1, 1.3, -1.9); LP.focar(P, v3(0, 1.6, -1.4)); tag = "laboratório"; sub = "vapor · clima sonho"; }
+}
+P.T = 1; P.D = 10; P.draw();
+document.getElementById("ui").innerHTML = `<div class="tag">${tag}<small>${sub}</small></div>`; window.PRONTO = true;
+</script></body></html>
