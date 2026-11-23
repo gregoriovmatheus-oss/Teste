@@ -186,7 +186,7 @@ export function pessoa({ longo = false, seed = 1, pele = COR.pele, cabelo = COR.
     triste: { br: -0.32, by: 0.36, bo: [0.8, 0.4], ab: 0.5, ol: [0, -0.25] },
     foco: { br: 0.22, by: 0.31, bo: [0.8, 0.2], ab: 0.55, ol: [0, 0] },
   };
-  const emocao = (nome, olhar = null) => C.rosto(EM[nome] || EM.calmo, olhar);
+  const emocao = (nome, olhar = null) => C.rosto(typeof nome === "object" ? { ...EM.calmo, ...nome } : (EM[nome] || EM.calmo), olhar);   // objeto = expressão própria {br, by, bo, ab, ol}
   emocao("calmo");
   return { root: R, cab, bracos, pernas, tronco, emocao };
 }
