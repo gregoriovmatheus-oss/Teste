@@ -57,7 +57,9 @@ setsid nohup bash ../../.claude/skills/video-curiosidades/kit/scripts/fila-rende
     - Mão num ponto exato: `alcancar(p, lado, vec3, k, {polo, maoGira})` (IK de 2 ossos) + `pontoCabeca(p, "boca|bochecha|testa|topo|nuca", lado)`. Use para mão no rosto, mãos na cabeça, segurar objeto e tocar algo. Para as mãos na cabeça, passe `polo: (s, 0.3, -0.2)`, que leva o cotovelo para fora.
     - Diálogo: `falar(p, t, {seed})`, chamado depois de `emocao`. As bochechas sobem no sorriso e na dor, e as rugas aparecem na raiva e na dor.
     - Outros: `olharPara(p, vec3, k)`, `punho(p, k)`, que fecha as 2 falanges.
-    - Prévia: `videos/_previa-anima/folha-anima-v2.jpg`.
+    - Cinema (pós e luz): `palco(...)` agora traz oclusão de ambiente, névoa, raios, bloom, aberração, bokeh oval, split-tone e curva S. Para ligar, use `luz(st, "noite|por-do-sol|interior|dramatica|dia|frio")`, `st.sol(vec3, força)` para os raios, `focar(st, vec3)`, `camMao(cam, t)` e `poeira(S, {...}).update(t)` (poeira ou neve).
+    - Lip-sync: `falarPalavras(p, t, palavras, t0)`, onde `t0` é o início da cena.
+    - Roteiro dos próximos ganhos: `GANHOS-3D.md`. Prévia: `videos/_previa-anima/folha-anima-v3-cinema.jpg`.
     - Multidão: `figurante({seed, roupa, pele})`, com o mesmo esqueleto e as mesmas animações e cerca de 10× menos triângulos. Não use mais o `humano` de `animals.js`.
     - Bichos: `urso()` (`respira`, `dormir(k)`, `andar(t)`) e `lemure()` (`respira`, `enrolar(k, t)`, `cauda(t)`).
     - Prévia: `videos/_previa-anima/folha-anima.jpg`.

@@ -12,8 +12,11 @@ export const COR = {
 export function mulberry32(a) { return () => { a |= 0; a = (a + 0x6d2b79f5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
 
 // facetas com variação de tom estável (hash da normal da faceta no espaço do objeto), como pintura
-function pintado(m, k = 0.16) {
+function pintado(m, k = 0.16, pele = false) {
   m.onBeforeCompile = (sh) => {
+    if (pele) sh.fragmentShader = sh.fragmentShader.replace("#include <emissivemap_fragment>", `#include <emissivemap_fragment>
+        { float fr = 1.0 - abs(dot(normal, normalize(vViewPosition)));
+          totalEmissiveRadiance += diffuseColor.rgb * vec3(1.0, 0.42, 0.3) * (0.1 + 0.55 * fr * fr * fr); }`);
     sh.vertexShader = sh.vertexShader.replace("#include <common>", "#include <common>\nvarying vec3 vObj;").replace("#include <begin_vertex>", "#include <begin_vertex>\nvObj = position;");
     sh.fragmentShader = sh.fragmentShader.replace("#include <common>", "#include <common>\nvarying vec3 vObj;")
       .replace("#include <normal_fragment_maps>", `#include <normal_fragment_maps>
@@ -21,9 +24,10 @@ function pintado(m, k = 0.16) {
           float hz = fract(sin(dot(floor(fn * 9.0 + 0.5), vec3(12.9898, 78.233, 37.719))) * 43758.5453);
           diffuseColor.rgb *= 1.0 + (hz - 0.5) * ${k.toFixed(3)}; }`);
   };
-  m.customProgramCacheKey = () => "pintado" + k;
+  m.customProgramCacheKey = () => "pintado" + k + (pele ? "p" : "");
   return m;
 }
+export const matPele = (c, rough = 0.62) => pintado(new THREE.MeshStandardMaterial({ color: c, roughness: rough, metalness: 0, flatShading: true }), 0.1, true);
 export const mat = (c, rough = 0.78, extra = {}) => pintado(new THREE.MeshStandardMaterial({ color: c, roughness: rough, metalness: 0, flatShading: true, ...extra }));
 const matContorno = new THREE.MeshBasicMaterial({ color: COR.contorno, side: THREE.BackSide });
 
@@ -81,14 +85,14 @@ function olhoR11(r, cIris = COR.iris, cPele = COR.pele) {
   const bri = new THREE.Mesh(new THREE.CircleGeometry(r * 0.12, 8), new THREE.MeshBasicMaterial({ color: 0xffffff })); bri.position.set(r * 0.22, r * 0.24, r * 0.995); globo.add(bri);
   // pálpebra de cima: casca de pele + risco escuro dos cílios na borda
   const sup = new THREE.Group(); g.add(sup);
-  sup.add(new THREE.Mesh(new THREE.SphereGeometry(r * 1.07, 12, 6, 0, Math.PI * 2, 0, Math.PI / 2), mat(cPele)));
+  sup.add(new THREE.Mesh(new THREE.SphereGeometry(r * 1.07, 12, 6, 0, Math.PI * 2, 0, Math.PI / 2), matPele(cPele)));
   const cil = new THREE.Mesh(new THREE.TorusGeometry(r * 1.07, r * 0.09, 3, 14, Math.PI), new THREE.MeshBasicMaterial({ color: 0x140a06 }));
   cil.rotation.x = Math.PI / 2; sup.add(cil);
-  const inf = new THREE.Mesh(new THREE.SphereGeometry(r * 1.05, 12, 4, 0, Math.PI * 2, Math.PI * 0.62, Math.PI * 0.38), mat(cPele)); const infP = new THREE.Group(); g.add(infP); infP.add(inf);
+  const inf = new THREE.Mesh(new THREE.SphereGeometry(r * 1.05, 12, 4, 0, Math.PI * 2, Math.PI * 0.62, Math.PI * 0.38), matPele(cPele)); const infP = new THREE.Group(); g.add(infP); infP.add(inf);
   return { g, globo, sup, olhar(ax, ay) { globo.rotation.set(-ay, ax, 0); }, baixo(k) { infP.rotation.x = -0.55 * k; }, abrir(k) { sup.rotation.x = k > 0.3 ? -0.25 - 1.15 * k : 0.4 + (-0.595 - 0.4) * (k / 0.3); globo.visible = k > 0.1; } };   // fechado: esconde a íris (o disco sairia pela pálpebra)
 }
 function cabecaR11({ seed, pele, cabelo, barba, iris = COR.iris }) {
-  const H = new THREE.Group(), pm = mat(pele, 0.72);
+  const H = new THREE.Group(), pm = matPele(pele);
   const cr = new THREE.Mesh(geoCranio(seed), pm); contorno(cr, 0.012); H.add(cr);
   // nariz: pirâmide com aresta para frente + asas
   const nz = new THREE.Mesh(new THREE.ConeGeometry(0.17, 0.6, 4, 1), pm); nz.rotation.set(-0.3, Math.PI / 4, 0); nz.scale.set(0.85, 1, 1.4); nz.position.set(0, -0.1, 0.7); H.add(nz);
@@ -183,7 +187,7 @@ function esqueleto(R, { pele, jaqueta, calca, tenis = COR.tenis, seed, simples }
   const tronco = new THREE.Group(); tronco.position.y = -0.92; coluna.add(tronco);
   const pescoco = new THREE.Group(); pescoco.position.set(0, 1.47, 0); tronco.add(pescoco);
   const cab = new THREE.Group(); cab.position.y = 0.18; pescoco.add(cab);
-  const seg = simples ? 5 : 6, jm = mat(jaqueta, 0.7), pm = mat(pele), ct = (m, k) => (simples ? m : contorno(m, k));
+  const seg = simples ? 5 : 6, jm = mat(jaqueta, 0.7), pm = matPele(pele), ct = (m, k) => (simples ? m : contorno(m, k));
   const bracos = [1, -1].map((s) => {
     const om = new THREE.Group(); om.position.set(s * 0.235, 1.36, 0); tronco.add(om);
     const sup = ct(new THREE.Mesh(new THREE.CylinderGeometry(0.062, 0.055, 0.32, seg), jm), 0.04); sup.position.y = -0.16; om.add(sup);
@@ -233,14 +237,14 @@ export function pessoa({ longo = false, seed = 1, pele = COR.pele, cabelo = COR.
     const tras = contorno(new THREE.Mesh(facetado(2, (v) => { v.y *= 1.6; v.x *= 1.05; if (v.z > 0.3) v.z = 0.3; }, seed + 80, 0.12), lm), 0.02); tras.scale.set(0.15, 0.17, 0.13); tras.position.set(0, -0.06, -0.04); mechas.add(tras);
     for (const s of [1, -1]) { const m = contorno(new THREE.Mesh(facetado(1, (v) => { v.y *= 2.6; v.x *= 0.6; }, seed + 85 + s, 0.2), lm), 0.03); m.scale.setScalar(0.06); m.position.set(s * 0.118, -0.03, 0.03); m.rotation.z = s * 0.08; mechas.add(m); } }
   // tronco: camisa + jaqueta aberta com gola (as abas da jaqueta balançam no andar)
-  const pesc = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.065, 0.16, 7), mat(pele)); pesc.position.y = 1.47; tronco.add(pesc);
-  const tor = contorno(new THREE.Mesh(facetado(2, (v) => { v.y *= 1.5; v.x *= 1.05; v.z *= 0.62; if (v.y > 0.6) { v.x *= 1 - (v.y - 0.6) * 0.5; } if (v.y < -0.2) { const k = Math.min(1, (-v.y - 0.2) / 1.1); v.x *= 1 - 0.2 * k; v.z *= 1 - 0.22 * k; } }, seed + 20, 0.08), mat(camisa)), 0.02);
+  const pesc = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.065, 0.16, 7), matPele(pele)); pesc.position.y = 1.47; tronco.add(pesc);
+  const tor = contorno(new THREE.Mesh(facetado(2, (v) => { v.y *= 1.5; v.x *= 1.05 * (1 + 0.11 * v.y); v.z *= 0.62 * (1 + 0.06 * v.y); if (v.y > 0.6) { v.x *= 1 - (v.y - 0.6) * 0.5; } if (v.y < -0.2) { const k = Math.min(1, (-v.y - 0.2) / 1.1); v.x *= 1 - 0.2 * k; v.z *= 1 - 0.22 * k; } }, seed + 20, 0.08), mat(camisa)), 0.02);
   tor.scale.set(0.2, 0.235, 0.196); tor.position.set(0, 1.15, -0.004); tronco.add(tor);
   const jm = mat(jaqueta, 0.7), abas = [];
   for (const s of [1, -1]) {
     const piv = new THREE.Group(); piv.position.set(s * 0.035, 1.38, -0.005); tronco.add(piv);
-    const lado = contorno(new THREE.Mesh(facetado(2, (v) => { v.y *= 1.5; v.z *= 0.62; if (v.x * s < -0.25) v.x = -0.25 * s; if (v.y > 0.8) v.y = 0.8 + (v.y - 0.8) * 0.5 - 0.12 * Math.abs(v.x); if (v.y < -0.2) { const k = Math.min(1, (-v.y - 0.2) / 1.1); v.x *= 1 - 0.16 * k; v.z *= 1 - 0.2 * k; } }, seed + 30 + s, 0.09), jm), 0.02);
-    lado.scale.set(0.215, 0.255, 0.2); lado.position.y = -0.24; piv.add(lado); abas.push(piv);
+    const lado = contorno(new THREE.Mesh(facetado(2, (v) => { v.y *= 1.5; v.x *= 1 + 0.11 * v.y; v.z *= 0.62 * (1 + 0.06 * v.y); if (v.x * s < -0.25) v.x = -0.25 * s; if (v.y > 0.8) v.y = 0.8 + (v.y - 0.8) * 0.5 - 0.12 * Math.abs(v.x); if (v.y < -0.1) { const k = Math.min(1, (-v.y - 0.1) / 1.1); v.x *= 1 - 0.24 * k; v.z *= 1 - 0.3 * k; } }, seed + 30 + s, 0.09), jm), 0.02);
+    lado.scale.set(0.198, 0.25, 0.178); lado.position.y = -0.235; piv.add(lado); abas.push(piv);
     const gola = contorno(new THREE.Mesh(new THREE.ConeGeometry(0.07, 0.17, 4), jm), 0.04);
     gola.position.set(s * 0.085, 1.42, 0.08); gola.rotation.set(0.5, 0, s * 0.45); tronco.add(gola);
   }
@@ -266,7 +270,7 @@ export function figurante({ seed = 1, pele = COR.pele, cabelo = COR.cabelo, roup
   const R = new THREE.Group();
   const E = esqueleto(R, { pele, jaqueta: roupa, calca, seed, simples: true });
   const { cab, tronco } = E, rr = mulberry32(seed * 31 + 7);
-  const cm = mat(pele, 0.72);
+  const cm = matPele(pele);
   const ca = new THREE.Mesh(facetado(1, (v) => { v.x *= 0.82; v.y *= 1.12; if (v.y < -0.2) v.x *= 0.85; }, seed, 0.06), cm); ca.scale.setScalar(0.115); ca.position.y = 0.0; cab.add(ca);
   const cbm = mat(cabelo, 0.85);
   const cap = new THREE.Mesh(facetado(1, (v) => { if (v.y < 0.1 - 0.35 * Math.max(0, -v.z)) v.y = 0.1 - 0.35 * Math.max(0, -v.z) + (v.y - 0.1) * 0.15; v.x *= 0.86; }, seed + 2, 0.15), cbm);
@@ -412,9 +416,13 @@ export function molecula(tipo = "N2", seed = 1, nuvem = 0.5) {
 }
 
 // palco R11 no renderizador WebGL compartilhado (1 contexto para o vídeo todo). A cena 2D (canvas) recebe a imagem pronta.
-// Pós: profundidade de campo pela profundidade, bloom leve, grade fria/quente, vinheta, grão por quadro; corte com dip de 5 quadros.
+// Pós "cinema" (23/11): profundidade de campo com bokeh anamórfico, oclusão de ambiente (sombras de contato), névoa por profundidade,
+// raios de luz (god rays) a partir de st.sol(vec3), bloom com halação quente, aberração cromática nas bordas, split-tone
+// (sombras frias, luzes quentes), curva S de contraste, vinheta, grão por quadro; corte com dip de 5 quadros.
 // st.draw() usa st.T / st.D (o bindSeek do monta-cenas preenche). Para prévia fora do vídeo, passe { webgl: canvasWebGL }.
-export function palco(canvas, { fov = 32, fundo = 0x14100c, foco = 1.5, faixa = 1.2, desfoque = 14, grao = 0.05, sat = 0.9, webgl = null } = {}) {
+// Atalhos: luz(st, "noite|por-do-sol|interior|dramatica|dia|frio"), focar(st, vec3), camMao(cam, t), poeira(S, {...}).
+export function palco(canvas, { fov = 32, fundo = 0x14100c, foco = 1.5, faixa = 1.2, desfoque = 14, grao = 0.045, sat = 0.92, webgl = null,
+  ao = 0.75, nevoa = 0.0, corNevoa = null, ca = 0.6, anamorf = 0.72, bloom = 0.7, contraste = 0.35, split = 0.6, raios = 0 } = {}) {
   const W = 1080, Hh = 1920;
   const r = webgl ? new THREE.WebGLRenderer({ canvas: webgl, antialias: false, preserveDrawingBuffer: true }) : sharedRenderer();
   if (webgl) { r.setPixelRatio(1); r.setSize(W, Hh, false); r.outputColorSpace = THREE.SRGBColorSpace; }
@@ -431,42 +439,72 @@ export function palco(canvas, { fov = 32, fundo = 0x14100c, foco = 1.5, faixa = 
   const rim2 = new THREE.DirectionalLight(0xffa860, 1.2); rim2.position.set(-2, 0.5, -2.5); S.add(rim2);
   const dt = new THREE.DepthTexture(W, Hh); dt.type = THREE.UnsignedIntType;
   const rt = new THREE.WebGLRenderTarget(W, Hh, { samples: 4, type: THREE.HalfFloatType, depthTexture: dt });
+  const cN = new THREE.Color(corNevoa ?? fundo);
   const U = { tC: { value: rt.texture }, tD: { value: dt }, near: { value: 0.01 }, far: { value: 400 }, foco: { value: foco }, faixa: { value: faixa },
-    desf: { value: desfoque }, res: { value: new THREE.Vector2(W, Hh) }, grao: { value: grao }, sat: { value: sat }, quadro: { value: 0 }, dip: { value: 0 } };
+    desf: { value: desfoque }, res: { value: new THREE.Vector2(W, Hh) }, grao: { value: grao }, sat: { value: sat }, quadro: { value: 0 }, dip: { value: 0 },
+    ao: { value: ao }, nevoa: { value: nevoa }, corNevoa: { value: new THREE.Vector3(cN.r, cN.g, cN.b) }, ca: { value: ca }, anamorf: { value: anamorf },
+    bloom: { value: bloom }, contraste: { value: contraste }, split: { value: split }, raios: { value: raios }, solUV: { value: new THREE.Vector2(0.5, 0.8) },
+    corRaios: { value: new THREE.Vector3(1.0, 0.82, 0.6) }, sombraCor: { value: new THREE.Vector3(0.86, 0.98, 1.1) }, luzCor: { value: new THREE.Vector3(1.08, 1.0, 0.88) } };
   const pos = new THREE.ShaderMaterial({ uniforms: U, depthTest: false, depthWrite: false,
     vertexShader: "varying vec2 vU; void main(){ vU = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }",
-    fragmentShader: `uniform sampler2D tC, tD; uniform float near, far, foco, faixa, desf, grao, sat, quadro, dip; uniform vec2 res; varying vec2 vU;
+    fragmentShader: `uniform sampler2D tC, tD; uniform float near, far, foco, faixa, desf, grao, sat, quadro, dip, ao, nevoa, ca, anamorf, bloom, contraste, split, raios;
+      uniform vec2 res, solUV; uniform vec3 corNevoa, corRaios, sombraCor, luzCor; varying vec2 vU;
       float lin(float d){ float z = d * 2.0 - 1.0; return 2.0 * near * far / (far + near - z * (far - near)); }
-      float coc(vec2 u){ return clamp(abs(lin(texture2D(tD, u).r) - foco) / faixa, 0.0, 1.0); }
+      float zl(vec2 u){ return lin(texture2D(tD, u).r); }
+      float coc(vec2 u){ return clamp(abs(zl(u) - foco) / faixa, 0.0, 1.0); }
       float h(vec2 p){ return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
+      float luma(vec3 c){ return dot(c, vec3(0.299, 0.587, 0.114)); }
       void main(){
         float c0 = coc(vU); vec3 acc = texture2D(tC, vU).rgb; float w = 1.0; vec3 blo = vec3(0.0);
         float rot = h(vU * res) * 6.2831;
         for (int i = 0; i < 48; i++) { float fi = float(i); float rr = sqrt((fi + 0.5) / 48.0); float an = fi * 2.39996 + rot;
-          vec2 o = vec2(cos(an), sin(an)) * rr * desf / res;
+          vec2 o = vec2(cos(an) * anamorf, sin(an)) * rr * desf / res;
           vec2 u2 = vU + o * c0; float ci = coc(u2);
-          vec3 s = texture2D(tC, u2).rgb; float wi = mix(0.2, 1.0, ci); acc += s * wi; w += wi;
-          if (i < 16) { vec3 sb = texture2D(tC, vU + o * 2.5).rgb; blo += max(sb - vec3(0.9), 0.0); } }
-        vec3 col = acc / w + blo * 0.05;
-        float l = dot(col, vec3(0.299, 0.587, 0.114)); col = mix(vec3(l), col, sat);
-        col = mix(col * vec3(0.92, 0.98, 1.08), col * vec3(1.06, 1.0, 0.92), smoothstep(0.05, 0.6, l));
-        vec2 q = vU - 0.5; col *= 1.0 - smoothstep(0.35, 0.95, length(q * vec2(1.0, 0.75))) * 0.6;
-        col += (h(vU * res + quadro * 17.31) - 0.5) * grao;
+          vec3 s = texture2D(tC, u2).rgb; float wi = mix(0.2, 1.0, ci) * (1.0 + 2.0 * max(luma(s) - 1.0, 0.0) * c0); acc += s * wi; w += wi;
+          if (i < 24) { vec3 sb = texture2D(tC, vU + o * (i < 12 ? 3.0 : 7.0)).rgb; blo += max(sb - vec3(0.75), 0.0) * (i < 12 ? 1.0 : 0.6); } }
+        vec3 col = acc / w;
+        // aberração cromática (cresce para as bordas)
+        vec2 dc = (vU - 0.5) * ca * 0.006;
+        col.r += (texture2D(tC, vU + dc).r - texture2D(tC, vU).r) * (1.0 - c0 * 0.6);
+        col.b += (texture2D(tC, vU - dc).b - texture2D(tC, vU).b) * (1.0 - c0 * 0.6);
+        // oclusão de ambiente pela profundidade (contato entre objetos, cantos, rosto)
+        float z0 = zl(vU);
+        if (ao > 0.0 && z0 < 60.0) { float occ = 0.0; float rad = clamp(38.0 / z0, 3.0, 70.0);
+          for (int i = 0; i < 12; i++) { float fi = float(i); float an = fi * 2.39996 + rot; float rr = (fi + 1.0) / 12.0;
+            vec2 u2 = vU + vec2(cos(an), sin(an)) * rr * rad / res; float dz = z0 - zl(u2);
+            occ += clamp((dz - 0.015 * z0) / (0.25 * z0 + 0.02), 0.0, 1.0) * (1.0 - smoothstep(0.35 * z0, 0.9 * z0 + 0.3, dz)); }
+          col *= 1.0 - ao * 0.85 * occ / 12.0; }
+        // névoa por profundidade
+        if (nevoa > 0.0) { float ceu0 = step(far * 0.5, z0); col = mix(col, corNevoa, (1.0 - exp(-nevoa * clamp(z0 - 0.5, 0.0, 60.0))) * mix(0.92, 0.35, ceu0)); }
+        // raios de luz: marcha em direção ao sol somando o que é claro/céu
+        if (raios > 0.0) { vec2 d = (solUV - vU) / 32.0; vec2 u = vU; float dec = 1.0, acr = 0.0; float j = h(vU * res + 3.1);
+          for (int i = 0; i < 32; i++) { u += d * (1.0 + 0.15 * j); vec3 s = texture2D(tC, clamp(u, 0.0, 1.0)).rgb; float ceu = step(far * 0.5, zl(clamp(u, 0.0, 1.0)));
+            acr += max(luma(s) - 0.85, 0.0) * dec * (0.3 + 0.7 * ceu); dec *= 0.95; }
+          col += corRaios * acr * raios * 0.05; }
+        col += blo * 0.03 * bloom * vec3(1.0, 0.86, 0.74);
+        float l = luma(col); col = mix(vec3(l), col, sat);
+        col = mix(col, col * mix(sombraCor, luzCor, smoothstep(0.04, 0.7, l)), split);
+        vec2 q = vU - 0.5; col *= 1.0 - smoothstep(0.32, 0.95, length(q * vec2(1.0, 0.72))) * 0.62;
+        col += (h(vU * res + quadro * 17.31) - 0.5) * grao * (0.6 + 0.8 * (1.0 - smoothstep(0.0, 0.5, l)));
         col *= 1.0 - dip;
         gl_FragColor = vec4(max(col, 0.0), 1.0);
         #include <tonemapping_fragment>
+        gl_FragColor.rgb = mix(gl_FragColor.rgb, gl_FragColor.rgb * gl_FragColor.rgb * (3.0 - 2.0 * gl_FragColor.rgb), contraste);
         #include <colorspace_fragment>
       }` });
   pos.toneMapped = true;
   const quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), pos); quad.frustumCulled = false;
   const S2 = new THREE.Scene(); S2.add(quad); const cam2 = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+  const solP = new THREE.Vector3(); let temSol = false;
   const st = { r, renderer: r, S, scene: S, cam, ctx, hemi, fria, key: fria, quente, rim, rim2, U, T: 0, D: 0, exposicao: 1.1,
     warm: { renderer: r, scene: S, camera: cam },
+    sol(v, forca = null) { solP.copy(v); temSol = true; if (forca !== null) U.raios.value = forca; },
     draw() {
       if (!st._s) { st._s = 1; S.traverse((o) => { if (o.isMesh && o.material && o.material.type !== "MeshBasicMaterial") { o.castShadow = o.material.side !== THREE.BackSide; o.receiveShadow = true; } }); }
       const T = st.T || 0, D = st.D || 1e9;
       U.near.value = cam.near; U.far.value = cam.far; U.quadro.value = Math.floor(T * 30);
       U.dip.value = Math.min(1, Math.max(1 - T / 0.17, 1 - (D - T) / 0.12, 0)) * 0.85;
+      if (temSol) { cam.updateMatrixWorld(); const p = solP.clone().project(cam); U.solUV.value.set(p.x * 0.5 + 0.5, p.y * 0.5 + 0.5); }
       const tm = r.toneMapping, te = r.toneMappingExposure;
       r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = st.exposicao;
       r.setRenderTarget(rt); r.render(S, cam); r.setRenderTarget(null); r.render(S2, cam2);
@@ -474,6 +512,40 @@ export function palco(canvas, { fov = 32, fundo = 0x14100c, foco = 1.5, faixa = 
       if (ctx) { ctx.globalCompositeOperation = "copy"; ctx.drawImage(r.domElement, 0, 0); ctx.globalCompositeOperation = "source-over"; }
     } };
   return st;
+}
+// presets de luz de cinema: muda as 5 luzes, o fundo, a névoa e a gradação de uma vez
+const LUZ = {
+  noite: { fundo: 0x0b1220, hemi: [0x5a78b0, 0x140c08, 0.35], fria: [0x8fb0ff, 2.2], quente: [0xff9a4a, 1.1], rim: [0x6f9cff, 3.0], rim2: [0xff7a3a, 1.6], nevoa: 0.035, split: 0.7, exp: 1.05 },
+  "por-do-sol": { fundo: 0x3a2236, hemi: [0xffb27a, 0x2a1830, 0.45], fria: [0xffa25a, 3.4], quente: [0x7f8cff, 0.9], rim: [0xffc070, 3.6], rim2: [0x7a6cff, 1.0], nevoa: 0.012, split: 0.5, raios: 0.8, exp: 1.05 },
+  interior: { fundo: 0x18120e, hemi: [0xd8b898, 0x20160e, 0.35], fria: [0xfff0d8, 3.0], quente: [0xffb070, 0.8], rim: [0xbfd4ff, 1.4], rim2: [0xffa860, 1.0], nevoa: 0.02, split: 0.45, raios: 0.9, exp: 1.1 },
+  dramatica: { fundo: 0x080808, hemi: [0x30384a, 0x050403, 0.15], fria: [0xfff1e0, 4.0], quente: [0xff9050, 0.3], rim: [0x9ab8ff, 3.4], rim2: [0xff6a30, 0.6], nevoa: 0.01, split: 0.6, exp: 1.0 },
+  dia: { fundo: 0x9fc4e8, hemi: [0xcfe4ff, 0x6a5a48, 0.8], fria: [0xfff4e0, 3.2], quente: [0xffe0c0, 1.0], rim: [0xd8e8ff, 1.6], rim2: [0xffe0b0, 0.6], nevoa: 0.012, split: 0.3, exp: 1.15 },
+  frio: { fundo: 0xaec4d8, hemi: [0xdfefff, 0x8a9aa8, 0.9], fria: [0xe8f2ff, 2.6], quente: [0xffd8b0, 0.5], rim: [0xcfe2ff, 2.0], rim2: [0xa8c8ff, 0.8], nevoa: 0.05, split: 0.55, exp: 1.1 },
+};
+export function luz(st, nome) {
+  const L = LUZ[nome]; if (!L) return;
+  st.S.background = new THREE.Color(L.fundo); st.hemi.color.setHex(L.hemi[0]); st.hemi.groundColor.setHex(L.hemi[1]); st.hemi.intensity = L.hemi[2];
+  for (const k of ["fria", "quente", "rim", "rim2"]) { st[k].color.setHex(L[k][0]); st[k].intensity = L[k][1]; }
+  const c = new THREE.Color(L.fundo); st.U.corNevoa.value.set(c.r, c.g, c.b); st.U.nevoa.value = L.nevoa; st.U.split.value = L.split; st.U.raios.value = L.raios || 0; st.exposicao = L.exp;
+}
+// foco automático na distância da câmera até um ponto (rack focus: chame com pontos diferentes ao longo do tempo)
+export function focar(st, alvo, k = 1) { const d = st.cam.position.distanceTo(alvo); st.U.foco.value = st.U.foco.value + (d - st.U.foco.value) * k; }
+// câmera na mão: tremor orgânico (soma de senos, determinístico). Chame depois do lookAt.
+export function camMao(cam, t, { intens = 1, seed = 1 } = {}) {
+  const r = mulberry32(seed * 17 + 5), a = [r() * 6, r() * 6, r() * 6];
+  cam.rotation.x += intens * (0.0045 * Math.sin(t * 1.3 + a[0]) + 0.002 * Math.sin(t * 3.7 + a[1]));
+  cam.rotation.y += intens * (0.0045 * Math.sin(t * 1.1 + a[1]) + 0.002 * Math.sin(t * 4.1 + a[2]));
+  cam.rotation.z += intens * 0.003 * Math.sin(t * 0.9 + a[2]);
+}
+// poeira no ar: partículas que pegam a luz e flutuam devagar (deixa a luz "visível")
+export function poeira(S, { n = 120, centro = [0, 1.4, 0], raio = [2.5, 1.5, 2.5], cor = 0xffe2b8, seed = 4, tam = 0.008 } = {}) {
+  const r = mulberry32(seed), g = new THREE.Group(); S.add(g);
+  const m = new THREE.SpriteMaterial({ map: halo, color: new THREE.Color(cor).multiplyScalar(2.2), transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending, depthWrite: false });
+  const P = [];
+  for (let i = 0; i < n; i++) { const sp = new THREE.Sprite(m); const s = tam * (0.5 + r() * 1.5) * 3; sp.scale.set(s, s, s); g.add(sp);
+    P.push({ sp, b: [centro[0] + (r() - 0.5) * 2 * raio[0], centro[1] + (r() - 0.5) * 2 * raio[1], centro[2] + (r() - 0.5) * 2 * raio[2]], f: 0.1 + r() * 0.25, ph: r() * 6.28 }); }
+  const up = (t) => P.forEach((p) => p.sp.position.set(p.b[0] + 0.08 * Math.sin(t * p.f + p.ph), p.b[1] + 0.05 * Math.sin(t * p.f * 1.3 + p.ph * 2) + 0.02 * t, p.b[2] + 0.08 * Math.cos(t * p.f * 0.8 + p.ph)));
+  up(0); return { g, update: up };
 }
 function olho(r) { const o = olhoR11(r); o.palp = o.sup.children[0]; return o; }
 
@@ -604,4 +676,16 @@ export function falar(p, t, { seed = 1, intens = 1 } = {}) {
   const fa = Math.max(0, Math.sin(ph) * 0.7 + Math.sin(ph * 1.63 + 1.1) * 0.3) * env * pausa * intens;
   p.emocao({ ...p.estado(), fa }, p.olharAtual());
   p.cab.rotation.x += 0.02 * fa; p.cab.rotation.y += 0.015 * Math.sin(t * 2.3);
+}
+
+// boca sincronizada com a narração: palavras = audio/palavras.json ([{text, start, end}]), t0 = início da cena no vídeo.
+// Cada sílaba (vogal) abre a boca; "o/u" arredondam (boca estreita), "a/e/i" abrem largo. Pausas fecham.
+export function falarPalavras(p, t, palavras, t0 = 0, { intens = 1 } = {}) {
+  const T = t + t0; const w = palavras.find((q) => T >= q.start - 0.03 && T <= q.end + 0.03);
+  let fa = 0, larg = 1;
+  if (w) { const sil = (w.text.toLowerCase().match(/[aeiouáéíóúâêôãõà]+/g) || ["a"]); const n = sil.length, u = Math.min(0.999, Math.max(0, (T - w.start) / Math.max(0.05, w.end - w.start)));
+    const k = Math.floor(u * n), f = u * n - k, v = sil[k][0];
+    fa = Math.sin(Math.PI * f) ** 0.7 * intens * (/[oóôõuú]/.test(v) ? 0.75 : /[ií]/.test(v) ? 0.55 : 1); larg = /[oóôõuú]/.test(v) ? 0.72 : /[ieíé]/.test(v) ? 1.15 : 1; }
+  const e = p.estado(); p.emocao({ ...e, bo: [e.bo[0] * larg, e.bo[1]], fa }, p.olharAtual());
+  p.cab.rotation.x += 0.015 * fa;
 }

@@ -53,6 +53,67 @@ if (c === "rosto") {
   if (close2) { cam.position.set(0.35, 1.6, 1.4); cam.lookAt(0, 1.5, 0); P.U.foco.value = 1.45; P.U.faixa.value = 0.6; }
   else { cam.position.set(0.9, 1.3, 2.8); cam.lookAt(0, 1.15, 0); P.U.foco.value = 2.9; }
   tag = { maoRosto: "mão no rosto", maosCabeca: "mãos na cabeça", caneca: "segurando", falar: "falando" }[arg]; sub = "braço com IK";
+} else if (c === "cine") {
+  S.remove(chao); S.children.filter((o) => o.isGroup).forEach((o) => S.remove(o));
+  const box = (w, h, d, cor, x, y, z, rough = 0.85, em = null) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), em ? new THREE.MeshBasicMaterial({ color: new THREE.Color(em).multiplyScalar(3) }) : LP.mat(cor, rough)); m.position.set(x, y, z); S.add(m); return m; };
+  const p = LP.pessoa({ seed: 4 }); S.add(p.root); p.reset();
+  if (arg === "interior") {
+    LP.luz(P, "interior");
+    box(8, 0.1, 8, 0x5a4434, 0, -0.05, 0, 0.7); box(0.1, 4, 8, 0x8a7a68, -2.2, 2, 0); box(8, 4, 0.1, 0x7a6a58, 0, 2, -2.2);
+    box(0.05, 1.4, 1.0, 0, -2.14, 1.7, -0.6, 0, 0xfff2d8); // janela
+    box(1.2, 0.06, 0.8, 0x6a4a30, 0.15, 0.78, 0.35, 0.5); box(0.06, 0.76, 0.06, 0x4a3020, 0.7, 0.38, 0.65);
+    const cn = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.04, 0.1, 10), LP.mat(0xe8e0d0, 0.35)); cn.position.set(0.12, 0.86, 0.28); S.add(cn);
+    P.fria.position.set(-4, 3.2, -1.2); P.sol(new THREE.Vector3(-2.14, 1.7, -0.6), 1.1);
+    LP.pose(p, "sentado", 1); p.root.position.set(0, 0, -0.35); p.root.rotation.y = 0.15;
+    LP.alcancar(p, 0, new THREE.Vector3(0.1, 0.88, 0.25), 1, { maoGira: -1.1 }); LP.punho(p, 0.55, 0);
+    p.emocao("triste", [-0.35, 0.05]); LP.vida(p, 2, { seed: 4, piscar: false });
+    LP.poeira(S, { n: 220, centro: [-1.3, 1.5, -0.9], raio: [0.8, 0.8, 0.7] }).update(t);
+    cam.position.set(0.95, 1.35, 1.25); cam.lookAt(-0.35, 1.2, -0.5); LP.camMao(cam, t); LP.focar(P, new THREE.Vector3(0, 1.4, -0.3)); P.U.faixa.value = 0.6; P.U.desf.value = 22;
+    tag = "luz de janela"; sub = "raios · poeira · contato";
+  } else if (arg === "noite") {
+    LP.luz(P, "noite");
+    box(30, 0.1, 30, 0x1a1c22, 0, -0.05, 0, 0.18);
+    const neons = [[0xff3a7a, -2.2, 2.6, -4], [0x3ac8ff, 2.4, 2.2, -6], [0xffa83a, -3.2, 1.6, -9], [0x8a5aff, 3.5, 3.2, -11]];
+    neons.forEach(([c, x, y, z]) => { box(1.4, 0.3, 0.05, 0, x, y, z, 0, c); const l = new THREE.PointLight(c, 6, 6); l.position.set(x, y - 0.3, z + 0.6); S.add(l); });
+    for (let i = 0; i < 8; i++) box(2, 3 + (i % 3), 2, 0x22252e, (i % 2 ? 4.2 : -4.2), 1.5, -3 - i * 2.5);
+    const z = LP.andar(p, t); p.emocao("foco", [0.2, 0]); LP.vida(p, t, { seed: 4, balanco: 0.3 }); p.root.position.z = -2 + z * 0.0; p.root.rotation.y = 0.2;
+    LP.bokeh(S, { n: 60, seed: 7, y: [0.5, 5], z: [-20, -8], cores: [0xff3a7a, 0x3ac8ff, 0xffa83a] });
+    cam.position.set(0.9, 1.0, 0.3); cam.lookAt(0, 1.3, -2); LP.camMao(cam, t, { intens: 1.5 }); LP.focar(P, new THREE.Vector3(0, 1.5, -2)); P.U.desf.value = 26;
+    tag = "rua à noite"; sub = "neon · chão molhado";
+  } else if (arg === "sol") {
+    LP.luz(P, "por-do-sol");
+    box(60, 0.1, 60, 0x4a3a2a, 0, -0.05, 0, 0.95);
+    const sol = new THREE.Mesh(new THREE.SphereGeometry(2.2, 20, 12), new THREE.MeshBasicMaterial({ color: new THREE.Color(0xffb060).multiplyScalar(4) })); sol.position.set(-6, 3.2, -30); S.add(sol);
+    for (let i = 0; i < 40; i++) { const r = LP.mulberry32(i); const g = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.4 + r() * 0.3, 3), LP.mat(0x6a5030)); g.position.set(-4 + r() * 8, 0.2, -1 - r() * 8); S.add(g); }
+    P.fria.position.set(-6, 3, -30).normalize().multiplyScalar(8); P.sol(sol.position, 1.3);
+    p.emocao("calmo", [-0.3, 0.1]); LP.vida(p, 2, { seed: 4 }); p.root.rotation.y = -2.6; p.root.position.set(0.3, 0, 0);
+    cam.position.set(1.6, 1.1, 2.6); cam.lookAt(-0.6, 1.6, -4); LP.focar(P, new THREE.Vector3(0.3, 1.5, 0)); P.U.desf.value = 18;
+    tag = "pôr do sol"; sub = "contraluz · raios";
+  } else if (arg === "close") {
+    LP.luz(P, "dramatica"); box(20, 0.1, 20, 0x1a1a1a, 0, -0.05, 0);
+    P.fria.position.set(2, 2.2, 1.5); P.rim.position.set(-1.5, 2, -2);
+    p.emocao("medo", [-0.4, 0.05]); LP.vida(p, 2, { seed: 4, piscar: false }); p.cab.rotation.y -= 0.35;
+    LP.bokeh(S, { n: 40, seed: 3, y: [1, 3], z: [-10, -4], cores: [0xffa060, 0x6f9cff] });
+    cam.position.set(-0.15, 1.66, 0.62); cam.lookAt(0.0, 1.64, 0); LP.focar(P, new THREE.Vector3(0.02, 1.68, 0.08)); P.U.faixa.value = 0.12; P.U.desf.value = 30;
+    tag = "close dramático"; sub = "luz única · rim";
+  } else if (arg === "multidao") {
+    LP.luz(P, "noite"); box(40, 0.1, 40, 0x1a1c22, 0, -0.05, 0, 0.2);
+    [[0xff3a7a, -3, 3, -8], [0x3ac8ff, 3, 2.6, -10], [0xffa83a, -2, 2, -14]].forEach(([c, x, y, z]) => { box(1.6, 0.35, 0.05, 0, x, y, z, 0, c); const l = new THREE.PointLight(c, 8, 9); l.position.set(x, y - 0.4, z + 0.8); S.add(l); });
+    const cores = [0x3d5a80, 0x7a3b3b, 0x4a6b4a, 0x6b5a7a, 0xb08a3a, 0x2c3442], peles = [0xb07c62, 0xd9a07e, 0x7a4e36, 0xe0b898, 0x9a6648], r = LP.mulberry32(5);
+    for (let i = 0; i < 30; i++) { const f = LP.figurante({ seed: 10 + i, roupa: cores[i % 6], pele: peles[i % 5], longo: i % 3 === 0 }); S.add(f.root); f.reset();
+      const dir = r() < 0.5 ? 1 : -1, d = LP.andar(f, t + r() * 3, { vel: 0.85 + r() * 0.3 }); LP.vida(f, t, { seed: 10 + i, balanco: 0.3 });
+      f.root.rotation.y = dir > 0 ? 0 : Math.PI; f.root.position.set(-2.5 + r() * 5, 0, -2 - r() * 10 + dir * (d % 2)); }
+    p.root.position.set(0.15, 0, 0.6); p.root.rotation.y = 0.15; p.emocao("medo", [0.35, 0.05]); LP.vida(p, t, { seed: 4 }); LP.alcancar(p, 0, LP.pontoCabeca(p, "bochecha", 0), 0.0);
+    cam.position.set(0.55, 1.55, 2.1); cam.lookAt(0, 1.45, 0); LP.camMao(cam, t); LP.focar(P, new THREE.Vector3(0.15, 1.6, 0.6)); P.U.desf.value = 24;
+    tag = "multidão"; sub = "figurantes · noite";
+  } else if (arg === "neve") {
+    LP.luz(P, "frio"); box(60, 0.1, 60, 0xe8eef4, 0, -0.05, 0, 0.9);
+    for (let i = 0; i < 14; i++) { const r = LP.mulberry32(50 + i); const a = new THREE.Mesh(new THREE.ConeGeometry(0.5 + r(), 2 + r() * 2, 6), LP.mat(0x2f4a3a)); a.position.set(-6 + r() * 12, 1.2, -4 - r() * 10); S.add(a); }
+    LP.pose(p, "encolhido", 1); p.emocao("triste", [0, -0.1]); LP.vida(p, t, { seed: 4 });
+    LP.poeira(S, { n: 300, centro: [0, 1.6, -2], raio: [3, 1.8, 2.5], cor: 0xffffff, seed: 9, tam: 0.014 }).update(t * 3);
+    cam.position.set(1.0, 1.4, 2.4); cam.lookAt(0, 1.2, 0); LP.focar(P, new THREE.Vector3(0, 1.4, 0)); P.U.desf.value = 20;
+    tag = "inverno"; sub = "névoa · neve";
+  }
 } else if (c === "multidao") {
   const cores = [0x3d5a80, 0x7a3b3b, 0x4a6b4a, 0x6b5a7a, 0xb08a3a, 0x2c3442];
   const peles = [0xb07c62, 0xd9a07e, 0x7a4e36, 0xe0b898, 0x9a6648];
