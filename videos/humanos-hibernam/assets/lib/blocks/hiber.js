@@ -197,9 +197,9 @@ export function quarto(S, { mk = M, estacao = "inverno", neveN = 500 } = {}) {
   ab.position.set(-2.0, 0.85, -1.25); g.add(ab); box(0.03, 0.22, 0.03, mk(0x30302e, 0.4), -2.0, 0.66, -1.25);
   const lamp = new THREE.PointLight(0xffb066, estacao === "inverno" ? 2.2 : 0.4, 5, 1.6); lamp.position.set(-1.95, 0.95, -1.1); g.add(lamp);
   // calendário à direita da janela
-  const cal = calendario(); cal.g.position.set(0.55, 1.95, ZW + 0.075); g.add(cal.g);
+  const cal = calendario(); cal.g.position.set(0.8, 1.95, ZW + 0.075); g.add(cal.g);
   // quadro e tapete
-  box(0.6, 0.45, 0.03, mk(0x2d3b4a, 0.6), 1.5, 1.6, ZW + 0.07);
+  box(0.6, 0.45, 0.03, mk(0x2d3b4a, 0.6), 1.75, 1.6, ZW + 0.07);
   const tap = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.9, 0.015, 24), mk(0x4a5a6e, 0.95)); tap.position.set(0.6, 0.01, 0.4); g.add(tap);
   const nv = estacao === "inverno" && neveN ? neve(S, { n: neveN, x: [JX - 3, JX + 3], y: [-0.2, 4], z: [-5, -1.8], seed: 17, tam: 0.035, vel: 0.35 }) : null;
   return { g, cal, neve: nv, lamp, vidro, ceu };
