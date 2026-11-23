@@ -1,0 +1,37 @@
+{
+  "slug": "humanos-hibernam",
+  "ref": "R10",
+  "duracao": 78.5,
+  "duracao_fixa": null,
+  "narracao": {
+    "arquivo": "assets/audio/narracao.mp3"
+  },
+  "cenas": [],
+  "hud": {
+    "inicio": 0.5,
+    "fim": 6,
+    "rotulo": "O CALOR VOLTA EM",
+    "linha2": "AR −273 °C",
+    "contador": {
+      "de": 5,
+      "ate": 0,
+      "fim": 5.5,
+      "unidade": "s",
+      "casas": 2
+    }
+  },
+  "legendas": {
+    "juntar": [],
+    "numeros": {},
+    "ocultar": []
+  },
+  "trilha": {
+    "arquivo": "assets/audio/trilha.mp3",
+    "volume": 0.12
+  },
+  "sfx": [],
+  "doc": {
+    "capitulos": [],
+    "hud": []
+  }
+}

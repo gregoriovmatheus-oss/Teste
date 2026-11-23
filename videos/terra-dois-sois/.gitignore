@@ -1,0 +1,13 @@
+.hyperframes/
+node_modules/
+renders/previa-quadros/
+renders/previa.mp4
+renders/*.tmp
+renders/work-*/
+renders/.*
+renders/previa.mp4
+renders/previa-quadros/
+renders/*.mp4
+renders/*.log
+renders/snap*/
+renders/previa-quadros/
