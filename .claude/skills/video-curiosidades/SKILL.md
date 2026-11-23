@@ -52,6 +52,12 @@ setsid nohup bash ../../.claude/skills/video-curiosidades/kit/scripts/fila-rende
 - **R11 (`assets/lib/blocks/lowpoly.js`):**
   - `palco(canvas, {foco, faixa, desfoque})` usa o renderizador compartilhado: um contexto WebGL só para o vídeo inteiro.
   - Personagens e cenário: `pessoa({seed, longo, barba, pele, cabelo, jaqueta, camisa, iris})` com `.emocao("calmo|medo|panico|triste|foco", [olharX, olharY])`; `corvo()`, `polvo()`, `molecula("N2"|"O2")`, `bokeh(S)`.
+  - **Animação (23/11):** a `pessoa` tem esqueleto (`quadril`, `coluna`, `pescoco`, `cab`, `bracos[i].om/cot/pulso/dedos`, `pernas[i].q/j/pe`). Em cada `render(t)`, chame `p.reset()`, depois `pose(p, "sentado|maoRosto|maosCabeca|apontar|susto|espreguicar|encolhido|pensativo|comemorar|deitado", k)` e/ou `andar(p, t)` (devolve a distância), depois `p.emocao(...)` e por último `vida(p, t, {seed})`, que faz a respiração, o balanço e as piscadas.
+    - Expressões: calmo, medo, panico, triste, foco, alegre, surpresa, grito, dor, sono, dormindo, raiva. `p.emocaoMix(a, b, k)` faz a transição entre duas.
+    - Outros: `olharPara(p, vec3, k)`, `punho(p, k)`.
+    - Multidão: `figurante({seed, roupa, pele})`, com o mesmo esqueleto e as mesmas animações e cerca de 10× menos triângulos. Não use mais o `humano` de `animals.js`.
+    - Bichos: `urso()` (`respira`, `dormir(k)`, `andar(t)`) e `lemure()` (`respira`, `enrolar(k, t)`, `cauda(t)`).
+    - Prévia: `videos/_previa-anima/folha-anima.jpg`.
   - Texto: `etiqueta(ctx, txt, pos3d, cam, alfa)` já fica dentro da área segura.
   - Foco: `foco` é a distância da câmera ao rosto, e o fundo desfoca sozinho.
 - **Delegar a montagem:** um agente por vídeo, no máximo 2 ao mesmo tempo (5 juntos estouraram o limite). O brief tem que dizer: sem render, sem commit, sem rodar `cenas.py`/`doc.py`, e devolver os capítulos e o HUD.

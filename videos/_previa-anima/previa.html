@@ -1,0 +1,73 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:Anton;src:url(assets/fonts/anton-latin-400-normal.woff2)}
+@font-face{font-family:Montserrat;font-weight:600;src:url(assets/fonts/montserrat-latin-600-normal.woff2)}
+html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#14100c}
+canvas{position:absolute;inset:0;width:1080px;height:1920px}
+.tag{position:absolute;left:0;right:0;top:1560px;text-align:center;font:400 92px Anton;color:#fff;text-transform:uppercase;-webkit-text-stroke:5px #000;paint-order:stroke fill}
+.tag small{display:block;font:600 40px Montserrat;color:#F5C518;-webkit-text-stroke:0;letter-spacing:.12em;margin-top:8px}
+</style></head><body>
+<canvas id="c"></canvas><div id="ui"></div>
+<script type="module">
+import * as THREE from "./assets/lib/three.module.js";
+import * as LP from "./assets/lib/blocks/lowpoly.js";
+const U = new URLSearchParams(location.search), c = U.get("c") || "rosto", arg = U.get("a") || "calmo", t = +(U.get("t") || 0);
+const close = c === "rosto";
+const P = LP.palco(null, { webgl: document.getElementById("c"), ...(close ? { foco: 1.3, faixa: 0.5, desfoque: 26 } : { foco: 3.4, faixa: 1.4, desfoque: 18 }) });
+const { S, cam } = P; S.background = new THREE.Color(0x141a24);
+LP.bokeh(S, { n: 50, seed: 3, y: [0.3, 4], z: [-14, -5] });
+const chao = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), LP.mat(0x2a2622, 0.95)); chao.rotation.x = -Math.PI / 2; S.add(chao);
+let tag = "", sub = "";
+if (c === "rosto") {
+  const p = LP.pessoa({ seed: 4 }); S.add(p.root); p.reset();
+  p.emocao(arg); LP.vida(p, t, { seed: 4, piscar: false });
+  if (arg === "dor") p.cab.rotation.z += 0.12;
+  if (arg === "grito") p.cab.rotation.x -= 0.12;
+  cam.position.set(0.22, 1.67, 1.05); cam.lookAt(0.0, 1.62, 0);
+  tag = arg; sub = "expressão";
+} else if (c === "andar") {
+  const p = LP.pessoa({ seed: 6, jaqueta: 0x2f6f8f }); S.add(p.root); p.reset();
+  const z = LP.andar(p, t); LP.vida(p, t, { seed: 6, balanco: 0.3 }); p.emocao("foco");
+  p.root.position.z = z; p.root.rotation.y = 0;
+  cam.position.set(2.6, 1.25, z + 1.6); cam.lookAt(0, 0.95, z + 0.1);
+  tag = "andar"; sub = "ciclo " + t.toFixed(2) + " s";
+} else if (c === "pose") {
+  const p = LP.pessoa({ seed: 8, jaqueta: 0x8a3b3b, longo: false }); S.add(p.root); p.reset();
+  if (arg === "sentado") { const b = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.45, 0.5), LP.mat(0x4a3a2c)); b.position.set(0, 0.225, -0.05); S.add(b); }
+  LP.pose(p, arg, 1); LP.vida(p, 1.3, { seed: 8, piscar: false });
+  const em = { maoRosto: "triste", maosCabeca: "panico", susto: "medo", espreguicar: "surpresa", sentado: "calmo", apontar: "foco", comemorar: "alegre", pensativo: "foco", encolhido: "triste" }[arg];
+  p.emocao(em || "calmo"); if (arg === "comemorar") LP.punho(p, 1);
+  p.root.rotation.y = -0.45;
+  cam.position.set(0.9, 1.25, 3.0); cam.lookAt(0, arg === "sentado" ? 0.75 : 1.0, 0);
+  tag = arg.replace(/([A-Z])/g, " $1"); sub = "pose";
+} else if (c === "multidao") {
+  const cores = [0x3d5a80, 0x7a3b3b, 0x4a6b4a, 0x6b5a7a, 0xb08a3a, 0x2c3442];
+  const peles = [0xb07c62, 0xd9a07e, 0x7a4e36, 0xe0b898, 0x9a6648];
+  const r = LP.mulberry32(5);
+  for (let i = 0; i < 26; i++) {
+    const f = LP.figurante({ seed: 10 + i, roupa: cores[i % 6], pele: peles[i % 5], longo: i % 3 === 0, cabelo: [0x2a1a10, 0x4a2c18, 0x1a1210, 0x6a4a2a][i % 4] });
+    S.add(f.root); f.reset();
+    const x = -3 + r() * 6, z0 = -6 + r() * 7, dir = r() < 0.5 ? 1 : -1;
+    const d = LP.andar(f, t + r() * 3, { vel: 0.85 + r() * 0.3 }); LP.vida(f, t, { seed: 10 + i, balanco: 0.3 });
+    f.root.rotation.y = dir > 0 ? 0 : Math.PI; f.root.position.set(x, 0, z0 + dir * ((d % 3) - 1.5));
+  }
+  const p = LP.pessoa({ seed: 4 }); S.add(p.root); p.reset(); p.emocao("medo", [0.3, 0.05]); LP.vida(p, t, { seed: 4 }); LP.pose(p, "encolhido", 0.5);
+  p.root.position.set(0.3, 0, 1.6); p.root.rotation.y = 0.3;
+  cam.position.set(0.9, 1.6, 4.4); cam.lookAt(0, 1.1, 0);
+  P.U.foco.value = 2.9; tag = "figurantes"; sub = "multidão andando";
+} else if (c === "urso") {
+  const u = LP.urso(); S.add(u.root); u.dormir(+arg); u.respira(0.5); u.root.rotation.y = 0.75;
+  cam.position.set(0.6, 1.3, 4.2); cam.lookAt(0.3, 0.55, 0); P.U.foco.value = 4.0; P.U.faixa.value = 2;
+  tag = "urso"; sub = +arg ? "hibernando" : "acordado";
+} else if (c === "lemure") {
+  const tr = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.16, 2.4, 7), LP.mat(0x4a3424)); tr.rotation.z = 0.35; tr.position.set(-0.1, 0.4, -0.2); S.add(tr);
+  const l = LP.lemure(); S.add(l.root); l.root.position.set(0, 0.0, 0); l.enrolar(+arg, t); l.cauda(t); l.respira(0.5); l.root.rotation.y = -0.4;
+  cam.position.set(0.5, 0.55, 1.15); cam.lookAt(0, 0.35, 0); P.U.foco.value = 1.2; P.U.faixa.value = 0.5;
+  tag = "lêmure"; sub = +arg ? "hibernando" : "acordado";
+}
+P.T = 1; P.D = 10; P.draw();
+document.getElementById("ui").innerHTML = `<div class="tag">${tag}<small>${sub}</small></div>`;
+window.PRONTO = true;
+</script>
+</body></html>
