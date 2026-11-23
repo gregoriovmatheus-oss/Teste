@@ -84,8 +84,8 @@ function olhoR11(r, cIris = COR.iris, cPele = COR.pele) {
   sup.add(new THREE.Mesh(new THREE.SphereGeometry(r * 1.07, 12, 6, 0, Math.PI * 2, 0, Math.PI / 2), mat(cPele)));
   const cil = new THREE.Mesh(new THREE.TorusGeometry(r * 1.07, r * 0.09, 3, 14, Math.PI), new THREE.MeshBasicMaterial({ color: 0x140a06 }));
   cil.rotation.x = Math.PI / 2; sup.add(cil);
-  const inf = new THREE.Mesh(new THREE.SphereGeometry(r * 1.05, 12, 4, 0, Math.PI * 2, Math.PI * 0.62, Math.PI * 0.38), mat(cPele)); g.add(inf);
-  return { g, globo, sup, olhar(ax, ay) { globo.rotation.set(-ay, ax, 0); }, abrir(k) { sup.rotation.x = k > 0.3 ? -0.25 - 1.15 * k : 0.4 + (-0.595 - 0.4) * (k / 0.3); globo.visible = k > 0.1; } };   // fechado: esconde a íris (o disco sairia pela pálpebra)
+  const inf = new THREE.Mesh(new THREE.SphereGeometry(r * 1.05, 12, 4, 0, Math.PI * 2, Math.PI * 0.62, Math.PI * 0.38), mat(cPele)); const infP = new THREE.Group(); g.add(infP); infP.add(inf);
+  return { g, globo, sup, olhar(ax, ay) { globo.rotation.set(-ay, ax, 0); }, baixo(k) { infP.rotation.x = -0.55 * k; }, abrir(k) { sup.rotation.x = k > 0.3 ? -0.25 - 1.15 * k : 0.4 + (-0.595 - 0.4) * (k / 0.3); globo.visible = k > 0.1; } };   // fechado: esconde a íris (o disco sairia pela pálpebra)
 }
 function cabecaR11({ seed, pele, cabelo, barba, iris = COR.iris }) {
   const H = new THREE.Group(), pm = mat(pele, 0.72);
@@ -96,6 +96,10 @@ function cabecaR11({ seed, pele, cabelo, barba, iris = COR.iris }) {
   const narina = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.02, 0.06), new THREE.MeshBasicMaterial({ color: 0x3a1a10 })); narina.position.set(0, -0.37, 0.76); H.add(narina);
   // orelhas
   for (const s of [1, -1]) { const o = new THREE.Mesh(facetado(1, (v) => { v.x *= 0.35; v.y *= 1.35; v.z *= 0.9; }, seed + 9 + s), pm); contorno(o, 0.04); o.scale.setScalar(0.24); o.position.set(s * 0.83, 0.0, -0.08); o.rotation.y = s * 0.25; H.add(o); }
+  // bochechas (sobem no sorriso e na dor) e rugas entre as sobrancelhas (raiva/dor)
+  const boch = [1, -1].map((s) => { const b = new THREE.Mesh(facetado(1, (v) => { v.z *= 0.5; }, seed + 40 + s, 0.12), pm); b.scale.set(0.2, 0.13, 0.12); b.position.set(s * 0.38, -0.2, 0.6); H.add(b); return b; });
+  const rugas = new THREE.Group(); rugas.position.set(0, 0.27, 0.79); H.add(rugas);
+  for (const s of [1, -1]) { const r = new THREE.Mesh(new THREE.BoxGeometry(0.018, 0.13, 0.01), new THREE.MeshBasicMaterial({ color: 0x4a2414 })); r.position.x = s * 0.05; r.rotation.z = s * 0.15; rugas.add(r); }
   // olhos
   const olhos = [1, -1].map((s) => { const o = olhoR11(0.15, iris, pele); o.g.position.set(s * 0.32, 0.1, 0.62); o.g.rotation.y = s * 0.16; H.add(o.g); return o; });
   // sobrancelhas grossas (2 prismas cada)
@@ -110,7 +114,7 @@ function cabecaR11({ seed, pele, cabelo, barba, iris = COR.iris }) {
   const lm = mat(0xb8705e, 0.5), labS = [], labI = [];
   for (const s of [1, -1]) {
     const ps = new THREE.Group(); boca.add(ps); const a = new THREE.Mesh(facetado(1, (v) => { v.x = (v.x + 1) * 0.5 * s; }, seed + 3 + s, 0.1), lm); a.scale.set(0.2, 0.042, 0.06); ps.add(a); labS.push(ps);
-    const pi = new THREE.Group(); boca.add(pi); const b = new THREE.Mesh(facetado(1, (v) => { v.x = (v.x + 1) * 0.5 * s; }, seed + 6 + s, 0.1), lm); b.scale.set(0.17, 0.05, 0.06); pi.add(b); labI.push(pi);
+    const pi = new THREE.Group(); boca.add(pi); const b = new THREE.Mesh(facetado(1, (v) => { v.x = (v.x + 1) * 0.5 * s; }, seed + 6 + s, 0.1), mat(0x9a5a4a, 0.5)); b.scale.set(0.16, 0.034, 0.05); pi.add(b); labI.push(pi);
   }
   const abre = new THREE.Mesh(new THREE.CircleGeometry(1, 10), new THREE.MeshBasicMaterial({ color: 0x1e0806 })); abre.position.z = 0.062; boca.add(abre);
   const lingua = new THREE.Mesh(new THREE.CircleGeometry(1, 8), new THREE.MeshBasicMaterial({ color: 0x7a2c2a })); lingua.position.z = 0.064; boca.add(lingua);
@@ -135,9 +139,13 @@ function cabecaR11({ seed, pele, cabelo, barba, iris = COR.iris }) {
     m.rotation.set(1.25 + pz * 0.25 + rr() * 0.25, Math.atan2(px, pz) * 0.2 + (rr() - 0.5) * 0.5, -px * 0.7 + (rr() - 0.5) * 0.4); H.add(m);
   }
   function rosto(e, olhar) {
-    somb.forEach((g, i) => { const s = i ? -1 : 1; g.rotation.z = s * e.br; g.position.y = e.by; });
-    // bo = [largura, abertura 0.3 (fechada) .. 5 (grito)], so = sorriso -1..1
-    const w = e.bo[0], ab = Math.max(0, e.bo[1] - 0.6), so = e.so || 0, h = 0.036 * ab;
+    somb.forEach((g, i) => { const s = i ? -1 : 1; g.rotation.z = s * e.br; g.position.y = e.by; g.position.x = s * (0.33 - 0.04 * Math.max(0, Math.abs(e.br) - 0.25)); });
+    // bo = [largura, abertura 0.3 (fechada) .. 5 (grito)], so = sorriso -1..1, fa = fala (abertura extra da boca, 0..1)
+    const w = e.bo[0], ab = Math.max(0, e.bo[1] - 0.6 + 2.6 * (e.fa || 0)), so = e.so || 0, h = 0.042 * ab;
+    const sobe = Math.max(0, so) * 0.9 + (e.ab < 0.3 && e.bo[1] > 1.5 ? 0.7 : 0);
+    boch.forEach((b) => { b.position.y = -0.22 + 0.08 * sobe; b.position.z = 0.5 + 0.1 * sobe; b.visible = sobe > 0.05; });
+    rugas.visible = Math.abs(e.br) > 0.38; rugas.scale.y = Math.min(1, (Math.abs(e.br) - 0.38) * 6);
+    olhos.forEach((o) => o.baixo(0.5 * sobe + 0.25 * Math.max(0, e.br - 0.3)));
     labS.forEach((p, i) => { const s = i ? -1 : 1; p.scale.x = w; p.rotation.z = s * so * 0.28; p.position.y = h * 0.25 + 0.012; });
     labI.forEach((p, i) => { const s = i ? -1 : 1; p.scale.x = w * (1 + 0.1 * ab); p.rotation.z = s * so * 0.32; p.position.y = -h * 1.38 - 0.02; });
     abre.visible = ab > 0.05; abre.scale.set(0.15 * w * (1 + 0.06 * ab), h * 0.68 + 0.004, 1); abre.position.y = -h * 0.66 + 0.01 * so;
@@ -183,12 +191,18 @@ function esqueleto(R, { pele, jaqueta, calca, tenis = COR.tenis, seed, simples }
     const cot = new THREE.Group(); cot.position.y = -0.32; om.add(cot);
     const inf = ct(new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.048, 0.3, seg), jm), 0.04); inf.position.y = -0.15; cot.add(inf);
     const pulso = new THREE.Group(); pulso.position.y = -0.3; cot.add(pulso);
-    const mao = ct(new THREE.Mesh(facetado(1, (v) => { v.y *= 1.3; v.z *= 0.6; }, seed + 50 + s, 0.15), pm), 0.05); mao.scale.set(0.05, 0.05, 0.045); mao.position.y = -0.04; pulso.add(mao);
+    const mao = ct(new THREE.Mesh(simples ? facetado(1, (v) => { v.y *= 1.3; v.z *= 0.6; }, seed + 50 + s, 0.15) : facetado(1, (v) => { v.y *= 1.15; v.z *= 0.5; if (v.y < 0) v.x *= 1.08; }, seed + 50 + s, 0.1), pm), 0.05);
+    mao.scale.set(simples ? 0.05 : 0.048, simples ? 0.05 : 0.052, simples ? 0.045 : 0.05); mao.position.y = -0.045; pulso.add(mao);
     const dedos = [];
     if (!simples) {
-      for (let f = 0; f < 4; f++) { const g = new THREE.Group(); g.position.set((f - 1.5) * 0.02, -0.075, 0.01); pulso.add(g);
-        const d = contorno(new THREE.Mesh(new THREE.BoxGeometry(0.018, 0.07, 0.02), pm), 0.12); d.position.y = -0.03; g.add(d); g.rotation.x = 0.25; dedos.push(g); }
-      const pol = contorno(new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.055, 0.02), pm), 0.12); pol.position.set(-s * 0.035, -0.04, 0.025); pol.rotation.z = s * 0.6; pulso.add(pol);
+      const fal = (w, h) => { const g = new THREE.BoxGeometry(w, h, w * 1.05); g.translate(0, -h / 2, 0); return g; };
+      for (let f = 0; f < 4; f++) { const L = [0.036, 0.042, 0.04, 0.032][f];
+        const g = new THREE.Group(); g.position.set((f - 1.5) * 0.021 * s, -0.088, 0.004); g.rotation.z = (f - 1.5) * 0.06; pulso.add(g);
+        g.add(contorno(new THREE.Mesh(fal(0.017, L), pm), 0.1));
+        const g2 = new THREE.Group(); g2.position.y = -L; g.add(g2); g2.add(contorno(new THREE.Mesh(fal(0.015, L * 0.8), pm), 0.1));
+        g.userData.f2 = g2; g.rotation.x = 0.2; g2.rotation.x = 0.25; dedos.push(g); }
+      const p1 = new THREE.Group(); p1.position.set(-s * 0.04, -0.035, 0.018); p1.rotation.set(0.3, 0, s * 0.75); pulso.add(p1);
+      p1.add(contorno(new THREE.Mesh(fal(0.019, 0.034), pm), 0.1)); const p2 = new THREE.Group(); p2.position.y = -0.034; p2.rotation.z = s * -0.25; p1.add(p2); p2.add(contorno(new THREE.Mesh(fal(0.017, 0.028), pm), 0.1));
     }
     return { om, cot, pulso, mao, dedos, s };
   });
@@ -205,7 +219,7 @@ function esqueleto(R, { pele, jaqueta, calca, tenis = COR.tenis, seed, simples }
 }
 // pose de descanso de cada osso (reset() volta para ela)
 function guardaDescanso(p) {
-  const ossos = [p.root, p.quadril, p.coluna, p.pescoco, p.cab, ...p.bracos.flatMap((b) => [b.om, b.cot, b.pulso, ...b.dedos]), ...p.pernas.flatMap((l) => [l.q, l.j, l.pe])];
+  const ossos = [p.root, p.quadril, p.coluna, p.pescoco, p.cab, ...p.bracos.flatMap((b) => [b.om, b.cot, b.pulso, ...b.dedos, ...b.dedos.map((d) => d.userData.f2).filter(Boolean)]), ...p.pernas.flatMap((l) => [l.q, l.j, l.pe])];
   const base = ossos.map((o) => [o.position.clone(), o.rotation.clone()]);
   p.reset = () => { ossos.forEach((o, i) => { if (o === p.root) return; o.position.copy(base[i][0]); o.rotation.copy(base[i][1]); }); p.respira(0); p.piscar(0); };
 }
@@ -220,12 +234,12 @@ export function pessoa({ longo = false, seed = 1, pele = COR.pele, cabelo = COR.
     for (const s of [1, -1]) { const m = contorno(new THREE.Mesh(facetado(1, (v) => { v.y *= 2.6; v.x *= 0.6; }, seed + 85 + s, 0.2), lm), 0.03); m.scale.setScalar(0.06); m.position.set(s * 0.118, -0.03, 0.03); m.rotation.z = s * 0.08; mechas.add(m); } }
   // tronco: camisa + jaqueta aberta com gola (as abas da jaqueta balançam no andar)
   const pesc = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.065, 0.16, 7), mat(pele)); pesc.position.y = 1.47; tronco.add(pesc);
-  const tor = contorno(new THREE.Mesh(facetado(2, (v) => { v.y *= 1.5; v.x *= 1.05; v.z *= 0.62; if (v.y > 0.6) { v.x *= 1 - (v.y - 0.6) * 0.5; } }, seed + 20, 0.08), mat(camisa)), 0.02);
+  const tor = contorno(new THREE.Mesh(facetado(2, (v) => { v.y *= 1.5; v.x *= 1.05; v.z *= 0.62; if (v.y > 0.6) { v.x *= 1 - (v.y - 0.6) * 0.5; } if (v.y < -0.2) { const k = Math.min(1, (-v.y - 0.2) / 1.1); v.x *= 1 - 0.2 * k; v.z *= 1 - 0.22 * k; } }, seed + 20, 0.08), mat(camisa)), 0.02);
   tor.scale.set(0.2, 0.235, 0.196); tor.position.set(0, 1.15, -0.004); tronco.add(tor);
   const jm = mat(jaqueta, 0.7), abas = [];
   for (const s of [1, -1]) {
     const piv = new THREE.Group(); piv.position.set(s * 0.035, 1.38, -0.005); tronco.add(piv);
-    const lado = contorno(new THREE.Mesh(facetado(2, (v) => { v.y *= 1.5; v.z *= 0.62; if (v.x * s < -0.25) v.x = -0.25 * s; if (v.y > 0.8) v.y = 0.8 + (v.y - 0.8) * 0.5 - 0.12 * Math.abs(v.x); }, seed + 30 + s, 0.09), jm), 0.02);
+    const lado = contorno(new THREE.Mesh(facetado(2, (v) => { v.y *= 1.5; v.z *= 0.62; if (v.x * s < -0.25) v.x = -0.25 * s; if (v.y > 0.8) v.y = 0.8 + (v.y - 0.8) * 0.5 - 0.12 * Math.abs(v.x); if (v.y < -0.2) { const k = Math.min(1, (-v.y - 0.2) / 1.1); v.x *= 1 - 0.16 * k; v.z *= 1 - 0.2 * k; } }, seed + 30 + s, 0.09), jm), 0.02);
     lado.scale.set(0.215, 0.255, 0.2); lado.position.y = -0.24; piv.add(lado); abas.push(piv);
     const gola = contorno(new THREE.Mesh(new THREE.ConeGeometry(0.07, 0.17, 4), jm), 0.04);
     gola.position.set(s * 0.085, 1.42, 0.08); gola.rotation.set(0.5, 0, s * 0.45); tronco.add(gola);
@@ -242,6 +256,7 @@ export function pessoa({ longo = false, seed = 1, pele = COR.pele, cabelo = COR.
   p.emocaoMix = (a, b, k, olhar = null) => { const A = typeof a === "object" ? { ...EM.calmo, ...a } : EM[a], B = typeof b === "object" ? { ...EM.calmo, ...b } : EM[b], L = (x, y) => x + (y - x) * k;
     p.emocao({ br: L(A.br, B.br), by: L(A.by, B.by), bo: [L(A.bo[0], B.bo[0]), L(A.bo[1], B.bo[1])], ab: L(A.ab, B.ab), ol: [L(A.ol[0], B.ol[0]), L(A.ol[1], B.ol[1])], so: L(A.so || 0, B.so || 0) }, olhar); };
   p.piscar = (b) => { C.rosto({ ...atual, _pisc: b }, olharAtual); };
+  p.estado = () => atual; p.olharAtual = () => olharAtual;
   p.respira = (k) => { tor.scale.z = 0.196 * (1 + 0.05 * k); tor.scale.x = 0.2 * (1 + 0.015 * k); abas.forEach((a, i) => (a.rotation.z = (i ? 1 : -1) * 0.02 * k)); };
   guardaDescanso(p); p.emocao("calmo");
   return p;
@@ -266,7 +281,7 @@ export function figurante({ seed = 1, pele = COR.pele, cabelo = COR.cabelo, roup
   R.scale.setScalar(0.94 + rr() * 0.14);
   const p = { root: R, ...E, abas: [], mechas: null, peito: tor };
   p.emocao = (nome) => { const e = typeof nome === "object" ? nome : EM[nome] || EM.calmo; olhos.forEach((o) => (o.scale.y = 0.2 + 1.3 * Math.min(1, e.ab / 0.62))); };
-  p.emocaoMix = (a, b, k) => p.emocao(k < 0.5 ? a : b);
+  p.emocaoMix = (a, b, k) => p.emocao(k < 0.5 ? a : b); p.estado = () => EM.calmo; p.olharAtual = () => null;
   p.piscar = (b) => olhos.forEach((o) => (o.scale.y = Math.max(0.15, 1.3 * (1 - b))));
   p.respira = (k) => { tor.scale.z = 0.2 * (1 + 0.05 * k); };
   guardaDescanso(p);
@@ -343,7 +358,7 @@ export function pose(p, nome, k = 1, { lado } = {}) {
   if (P.pernas) p.pernas.forEach((l) => { for (const n of ["q", "j", "pe"]) if (P.pernas[n]) _mix(l[n], P.pernas[n], k); });
 }
 // mão fechada (k=1) ou aberta (0)
-export function punho(p, k = 1, lado = "ambos") { p.bracos.forEach((b, i) => { if (lado !== "ambos" && lado !== i) return; b.dedos.forEach((d) => (d.rotation.x = L_(d.rotation.x, 1.9, k))); }); }
+export function punho(p, k = 1, lado = "ambos") { p.bracos.forEach((b, i) => { if (lado !== "ambos" && lado !== i) return; b.dedos.forEach((d) => { d.rotation.x = L_(d.rotation.x, 1.5, k); if (d.userData.f2) d.userData.f2.rotation.x = L_(d.userData.f2.rotation.x, 1.7, k); }); }); }
 // virar cabeça (e um pouco o tronco) para um ponto do mundo
 const _a = new THREE.Vector3(), _b = new THREE.Vector3(), _q = new THREE.Quaternion();
 export function olharPara(p, alvo, k = 1) {
@@ -551,4 +566,42 @@ export function lemure({ seed = 11, cor = 0x8d8a86, ventre = 0xd8d0c4, cauda = t
       corpo.rotation.x = 0.7 * e; cab.position.set(0, 0.55 - 0.3 * e, 0.03 + 0.12 * e); cab.rotation.x = 0.9 * e; olhos.forEach((q) => q.abrir(0.95 * (1 - e)));
       elos.forEach((g, j) => (g.rotation.x = j ? 0.09 + 0.32 * e + 0.03 * Math.sin(t * 0.8 + j * 0.5) * (1 - e) : 2.6 - 1.2 * e)); },
     cauda(t) { elos.forEach((g, j) => { if (j) g.rotation.z = 0.05 * Math.sin(t * 1.4 - j * 0.45); }); } };
+}
+
+// ===== alcançar: IK de 2 ossos. Leva a mão (lado 0 ou 1) até um ponto do mundo, cotovelo apontando para fora/baixo.
+// Use depois de pose/andar e antes de vida. Ex.: mão no rosto = alcancar(p, 0, rostoMundo, 1); segurar xícara, tocar a parede, coçar a cabeça.
+const _t = new THREE.Vector3(), _o = new THREE.Vector3(), _w = new THREE.Vector3(), _e = new THREE.Vector3(), _pl = new THREE.Vector3(), _qq = new THREE.Quaternion(), _qp = new THREE.Quaternion(), _m4 = new THREE.Matrix4();
+export function alcancar(p, lado, alvo, k = 1, { polo = null, maoGira = 0 } = {}) {
+  if (k <= 0) return; k = sm(Math.min(1, k));
+  const b = p.bracos[lado], om = b.om, L1 = 0.32, L2 = 0.345;
+  p.root.updateMatrixWorld(true);
+  // alvo no espaço do pai do ombro
+  _m4.copy(om.parent.matrixWorld).invert(); _t.copy(alvo).applyMatrix4(_m4).sub(om.position);
+  const d = Math.min(_t.length(), (L1 + L2) * 0.995), dn = _t.clone().normalize();
+  const cE = (L1 * L1 + L2 * L2 - d * d) / (2 * L1 * L2), dobra = Math.PI - Math.acos(Math.max(-1, Math.min(1, cE)));
+  // pulso no espaço do ombro com essa dobra
+  _w.set(0, -L1 - L2 * Math.cos(dobra), L2 * Math.sin(dobra));
+  _qq.setFromUnitVectors(_w.clone().normalize(), dn);
+  // gira em volta do eixo ombro→alvo para o cotovelo ficar do lado do polo
+  _e.set(0, -L1, 0).applyQuaternion(_qq);
+  _pl.copy(polo || new THREE.Vector3(b.s * 0.55, -1, -0.25)).normalize();
+  const proj = (v) => v.clone().sub(dn.clone().multiplyScalar(v.dot(dn))).normalize();
+  const a = proj(_e), c = proj(_pl); let ang = Math.acos(Math.max(-1, Math.min(1, a.dot(c)))); if (a.clone().cross(c).dot(dn) < 0) ang = -ang;
+  _qp.setFromAxisAngle(dn, ang); _qq.premultiply(_qp);
+  const q0 = om.quaternion.clone(); om.quaternion.copy(q0.slerp(_qq, k));
+  b.cot.rotation.set(L_(b.cot.rotation.x, -dobra, k), b.cot.rotation.y * (1 - k), b.cot.rotation.z * (1 - k));
+  b.pulso.rotation.set(L_(b.pulso.rotation.x, 0.25, k), L_(b.pulso.rotation.y, maoGira, k), b.pulso.rotation.z * (1 - k));
+}
+// ponto do rosto/cabeça no mundo (para alcancar/olharPara): onde = "boca" | "bochecha" | "testa" | "topo" | "nuca"
+export function pontoCabeca(p, onde = "bochecha", lado = 0) {
+  const s = p.bracos[lado].s, P = { boca: [0, -0.08, 0.13], bochecha: [s * 0.095, -0.075, 0.075], testa: [0, 0.07, 0.13], topo: [s * 0.05, 0.16, 0.0], nuca: [s * 0.04, 0.02, -0.13] }[onde];
+  p.root.updateMatrixWorld(true); return p.cab.localToWorld(new THREE.Vector3(...P));
+}
+// fala procedural: a boca abre e fecha em sílabas (~5/s) com pausas; some à expressão atual. Use em cenas de diálogo.
+export function falar(p, t, { seed = 1, intens = 1 } = {}) {
+  const r = mulberry32(seed * 53 + 2); const ph = t * 5.2 * 2 * Math.PI;
+  const env = 0.6 + 0.4 * Math.sin(t * 1.7 + r() * 6) ; const pausa = Math.sin(t * 0.9 + r() * 6) > 0.85 ? 0 : 1;
+  const fa = Math.max(0, Math.sin(ph) * 0.7 + Math.sin(ph * 1.63 + 1.1) * 0.3) * env * pausa * intens;
+  p.emocao({ ...p.estado(), fa }, p.olharAtual());
+  p.cab.rotation.x += 0.02 * fa; p.cab.rotation.y += 0.015 * Math.sin(t * 2.3);
 }

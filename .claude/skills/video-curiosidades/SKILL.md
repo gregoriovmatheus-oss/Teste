@@ -54,7 +54,10 @@ setsid nohup bash ../../.claude/skills/video-curiosidades/kit/scripts/fila-rende
   - Personagens e cenário: `pessoa({seed, longo, barba, pele, cabelo, jaqueta, camisa, iris})` com `.emocao("calmo|medo|panico|triste|foco", [olharX, olharY])`; `corvo()`, `polvo()`, `molecula("N2"|"O2")`, `bokeh(S)`.
   - **Animação (23/11):** a `pessoa` tem esqueleto (`quadril`, `coluna`, `pescoco`, `cab`, `bracos[i].om/cot/pulso/dedos`, `pernas[i].q/j/pe`). Em cada `render(t)`, chame `p.reset()`, depois `pose(p, "sentado|maoRosto|maosCabeca|apontar|susto|espreguicar|encolhido|pensativo|comemorar|deitado", k)` e/ou `andar(p, t)` (devolve a distância), depois `p.emocao(...)` e por último `vida(p, t, {seed})`, que faz a respiração, o balanço e as piscadas.
     - Expressões: calmo, medo, panico, triste, foco, alegre, surpresa, grito, dor, sono, dormindo, raiva. `p.emocaoMix(a, b, k)` faz a transição entre duas.
-    - Outros: `olharPara(p, vec3, k)`, `punho(p, k)`.
+    - Mão num ponto exato: `alcancar(p, lado, vec3, k, {polo, maoGira})` (IK de 2 ossos) + `pontoCabeca(p, "boca|bochecha|testa|topo|nuca", lado)`. Use para mão no rosto, mãos na cabeça, segurar objeto e tocar algo. Para as mãos na cabeça, passe `polo: (s, 0.3, -0.2)`, que leva o cotovelo para fora.
+    - Diálogo: `falar(p, t, {seed})`, chamado depois de `emocao`. As bochechas sobem no sorriso e na dor, e as rugas aparecem na raiva e na dor.
+    - Outros: `olharPara(p, vec3, k)`, `punho(p, k)`, que fecha as 2 falanges.
+    - Prévia: `videos/_previa-anima/folha-anima-v2.jpg`.
     - Multidão: `figurante({seed, roupa, pele})`, com o mesmo esqueleto e as mesmas animações e cerca de 10× menos triângulos. Não use mais o `humano` de `animals.js`.
     - Bichos: `urso()` (`respira`, `dormir(k)`, `andar(t)`) e `lemure()` (`respira`, `enrolar(k, t)`, `cauda(t)`).
     - Prévia: `videos/_previa-anima/folha-anima.jpg`.
