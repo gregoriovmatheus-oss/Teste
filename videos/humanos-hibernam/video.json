@@ -1,12 +1,91 @@
 {
   "slug": "humanos-hibernam",
   "ref": "R10",
-  "duracao": 78.5,
+  "duracao": 73.91,
   "duracao_fixa": null,
   "narracao": {
     "arquivo": "assets/audio/narracao.mp3"
   },
-  "cenas": [],
+  "cenas": [
+    {
+      "id": "f01",
+      "palavra": "Dezembro chega.",
+      "inicio": 0,
+      "fim": 5.96
+    },
+    {
+      "id": "f02",
+      "palavra": "Os ursos",
+      "inicio": 5.96,
+      "fim": 12.61
+    },
+    {
+      "id": "f03",
+      "palavra": "E existe",
+      "inicio": 12.61,
+      "fim": 18.32
+    },
+    {
+      "id": "f04",
+      "palavra": "Hibernando, o",
+      "inicio": 18.32,
+      "fim": 23.95
+    },
+    {
+      "id": "f05",
+      "palavra": "Não precisaria",
+      "inicio": 23.95,
+      "fim": 29.03
+    },
+    {
+      "id": "f06",
+      "palavra": "Nas marmotas,",
+      "inicio": 29.03,
+      "fim": 34.87
+    },
+    {
+      "id": "f07",
+      "palavra": "Na medicina,",
+      "inicio": 34.87,
+      "fim": 40.53
+    },
+    {
+      "id": "f08",
+      "palavra": "No espaço",
+      "inicio": 40.53,
+      "fim": 48.77
+    },
+    {
+      "id": "f09",
+      "palavra": "A nave",
+      "inicio": 48.77,
+      "fim": 52.8
+    },
+    {
+      "id": "f10",
+      "palavra": "E a",
+      "inicio": 52.8,
+      "fim": 58.61
+    },
+    {
+      "id": "f11",
+      "palavra": "Quem ficasse",
+      "inicio": 58.61,
+      "fim": 62.18
+    },
+    {
+      "id": "f12",
+      "palavra": "Acordar seria",
+      "inicio": 62.18,
+      "fim": 67.61
+    },
+    {
+      "id": "f13",
+      "palavra": "Talvez a",
+      "inicio": 67.61,
+      "fim": 73.91
+    }
+  ],
   "hud": {
     "inicio": 0.5,
     "fim": 6,

@@ -1,12 +1,91 @@
 {
   "slug": "sem-dor",
   "ref": "R10",
-  "duracao": 78.5,
+  "duracao": 70.77,
   "duracao_fixa": null,
   "narracao": {
     "arquivo": "assets/audio/narracao.mp3"
   },
-  "cenas": [],
+  "cenas": [
+    {
+      "id": "f01",
+      "palavra": "Você corta",
+      "inicio": 0,
+      "fim": 6.0
+    },
+    {
+      "id": "f02",
+      "palavra": "Parece superpoder.",
+      "inicio": 6.0,
+      "fim": 11.97
+    },
+    {
+      "id": "f03",
+      "palavra": "Espalhados pelo",
+      "inicio": 11.97,
+      "fim": 19.26
+    },
+    {
+      "id": "f04",
+      "palavra": "Quando você",
+      "inicio": 19.26,
+      "fim": 24.94
+    },
+    {
+      "id": "f05",
+      "palavra": "Sem dor,",
+      "inicio": 24.94,
+      "fim": 29.78
+    },
+    {
+      "id": "f06",
+      "palavra": "Crianças com",
+      "inicio": 29.78,
+      "fim": 35.81
+    },
+    {
+      "id": "f07",
+      "palavra": "As juntas",
+      "inicio": 35.81,
+      "fim": 39.48
+    },
+    {
+      "id": "f08",
+      "palavra": "E as",
+      "inicio": 39.48,
+      "fim": 45.3
+    },
+    {
+      "id": "f09",
+      "palavra": "Na forma",
+      "inicio": 45.3,
+      "fim": 48.81
+    },
+    {
+      "id": "f10",
+      "palavra": "Você viveria",
+      "inicio": 48.81,
+      "fim": 54.07
+    },
+    {
+      "id": "f11",
+      "palavra": "Por isso",
+      "inicio": 54.07,
+      "fim": 60.64
+    },
+    {
+      "id": "f12",
+      "palavra": "Porque a",
+      "inicio": 60.64,
+      "fim": 64.1
+    },
+    {
+      "id": "f13",
+      "palavra": "Da próxima",
+      "inicio": 64.1,
+      "fim": 70.77
+    }
+  ],
   "hud": {
     "inicio": 0.5,
     "fim": 6,

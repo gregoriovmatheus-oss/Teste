@@ -1,12 +1,91 @@
 {
   "slug": "terra-dois-sois",
   "ref": "R10",
-  "duracao": 78.5,
+  "duracao": 77.06,
   "duracao_fixa": null,
   "narracao": {
     "arquivo": "assets/audio/narracao.mp3"
   },
-  "cenas": [],
+  "cenas": [
+    {
+      "id": "f01",
+      "palavra": "Você acorda,",
+      "inicio": 0,
+      "fim": 5.84
+    },
+    {
+      "id": "f02",
+      "palavra": "Parece ficção,",
+      "inicio": 5.84,
+      "fim": 12.05
+    },
+    {
+      "id": "f03",
+      "palavra": "E quase",
+      "inicio": 12.05,
+      "fim": 17.72
+    },
+    {
+      "id": "f04",
+      "palavra": "Se o",
+      "inicio": 17.72,
+      "fim": 24.11
+    },
+    {
+      "id": "f05",
+      "palavra": "Então imagine",
+      "inicio": 24.11,
+      "fim": 29.06
+    },
+    {
+      "id": "f06",
+      "palavra": "Quando os",
+      "inicio": 29.06,
+      "fim": 35.22
+    },
+    {
+      "id": "f07",
+      "palavra": "Seu corpo",
+      "inicio": 35.22,
+      "fim": 41.91
+    },
+    {
+      "id": "f08",
+      "palavra": "Cada objeto",
+      "inicio": 41.91,
+      "fim": 47.98
+    },
+    {
+      "id": "f09",
+      "palavra": "O clima",
+      "inicio": 47.98,
+      "fim": 54.22
+    },
+    {
+      "id": "f10",
+      "palavra": "As plantas",
+      "inicio": 54.22,
+      "fim": 60.69
+    },
+    {
+      "id": "f11",
+      "palavra": "Todo quarto",
+      "inicio": 60.69,
+      "fim": 66.14
+    },
+    {
+      "id": "f12",
+      "palavra": "Os primeiros",
+      "inicio": 66.14,
+      "fim": 71.22
+    },
+    {
+      "id": "f13",
+      "palavra": "E você",
+      "inicio": 71.22,
+      "fim": 77.06
+    }
+  ],
   "hud": {
     "inicio": 0.5,
     "fim": 6,
