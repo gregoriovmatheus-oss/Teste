@@ -110,7 +110,92 @@
   },
   "sfx": [],
   "doc": {
-    "capitulos": [],
-    "hud": []
+    "capitulos": [
+      [
+        0,
+        "O INVERNO"
+      ],
+      [
+        5.96,
+        "QUEM HIBERNA"
+      ],
+      [
+        18.32,
+        "O CORPO EM PAUSA"
+      ],
+      [
+        34.87,
+        "A PAUSA NO MUNDO"
+      ],
+      [
+        62.18,
+        "O DESPERTAR"
+      ]
+    ],
+    "hud": [
+      {
+        "rotulo": "CORAÇÃO DO URSO",
+        "unid": "bpm",
+        "fmt": "int",
+        "keys": [
+          [
+            9.76,
+            50
+          ],
+          [
+            10.06,
+            50
+          ],
+          [
+            12.11,
+            10
+          ]
+        ],
+        "max": 50,
+        "alerta": [
+          [
+            10.06,
+            12.61
+          ]
+        ],
+        "de": 9.76
+      },
+      {
+        "rotulo": "METABOLISMO",
+        "unid": "%",
+        "fmt": "int",
+        "keys": [
+          [
+            19.73,
+            100
+          ],
+          [
+            20.78,
+            25
+          ]
+        ],
+        "max": 100,
+        "alerta": [
+          [
+            20.4,
+            23.95
+          ]
+        ],
+        "de": 19.1
+      },
+      {
+        "rotulo": "VIAGEM A MARTE",
+        "unid": "meses",
+        "fmt": "int",
+        "keys": [
+          [
+            43.64,
+            7
+          ]
+        ],
+        "max": 7,
+        "de": 43.64
+      }
+    ]
   }
 }

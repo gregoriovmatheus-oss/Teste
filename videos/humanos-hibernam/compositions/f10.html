@@ -1,57 +1,89 @@
-<!-- Modelo de cena 3D (R01). cenas.py --criar copia para compositions/fNN.html trocando os marcadores de id e duração.
-     Padrão: script clássico registra buildReady na hora; import dinâmico do kit e dos blocos;
-     K.bindSeek(canvas, render) dá o tempo LOCAL da cena (sem gambiarra de data-start). -->
+<!-- f10: cena 3D padrão documentário (R10 + doc). Lógica em cenas/f10.js (gerado por scripts/monta-cenas.py).
+     Tempos escritos para 5.81 s e esticados para a duração real do host (data-duration). -->
 <template>
   <style>
-    #root { position: absolute; inset: 0; overflow: hidden; background: #0b1018; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0b0a12; }
     #f10-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
-    #f10-titulo { position: absolute; left: 160px; right: 200px; top: 660px; text-align: center; }
-    #f10-titulo-in { display: block; font-family: "EB Garamond", serif; font-size: 84px; line-height: 1.05; color: #fff;
-      text-shadow: 0 4px 26px rgba(4, 10, 20, 0.75), 0 1px 4px rgba(4, 10, 20, 0.6); }
-    #f10-titulo-in .ice { color: #8fcbf2; }
+    /* rótulos 2D: y 680-980, acima da faixa da legenda (1005-1235) */
+    .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .rot-t { display: block; font-family: "Anton", sans-serif; font-weight: 400; font-size: 92px; line-height: 1.05; color: #fff; text-transform: uppercase;
+      -webkit-text-stroke: 5px #000; paint-order: stroke fill; text-shadow: 0 6px 0 #000, 0 10px 24px rgba(0,0,0,0.6); opacity: 0; }
+    .rot-t .y { color: #F5C518; } .rot-t .r { color: #E8463A; } .rot-t .p { font-size: 70px; }
+    .rot-t .k { display: inline-block; font-size: 34px; letter-spacing: 0.12em; color: #F05A4A; -webkit-text-stroke: 0; text-shadow: 0 3px 0 #000; margin-bottom: 10px; }
+    .rot-t .n { color: #F5C518; }
+.rot-t { font-family: "Inter", sans-serif; font-weight: 300; font-size: 80px; line-height: 1.1; color: #fff; text-transform: none; letter-spacing: -0.01em; -webkit-text-stroke: 0; text-shadow: 0 2px 30px rgba(0,0,0,0.75), 0 1px 3px rgba(0,0,0,0.6); }
+    .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }
+    .rot-t .o { font-weight: 800; color: #ff8a4c; } .rot-t .p { font-size: 60px; }
+    .rot-t .k { display: inline-block; font-family: "JetBrains Mono", monospace; font-weight: 600; font-size: 26px; letter-spacing: 0.32em; color: #7cc8ff; margin-bottom: 18px; text-shadow: 0 2px 12px rgba(0,0,0,0.8); }
+    .rot-t .n { font-family: "JetBrains Mono", monospace; font-weight: 600; color: #7cc8ff; }
+
   </style>
   <div id="root" data-composition-id="f10" data-width="1080" data-height="1920">
     <canvas id="f10-canvas" width="1080" height="1920"></canvas>
-    <div id="f10-titulo" class="clip" data-start="0.3" data-duration="2.2">
-      <span id="f10-titulo-in">Texto da <span class="ice">cena</span></span>
-    </div>
+    <div id="f10-r1" class="rot" style="top: 700px"><span id="f10-r1-in" class="rot-t"><span class="k">A SOCIEDADE</span><br>Tudo <span class="y">em pausa</span></span></div>
+    <div id="f10-r2" class="rot" style="top: 700px"><span id="f10-r2-in" class="rot-t">Pausa de <span class="y">3 meses</span></span></div>
   </div>
   <script>
     (function () {
-      /* 2D por cima (GSAP). Título entre y 640 e 1000: o HUD ocupa 290-620 e a legenda 1045-1195. */
+      const D0 = 5.81;
+      // duração real = data-duration do host da cena (muda quando a narração muda)
+      const durReal = () => {
+        for (let n = document.getElementById("f10-canvas"); n; n = n.parentElement) {
+          if (n.getAttribute && n.getAttribute("data-composition-id") === "f10" && n.hasAttribute("data-duration")) return parseFloat(n.getAttribute("data-duration")) || D0;
+        }
+        return D0;
+      };
+      const DR = durReal(), K = DR / D0;
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f10-titulo-in", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 0.3);
-      tl.to("#f10-titulo-in", { opacity: 0, duration: 0.2, ease: "power2.in" }, 2.3);
-      tl.set({}, {}, 5.81);
+      tl.fromTo("#f10-r1-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 0.42 * K);
+      tl.to("#f10-r1-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 1.45 * K);
+      tl.fromTo("#f10-r2-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 4.84 * K);
+      tl.set({}, {}, DR);
       window.__timelines = window.__timelines || {};
       window.__timelines["f10"] = tl;
 
-      /* 3D */
       window.__hf = window.__hf || {};
       window.__hf.buildReady = window.__hf.buildReady || {};
       window.__hf.buildReady["f10"] = Promise.all([
-        import("./assets/lib/kit.js"),
-        import("./assets/lib/blocks/city.js"),
-        // import("./assets/lib/blocks/globe.js"), import("./assets/lib/blocks/particles.js"),
-        // import("./assets/lib/blocks/shockwave.js"), import("./assets/lib/blocks/counter.js"),
-      ]).then(async ([K, { createCity }]) => {
-        const { THREE, ease, range, lerp, clamp } = K;
+        import("./assets/lib/kit.js"), import("./assets/lib/blocks/toy.js"), import("./assets/lib/blocks/animals.js"), import("./assets/lib/blocks/hiber.js")
+      ]).then(async ([K_, T, A, HIBER]) => {
+        const K = K_;
+        const { THREE, ease, range, lerp, clamp, smoothstep, mulberry32 } = K;
+        const D = D0;   // o corpo trabalha no tempo de autoria
         const canvas = document.getElementById("f10-canvas");
-        const renderer = K.createRenderer(canvas);
-        const scene = new THREE.Scene();
-        const cam = new THREE.PerspectiveCamera(35, K.W / K.H, 1, 2000);
-        const city = createCity(scene, { seed: 7, geada: [5.81 * 0.6, 5.81 * 0.6 + 0.35], paraEm: 5.81 * 0.6 });
 
-        function render(t) {               // t = segundos locais da cena
-          const p = ease.outCubic(clamp(t / 5.81));
-          const h = lerp(300, 175, p), ang = lerp(-0.35, 0.05, p);
-          cam.position.set(Math.sin(ang) * 18, h, Math.cos(ang) * 18 + 10);
-          cam.up.set(Math.sin(ang), 0, -Math.cos(ang));
-          cam.lookAt(0, 0, 0);
-          city.update(t);
-          renderer.render(scene, cam);
+        await HIBER.prepara();
+        const st = T.createToyStage(canvas, { fov: 38, ceu: ["#0a1222", "#4a5e7e"], nevoa: [20, 90], corNevoa: "#26344a", nuvens: 0, exposicao: 0.8 });
+        const S = st.scene, cam = st.cam;
+        st.key.color.set(0xbcd2f0); st.key.intensity = 1.5; st.hemi.intensity = 0.4; st.rim.color.set(0x7cc8ff); st.rim.intensity = 0.6;
+        const r = T.rua({ len: 70, larg: 10, calc: 3, seed: 6, arvores: false, hMin: 8, hMax: 20, chao: 0xdfe8f2 }); S.add(r.group);
+        r.buildings.forEach((b) => (b.userData.win.emissiveIntensity = 0));
+        const neveRua = new THREE.Mesh(new THREE.PlaneGeometry(16, 70), T.M(0xe8eef6, 0.85)); neveRua.rotation.x = -Math.PI / 2; neveRua.position.y = 0.42; S.add(neveRua);
+        // placa da escola na calçada
+        const pl = new THREE.Group(); pl.position.set(3.2, 0.4, -4); pl.rotation.y = -0.35; S.add(pl);
+        for (const s of [-1, 1]) { const p = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 2.4, 8), T.M(0x2a2c30, 0.4, { metalness: 0.7 })); p.position.set(s * 1.1, 1.2, 0); pl.add(p); }
+        const placa = HIBER.placa("ESCOLA FECHADA\nVOLTAMOS EM MARÇO", { w: 2.6, h: 1.2, tam: 70 }); placa.position.y = 2.2; pl.add(placa);
+        const nv = HIBER.neve(S, { n: 1600, x: [-8, 10], y: [0, 10], z: [-24, 14], seed: 61, tam: 0.07, vel: 0.7 });
+        const ITENS = [["ESCOLAS", 1.85], ["EMPREGOS", 2.36], ["CONTAS", 3.08]];
+        function render(t) {
+          nv.update(t, 0.1);
+          // grua descendo pela rua até a placa
+          const e = ease.inOutSine(range(t, 0, 5.81));
+          cam.position.set(lerp(-1.5, 2.0, e), lerp(9, 2.5, e), lerp(16, 3.0, e));
+          cam.lookAt(lerp(0.5, 3.6, e), lerp(-1.5, 1.3, e), -4);
+          st.bloom = 0.45; st.sol(0, -4, 20);
+          st.draw();
+          const c = st.ctx, vv = HIBER.vis(st), sai = 1 - range(t, 4.4, 4.75);
+          ITENS.forEach(([s, t0], i) => {
+            const a = vv * range(t, t0, t0 + 0.25) * sai, y = 730 + i * 82; if (a <= 0) return;
+            HIBER.painel(c, 230, y - 32, 480, 64, a);
+            HIBER.txt(c, s, 260, y, { tam: 30, al: "left", a, esp: 0.15 });
+            HIBER.txt(c, "PAUSADO", 680, y, { tam: 24, cor: HIBER.LARANJA, al: "right", a: a * range(t, 3.53, 3.9), esp: 0.2 });
+          });
         }
-        await K.bindSeek(canvas, render, { warm: [{ renderer, scene, camera: cam }], duration: 5.81 });
+
+        // DR foi lido na hora em que o script rodou (depois do inline o host pode mudar de atributos)
+        await K.bindSeek(canvas, (t) => { st.T = t * D / DR; st.D = D; render(st.T); }, { warm: [st.warm, ...(st.extraWarm || [])], duration: DR });
       });
     })();
   </script>

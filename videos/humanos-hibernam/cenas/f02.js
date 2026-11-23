@@ -1,4 +1,4 @@
-/*META {"imports": ["hiber"], "rotulos": [{"de": 0.25, "ate": 2.25, "texto": "<span class=\"k\">URSO-NEGRO · INVERNO</span><br>Todo ano, <span class=\"y\">hibernando</span>"}], "D0": 6.65} */
+/*META {"imports": ["hiber"], "rotulos": [{"de": 0.25, "ate": 2.25, "texto": "<span class=\"k\">URSO-NEGRO · INVERNO</span><br>Todo ano, <span class=\"y\">hibernando</span>"}], "D0": 6.65, "css": ".rot-t { font-family: \"Inter\", sans-serif; font-weight: 300; font-size: 80px; line-height: 1.1; color: #fff; text-transform: none; letter-spacing: -0.01em; -webkit-text-stroke: 0; text-shadow: 0 2px 30px rgba(0,0,0,0.75), 0 1px 3px rgba(0,0,0,0.6); }\n    .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }\n    .rot-t .o { font-weight: 800; color: #ff8a4c; } .rot-t .p { font-size: 60px; }\n    .rot-t .k { display: inline-block; font-family: \"JetBrains Mono\", monospace; font-weight: 600; font-size: 26px; letter-spacing: 0.32em; color: #7cc8ff; margin-bottom: 18px; text-shadow: 0 2px 12px rgba(0,0,0,0.8); }\n    .rot-t .n { font-family: \"JetBrains Mono\", monospace; font-weight: 600; color: #7cc8ff; }\n"} */
         await HIBER.prepara();
         const st = T.createToyStage(canvas, { fov: 38, ceu: ["#070b16", "#1d2a40"], nevoa: [8, 40], corNevoa: "#141e30", nuvens: 0, exposicao: 1.0 });
         const S = st.scene, cam = st.cam;
@@ -9,9 +9,9 @@
         toca.scale.set(1.15, 0.85, 1); S.add(toca);
         const capa = new THREE.Mesh(new THREE.SphereGeometry(2.38, 40, 12, Math.PI / 2 + 0.95, Math.PI * 2 - 1.9, 0, Math.PI / 3.2), T.M(0xeef3f8, 0.8)); capa.scale.set(1.15, 0.87, 1); S.add(capa);
         const R = mulberry32(21);
-        for (let i = 0; i < 9; i++) { const pd = new THREE.Mesh(new THREE.DodecahedronGeometry(0.25 + R() * 0.35, 0), T.M(0x4a4440, 0.9)); const a = Math.PI / 2 + (R() - 0.5) * 1.5; pd.position.set(Math.cos(a) * 2.5 + (R() - 0.5), 0.1, Math.sin(a) * 2.4); S.add(pd); }
+        for (let i = 0; i < 9; i++) { const pd = new THREE.Mesh(new THREE.DodecahedronGeometry(0.25 + R() * 0.35, 0), T.M(0x4a4440, 0.9)); const a = Math.PI / 2 + (i % 2 ? 1 : -1) * (1.0 + R() * 0.8); pd.position.set(Math.cos(a) * 2.5 + (R() - 0.5), 0.1, Math.sin(a) * 2.4); S.add(pd); }
         const u = HIBER.urso(T.M); u.g.rotation.y = -0.7; u.g.position.set(-0.1, 0, 0.1); S.add(u.g);
-        const dentro = new THREE.PointLight(0x9fb8e0, 2.5, 5, 1.5); dentro.position.set(0.8, 1.2, 1.6); S.add(dentro);
+        const dentro = new THREE.PointLight(0xbfd4f5, 9, 6, 1.2); dentro.position.set(0.9, 1.5, 2.0); S.add(dentro);
         for (let i = 0; i < 16; i++) { const p = HIBER.pinheiro(T.M, 1.4 + R() * 1.6, true); const a = R() * 6.283, d = 6 + R() * 16; p.position.set(Math.cos(a) * d, 0, -Math.abs(Math.sin(a)) * d - 2); S.add(p); }
         const nv = HIBER.neve(S, { n: 1400, x: [-8, 8], y: [0, 7], z: [-8, 9], seed: 22, tam: 0.06, vel: 0.5 });
         // batimentos: 50 bpm até "50" (3,8 s), depois cai até 10 em "10" (6,19 s)
@@ -23,8 +23,8 @@
           u.respira(t, 1.4, lerp(8, 3, range(t, 4, 6.2)));
           // dolly baixo na neve até a boca da toca
           const e = ease.inOutSine(range(t, 0, 6.65));
-          cam.position.set(lerp(2.6, 1.25, e), lerp(1.1, 0.85, e), lerp(8.5, 3.3, e));
-          cam.lookAt(lerp(0.2, 0.55, e), lerp(1.6, 1.1, e), 0);
+          cam.position.set(lerp(2.4, 1.0, e), lerp(2.2, 1.7, e), lerp(9.5, 4.6, e));
+          cam.lookAt(lerp(0.2, 0.4, e), lerp(-1.3, -1.4, e), 0);
           st.bloom = 0.5; st.sol(0, 0, 10);
           st.draw();
           // monitor cardíaco (aparece em "coração", 2,4 s)

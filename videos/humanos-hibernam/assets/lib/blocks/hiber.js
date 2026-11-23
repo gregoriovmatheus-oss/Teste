@@ -202,7 +202,7 @@ export function quarto(S, { mk = M, estacao = "inverno", neveN = 500 } = {}) {
   box(0.6, 0.45, 0.03, mk(0x2d3b4a, 0.6), 1.75, 1.6, ZW + 0.07);
   const tap = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.9, 0.015, 24), mk(0x4a5a6e, 0.95)); tap.position.set(0.6, 0.01, 0.4); g.add(tap);
   const nv = estacao === "inverno" && neveN ? neve(S, { n: neveN, x: [JX - 3, JX + 3], y: [-0.2, 4], z: [-5, -1.8], seed: 17, tam: 0.035, vel: 0.35 }) : null;
-  return { g, cal, neve: nv, lamp, vidro, ceu };
+  return { g, cal, neve: nv, lamp, vidro, ceu, cob, dobra, trav };
 }
 
 /* ---------- árvores ---------- */
@@ -244,7 +244,7 @@ function olhoFechado(g, p, s = 0.05, ry = 0) {
   o.position.set(...p); o.rotation.set(0, Math.PI / 2 + ry, Math.PI); g.add(o); return o;
 }
 export function urso(mk = M) {
-  const g = new THREE.Group(), pelo = mk(0x231b17, 0.95), pelo2 = mk(0x2e241e, 0.95), foc = mk(0x6a5040, 0.85), nariz = mk(0x0b0908, 0.3);
+  const g = new THREE.Group(), pelo = mk(0x3a2c23, 0.9), pelo2 = mk(0x46362b, 0.9), foc = mk(0x6a5040, 0.85), nariz = mk(0x0b0908, 0.3);
   const corpo = bolota(g, pelo, [1.05, 0.62, 0.72], [0, 0.6, 0]);
   bolota(g, pelo2, [0.62, 0.55, 0.6], [-0.65, 0.55, 0.05]);              // quadril
   const cab = new THREE.Group(); cab.position.set(0.85, 0.45, 0.35); cab.rotation.set(0.15, -0.5, -0.35); g.add(cab);

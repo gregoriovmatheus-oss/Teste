@@ -1,4 +1,4 @@
-/*META {"imports": ["hiber"], "rotulos": [{"de": 1.03, "ate": 2.25, "texto": "Um <span class=\"y\">primata</span> que hiberna"}, {"de": 2.31, "ate": 3.6, "texto": "<span class=\"k\">MADAGASCAR</span><br><span class=\"p\">lêmure-anão-de-<span class=\"y\">cauda-gorda</span></span>"}, {"de": 3.69, "ate": 5.71, "texto": "Primata, <span class=\"y\">como nós</span>"}], "D0": 5.71} */
+/*META {"imports": ["hiber"], "rotulos": [{"de": 1.03, "ate": 2.25, "texto": "Um <span class=\"y\">primata</span> que hiberna"}, {"de": 2.31, "ate": 3.6, "texto": "<span class=\"k\">MADAGASCAR</span><br><span class=\"p\">lêmure-anão-de-<span class=\"y\">cauda-gorda</span></span>"}, {"de": 3.69, "ate": 5.71, "texto": "Primata, <span class=\"y\">como nós</span>"}], "D0": 5.71, "css": ".rot-t { font-family: \"Inter\", sans-serif; font-weight: 300; font-size: 80px; line-height: 1.1; color: #fff; text-transform: none; letter-spacing: -0.01em; -webkit-text-stroke: 0; text-shadow: 0 2px 30px rgba(0,0,0,0.75), 0 1px 3px rgba(0,0,0,0.6); }\n    .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }\n    .rot-t .o { font-weight: 800; color: #ff8a4c; } .rot-t .p { font-size: 60px; }\n    .rot-t .k { display: inline-block; font-family: \"JetBrains Mono\", monospace; font-weight: 600; font-size: 26px; letter-spacing: 0.32em; color: #7cc8ff; margin-bottom: 18px; text-shadow: 0 2px 12px rgba(0,0,0,0.8); }\n    .rot-t .n { font-family: \"JetBrains Mono\", monospace; font-weight: 600; color: #7cc8ff; }\n"} */
         await HIBER.prepara();
         const st = T.createToyStage(canvas, { fov: 34, ceu: ["#2a2440", "#e89a5c"], nevoa: [10, 60], corNevoa: "#c07a58", nuvens: 0, exposicao: 1.0 });
         const S = st.scene, cam = st.cam;
@@ -15,8 +15,8 @@
           l.respira(t, 1);
           // aproxima em arco do oco do baobá ao entardecer
           const e = ease.inOutSine(range(t, 0, 5.71)), a = lerp(0.5, -0.15, e), r = lerp(5.2, 1.5, e);
-          cam.position.set(Math.sin(a) * r, lerp(1.2, 1.5, e), b.oco.z + Math.cos(a) * r);
-          alvo.set(0, lerp(2.3, 1.2, e), b.oco.z); cam.lookAt(alvo);
+          cam.position.set(Math.sin(a) * r, lerp(1.6, 1.45, e), b.oco.z + Math.cos(a) * r);
+          alvo.set(0, lerp(1.0, 1.05, e), b.oco.z); cam.lookAt(alvo);
           st.bloom = 0.55; st.sol(0, 0, 8);
           st.draw();
         }
