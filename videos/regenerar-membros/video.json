@@ -110,7 +110,79 @@
   },
   "sfx": [],
   "doc": {
-    "capitulos": [],
-    "hud": []
+    "capitulos": [
+      [
+        0,
+        "O ACIDENTE"
+      ],
+      [
+        5.39,
+        "O SEGREDO"
+      ],
+      [
+        30.16,
+        "A VIDA NOVA"
+      ],
+      [
+        50.34,
+        "O LIMITE"
+      ],
+      [
+        66.2,
+        "A ESCOLHA"
+      ]
+    ],
+    "hud": [
+      {
+        "rotulo": "FÍGADO RESTANTE",
+        "unid": "%",
+        "fmt": "int",
+        "keys": [
+          [
+            14.7,
+            100
+          ],
+          [
+            15.1,
+            33
+          ],
+          [
+            15.3,
+            33
+          ],
+          [
+            17.3,
+            100
+          ]
+        ],
+        "max": 100,
+        "alerta": [
+          [
+            14.7,
+            15.3
+          ]
+        ],
+        "de": 12.26
+      },
+      {
+        "rotulo": "CRESCIMENTO",
+        "fmt": "texto",
+        "keys": [
+          [
+            55.4,
+            "PAUSADO"
+          ],
+          [
+            58.25,
+            "LIGADO"
+          ],
+          [
+            59.4,
+            "DESLIGADO"
+          ]
+        ],
+        "de": 55.39
+      }
+    ]
   }
 }

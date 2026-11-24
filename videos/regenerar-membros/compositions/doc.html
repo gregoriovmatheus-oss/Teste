@@ -18,15 +18,15 @@
   <div id="root" data-composition-id="doc" data-width="1080" data-height="1920">
     <div id="chap"><span id="chapN">01</span><span id="chapT"></span></div>
     <div id="hud">
-    <div class="row" id="h0"><span class="lbl">VELOCIDADE DO MUNDO</span><span class="val"><span id="h0v"></span> <span class="un">×</span></span></div>
+    <div class="row" id="h0"><span class="lbl">FÍGADO RESTANTE</span><span class="val"><span id="h0v"></span> <span class="un">%</span></span></div>
     <div class="meter" id="h0m"><div id="h0b"></div></div>
-    <div class="row" id="h1"><span class="lbl">GPS ADIANTA</span><span class="val"><span id="h1v"></span> <span class="un">µs/dia</span></span></div>
+    <div class="row" id="h1"><span class="lbl">CRESCIMENTO</span><span class="val"><span id="h1v"></span> <span class="un"></span></span></div>
     <div class="meter" id="h1m"><div id="h1b"></div></div>
     </div>
   </div>
   <script>
     (function () {
-      const CAPS = [[0.2, "O ESTALO"], [9.57, "A FÍSICA"], [28.17, "O PREÇO"], [41.57, "A CONTA DA VIDA"], [68.2, "O RETORNO"]], HUD = [{"rotulo": "VELOCIDADE DO MUNDO", "unid": "×", "fmt": "f2", "keys": [[0, 1], [0.85, 1], [1.7, 0], [71.9, 0], [72.6, 1]], "max": 1, "alerta": [[1.7, 71.9]], "de": 0.4}, {"rotulo": "GPS ADIANTA", "unid": "µs/dia", "fmt": "int", "keys": [[63.1, 0], [64.8, 38], [66.3, 38], [67.3, 0]], "max": 38, "alerta": [[64.8, 66.3]], "de": 58.98, "ate": 68.2}], D = 78.5;
+      const CAPS = [[0, "O ACIDENTE"], [5.39, "O SEGREDO"], [30.16, "A VIDA NOVA"], [50.34, "O LIMITE"], [66.2, "A ESCOLHA"]], HUD = [{"rotulo": "FÍGADO RESTANTE", "unid": "%", "fmt": "int", "keys": [[14.7, 100], [15.1, 33], [15.3, 33], [17.3, 100]], "max": 100, "alerta": [[14.7, 15.3]], "de": 12.26, "ate": 30.16}, {"rotulo": "CRESCIMENTO", "fmt": "texto", "keys": [[55.4, "PAUSADO"], [58.25, "LIGADO"], [59.4, "DESLIGADO"]], "de": 55.39, "ate": 66.2}], D = 78.55;
       const $ = (id) => document.getElementById(id);
       const val = (h, t) => {
         const k = h.keys; if (h.fmt === "texto") { let s = k[0][1]; for (const [a, b] of k) if (t >= a) s = b; return s; }
