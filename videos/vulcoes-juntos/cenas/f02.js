@@ -1,0 +1,62 @@
+/*META {"imports": ["terra", "vulcoes"], "rotulos": [], "D0": 6.34, "css": ".rot-t { font-family: \"Inter\", sans-serif; font-weight: 300; font-size: 80px; line-height: 1.1; color: #fff; text-transform: none; letter-spacing: -0.01em; -webkit-text-stroke: 0; text-shadow: 0 2px 30px rgba(0,0,0,0.75), 0 1px 3px rgba(0,0,0,0.6); }\n    .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }\n    .rot-t .o { font-weight: 800; color: #ff8a4c; } .rot-t .p { font-size: 60px; }\n    .rot-t .k { display: inline-block; font-family: \"JetBrains Mono\", monospace; font-weight: 600; font-size: 26px; letter-spacing: 0.32em; color: #7cc8ff; margin-bottom: 18px; text-shadow: 0 2px 12px rgba(0,0,0,0.8); }\n    .rot-t .n { font-family: \"JetBrains Mono\", monospace; font-weight: 600; color: #7cc8ff; }\n"} */
+        const V = VULCOES;
+        await V.prepara();
+        const st = T.createToyStage(canvas, { fov: 38, ceu: "#000000", nevoa: null, nuvens: 0, exposicao: 1.0 });
+        const S = st.scene, cam = st.cam;
+        S.environment = null; st.hemi.intensity = 0; st.key.intensity = 0; st.rim.intensity = 0; st.key.castShadow = false;
+        S.add(TERRA.createCeu({ seed: 23, n: 4500, via: 0.5 }));
+        const E = await TERRA.createTerra({ raio: 1 }); S.add(E.group);
+        E.sol.set(-1, 0.35, 0.5); E.u.luzes.value = 0.5; E.u.nuvens.value = 0.6;
+        // ~1.350 vulcões ativos (USGS) sobre os cinturões reais: Anel de Fogo, Indonésia, Islândia, Mediterrâneo, rifte africano, Caribe, hotspots
+        const CINT = [
+          [[-73, -50], [-70, -22], [-78, -2], [-90, 13], [-103, 19], [-122, 40], [-122, 49], [-152, 60], [-165, 54], [-180, 52]],
+          [[180, 52], [160, 55], [150, 46], [141, 37], [131, 31], [124, 23], [122, 13], [125, 2], [120, -6], [112, -8], [101, -2], [95, 5]],
+          [[147, -6], [156, -8], [167, -15], [178, -21], [176, -38]], [[-62, 17], [-61, 12]], [[36, -4], [38, 5], [41, 12]], [[13, 41], [15, 37.5], [26, 36.5]],
+          [[-22, 64], [-16, 65]], [[-29, 38], [-25, 38]], [[-17, 28], [-14, 29]],
+        ];
+        const HOT = [[-155.5, 19.4], [-110.6, 44.4], [167, -77.5], [-91, -0.5], [-18, 15], [55.7, -21.1], [-9, 61]];
+        const N = 1350, R = mulberry32(1350), P = new Float32Array(N * 3), SD = new Float32Array(N * 2), ESP = [];
+        const segs = []; let tot = 0;
+        CINT.forEach((c) => { for (let i = 0; i < c.length - 1; i++) { const L = Math.hypot(c[i + 1][0] - c[i][0], c[i + 1][1] - c[i][1]); segs.push([c[i], c[i + 1], L]); tot += L; } });
+        for (let i = 0; i < N; i++) {
+          let lon, lat;
+          if (R() < 0.86) { let x = R() * tot, s = segs[0]; for (const g of segs) { if (x < g[2]) { s = g; break; } x -= g[2]; } const u = x / s[2];
+            lon = lerp(s[0][0], s[1][0], u) + (R() - 0.5) * 3.2; lat = lerp(s[0][1], s[1][1], u) + (R() - 0.5) * 3.2; }
+          else { const h = HOT[Math.floor(R() * HOT.length)]; lon = h[0] + (R() - 0.5) * 4; lat = h[1] + (R() - 0.5) * 3; }
+          const v = E.ponto(lon, lat, 1.004); P.set([v.x, v.y, v.z], i * 3); SD.set([R(), R()], i * 2);
+        }
+        // ordem de acender: aleatória (o contador sobe e os pontos aparecem pelo globo inteiro)
+        const ordem = new Float32Array(N); { const idx = [...Array(N).keys()]; for (let i = N - 1; i > 0; i--) { const j = Math.floor(R() * (i + 1)); [idx[i], idx[j]] = [idx[j], idx[i]]; } idx.forEach((k, i) => (ordem[k] = i)); }
+        const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.BufferAttribute(P, 3)); g.setAttribute("sd", new THREE.BufferAttribute(SD, 2)); g.setAttribute("ord", new THREE.BufferAttribute(ordem, 1));
+        const U = { uN: { value: 0 }, uB: { value: 0 }, uT: { value: 0 } };
+        const vert = (sobe) => `attribute vec2 sd; attribute float ord; uniform float uN, uB, uT; varying float vA; varying float vB;
+          void main(){ vec3 nrm = normalize(position); float on = step(ord, uN); float b = uB * smoothstep(0.0, 0.25, uB - sd.x * 0.35);
+            vec3 p = position * (1.0 + ${sobe ? "0.09 * b * (0.4 + 0.6 * sd.y)" : "0.0"});
+            vec4 w = modelMatrix * vec4(p, 1.0); vec3 wn = normalize(mat3(modelMatrix) * nrm);
+            float fr = dot(wn, normalize(cameraPosition - w.xyz)); vA = on * smoothstep(-0.02, 0.15, fr) * ${sobe ? "b * (1.0 - 0.6 * uB)" : "1.0"}; vB = b;
+            vec4 mv = viewMatrix * w; gl_Position = projectionMatrix * mv;
+            gl_PointSize = (${sobe ? "14.0 + 26.0 * b" : "8.0 + 10.0 * b"} + 3.0 * sin(uT * 6.0 + sd.y * 30.0) * on) * 7.0 / -mv.z; }`;
+        const frag = `varying float vA; varying float vB; void main(){ vec2 d = gl_PointCoord - 0.5; float k = exp(-dot(d, d) * 10.0); if (vA * k < 0.01) discard;
+          gl_FragColor = vec4(mix(vec3(1.0, 0.42, 0.1), vec3(1.0, 0.9, 0.7), vB * 0.6) * k * vA * 1.6, 1.0); }`;
+        const mk = (sobe) => { const m = new THREE.ShaderMaterial({ uniforms: U, vertexShader: vert(sobe), fragmentShader: frag, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending });
+          const pts = new THREE.Points(g, m); pts.frustumCulled = false; E.earth.add(pts); return pts; };
+        mk(false); mk(true);
+        const fmt = (n) => Math.round(n).toLocaleString("pt-BR");
+        function render(t) {
+          // contador 0 → 1.350 entre "mil" (1,39 s) e "ativos" (3,4 s); "explodindo" (4,41 s) = todos estouram em câmera lenta
+          const c = ease.outCubic(range(t, 1.35, 3.4)), boom = ease.outCubic(range(t, 4.35, 6.3));
+          U.uN.value = N * c; U.uB.value = boom; U.uT.value = t;
+          E.aim(lerp(-165, -128, ease.inOutSine(range(t, 0, 6.34))), lerp(18, 12, range(t, 0, 6.34)));
+          E.nuv.rotation.y = t * 0.01;
+          // câmera: Terra na metade de baixo, desce devagar; no estouro, empurra para a superfície
+          const e = ease.inOutSine(range(t, 0, 4.3)), z = lerp(3.4, 3.05, e) - 0.55 * ease.inOutCubic(range(t, 4.3, 6.34));
+          cam.position.set(lerp(0.25, -0.1, e), lerp(0.55, 0.35, e), z);
+          cam.lookAt(0, lerp(1.22, 1.05, e), 0);
+          st.bloom = 0.6 + 0.5 * boom;
+          st.draw();
+          const x = st.ctx, a = V.vis(st);
+          V.txt(x, fmt(1350 * c), 540, 760, { fonte: "inter", peso: 800, tam: 150, cor: "#fff", a: a * range(t, 1.3, 1.5), esp: -0.01 });
+          V.txt(x, "VULCÕES ATIVOS", 540, 870, { tam: 30, cor: V.AZUL, a: a * range(t, 2.9, 3.2), esp: 0.32 });
+          V.txt(x, "FONTE: USGS", 540, 920, { tam: 20, cor: "rgba(255,255,255,0.6)", a: a * range(t, 3.2, 3.5), esp: 0.3, peso: 400 });
+          V.txt(x, "NO MESMO MINUTO", 540, 975, { tam: 30, cor: V.LARANJA, a: a * range(t, 5.25, 5.55), esp: 0.32 });
+        }

@@ -1,57 +1,112 @@
-<!-- Modelo de cena 3D (R01). cenas.py --criar copia para compositions/fNN.html trocando os marcadores de id e duração.
-     Padrão: script clássico registra buildReady na hora; import dinâmico do kit e dos blocos;
-     K.bindSeek(canvas, render) dá o tempo LOCAL da cena (sem gambiarra de data-start). -->
+<!-- f11: cena 3D padrão documentário (R10 + doc). Lógica em cenas/f11.js (gerado por scripts/monta-cenas.py).
+     Tempos escritos para 6.42 s e esticados para a duração real do host (data-duration). -->
 <template>
   <style>
-    #root { position: absolute; inset: 0; overflow: hidden; background: #0b1018; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0b0a12; }
     #f11-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
-    #f11-titulo { position: absolute; left: 160px; right: 200px; top: 660px; text-align: center; }
-    #f11-titulo-in { display: block; font-family: "EB Garamond", serif; font-size: 84px; line-height: 1.05; color: #fff;
-      text-shadow: 0 4px 26px rgba(4, 10, 20, 0.75), 0 1px 4px rgba(4, 10, 20, 0.6); }
-    #f11-titulo-in .ice { color: #8fcbf2; }
+    /* rótulos 2D: y 680-980, acima da faixa da legenda (1005-1235) */
+    .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .rot-t { display: block; font-family: "Anton", sans-serif; font-weight: 400; font-size: 92px; line-height: 1.05; color: #fff; text-transform: uppercase;
+      -webkit-text-stroke: 5px #000; paint-order: stroke fill; text-shadow: 0 6px 0 #000, 0 10px 24px rgba(0,0,0,0.6); opacity: 0; }
+    .rot-t .y { color: #F5C518; } .rot-t .r { color: #E8463A; } .rot-t .p { font-size: 70px; }
+    .rot-t .k { display: inline-block; font-size: 34px; letter-spacing: 0.12em; color: #F05A4A; -webkit-text-stroke: 0; text-shadow: 0 3px 0 #000; margin-bottom: 10px; }
+    .rot-t .n { color: #F5C518; }
+.rot-t { font-family: "Inter", sans-serif; font-weight: 300; font-size: 80px; line-height: 1.1; color: #fff; text-transform: none; letter-spacing: -0.01em; -webkit-text-stroke: 0; text-shadow: 0 2px 30px rgba(0,0,0,0.75), 0 1px 3px rgba(0,0,0,0.6); }
+    .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }
+    .rot-t .o { font-weight: 800; color: #ff8a4c; } .rot-t .p { font-size: 60px; }
+    .rot-t .k { display: inline-block; font-family: "JetBrains Mono", monospace; font-weight: 600; font-size: 26px; letter-spacing: 0.32em; color: #7cc8ff; margin-bottom: 18px; text-shadow: 0 2px 12px rgba(0,0,0,0.8); }
+    .rot-t .n { font-family: "JetBrains Mono", monospace; font-weight: 600; color: #7cc8ff; }
+
   </style>
   <div id="root" data-composition-id="f11" data-width="1080" data-height="1920">
     <canvas id="f11-canvas" width="1080" height="1920"></canvas>
-    <div id="f11-titulo" class="clip" data-start="0.3" data-duration="2.2">
-      <span id="f11-titulo-in">Texto da <span class="ice">cena</span></span>
-    </div>
+    <div id="f11-r1" class="rot" style="top: 700px"><span id="f11-r1-in" class="rot-t">estufas com<br><span class="y">luz artificial</span></span></div>
   </div>
   <script>
     (function () {
-      /* 2D por cima (GSAP). Título entre y 640 e 1000: o HUD ocupa 290-620 e a legenda 1045-1195. */
+      const D0 = 6.42;
+      // duração real = data-duration do host da cena (muda quando a narração muda)
+      const durReal = () => {
+        for (let n = document.getElementById("f11-canvas"); n; n = n.parentElement) {
+          if (n.getAttribute && n.getAttribute("data-composition-id") === "f11" && n.hasAttribute("data-duration")) return parseFloat(n.getAttribute("data-duration")) || D0;
+        }
+        return D0;
+      };
+      const DR = durReal(), K = DR / D0;
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f11-titulo-in", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 0.3);
-      tl.to("#f11-titulo-in", { opacity: 0, duration: 0.2, ease: "power2.in" }, 2.3);
-      tl.set({}, {}, 6.42);
+      tl.fromTo("#f11-r1-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 2.2 * K);
+      tl.to("#f11-r1-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 3.75 * K);
+      tl.set({}, {}, DR);
       window.__timelines = window.__timelines || {};
       window.__timelines["f11"] = tl;
 
-      /* 3D */
       window.__hf = window.__hf || {};
       window.__hf.buildReady = window.__hf.buildReady || {};
       window.__hf.buildReady["f11"] = Promise.all([
-        import("./assets/lib/kit.js"),
-        import("./assets/lib/blocks/city.js"),
-        // import("./assets/lib/blocks/globe.js"), import("./assets/lib/blocks/particles.js"),
-        // import("./assets/lib/blocks/shockwave.js"), import("./assets/lib/blocks/counter.js"),
-      ]).then(async ([K, { createCity }]) => {
-        const { THREE, ease, range, lerp, clamp } = K;
+        import("./assets/lib/kit.js"), import("./assets/lib/blocks/toy.js"), import("./assets/lib/blocks/animals.js"), import("./assets/lib/blocks/vulcoes.js")
+      ]).then(async ([K_, T, A, VULCOES]) => {
+        const K = K_;
+        const { THREE, ease, range, lerp, clamp, smoothstep, mulberry32 } = K;
+        const D = D0;   // o corpo trabalha no tempo de autoria
         const canvas = document.getElementById("f11-canvas");
-        const renderer = K.createRenderer(canvas);
-        const scene = new THREE.Scene();
-        const cam = new THREE.PerspectiveCamera(35, K.W / K.H, 1, 2000);
-        const city = createCity(scene, { seed: 7, geada: [6.42 * 0.6, 6.42 * 0.6 + 0.35], paraEm: 6.42 * 0.6 });
 
-        function render(t) {               // t = segundos locais da cena
-          const p = ease.outCubic(clamp(t / 6.42));
-          const h = lerp(300, 175, p), ang = lerp(-0.35, 0.05, p);
-          cam.position.set(Math.sin(ang) * 18, h, Math.cos(ang) * 18 + 10);
-          cam.up.set(Math.sin(ang), 0, -Math.cos(ang));
-          cam.lookAt(0, 0, 0);
-          city.update(t);
-          renderer.render(scene, cam);
+        const V = VULCOES;
+        await V.prepara();
+        const st = T.createToyStage(canvas, { fov: 40, ceu: ["#2a2a2e", "#5a5650"], nevoa: [8, 40], corNevoa: "#1a1418", nuvens: 0, exposicao: 1.05 });
+        const S = st.scene, cam = st.cam;
+        st.key.color.set(0x9a9aa8); st.key.intensity = 0.5; st.hemi.intensity = 0.25; st.rim.intensity = 0.2; st.sol(0, -4, 12);
+        const chao = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), T.TOON({ color: 0x3a3430, roughness: 0.9 })); chao.rotation.x = -Math.PI / 2; chao.receiveShadow = true; S.add(chao);
+        // estufa: arcos e vidro, cinza lá fora
+        const vidro = new THREE.MeshStandardMaterial({ color: 0x8a8a80, roughness: 0.3, transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthWrite: false });
+        const tunel = new THREE.Mesh(new THREE.CylinderGeometry(3.2, 3.2, 18, 24, 1, true, -Math.PI / 2, Math.PI), vidro); tunel.rotation.x = -Math.PI / 2; tunel.position.set(0, 0, -6); S.add(tunel);
+        for (let i = 0; i < 8; i++) { const a = new THREE.Mesh(new THREE.TorusGeometry(3.2, 0.04, 6, 24, Math.PI), T.TOON({ color: 0xcfd2d6, roughness: 0.4, metalness: 0.5 })); a.position.set(0, 0, 2 - i * 2.4); S.add(a); }
+        // canteiros com mudas (crescem quando a luz acende)
+        const NP = 420, R = mulberry32(1111), PL = [];
+        const muda = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(0.16, 0), T.TOON({ color: 0x4a9a3a, roughness: 0.7, flatShading: true }), NP);
+        for (let i = 0; i < NP; i++) { const s = i % 2 ? 1 : -1; PL.push([s * (1.1 + (R() - 0.5) * 0.7), -R() * 16 + 1.5, 0.6 + R() * 0.7, R()]); muda.setColorAt(i, new THREE.Color().setHSL(0.27 + R() * 0.06, 0.55, 0.32 + R() * 0.12)); }
+        S.add(muda);
+        [-1.1, 1.1].forEach((x) => { const c = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.45, 17), T.TOON({ color: 0x5a3e2c, roughness: 0.95 })); c.position.set(x, 0.22, -6); S.add(c); });
+        // barras de LED de cultivo (rosa/violeta) acendendo em sequência
+        const LEDS = [], luzes = [];
+        for (let i = 0; i < 7; i++) { [-1.1, 1.1].forEach((x) => { const m = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.05, 1.8), new THREE.MeshBasicMaterial({ color: 0x220a20, toneMapped: false })); m.position.set(x, 1.9, 1 - i * 2.4); S.add(m); LEDS.push([m, i]); }); }
+        for (let i = 0; i < 4; i++) { const l = new THREE.PointLight(0xff4ad8, 0, 6, 1.4); l.position.set(0, 1.7, 0.5 - i * 4.5); S.add(l); luzes.push([l, i]); }
+        // prateleira de cogumelos e estoque racionado (no fim do corredor, à direita)
+        const pr = new THREE.Group(); pr.position.set(1.6, 0, -11); pr.rotation.y = -0.6; S.add(pr);
+        [0.4, 1.0, 1.6].forEach((y) => { const b = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.05, 0.6), T.TOON({ color: 0x8a6a4a })); b.position.y = y; pr.add(b); });
+        const NC = 60, cog = [], capM = T.TOON({ color: 0xe8dcc8, roughness: 0.6 }), peM = T.TOON({ color: 0xf2ece0, roughness: 0.6 });
+        for (let i = 0; i < NC; i++) { const g = new THREE.Group(); const p = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.024, 0.1, 6), peM); p.position.y = 0.05; g.add(p);
+          const c = new THREE.Mesh(new THREE.SphereGeometry(0.06, 8, 5, 0, 6.283, 0, Math.PI / 2), capM); c.position.y = 0.09; g.add(c);
+          g.position.set(-0.8 + (i % 20) * 0.085 + R() * 0.02, i < 20 ? 0.43 : 1.03, (Math.floor(i / 20) % 1) * 0.1 + (R() - 0.5) * 0.3); g.userData.f = R(); pr.add(g); cog.push(g); if (i >= 40) g.visible = false; }
+        const latas = []; for (let i = 0; i < 10; i++) { const l = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.16, 10), T.TOON({ color: [0xc84a3a, 0xd8b040, 0x3a7a5a][i % 3], roughness: 0.3, metalness: 0.6 })); l.position.set(-0.75 + i * 0.165, 1.71, 0); pr.add(l); latas.push(l); }
+        const CZ = V.cinza(S, { n: 500, area: [8, 4], centro: [0, 0, -6], alt: 6, cor: 0x7a746c, tam: 0.05, vel: 0.4, op: 0.5 });
+        CZ.pts.position.set(0, 0, 0);
+        const M4 = new THREE.Matrix4(), PS = new THREE.Vector3(), SC = new THREE.Vector3(), Q0 = new THREE.Quaternion(), alvo = new THREE.Vector3();
+        function render(t) {
+          // a luz artificial acende em "luz" (2,95 s), fileira por fileira; as mudas crescem
+          LEDS.forEach(([m, i]) => { const k = range(t, 2.9 + i * 0.07, 3.0 + i * 0.07); m.material.color.setHex(0x220a20).lerp(new THREE.Color(0xff7ae8), k).multiplyScalar(1 + 2 * k); });
+          luzes.forEach(([l, i]) => (l.intensity = 9 * range(t, 2.9 + i * 0.12, 3.1 + i * 0.12)));
+          st.hemi.color.set(0x8a8aa0).lerp(new THREE.Color(0xff9ae0), range(t, 2.9, 3.4)); st.hemi.intensity = 0.25 + 0.35 * range(t, 2.9, 3.4);
+          const cr = ease.outCubic(range(t, 3.0, 5.5));
+          for (let i = 0; i < NP; i++) { const r = PL[i]; PS.set(r[0], 0.45, r[1]); SC.set(1, 1.3, 1).multiplyScalar(r[2] * (0.35 + 0.65 * cr) * (0.9 + 0.05 * Math.sin(t * 2 + i))); M4.compose(PS, Q0, SC); muda.setMatrixAt(i, M4); }
+          muda.instanceMatrix.needsUpdate = true;
+          // cogumelos brotam em "cogumelos" (4,26 s); latas racionadas: metade some em "racionaria" (4,96 s)
+          cog.forEach((g) => g.scale.setScalar(Math.max(0.001, ease.outBack(range(t, 4.1 + g.userData.f * 0.5, 4.5 + g.userData.f * 0.5)))));
+          latas.forEach((l, i) => { l.visible = !(i % 2 === 1 && t > 5.0 + i * 0.05); });
+          CZ.update(t);
+          // câmera: dolly pelo corredor, depois vira para a prateleira
+          const e = ease.inOutSine(range(t, 0, 4.0)), v = ease.inOutCubic(range(t, 3.9, 5.2));
+          cam.position.set(lerp(0.0, 0.4, e), lerp(1.5, 1.35, e), lerp(3.2, -4.5, e) - 3.6 * v);
+          alvo.set(lerp(0, 0.2, e), lerp(0.9, 0.9, e), cam.position.z - 6);
+          alvo.lerp(new THREE.Vector3(1.6, 1.0, -11), v); cam.lookAt(alvo);
+          st.bloom = 0.35 + 0.5 * range(t, 2.9, 3.4);
+          st.draw();
+          const x = st.ctx, a = V.vis(st);
+          V.etq(x, "COGUMELOS", pr.localToWorld(new THREE.Vector3(0.2, 0.55, 0)), cam, a * range(t, 4.25, 4.5), { cor: V.AZUL, dy: -80, dx: -160 });
+          V.etq(x, "ESTOQUE RACIONADO", pr.localToWorld(new THREE.Vector3(0.0, 1.8, 0)), cam, a * range(t, 4.95, 5.2), { cor: V.LARANJA, dy: 120, dx: -120 });
         }
-        await K.bindSeek(canvas, render, { warm: [{ renderer, scene, camera: cam }], duration: 6.42 });
+
+        // DR foi lido na hora em que o script rodou (depois do inline o host pode mudar de atributos)
+        await K.bindSeek(canvas, (t) => { st.T = t * D / DR; st.D = D; render(st.T); }, { warm: [st.warm, ...(st.extraWarm || [])], duration: DR });
       });
     })();
   </script>

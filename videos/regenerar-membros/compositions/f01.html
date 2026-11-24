@@ -1,57 +1,106 @@
-<!-- Modelo de cena 3D (R01). cenas.py --criar copia para compositions/fNN.html trocando os marcadores de id e duração.
-     Padrão: script clássico registra buildReady na hora; import dinâmico do kit e dos blocos;
-     K.bindSeek(canvas, render) dá o tempo LOCAL da cena (sem gambiarra de data-start). -->
+<!-- f01: cena 3D padrão documentário (R10 + doc). Lógica em cenas/f01.js (gerado por scripts/monta-cenas.py).
+     Tempos escritos para 5.39 s e esticados para a duração real do host (data-duration). -->
 <template>
   <style>
-    #root { position: absolute; inset: 0; overflow: hidden; background: #0b1018; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0b0a12; }
     #f01-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
-    #f01-titulo { position: absolute; left: 160px; right: 200px; top: 660px; text-align: center; }
-    #f01-titulo-in { display: block; font-family: "EB Garamond", serif; font-size: 84px; line-height: 1.05; color: #fff;
-      text-shadow: 0 4px 26px rgba(4, 10, 20, 0.75), 0 1px 4px rgba(4, 10, 20, 0.6); }
-    #f01-titulo-in .ice { color: #8fcbf2; }
+    /* rótulos 2D: y 680-980, acima da faixa da legenda (1005-1235) */
+    .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .rot-t { display: block; font-family: "Anton", sans-serif; font-weight: 400; font-size: 92px; line-height: 1.05; color: #fff; text-transform: uppercase;
+      -webkit-text-stroke: 5px #000; paint-order: stroke fill; text-shadow: 0 6px 0 #000, 0 10px 24px rgba(0,0,0,0.6); opacity: 0; }
+    .rot-t .y { color: #F5C518; } .rot-t .r { color: #E8463A; } .rot-t .p { font-size: 70px; }
+    .rot-t .k { display: inline-block; font-size: 34px; letter-spacing: 0.12em; color: #F05A4A; -webkit-text-stroke: 0; text-shadow: 0 3px 0 #000; margin-bottom: 10px; }
+    .rot-t .n { color: #F5C518; }
+    [data-composition-id="f01"] .rot-t { font-family: "Inter", sans-serif; font-weight: 300; font-size: 84px; line-height: 1.1; text-transform: none; letter-spacing: -0.01em; -webkit-text-stroke: 0; text-shadow: 0 2px 30px rgba(0,0,0,0.7), 0 1px 3px rgba(0,0,0,0.6); }
+    [data-composition-id="f01"] .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }
+    [data-composition-id="f01"] .rot-t .r { font-weight: 800; color: #ff8a4c; }
+    [data-composition-id="f01"] .rot-t .k { font-family: "JetBrains Mono", monospace; font-weight: 600; font-size: 28px; letter-spacing: 0.3em; color: #7cc8ff; margin-bottom: 18px; -webkit-text-stroke: 0; text-shadow: 0 2px 12px rgba(0,0,0,0.8); }
+    [data-composition-id="f01"] .rot-t .n { font-family: "JetBrains Mono", monospace; font-weight: 600; color: #7cc8ff; }
+
   </style>
   <div id="root" data-composition-id="f01" data-width="1080" data-height="1920">
     <canvas id="f01-canvas" width="1080" height="1920"></canvas>
-    <div id="f01-titulo" class="clip" data-start="0.3" data-duration="2.2">
-      <span id="f01-titulo-in">Texto da <span class="ice">cena</span></span>
-    </div>
+    <div id="f01-r1" class="rot" style="top: 700px"><span id="f01-r1-in" class="rot-t"><span class="k">UM EXPERIMENTO MENTAL</span><br>E se você pudesse <span class="y">regenerar</span> a mão?</span></div>
   </div>
   <script>
     (function () {
-      /* 2D por cima (GSAP). Título entre y 640 e 1000: o HUD ocupa 290-620 e a legenda 1045-1195. */
+      const D0 = 5.39;
+      // duração real = data-duration do host da cena (muda quando a narração muda)
+      const durReal = () => {
+        for (let n = document.getElementById("f01-canvas"); n; n = n.parentElement) {
+          if (n.getAttribute && n.getAttribute("data-composition-id") === "f01" && n.hasAttribute("data-duration")) return parseFloat(n.getAttribute("data-duration")) || D0;
+        }
+        return D0;
+      };
+      const DR = durReal(), K = DR / D0;
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f01-titulo-in", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 0.3);
-      tl.to("#f01-titulo-in", { opacity: 0, duration: 0.2, ease: "power2.in" }, 2.3);
-      tl.set({}, {}, 5.39);
+      tl.fromTo("#f01-r1-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 0.0 * K);
+      tl.to("#f01-r1-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 2.12 * K);
+      tl.set({}, {}, DR);
       window.__timelines = window.__timelines || {};
       window.__timelines["f01"] = tl;
 
-      /* 3D */
       window.__hf = window.__hf || {};
       window.__hf.buildReady = window.__hf.buildReady || {};
       window.__hf.buildReady["f01"] = Promise.all([
-        import("./assets/lib/kit.js"),
-        import("./assets/lib/blocks/city.js"),
-        // import("./assets/lib/blocks/globe.js"), import("./assets/lib/blocks/particles.js"),
-        // import("./assets/lib/blocks/shockwave.js"), import("./assets/lib/blocks/counter.js"),
-      ]).then(async ([K, { createCity }]) => {
-        const { THREE, ease, range, lerp, clamp } = K;
+        import("./assets/lib/kit.js"), import("./assets/lib/blocks/toy.js"), import("./assets/lib/blocks/animals.js"), import("./assets/lib/blocks/lowpoly.js"), import("./assets/lib/blocks/cinema.js"), import("./assets/lib/blocks/regen.js")
+      ]).then(async ([K_, T, A, LOWPOLY, CINEMA, REGEN]) => {
+        const K = K_;
+        const { THREE, ease, range, lerp, clamp, smoothstep, mulberry32 } = K;
+        const D = D0;   // o corpo trabalha no tempo de autoria
         const canvas = document.getElementById("f01-canvas");
-        const renderer = K.createRenderer(canvas);
-        const scene = new THREE.Scene();
-        const cam = new THREE.PerspectiveCamera(35, K.W / K.H, 1, 2000);
-        const city = createCity(scene, { seed: 7, geada: [5.39 * 0.6, 5.39 * 0.6 + 0.35], paraEm: 5.39 * 0.6 });
 
-        function render(t) {               // t = segundos locais da cena
-          const p = ease.outCubic(clamp(t / 5.39));
-          const h = lerp(300, 175, p), ang = lerp(-0.35, 0.05, p);
-          cam.position.set(Math.sin(ang) * 18, h, Math.cos(ang) * 18 + 10);
-          cam.up.set(Math.sin(ang), 0, -Math.cos(ang));
-          cam.lookAt(0, 0, 0);
-          city.update(t);
-          renderer.render(scene, cam);
+        const LP = LOWPOLY, CI = CINEMA, RG = REGEN;
+        const st = LP.palco(canvas, { foco: 1.6, faixa: 0.35, desfoque: 24 });
+        const { S, cam } = st;
+        LP.luz(st, "noite"); st.hemi.intensity = 0.4; st.exposicao = 1.05;
+        const Q = CI.cenario(S, "quarto"); CI.gobo(S, { pos: [-2.4, 2.2, 0.2], girar: Math.PI / 2 }); const ab = CI.luzPratica(S, "abajur", [-1.1, 0.5, -1.6], { forca: 0.8 });
+        LP.bokeh(S, { n: 34, seed: 7, y: [0.8, 2.8], z: [-6, -3], cores: [0x7cc8ff, 0xfff0d0, 0x9fe0ff] });
+        const p = LP.pessoa({ seed: 12, jaqueta: 0x34465e, camisa: 0x1e232c, pele: 0xc68e6e, cabelo: 0x2e1c12 });
+        p.root.position.set(0, 0, 0.3); S.add(p.root);
+        const esq = p.bracos[0];
+        // atadura no fim do antebraço (a mão perdida fica sugerida: coto enfaixado, sem ferida à mostra)
+        const atm = new THREE.MeshStandardMaterial({ map: RG.texAtadura(), color: 0xf6f4ee, roughness: 0.92, flatShading: true, emissive: 0xffffff, emissiveIntensity: 0.22 });
+        const at = new THREE.Group(); esq.cot.add(at); at.position.y = -0.22;
+        const atC = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.064, 0.17, 10), atm); at.add(atC);
+        const atP = new THREE.Mesh(new THREE.SphereGeometry(0.06, 10, 8, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), atm); atP.position.y = -0.085; at.add(atP);
+        // brilho de regeneração no punho
+        const halo = RG.glowSprite(0x7cc8ff, 0.32, 0); esq.cot.add(halo); halo.position.y = -0.33;
+        const luzR = new THREE.PointLight(0x7cc8ff, 0, 1.6, 1.8); esq.cot.add(luzR); luzR.position.set(0, -0.33, 0.05);
+        const fa = Array.from({ length: 14 }, (_, i) => { const s = RG.glowSprite(0xbfe8ff, 0.03, 0); esq.cot.add(s); return s; });
+        const MAO = new THREE.Vector3(0.25, 1.5, 0.74), ROSTO = new THREE.Vector3(0, 1.64, 0.36), mw = new THREE.Vector3();
+        function render(t) {
+          p.reset();
+          LP.alcancar(p, 0, MAO, 1, { polo: new THREE.Vector3(1, -0.7, -0.4), maoGira: 0.4 });
+          p.bracos[1].om.rotation.x = -0.12;
+          LP.olharPara(p, MAO, 0.85);
+          // a mão volta: palma primeiro, depois os dedos, um a um
+          const k1 = ease.outCubic(range(t, 2.75, 4.1));
+          esq.pulso.scale.setScalar(Math.max(1e-3, k1));
+          esq.dedos.forEach((d, i) => d.scale.setScalar(Math.max(1e-3, ease.outBack(range(t, 3.2 + i * 0.14, 4.4 + i * 0.14)))));
+          const solta = ease.inOutCubic(range(t, 2.45, 3.1));
+          atP.scale.setScalar(Math.max(1e-3, 1 - solta)); at.scale.y = 1 - 0.45 * solta; at.position.y = -0.22 + 0.04 * solta;
+          // expressão: aflito → surpresa → começa a sorrir
+          const sur = ease.inOutSine(range(t, 2.7, 3.5)), sor = ease.inOutSine(range(t, 4.5, 5.3));
+          if (sor > 0) p.emocaoMix("surpresa", "alegre", sor * 0.55); else p.emocaoMix("nervoso", "surpresa", sur);
+          LP.vida(p, t, { seed: 12, balanco: 0.5, olhos: false });
+          // brilho: pulso fraco desde o quadro 0 (miniatura), cresce quando a mão nasce
+          const gl = 0.3 + 0.12 * Math.sin(t * 5) + 0.9 * ease.inOutSine(range(t, 2.5, 3.6)) - 0.45 * range(t, 4.6, 5.39);
+          halo.material.opacity = Math.min(1, gl); halo.scale.setScalar(0.14 + 0.1 * gl); luzR.intensity = 0.9 * gl;
+          fa.forEach((s, i) => { const a = i * 0.45 + t * (1.4 + (i % 3) * 0.4), r = 0.05 + 0.03 * Math.sin(t * 2 + i); s.position.set(Math.cos(a) * r, -0.33 - 0.06 * Math.sin(a * 0.7 + i), Math.sin(a) * r); s.material.opacity = Math.min(1, gl) * 0.85; });
+          // câmera: retrato no quadro 0 → aproxima devagar → foco passa do rosto para a mão
+          CI.trilho(cam, t, [[0, [0.16, 1.5, 2.75], [0.1, 1.3, 0.4]], [2.4, [0.22, 1.52, 2.45], [0.12, 1.34, 0.45]], [5.39, [0.32, 1.56, 1.95], [0.13, 1.42, 0.48]]], { mao: 1, seed: 3 });
+          esq.cot.updateMatrixWorld(true); halo.getWorldPosition(mw);
+          CI.focoEntre(st, ROSTO, mw, ease.inOutSine(range(t, 2.6, 3.4)) * (1 - 0.7 * range(t, 4.6, 5.3)));
+          CI.preenche(st, ROSTO, { forca: 0.55 });
+          st.T = Math.max(st.T, 0.18);
+          st.draw();
+          RG.quadro();
+          RG.frase(st.ctx, cam, mw, "SEMANAS DEPOIS", ease.outCubic(range(t, 2.45, 2.75)) * (1 - range(t, 4.3, 4.6)), { cor: RG.AZUL, tam: 28, dy: 260, dx: 120 });
         }
-        await K.bindSeek(canvas, render, { warm: [{ renderer, scene, camera: cam }], duration: 5.39 });
+
+        // DR foi lido na hora em que o script rodou (depois do inline o host pode mudar de atributos)
+        await K.bindSeek(canvas, (t) => { st.T = t * D / DR; st.D = D; render(st.T); }, { warm: [st.warm, ...(st.extraWarm || [])], duration: DR });
       });
     })();
   </script>

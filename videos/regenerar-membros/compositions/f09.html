@@ -1,57 +1,97 @@
-<!-- Modelo de cena 3D (R01). cenas.py --criar copia para compositions/fNN.html trocando os marcadores de id e duração.
-     Padrão: script clássico registra buildReady na hora; import dinâmico do kit e dos blocos;
-     K.bindSeek(canvas, render) dá o tempo LOCAL da cena (sem gambiarra de data-start). -->
+<!-- f09: cena 3D padrão documentário (R10 + doc). Lógica em cenas/f09.js (gerado por scripts/monta-cenas.py).
+     Tempos escritos para 5.05 s e esticados para a duração real do host (data-duration). -->
 <template>
   <style>
-    #root { position: absolute; inset: 0; overflow: hidden; background: #0b1018; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0b0a12; }
     #f09-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
-    #f09-titulo { position: absolute; left: 160px; right: 200px; top: 660px; text-align: center; }
-    #f09-titulo-in { display: block; font-family: "EB Garamond", serif; font-size: 84px; line-height: 1.05; color: #fff;
-      text-shadow: 0 4px 26px rgba(4, 10, 20, 0.75), 0 1px 4px rgba(4, 10, 20, 0.6); }
-    #f09-titulo-in .ice { color: #8fcbf2; }
+    /* rótulos 2D: y 680-980, acima da faixa da legenda (1005-1235) */
+    .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .rot-t { display: block; font-family: "Anton", sans-serif; font-weight: 400; font-size: 92px; line-height: 1.05; color: #fff; text-transform: uppercase;
+      -webkit-text-stroke: 5px #000; paint-order: stroke fill; text-shadow: 0 6px 0 #000, 0 10px 24px rgba(0,0,0,0.6); opacity: 0; }
+    .rot-t .y { color: #F5C518; } .rot-t .r { color: #E8463A; } .rot-t .p { font-size: 70px; }
+    .rot-t .k { display: inline-block; font-size: 34px; letter-spacing: 0.12em; color: #F05A4A; -webkit-text-stroke: 0; text-shadow: 0 3px 0 #000; margin-bottom: 10px; }
+    .rot-t .n { color: #F5C518; }
+    [data-composition-id="f09"] .rot-t { font-family: "Inter", sans-serif; font-weight: 300; font-size: 84px; line-height: 1.1; text-transform: none; letter-spacing: -0.01em; -webkit-text-stroke: 0; text-shadow: 0 2px 30px rgba(0,0,0,0.7), 0 1px 3px rgba(0,0,0,0.6); }
+    [data-composition-id="f09"] .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }
+    [data-composition-id="f09"] .rot-t .r { font-weight: 800; color: #ff8a4c; }
+    [data-composition-id="f09"] .rot-t .k { font-family: "JetBrains Mono", monospace; font-weight: 600; font-size: 28px; letter-spacing: 0.3em; color: #7cc8ff; margin-bottom: 18px; -webkit-text-stroke: 0; text-shadow: 0 2px 12px rgba(0,0,0,0.8); }
+    [data-composition-id="f09"] .rot-t .n { font-family: "JetBrains Mono", monospace; font-weight: 600; color: #7cc8ff; }
+
   </style>
   <div id="root" data-composition-id="f09" data-width="1080" data-height="1920">
     <canvas id="f09-canvas" width="1080" height="1920"></canvas>
-    <div id="f09-titulo" class="clip" data-start="0.3" data-duration="2.2">
-      <span id="f09-titulo-in">Texto da <span class="ice">cena</span></span>
-    </div>
+    <div id="f09-r1" class="rot" style="top: 700px"><span id="f09-r1-in" class="rot-t">Mas existe<br>um <span class="r">limite</span></span></div>
   </div>
   <script>
     (function () {
-      /* 2D por cima (GSAP). Título entre y 640 e 1000: o HUD ocupa 290-620 e a legenda 1045-1195. */
+      const D0 = 5.05;
+      // duração real = data-duration do host da cena (muda quando a narração muda)
+      const durReal = () => {
+        for (let n = document.getElementById("f09-canvas"); n; n = n.parentElement) {
+          if (n.getAttribute && n.getAttribute("data-composition-id") === "f09" && n.hasAttribute("data-duration")) return parseFloat(n.getAttribute("data-duration")) || D0;
+        }
+        return D0;
+      };
+      const DR = durReal(), K = DR / D0;
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f09-titulo-in", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 0.3);
-      tl.to("#f09-titulo-in", { opacity: 0, duration: 0.2, ease: "power2.in" }, 2.3);
-      tl.set({}, {}, 5.05);
+      tl.fromTo("#f09-r1-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 0.8 * K);
+      tl.to("#f09-r1-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 1.9 * K);
+      tl.set({}, {}, DR);
       window.__timelines = window.__timelines || {};
       window.__timelines["f09"] = tl;
 
-      /* 3D */
       window.__hf = window.__hf || {};
       window.__hf.buildReady = window.__hf.buildReady || {};
       window.__hf.buildReady["f09"] = Promise.all([
-        import("./assets/lib/kit.js"),
-        import("./assets/lib/blocks/city.js"),
-        // import("./assets/lib/blocks/globe.js"), import("./assets/lib/blocks/particles.js"),
-        // import("./assets/lib/blocks/shockwave.js"), import("./assets/lib/blocks/counter.js"),
-      ]).then(async ([K, { createCity }]) => {
-        const { THREE, ease, range, lerp, clamp } = K;
+        import("./assets/lib/kit.js"), import("./assets/lib/blocks/toy.js"), import("./assets/lib/blocks/animals.js"), import("./assets/lib/blocks/regen.js")
+      ]).then(async ([K_, T, A, REGEN]) => {
+        const K = K_;
+        const { THREE, ease, range, lerp, clamp, smoothstep, mulberry32 } = K;
+        const D = D0;   // o corpo trabalha no tempo de autoria
         const canvas = document.getElementById("f09-canvas");
-        const renderer = K.createRenderer(canvas);
-        const scene = new THREE.Scene();
-        const cam = new THREE.PerspectiveCamera(35, K.W / K.H, 1, 2000);
-        const city = createCity(scene, { seed: 7, geada: [5.05 * 0.6, 5.05 * 0.6 + 0.35], paraEm: 5.05 * 0.6 });
 
-        function render(t) {               // t = segundos locais da cena
-          const p = ease.outCubic(clamp(t / 5.05));
-          const h = lerp(300, 175, p), ang = lerp(-0.35, 0.05, p);
-          cam.position.set(Math.sin(ang) * 18, h, Math.cos(ang) * 18 + 10);
-          cam.up.set(Math.sin(ang), 0, -Math.cos(ang));
-          cam.lookAt(0, 0, 0);
-          city.update(t);
-          renderer.render(scene, cam);
+        const RG = REGEN;
+        const st = T.createToyStage(canvas, { fov: 40, ceu: ["#07060c", "#1a1020"], nevoa: [2, 10], corNevoa: "#0c0810", nuvens: 0, exposicao: 1.05 });
+        const S = st.scene, cam = st.cam;
+        st.hemi.intensity = 0.5; st.key.intensity = 2.5; st.rim.color.set(0x7cc8ff); st.rim.intensity = 2.4; st.sol(0, 0, 3, 0);
+        // tecido: camada de células normais (hexágonos), dividindo devagar
+        const NX = 22, NT = NX * NX, tec = RG.celulas(S, NT, { raio: 0.09, det: 0 });
+        const TP = [];
+        for (let i = 0; i < NX; i++) for (let j = 0; j < NX; j++) TP.push([(i - NX / 2 + (j % 2) * 0.5) * 0.17, 0, (j - NX / 2) * 0.15]);
+        // tumor: células vermelhas em bola que cresce (ordenadas da mais central para fora)
+        const N = 700, tum = RG.celulas(S, N, { raio: 0.06, det: 0 }); tum.m.material.emissive.set(0xff3a2a);
+        const R = mulberry32(91), TU = [];
+        for (let i = 0; i < N; i++) { const u = R(), th = R() * 6.283, ph = Math.acos(2 * R() - 1), r = Math.cbrt(u) * 0.62; TU.push([r * Math.sin(ph) * Math.cos(th), 0.06 + Math.abs(r * Math.cos(ph)) * 0.9, r * Math.sin(ph) * Math.sin(th), r]); }
+        TU.sort((a, b) => a[3] - b[3]);
+        const alarme = new THREE.PointLight(0xff3a2a, 0, 4, 1.5); alarme.position.set(0, 0.8, 0.3); S.add(alarme);
+        const halo = RG.glowSprite(0xff5a3a, 1.6, 0); halo.position.set(0, 0.35, 0); S.add(halo);
+        const v = new THREE.Vector3(), cN = new THREE.Color(), c1 = new THREE.Color(0x9fc8e8), c2 = new THREE.Color(0xe8b0b8);
+        function render(t) {
+          for (let i = 0; i < NT; i++) { const [x, y, z] = TP[i], d = Math.hypot(x, z), puls = 0.04 * Math.sin(t * 1.5 + i * 0.9);
+            cN.copy(c1).lerp(c2, (i * 7 % 11) / 11);
+            const empurra = 0.12 * range(t, 2.2, 4.6) * Math.max(0, 1 - d / 1.2);
+            tec.set(i, x * (1 + empurra), y - 0.02, z * (1 + empurra), (1 + puls) * (d < 3.3 ? 1 : 0), cN.getHex()); }
+          tec.fim();
+          // a primeira célula muda (1,3 s); depois duplica cada vez mais rápido
+          const n = t < 1.34 ? 0 : Math.min(N, Math.floor(Math.pow(2, (t - 1.34) * (1.2 + 1.4 * range(t, 2.2, 3.3))))) ;
+          for (let i = 0; i < N; i++) { const [x, y, z] = TU[i]; const s = i < n ? Math.min(1, (n - i) / 6) : 0;
+            tum.set(i, x * Math.max(0.3, s), y * Math.max(0.3, s) + 0.02, z * Math.max(0.3, s), s * (0.9 + 0.15 * Math.sin(t * 6 + i)), i === 0 ? 0xff6a4a : 0xc8342a); }
+          tum.fim(); tum.m.material.emissiveIntensity = 0.25 + 0.2 * Math.sin(t * 5) ** 2;
+          const al = range(t, 2.8, 4.4);
+          alarme.intensity = 6 * al * (0.7 + 0.3 * Math.sin(t * 6)); halo.material.opacity = 0.5 * al;
+          st.rim.color.lerpColors(new THREE.Color(0x7cc8ff), new THREE.Color(0xff5a3a), al);
+          // câmera: rasante sobre o tecido, aproximando da célula que muda
+          const e = ease.inOutSine(range(t, 0, 5.05));
+          cam.position.set(lerp(1.6, 0.9, e), lerp(1.1, 0.95, e), lerp(2.6, 1.6, e)); cam.lookAt(0, lerp(0.0, 0.15, e), 0);
+          st.bloom = 0.5 + 0.3 * al;
+          st.draw();
+          const c = st.ctx, vv = RG.vis(st); RG.quadro();
+          v.set(0, 0.05, 0); RG.frase(c, cam, v, "UMA CÉLULA SAI DO CONTROLE", ease.outCubic(range(t, 2.2, 2.5)) * (1 - range(t, 4.1, 4.35)) * vv, { cor: RG.LARANJA, tam: 26, dy: 280 });
+          v.set(0, 0.5, 0); RG.frase(c, cam, v, "CÂNCER", ease.outCubic(range(t, 4.38, 4.62)) * vv, { cor: RG.LARANJA, tam: 44, dy: 340 });
         }
-        await K.bindSeek(canvas, render, { warm: [{ renderer, scene, camera: cam }], duration: 5.05 });
+
+        // DR foi lido na hora em que o script rodou (depois do inline o host pode mudar de atributos)
+        await K.bindSeek(canvas, (t) => { st.T = t * D / DR; st.D = D; render(st.T); }, { warm: [st.warm, ...(st.extraWarm || [])], duration: DR });
       });
     })();
   </script>

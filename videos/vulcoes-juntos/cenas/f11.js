@@ -1,0 +1,55 @@
+/*META {"imports": ["vulcoes"], "rotulos": [{"de": 2.2, "ate": 4.05, "texto": "estufas com<br><span class=\"y\">luz artificial</span>"}], "D0": 6.42, "css": ".rot-t { font-family: \"Inter\", sans-serif; font-weight: 300; font-size: 80px; line-height: 1.1; color: #fff; text-transform: none; letter-spacing: -0.01em; -webkit-text-stroke: 0; text-shadow: 0 2px 30px rgba(0,0,0,0.75), 0 1px 3px rgba(0,0,0,0.6); }\n    .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }\n    .rot-t .o { font-weight: 800; color: #ff8a4c; } .rot-t .p { font-size: 60px; }\n    .rot-t .k { display: inline-block; font-family: \"JetBrains Mono\", monospace; font-weight: 600; font-size: 26px; letter-spacing: 0.32em; color: #7cc8ff; margin-bottom: 18px; text-shadow: 0 2px 12px rgba(0,0,0,0.8); }\n    .rot-t .n { font-family: \"JetBrains Mono\", monospace; font-weight: 600; color: #7cc8ff; }\n"} */
+        const V = VULCOES;
+        await V.prepara();
+        const st = T.createToyStage(canvas, { fov: 40, ceu: ["#2a2a2e", "#5a5650"], nevoa: [8, 40], corNevoa: "#1a1418", nuvens: 0, exposicao: 1.05 });
+        const S = st.scene, cam = st.cam;
+        st.key.color.set(0x9a9aa8); st.key.intensity = 0.5; st.hemi.intensity = 0.25; st.rim.intensity = 0.2; st.sol(0, -4, 12);
+        const chao = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), T.TOON({ color: 0x3a3430, roughness: 0.9 })); chao.rotation.x = -Math.PI / 2; chao.receiveShadow = true; S.add(chao);
+        // estufa: arcos e vidro, cinza lá fora
+        const vidro = new THREE.MeshStandardMaterial({ color: 0x8a8a80, roughness: 0.3, transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthWrite: false });
+        const tunel = new THREE.Mesh(new THREE.CylinderGeometry(3.2, 3.2, 18, 24, 1, true, -Math.PI / 2, Math.PI), vidro); tunel.rotation.x = -Math.PI / 2; tunel.position.set(0, 0, -6); S.add(tunel);
+        for (let i = 0; i < 8; i++) { const a = new THREE.Mesh(new THREE.TorusGeometry(3.2, 0.04, 6, 24, Math.PI), T.TOON({ color: 0xcfd2d6, roughness: 0.4, metalness: 0.5 })); a.position.set(0, 0, 2 - i * 2.4); S.add(a); }
+        // canteiros com mudas (crescem quando a luz acende)
+        const NP = 420, R = mulberry32(1111), PL = [];
+        const muda = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(0.16, 0), T.TOON({ color: 0x4a9a3a, roughness: 0.7, flatShading: true }), NP);
+        for (let i = 0; i < NP; i++) { const s = i % 2 ? 1 : -1; PL.push([s * (1.1 + (R() - 0.5) * 0.7), -R() * 16 + 1.5, 0.6 + R() * 0.7, R()]); muda.setColorAt(i, new THREE.Color().setHSL(0.27 + R() * 0.06, 0.55, 0.32 + R() * 0.12)); }
+        S.add(muda);
+        [-1.1, 1.1].forEach((x) => { const c = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.45, 17), T.TOON({ color: 0x5a3e2c, roughness: 0.95 })); c.position.set(x, 0.22, -6); S.add(c); });
+        // barras de LED de cultivo (rosa/violeta) acendendo em sequência
+        const LEDS = [], luzes = [];
+        for (let i = 0; i < 7; i++) { [-1.1, 1.1].forEach((x) => { const m = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.05, 1.8), new THREE.MeshBasicMaterial({ color: 0x220a20, toneMapped: false })); m.position.set(x, 1.9, 1 - i * 2.4); S.add(m); LEDS.push([m, i]); }); }
+        for (let i = 0; i < 4; i++) { const l = new THREE.PointLight(0xff4ad8, 0, 6, 1.4); l.position.set(0, 1.7, 0.5 - i * 4.5); S.add(l); luzes.push([l, i]); }
+        // prateleira de cogumelos e estoque racionado (no fim do corredor, à direita)
+        const pr = new THREE.Group(); pr.position.set(1.6, 0, -11); pr.rotation.y = -0.6; S.add(pr);
+        [0.4, 1.0, 1.6].forEach((y) => { const b = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.05, 0.6), T.TOON({ color: 0x8a6a4a })); b.position.y = y; pr.add(b); });
+        const NC = 60, cog = [], capM = T.TOON({ color: 0xe8dcc8, roughness: 0.6 }), peM = T.TOON({ color: 0xf2ece0, roughness: 0.6 });
+        for (let i = 0; i < NC; i++) { const g = new THREE.Group(); const p = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.024, 0.1, 6), peM); p.position.y = 0.05; g.add(p);
+          const c = new THREE.Mesh(new THREE.SphereGeometry(0.06, 8, 5, 0, 6.283, 0, Math.PI / 2), capM); c.position.y = 0.09; g.add(c);
+          g.position.set(-0.8 + (i % 20) * 0.085 + R() * 0.02, i < 20 ? 0.43 : 1.03, (Math.floor(i / 20) % 1) * 0.1 + (R() - 0.5) * 0.3); g.userData.f = R(); pr.add(g); cog.push(g); if (i >= 40) g.visible = false; }
+        const latas = []; for (let i = 0; i < 10; i++) { const l = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.16, 10), T.TOON({ color: [0xc84a3a, 0xd8b040, 0x3a7a5a][i % 3], roughness: 0.3, metalness: 0.6 })); l.position.set(-0.75 + i * 0.165, 1.71, 0); pr.add(l); latas.push(l); }
+        const CZ = V.cinza(S, { n: 500, area: [8, 4], centro: [0, 0, -6], alt: 6, cor: 0x7a746c, tam: 0.05, vel: 0.4, op: 0.5 });
+        CZ.pts.position.set(0, 0, 0);
+        const M4 = new THREE.Matrix4(), PS = new THREE.Vector3(), SC = new THREE.Vector3(), Q0 = new THREE.Quaternion(), alvo = new THREE.Vector3();
+        function render(t) {
+          // a luz artificial acende em "luz" (2,95 s), fileira por fileira; as mudas crescem
+          LEDS.forEach(([m, i]) => { const k = range(t, 2.9 + i * 0.07, 3.0 + i * 0.07); m.material.color.setHex(0x220a20).lerp(new THREE.Color(0xff7ae8), k).multiplyScalar(1 + 2 * k); });
+          luzes.forEach(([l, i]) => (l.intensity = 9 * range(t, 2.9 + i * 0.12, 3.1 + i * 0.12)));
+          st.hemi.color.set(0x8a8aa0).lerp(new THREE.Color(0xff9ae0), range(t, 2.9, 3.4)); st.hemi.intensity = 0.25 + 0.35 * range(t, 2.9, 3.4);
+          const cr = ease.outCubic(range(t, 3.0, 5.5));
+          for (let i = 0; i < NP; i++) { const r = PL[i]; PS.set(r[0], 0.45, r[1]); SC.set(1, 1.3, 1).multiplyScalar(r[2] * (0.35 + 0.65 * cr) * (0.9 + 0.05 * Math.sin(t * 2 + i))); M4.compose(PS, Q0, SC); muda.setMatrixAt(i, M4); }
+          muda.instanceMatrix.needsUpdate = true;
+          // cogumelos brotam em "cogumelos" (4,26 s); latas racionadas: metade some em "racionaria" (4,96 s)
+          cog.forEach((g) => g.scale.setScalar(Math.max(0.001, ease.outBack(range(t, 4.1 + g.userData.f * 0.5, 4.5 + g.userData.f * 0.5)))));
+          latas.forEach((l, i) => { l.visible = !(i % 2 === 1 && t > 5.0 + i * 0.05); });
+          CZ.update(t);
+          // câmera: dolly pelo corredor, depois vira para a prateleira
+          const e = ease.inOutSine(range(t, 0, 4.0)), v = ease.inOutCubic(range(t, 3.9, 5.2));
+          cam.position.set(lerp(0.0, 0.4, e), lerp(1.5, 1.35, e), lerp(3.2, -4.5, e) - 3.6 * v);
+          alvo.set(lerp(0, 0.2, e), lerp(0.9, 0.9, e), cam.position.z - 6);
+          alvo.lerp(new THREE.Vector3(1.6, 1.0, -11), v); cam.lookAt(alvo);
+          st.bloom = 0.35 + 0.5 * range(t, 2.9, 3.4);
+          st.draw();
+          const x = st.ctx, a = V.vis(st);
+          V.etq(x, "COGUMELOS", pr.localToWorld(new THREE.Vector3(0.2, 0.55, 0)), cam, a * range(t, 4.25, 4.5), { cor: V.AZUL, dy: -80, dx: -160 });
+          V.etq(x, "ESTOQUE RACIONADO", pr.localToWorld(new THREE.Vector3(0.0, 1.8, 0)), cam, a * range(t, 4.95, 5.2), { cor: V.LARANJA, dy: 120, dx: -120 });
+        }

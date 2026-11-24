@@ -1,0 +1,59 @@
+/*META {"imports": ["lowpoly", "cinema", "regen"], "css": "    [data-composition-id=\"f08\"] .rot-t { font-family: \"Inter\", sans-serif; font-weight: 300; font-size: 84px; line-height: 1.1; text-transform: none; letter-spacing: -0.01em; -webkit-text-stroke: 0; text-shadow: 0 2px 30px rgba(0,0,0,0.7), 0 1px 3px rgba(0,0,0,0.6); }\n    [data-composition-id=\"f08\"] .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }\n    [data-composition-id=\"f08\"] .rot-t .r { font-weight: 800; color: #ff8a4c; }\n    [data-composition-id=\"f08\"] .rot-t .k { font-family: \"JetBrains Mono\", monospace; font-weight: 600; font-size: 28px; letter-spacing: 0.3em; color: #7cc8ff; margin-bottom: 18px; -webkit-text-stroke: 0; text-shadow: 0 2px 12px rgba(0,0,0,0.8); }\n    [data-composition-id=\"f08\"] .rot-t .n { font-family: \"JetBrains Mono\", monospace; font-weight: 600; color: #7cc8ff; }\n", "rotulos": [{"de": 0.1, "ate": 1.4, "texto": "Atletas <span class=\"y\">voltariam</span>"}, {"de": 4.9, "ate": 7.25, "sai": false, "texto": "Dentista quase<br><span class=\"y\">sem trabalho</span>"}], "D0": 7.25} */
+        const LP = LOWPOLY, CI = CINEMA, RG = REGEN;
+        const st = LP.palco(canvas, { foco: 3, faixa: 1.2, desfoque: 18 });
+        const { S, cam } = st;
+        LP.luz(st, "dia");
+        CI.ceu(S, { topo: 0x3a7ad0, horizonte: 0xd8e8f0, nuvens: 6 });
+        // pista de atletismo: chão, raias, grama
+        const pista = new THREE.Mesh(new THREE.PlaneGeometry(6, 80), LP.mat(0xa8483a, 0.9)); pista.rotation.x = -Math.PI / 2; pista.position.z = 20; S.add(pista);
+        const grama = new THREE.Mesh(new THREE.PlaneGeometry(60, 80), LP.mat(0x4f7a3a, 0.95)); grama.rotation.x = -Math.PI / 2; grama.position.set(0, -0.01, 20); S.add(grama);
+        for (let i = -2; i <= 3; i++) { const l = new THREE.Mesh(new THREE.PlaneGeometry(0.05, 80), LP.mat(0xf2f0ea, 0.6)); l.rotation.x = -Math.PI / 2; l.position.set(-2.4 + (i + 2) * 1.0 - 0.5, 0.005, 20); S.add(l); }
+        for (let i = 0; i < 8; i++) CI.arvore(S, { pos: [-6 - (i % 2) * 2, 0, i * 6 - 2], seed: i + 3 });
+        const a = LP.pessoa({ seed: 41, feminina: true, roupa: "uniforme", jaqueta: 0x1f5aa8, pele: 0x6a4430, cabelo: 0x120a06 });
+        a.root.position.set(0, 0, 0); S.add(a.root);
+        const joelho = RG.glowSprite(0x7cc8ff, 0.22, 0); a.pernas[0].j.add(joelho); joelho.position.set(0, 0, 0.07);
+        // consultório (longe da pista; a câmera corta para lá)
+        const O = CI.cenario(S, "escritorio"); O.g.position.x = 40; const OX = 40;
+        const mod = new THREE.Group(); mod.position.set(OX - 0.05, 0.79, -1.62); S.add(mod);
+        const gm = new THREE.Mesh(new THREE.CapsuleGeometry(0.05, 0.3, 6, 14), LP.mat(0xd86a7a, 0.45)); gm.rotation.z = Math.PI / 2; gm.scale.set(1, 1, 1.25); gm.position.y = 0.02; mod.add(gm);
+        const dentes = [-0.13, 0.13].map((x) => { const d = RG.dente(); d.g.scale.setScalar(0.09); d.g.position.set(x, -0.025, 0); mod.add(d.g); return d; });
+        const novo = RG.dente(); novo.g.scale.setScalar(0.09); mod.add(novo.g);
+        const brilhoD = RG.glowSprite(0x7cc8ff, 0.2, 0); mod.add(brilhoD); brilhoD.position.set(0, 0.06, 0.03);
+        const dt = LP.pessoa({ seed: 52, roupa: "jaleco", oculos: true, pele: 0xc89478, cabelo: 0x4a3020 });
+        dt.root.position.set(OX + 0.62, 0, -1.15); dt.root.rotation.y = -0.75; S.add(dt.root);
+        const cad = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.07, 0.45), LP.mat(0x2a2a30)); cad.position.set(OX + 0.62, 0.47, -1.2); S.add(cad);
+        const v = new THREE.Vector3(), RD = new THREE.Vector3(OX + 0.6, 1.25, -1.1);
+        function render(t) {
+          a.reset(); dt.reset();
+          const d = LP.correr(a, t, { vel: 1.0 }); a.root.position.z = d;
+          a.emocaoMix("foco", "alegre", ease.inOutSine(range(t, 1.0, 2.0)) * 0.7);
+          LP.vida(a, t, { seed: 41, balanco: 0, olhos: false, piscar: false });
+          joelho.material.opacity = 0.6 * ease.outCubic(range(t, 1.45, 1.8));
+          // dente novo nasce entre os vizinhos
+          const k = ease.inOutSine(range(t, 3.0, 4.9));
+          novo.u.corte.value = lerp(0.0, 1.8, k); novo.g.position.y = lerp(-0.1, -0.025, k); novo.u.forca.value = 2.2 * (1 - range(t, 4.6, 5.2));
+          brilhoD.material.opacity = 0.7 * range(t, 2.9, 3.2) * (1 - range(t, 4.7, 5.3));
+          LP.sentar(dt, 1); dt.bracos.forEach((b) => (b.cot.rotation.x -= 0.4));
+          const boc = Math.sin(Math.PI * range(t, 5.3, 6.6));
+          dt.emocaoMix("sono", "bocejo", boc); dt.cab.rotation.x -= 0.2 * boc; dt.bracos[1].om.rotation.x -= 1.6 * boc; dt.bracos[1].cot.rotation.x -= 1.2 * boc;
+          LP.vida(dt, t, { seed: 52, balanco: 0.3, olhos: false });
+          if (t < 2.62) {
+            // travelling lateral acompanhando a corredora
+            a.root.updateMatrixWorld(true); a.cab.getWorldPosition(v);
+            cam.position.set(2.2 - 0.3 * t, 1.25, d + 1.4 + 0.25 * t); cam.lookAt(0, 1.05, d + 0.2);
+            CI.movimento(st, range(t, 2.35, 2.62) * 0.02, 0);
+            LP.focar(st, v); st.U.faixa.value = 1.2;
+          } else {
+            // corte: macro no modelo da arcada → recua até o dentista entediado
+            const e = ease.inOutCubic(range(t, 4.7, 6.6));
+            CI.movimento(st, (1 - range(t, 2.62, 2.85)) * 0.02, 0);
+            cam.position.set(lerp(OX - 0.14, OX + 0.05, e), lerp(1.18, 1.35, e), lerp(-0.85, 0.7, e));
+            cam.lookAt(lerp(OX - 0.05, OX + 0.5, e), lerp(0.8, 0.92, e), lerp(-1.62, -1.3, e));
+            CI.focoEntre(st, new THREE.Vector3(OX - 0.05, 0.82, -1.62), RD, ease.inOutSine(range(t, 5.0, 6.0)));
+            st.U.faixa.value = lerp(0.12, 0.6, e);
+          }
+          st.draw();
+          const c = st.ctx, vv = RG.vis(st); RG.quadro();
+          if (t < 2.62) { joelho.getWorldPosition(v); RG.frase(c, cam, v, "LESÕES GRAVES", ease.outCubic(range(t, 1.5, 1.8)) * vv, { cor: RG.LARANJA, tam: 30, dy: -60, dx: 120 }); }
+          else { mod.localToWorld(v.set(0, 0.1, 0)); RG.frase(c, cam, v, "DENTES NASCERIAM DE NOVO", ease.outCubic(range(t, 3.6, 3.9)) * (1 - range(t, 4.6, 4.85)) * vv, { cor: RG.AZUL, tam: 28, dy: 260 }); }
+        }
