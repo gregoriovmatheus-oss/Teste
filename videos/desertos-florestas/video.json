@@ -1,0 +1,116 @@
+{
+  "slug": "desertos-florestas",
+  "ref": "R10",
+  "duracao": 77.42,
+  "duracao_fixa": null,
+  "narracao": {
+    "arquivo": "assets/audio/narracao.mp3"
+  },
+  "cenas": [
+    {
+      "id": "f01",
+      "palavra": "Você está",
+      "inicio": 0,
+      "fim": 5.77
+    },
+    {
+      "id": "f02",
+      "palavra": "Os desertos",
+      "inicio": 5.77,
+      "fim": 11.51
+    },
+    {
+      "id": "f03",
+      "palavra": "Parece impossível",
+      "inicio": 11.51,
+      "fim": 17.8
+    },
+    {
+      "id": "f04",
+      "palavra": "As árvores",
+      "inicio": 17.8,
+      "fim": 23.4
+    },
+    {
+      "id": "f05",
+      "palavra": "Bilhões de",
+      "inicio": 23.4,
+      "fim": 29.78
+    },
+    {
+      "id": "f06",
+      "palavra": "Milhões de",
+      "inicio": 29.78,
+      "fim": 35.05
+    },
+    {
+      "id": "f07",
+      "palavra": "Mas tem",
+      "inicio": 35.05,
+      "fim": 40.37
+    },
+    {
+      "id": "f08",
+      "palavra": "Trocando areia",
+      "inicio": 40.37,
+      "fim": 46.35
+    },
+    {
+      "id": "f09",
+      "palavra": "E tem",
+      "inicio": 46.35,
+      "fim": 52.62
+    },
+    {
+      "id": "f10",
+      "palavra": "Sem essa",
+      "inicio": 52.62,
+      "fim": 58.3
+    },
+    {
+      "id": "f11",
+      "palavra": "E os",
+      "inicio": 58.3,
+      "fim": 63.56
+    },
+    {
+      "id": "f12",
+      "palavra": "Por isso",
+      "inicio": 63.56,
+      "fim": 70.02
+    },
+    {
+      "id": "f13",
+      "palavra": "E você",
+      "inicio": 70.02,
+      "fim": 77.42
+    }
+  ],
+  "hud": {
+    "inicio": 0.5,
+    "fim": 6,
+    "rotulo": "O CALOR VOLTA EM",
+    "linha2": "AR −273 °C",
+    "contador": {
+      "de": 5,
+      "ate": 0,
+      "fim": 5.5,
+      "unidade": "s",
+      "casas": 2
+    }
+  },
+  "legendas": {
+    "juntar": [],
+    "numeros": {},
+    "ocultar": []
+  },
+  "trilha": {
+    "arquivo": "assets/audio/trilha.mp3",
+    "volume": 0.12
+  },
+  "sfx": [],
+  "doc": {
+    "capitulos": [],
+    "hud": []
+  }
+}

@@ -1,0 +1,116 @@
+{
+  "slug": "vulcoes-juntos",
+  "ref": "R10",
+  "duracao": 76.34,
+  "duracao_fixa": null,
+  "narracao": {
+    "arquivo": "assets/audio/narracao.mp3"
+  },
+  "cenas": [
+    {
+      "id": "f01",
+      "palavra": "Imagine acordar",
+      "inicio": 0,
+      "fim": 5.86
+    },
+    {
+      "id": "f02",
+      "palavra": "A Terra",
+      "inicio": 5.86,
+      "fim": 12.2
+    },
+    {
+      "id": "f03",
+      "palavra": "Quem mora",
+      "inicio": 12.2,
+      "fim": 17.53
+    },
+    {
+      "id": "f04",
+      "palavra": "Mas o",
+      "inicio": 17.53,
+      "fim": 22.43
+    },
+    {
+      "id": "f05",
+      "palavra": "Em poucas",
+      "inicio": 22.43,
+      "fim": 27.89
+    },
+    {
+      "id": "f06",
+      "palavra": "Em mil",
+      "inicio": 27.89,
+      "fim": 32.85
+    },
+    {
+      "id": "f07",
+      "palavra": "Com todos",
+      "inicio": 32.85,
+      "fim": 39.53
+    },
+    {
+      "id": "f08",
+      "palavra": "Sem sol",
+      "inicio": 39.53,
+      "fim": 46.07
+    },
+    {
+      "id": "f09",
+      "palavra": "Os aviões",
+      "inicio": 46.07,
+      "fim": 52.66
+    },
+    {
+      "id": "f10",
+      "palavra": "Telhados desabariam",
+      "inicio": 52.66,
+      "fim": 58.67
+    },
+    {
+      "id": "f11",
+      "palavra": "Para sobreviver",
+      "inicio": 58.67,
+      "fim": 65.09
+    },
+    {
+      "id": "f12",
+      "palavra": "Depois de",
+      "inicio": 65.09,
+      "fim": 69.86
+    },
+    {
+      "id": "f13",
+      "palavra": "E você",
+      "inicio": 69.86,
+      "fim": 76.34
+    }
+  ],
+  "hud": {
+    "inicio": 0.5,
+    "fim": 6,
+    "rotulo": "O CALOR VOLTA EM",
+    "linha2": "AR −273 °C",
+    "contador": {
+      "de": 5,
+      "ate": 0,
+      "fim": 5.5,
+      "unidade": "s",
+      "casas": 2
+    }
+  },
+  "legendas": {
+    "juntar": [],
+    "numeros": {},
+    "ocultar": []
+  },
+  "trilha": {
+    "arquivo": "assets/audio/trilha.mp3",
+    "volume": 0.12
+  },
+  "sfx": [],
+  "doc": {
+    "capitulos": [],
+    "hud": []
+  }
+}

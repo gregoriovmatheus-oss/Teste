@@ -1,0 +1,116 @@
+{
+  "slug": "regenerar-membros",
+  "ref": "R10",
+  "duracao": 78.55,
+  "duracao_fixa": null,
+  "narracao": {
+    "arquivo": "assets/audio/narracao.mp3"
+  },
+  "cenas": [
+    {
+      "id": "f01",
+      "palavra": "Um acidente",
+      "inicio": 0,
+      "fim": 5.39
+    },
+    {
+      "id": "f02",
+      "palavra": "Parece ficção",
+      "inicio": 5.39,
+      "fim": 12.26
+    },
+    {
+      "id": "f03",
+      "palavra": "E você",
+      "inicio": 12.26,
+      "fim": 18.28
+    },
+    {
+      "id": "f04",
+      "palavra": "O segredo",
+      "inicio": 18.28,
+      "fim": 24.71
+    },
+    {
+      "id": "f05",
+      "palavra": "Aí elas",
+      "inicio": 24.71,
+      "fim": 30.16
+    },
+    {
+      "id": "f06",
+      "palavra": "Para um",
+      "inicio": 30.16,
+      "fim": 36.23
+    },
+    {
+      "id": "f07",
+      "palavra": "Hospitais mudariam",
+      "inicio": 36.23,
+      "fim": 43.09
+    },
+    {
+      "id": "f08",
+      "palavra": "Atletas voltariam",
+      "inicio": 43.09,
+      "fim": 50.34
+    },
+    {
+      "id": "f09",
+      "palavra": "Mas existe",
+      "inicio": 50.34,
+      "fim": 55.39
+    },
+    {
+      "id": "f10",
+      "palavra": "Por isso",
+      "inicio": 55.39,
+      "fim": 60.85
+    },
+    {
+      "id": "f11",
+      "palavra": "E nem",
+      "inicio": 60.85,
+      "fim": 66.2
+    },
+    {
+      "id": "f12",
+      "palavra": "Talvez por",
+      "inicio": 66.2,
+      "fim": 71.9
+    },
+    {
+      "id": "f13",
+      "palavra": "E você",
+      "inicio": 71.9,
+      "fim": 78.55
+    }
+  ],
+  "hud": {
+    "inicio": 0.5,
+    "fim": 6,
+    "rotulo": "O CALOR VOLTA EM",
+    "linha2": "AR −273 °C",
+    "contador": {
+      "de": 5,
+      "ate": 0,
+      "fim": 5.5,
+      "unidade": "s",
+      "casas": 2
+    }
+  },
+  "legendas": {
+    "juntar": [],
+    "numeros": {},
+    "ocultar": []
+  },
+  "trilha": {
+    "arquivo": "assets/audio/trilha.mp3",
+    "volume": 0.12
+  },
+  "sfx": [],
+  "doc": {
+    "capitulos": [],
+    "hud": []
+  }
+}
