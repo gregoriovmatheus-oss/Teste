@@ -86,19 +86,6 @@
       "fim": 76.34
     }
   ],
-  "hud": {
-    "inicio": 0.5,
-    "fim": 6,
-    "rotulo": "O CALOR VOLTA EM",
-    "linha2": "AR −273 °C",
-    "contador": {
-      "de": 5,
-      "ate": 0,
-      "fim": 5.5,
-      "unidade": "s",
-      "casas": 2
-    }
-  },
   "legendas": {
     "juntar": [],
     "numeros": {},
@@ -110,7 +97,73 @@
   },
   "sfx": [],
   "doc": {
-    "capitulos": [],
-    "hud": []
+    "capitulos": [
+      [
+        0,
+        "O RONCO"
+      ],
+      [
+        12.2,
+        "A ERUPÇÃO"
+      ],
+      [
+        22.43,
+        "O CÉU CINZA"
+      ],
+      [
+        32.85,
+        "O PLANETA SEM VERÃO"
+      ],
+      [
+        58.67,
+        "O RETORNO"
+      ]
+    ],
+    "hud": [
+      {
+        "rotulo": "VULCÕES ATIVOS · USGS",
+        "fmt": "int",
+        "keys": [
+          [
+            7.2,
+            0
+          ],
+          [
+            9.3,
+            1350
+          ]
+        ],
+        "max": 1350,
+        "alerta": [
+          [
+            10.3,
+            12.2
+          ]
+        ],
+        "de": 5.86
+      },
+      {
+        "rotulo": "VOOS CANCELADOS · 2010",
+        "fmt": "int",
+        "keys": [
+          [
+            51.6,
+            0
+          ],
+          [
+            52.2,
+            100000
+          ]
+        ],
+        "max": 100000,
+        "alerta": [
+          [
+            52.2,
+            52.66
+          ]
+        ],
+        "de": 49.5
+      }
+    ]
   }
 }

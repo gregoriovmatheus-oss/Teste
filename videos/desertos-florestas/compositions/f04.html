@@ -66,7 +66,7 @@
         // água subindo (raiz → tronco → copa) e depois virando vapor
         const N = 600, pos = new Float32Array(N * 3), gw = new THREE.BufferGeometry(); gw.setAttribute("position", new THREE.BufferAttribute(pos, 3));
         const agua = new THREE.Points(gw, new THREE.PointsMaterial({ map: DS.glowTex("suave"), color: 0x6cc8ff, size: 0.22, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false })); agua.frustumCulled = false; S.add(agua);
-        const D = []; for (let i = 0; i < N; i++) D.push([r(), Math.floor(r() * pontas.length), 0.25 + r() * 0.2, r() - 0.5, r() - 0.5]);
+        const DD = []; for (let i = 0; i < N; i++) DD.push([r(), Math.floor(r() * pontas.length), 0.25 + r() * 0.2, r() - 0.5, r() - 0.5]);
         const vap = new THREE.Points(new THREE.BufferGeometry(), new THREE.PointsMaterial({ map: DS.glowTex("suave"), color: 0xf4f8ff, size: 1.6, transparent: true, opacity: 0, depthWrite: false })); vap.frustumCulled = false; S.add(vap);
         const NV = 160, pv = new Float32Array(NV * 3); vap.geometry.setAttribute("position", new THREE.BufferAttribute(pv, 3));
         // nuvem que se forma e chuva
@@ -78,7 +78,7 @@
         const cam0 = new THREE.Vector3(2.2, -1.2, 7.5), al0 = new THREE.Vector3(0, -1.4, 2.5), cam1 = new THREE.Vector3(1.2, 4.2, 15.5), al1 = new THREE.Vector3(0, 4.2, 0), cam2 = new THREE.Vector3(-0.8, 6.5, 19), al2 = new THREE.Vector3(0, 6.0, 0);
         function render(t) {
           const sobe = range(t, 0.6, 1.2);
-          D.forEach((d, i) => { const [x, ex, ey] = pontas[d[1]], f = (d[0] + t * d[2]) % 1;
+          DD.forEach((d, i) => { const [x, ex, ey] = pontas[d[1]], f = (d[0] + t * d[2]) % 1;
             let px, py, pz = 2.6;
             if (f < 0.35) { const k = f / 0.35; px = lerp(ex, x, k); py = lerp(ey, 0, k); }
             else { const k = (f - 0.35) / 0.65; px = x + d[3] * 1.6 * k; py = lerp(0, 3.8, k); pz = lerp(2.6, 0.4, Math.min(1, k * 3)) + d[4] * 1.4 * k; }

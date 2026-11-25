@@ -86,19 +86,6 @@
       "fim": 77.42
     }
   ],
-  "hud": {
-    "inicio": 0.5,
-    "fim": 6,
-    "rotulo": "O CALOR VOLTA EM",
-    "linha2": "AR −273 °C",
-    "contador": {
-      "de": 5,
-      "ate": 0,
-      "fim": 5.5,
-      "unidade": "s",
-      "casas": 2
-    }
-  },
   "legendas": {
     "juntar": [],
     "numeros": {},
@@ -110,7 +97,85 @@
   },
   "sfx": [],
   "doc": {
-    "capitulos": [],
-    "hud": []
+    "capitulos": [
+      [
+        0,
+        "O DESERTO"
+      ],
+      [
+        11.51,
+        "O SAARA VERDE"
+      ],
+      [
+        23.4,
+        "OS GANHOS"
+      ],
+      [
+        35.05,
+        "O OUTRO LADO"
+      ],
+      [
+        63.56,
+        "O EQUILÍBRIO"
+      ]
+    ],
+    "hud": [
+      {
+        "rotulo": "DESERTOS · TERRA FIRME",
+        "unid": "%",
+        "fmt": "int",
+        "keys": [
+          [
+            7.5,
+            0
+          ],
+          [
+            8.2,
+            33
+          ]
+        ],
+        "max": 100,
+        "de": 7.4
+      },
+      {
+        "rotulo": "SAARA VERDE · ANOS ATRÁS",
+        "fmt": "int",
+        "keys": [
+          [
+            14.4,
+            0
+          ],
+          [
+            15.3,
+            6000
+          ]
+        ],
+        "max": 11000,
+        "de": 14.3
+      },
+      {
+        "rotulo": "POEIRA → AMAZÔNIA",
+        "unid": "mi t/ano",
+        "fmt": "f1",
+        "keys": [
+          [
+            49.4,
+            0
+          ],
+          [
+            50.4,
+            27.7
+          ]
+        ],
+        "max": 40,
+        "alerta": [
+          [
+            52.7,
+            58.3
+          ]
+        ],
+        "de": 49.3
+      }
+    ]
   }
 }

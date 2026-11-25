@@ -57,7 +57,7 @@
         st.key.color.set(0xffe6c0); st.key.intensity = 2.6; st.hemi.intensity = 0.7; st.sol(0, -10, 40);
         const DU = DS.dunas(S, T.M, { tam: 220, seg: 64, amp: 0.5, areia: 0xc8a064, verde: 0x4a7a30, centro: [0, -60] });
         DU.pintar((x, z) => 0.6 + 0.3 * Math.sin(x * 0.15 + z * 0.1));
-        const FL = DS.floresta(S, T.M, { n: 520, area: [[-40, 40], [-110, 12]], seed: 15, h: DU.h, alt: [2.0, 3.6], cor: 0x3a7430 });
+        const FL = DS.floresta(S, T.M, { n: 520, area: [[-40, 40], [-110, -3]], seed: 15, h: DU.h, alt: [2.0, 3.6], cor: 0x3a7430 });
         // CO2: carbono escuro + dois oxigênios (InstancedMesh)
         const NM = 70, r = mulberry32(17), geo = new THREE.IcosahedronGeometry(1, 1);
         const IC = new THREE.InstancedMesh(geo, T.M(0x2a2c30, 0.4), NM), IO = new THREE.InstancedMesh(geo, T.M(0xd85a48, 0.35), NM * 2);

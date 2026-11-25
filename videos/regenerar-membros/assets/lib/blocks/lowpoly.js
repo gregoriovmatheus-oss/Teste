@@ -247,7 +247,7 @@ function esqueleto(R, { pele, jaqueta, calca, tenis = COR.tenis, seed, simples }
 }
 // pose de descanso de cada osso (reset() volta para ela)
 function guardaDescanso(p) {
-  const ossos = [p.root, p.quadril, p.coluna, p.pescoco, p.cab, ...p.bracos.flatMap((b) => [b.om, b.cot, b.pulso, ...b.dedos, ...b.dedos.map((d) => d.userData.f2).filter(Boolean)]), ...p.pernas.flatMap((l) => [l.q, l.j, l.pe])];
+  const ossos = [p.root, p.quadril, p.coluna, p.pescoco, p.cab, ...p.bracos.flatMap((b) => [b.om, b.cot, b.pulso, ...b.dedos, ...b.dedos.map((d) => d.userData.f2).filter(Boolean)]), ...p.pernas.flatMap((l) => [l.q, l.j, l.pe]), ...(p.abas || []), ...(p.mechas ? [p.mechas] : [])];
   const base = ossos.map((o) => [o.position.clone(), o.rotation.clone()]);
   p.reset = () => { ossos.forEach((o, i) => { if (o === p.root) return; o.position.copy(base[i][0]); o.rotation.copy(base[i][1]); }); p.respira(0); p.piscar(0); };
 }

@@ -3,7 +3,7 @@
         await DS.prepara();
         const st = LP.palco(canvas, { fov: 32, foco: 1.4, faixa: 0.6, desfoque: 14, fundo: 0xe8d0a0, bloom: 0.8, raios: 0.4 });
         const { S, cam } = st; cam.far = 320; cam.updateProjectionMatrix();
-        LP.luz(st, "dia"); st.U.nevoa.value = 0.01; st.U.corNevoa.value.set(0.92, 0.82, 0.66); st.exposicao = 1.08;
+        LP.luz(st, "dia"); st.U.nevoa.value = 0.0035; st.U.corNevoa.value.set(0.92, 0.82, 0.66); st.exposicao = 1.08;
         CI.ceu(S, { topo: 0x3f7cc0, horizonte: 0xf2d8a8, nuvens: 3 });
         st.fria.color.set(0xffeccc); st.fria.intensity = 3.4; st.fria.position.set(3, 5, 3);
         const SOL = DS.brilho(0xfff0c8, 40, "suave", 0.9); SOL.position.set(80, 60, -120); S.add(SOL);

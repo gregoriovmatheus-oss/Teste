@@ -58,7 +58,7 @@
         S.add(TERRA.createCeu({ seed: 31, n: 4000, via: 0.7 }));
         const E = await DS.terraVerde(TERRA); S.add(E.group);
         E.u.verde.value = 1; E.u.nuvens.value = 0.45; E.u.luzes.value = 0.6;
-        const SOL = TERRA.createSol({ raio: 3, halo: 30 }); SOL.group.position.set(-38, 14, -40); S.add(SOL.group);
+        const SOL = TERRA.createSol({ raio: 3, halo: 30 }); SOL.group.position.set(-30, 18, 40); S.add(SOL.group);
         E.sol.copy(SOL.group.position).normalize();
         const alvo = new THREE.Vector3(), sah = new THREE.Vector3(), aus = new THREE.Vector3();
         function render(t) {
@@ -68,13 +68,13 @@
           E.u.tt.value = t;
           E.u.calor.value = 0.25 * range(t, 1.4, 2.9) + 0.85 * ease.inOutSine(range(t, 3.4, 5.2));
           const e = ease.inOutCubic(range(t, 0, 5.98));
-          cam.position.set(lerp(1.4, 0.55, e), lerp(0.55, 0.2, e), lerp(3.6, 2.35, e));
-          alvo.set(lerp(0.35, 0.05, e), lerp(-0.05, -0.15, e), 0); cam.lookAt(alvo);
+          cam.position.set(lerp(1.2, 0.5, e), lerp(0.5, 0.3, e), lerp(4.0, 2.9, e));
+          alvo.set(lerp(0.25, 0.05, e), lerp(0.0, -0.1, e), 0); cam.lookAt(alvo);
           st.bloom = 0.8;
           st.draw();
           const c = st.ctx;
           sah.copy(E.ponto(12, 21)); E.earth.localToWorld(sah);
-          DS.etq(c, "SAARA · MAIS QUENTE", sah, cam, range(t, 3.9, 4.2), { cor: DS.LARANJA, dy: -130 });
+          DS.etq(c, "SAARA · MAIS QUENTE", sah, cam, range(t, 3.9, 4.2), { cor: DS.LARANJA, dy: -130, dx: 260 });
           // feixes de sol chegando (entram e não voltam)
           const a = range(t, 0.2, 0.8) * (1 - range(t, 3.2, 3.6));
           if (a > 0) { const [sx, sy] = DS.proj(SOL.group.position, cam); DS.raios2D(c, sx, sy, a * 0.8, { n: 10, seed: 5, cor: "255,214,160", r1: 1600, giro: t * 0.03 }); }
