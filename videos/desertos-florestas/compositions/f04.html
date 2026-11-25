@@ -1,57 +1,116 @@
-<!-- Modelo de cena 3D (R01). cenas.py --criar copia para compositions/fNN.html trocando os marcadores de id e duração.
-     Padrão: script clássico registra buildReady na hora; import dinâmico do kit e dos blocos;
-     K.bindSeek(canvas, render) dá o tempo LOCAL da cena (sem gambiarra de data-start). -->
+<!-- f04: cena 3D padrão documentário (R10 + doc). Lógica em cenas/f04.js (gerado por scripts/monta-cenas.py).
+     Tempos escritos para 5.6 s e esticados para a duração real do host (data-duration). -->
 <template>
   <style>
-    #root { position: absolute; inset: 0; overflow: hidden; background: #0b1018; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0b0a12; }
     #f04-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
-    #f04-titulo { position: absolute; left: 160px; right: 200px; top: 660px; text-align: center; }
-    #f04-titulo-in { display: block; font-family: "EB Garamond", serif; font-size: 84px; line-height: 1.05; color: #fff;
-      text-shadow: 0 4px 26px rgba(4, 10, 20, 0.75), 0 1px 4px rgba(4, 10, 20, 0.6); }
-    #f04-titulo-in .ice { color: #8fcbf2; }
+    /* rótulos 2D: y 680-980, acima da faixa da legenda (1005-1235) */
+    .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .rot-t { display: block; font-family: "Anton", sans-serif; font-weight: 400; font-size: 92px; line-height: 1.05; color: #fff; text-transform: uppercase;
+      -webkit-text-stroke: 5px #000; paint-order: stroke fill; text-shadow: 0 6px 0 #000, 0 10px 24px rgba(0,0,0,0.6); opacity: 0; }
+    .rot-t .y { color: #F5C518; } .rot-t .r { color: #E8463A; } .rot-t .p { font-size: 70px; }
+    .rot-t .k { display: inline-block; font-size: 34px; letter-spacing: 0.12em; color: #F05A4A; -webkit-text-stroke: 0; text-shadow: 0 3px 0 #000; margin-bottom: 10px; }
+    .rot-t .n { color: #F5C518; }
+.rot-t { font-family: "Inter", sans-serif; font-weight: 300; font-size: 80px; line-height: 1.1; color: #fff; text-transform: none; letter-spacing: -0.01em; -webkit-text-stroke: 0; text-shadow: 0 2px 30px rgba(0,0,0,0.75), 0 1px 3px rgba(0,0,0,0.6); }
+    .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }
+    .rot-t .o { font-weight: 800; color: #ff8a4c; } .rot-t .p { font-size: 60px; }
+    .rot-t .k { display: inline-block; font-family: "JetBrains Mono", monospace; font-weight: 600; font-size: 26px; letter-spacing: 0.32em; color: #7cc8ff; margin-bottom: 18px; text-shadow: 0 2px 12px rgba(0,0,0,0.8); }
+    .rot-t .n { font-family: "JetBrains Mono", monospace; font-weight: 600; color: #7cc8ff; }
+
   </style>
   <div id="root" data-composition-id="f04" data-width="1080" data-height="1920">
     <canvas id="f04-canvas" width="1080" height="1920"></canvas>
-    <div id="f04-titulo" class="clip" data-start="0.3" data-duration="2.2">
-      <span id="f04-titulo-in">Texto da <span class="ice">cena</span></span>
-    </div>
+
   </div>
   <script>
     (function () {
-      /* 2D por cima (GSAP). Título entre y 640 e 1000: o HUD ocupa 290-620 e a legenda 1045-1195. */
+      const D0 = 5.6;
+      // duração real = data-duration do host da cena (muda quando a narração muda)
+      const durReal = () => {
+        for (let n = document.getElementById("f04-canvas"); n; n = n.parentElement) {
+          if (n.getAttribute && n.getAttribute("data-composition-id") === "f04" && n.hasAttribute("data-duration")) return parseFloat(n.getAttribute("data-duration")) || D0;
+        }
+        return D0;
+      };
+      const DR = durReal(), K = DR / D0;
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f04-titulo-in", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 0.3);
-      tl.to("#f04-titulo-in", { opacity: 0, duration: 0.2, ease: "power2.in" }, 2.3);
-      tl.set({}, {}, 5.6);
+
+      tl.set({}, {}, DR);
       window.__timelines = window.__timelines || {};
       window.__timelines["f04"] = tl;
 
-      /* 3D */
       window.__hf = window.__hf || {};
       window.__hf.buildReady = window.__hf.buildReady || {};
       window.__hf.buildReady["f04"] = Promise.all([
-        import("./assets/lib/kit.js"),
-        import("./assets/lib/blocks/city.js"),
-        // import("./assets/lib/blocks/globe.js"), import("./assets/lib/blocks/particles.js"),
-        // import("./assets/lib/blocks/shockwave.js"), import("./assets/lib/blocks/counter.js"),
-      ]).then(async ([K, { createCity }]) => {
-        const { THREE, ease, range, lerp, clamp } = K;
+        import("./assets/lib/kit.js"), import("./assets/lib/blocks/toy.js"), import("./assets/lib/blocks/animals.js"), import("./assets/lib/blocks/deserto.js")
+      ]).then(async ([K_, T, A, DESERTO]) => {
+        const K = K_;
+        const { THREE, ease, range, lerp, clamp, smoothstep, mulberry32 } = K;
+        const D = D0;   // o corpo trabalha no tempo de autoria
         const canvas = document.getElementById("f04-canvas");
-        const renderer = K.createRenderer(canvas);
-        const scene = new THREE.Scene();
-        const cam = new THREE.PerspectiveCamera(35, K.W / K.H, 1, 2000);
-        const city = createCity(scene, { seed: 7, geada: [5.6 * 0.6, 5.6 * 0.6 + 0.35], paraEm: 5.6 * 0.6 });
 
-        function render(t) {               // t = segundos locais da cena
-          const p = ease.outCubic(clamp(t / 5.6));
-          const h = lerp(300, 175, p), ang = lerp(-0.35, 0.05, p);
-          cam.position.set(Math.sin(ang) * 18, h, Math.cos(ang) * 18 + 10);
-          cam.up.set(Math.sin(ang), 0, -Math.cos(ang));
-          cam.lookAt(0, 0, 0);
-          city.update(t);
-          renderer.render(scene, cam);
+        const DS = DESERTO;
+        await DS.prepara();
+        const st = T.createToyStage(canvas, { fov: 40, ceu: ["#3f7ec4", "#d6e6ef"], nevoa: [40, 160], corNevoa: "#c8dbe6", nuvens: 4, exposicao: 1.05 });
+        const S = st.scene, cam = st.cam;
+        st.key.color.set(0xfff0d8); st.key.intensity = 2.8; st.hemi.intensity = 0.75; st.sol(0, 0, 18);
+        // corte do solo (frente em z = 2.5) com raízes desenhadas; três árvores em cima
+        const solo = new THREE.Mesh(new THREE.BoxGeometry(16, 3.2, 5), T.M(0x5a3d26, 0.95)); solo.position.set(0, -1.6, 0); S.add(solo);
+        const grama = new THREE.Mesh(new THREE.BoxGeometry(16, 0.12, 5), T.M(0x5d8a34, 0.9)); grama.position.set(0, 0.02, 0); S.add(grama);
+        const chao = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), T.M(0x6f8d3c, 0.95)); chao.rotation.x = -Math.PI / 2; chao.position.set(0, -0.01, -102.6); S.add(chao);
+        const XS = [-4.2, 0, 4.2], raizM = T.M(0x8a6040, 0.8), r = mulberry32(3), pontas = [];
+        XS.forEach((x, i) => { const a = T.arvore(1.05 - i * 0.08 + (i === 1 ? 0.15 : 0), 0x3f7a30, 10 + i); a.position.set(x, 0, 0.4); S.add(a);
+          for (let j = 0; j < 5; j++) { const ang = -Math.PI / 2 + (j - 2) * 0.45 + (r() - 0.5) * 0.2, L = 1.5 + r() * 1.0;
+            const c = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.08, L, 5), raizM); const ex = x + Math.cos(ang) * L, ey = Math.sin(ang) * L;
+            c.position.set((x + ex) / 2, ey / 2, 2.52); c.rotation.z = ang - Math.PI / 2; S.add(c); pontas.push([x, ex, ey]); } });
+        // água subindo (raiz → tronco → copa) e depois virando vapor
+        const N = 600, pos = new Float32Array(N * 3), gw = new THREE.BufferGeometry(); gw.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+        const agua = new THREE.Points(gw, new THREE.PointsMaterial({ map: DS.glowTex("suave"), color: 0x6cc8ff, size: 0.22, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false })); agua.frustumCulled = false; S.add(agua);
+        const D = []; for (let i = 0; i < N; i++) D.push([r(), Math.floor(r() * pontas.length), 0.25 + r() * 0.2, r() - 0.5, r() - 0.5]);
+        const vap = new THREE.Points(new THREE.BufferGeometry(), new THREE.PointsMaterial({ map: DS.glowTex("suave"), color: 0xf4f8ff, size: 1.6, transparent: true, opacity: 0, depthWrite: false })); vap.frustumCulled = false; S.add(vap);
+        const NV = 160, pv = new Float32Array(NV * 3); vap.geometry.setAttribute("position", new THREE.BufferAttribute(pv, 3));
+        // nuvem que se forma e chuva
+        const nuv = T.nuvem(5, 0xffffff); nuv.position.set(0, 10.5, -1); S.add(nuv);
+        const nm = nuv.children[0].material;
+        const NR = 260, gota = new THREE.InstancedMesh(new THREE.BoxGeometry(0.03, 0.5, 0.03), new THREE.MeshBasicMaterial({ color: 0xa8d4ff, transparent: true, opacity: 0.7 }), NR); gota.frustumCulled = false; S.add(gota);
+        const RD = []; for (let i = 0; i < NR; i++) RD.push([(r() - 0.5) * 9, (r() - 0.5) * 4 - 1, r()]);
+        const m4 = new THREE.Matrix4(), alvo = new THREE.Vector3();
+        const cam0 = new THREE.Vector3(2.2, -1.2, 7.5), al0 = new THREE.Vector3(0, -1.4, 2.5), cam1 = new THREE.Vector3(1.2, 4.2, 15.5), al1 = new THREE.Vector3(0, 4.2, 0), cam2 = new THREE.Vector3(-0.8, 6.5, 19), al2 = new THREE.Vector3(0, 6.0, 0);
+        function render(t) {
+          const sobe = range(t, 0.6, 1.2);
+          D.forEach((d, i) => { const [x, ex, ey] = pontas[d[1]], f = (d[0] + t * d[2]) % 1;
+            let px, py, pz = 2.6;
+            if (f < 0.35) { const k = f / 0.35; px = lerp(ex, x, k); py = lerp(ey, 0, k); }
+            else { const k = (f - 0.35) / 0.65; px = x + d[3] * 1.6 * k; py = lerp(0, 3.8, k); pz = lerp(2.6, 0.4, Math.min(1, k * 3)) + d[4] * 1.4 * k; }
+            const on = i < N * sobe ? 1 : 0;
+            pos[i * 3] = on ? px : 0; pos[i * 3 + 1] = on ? py : -50; pos[i * 3 + 2] = pz; });
+          gw.attributes.position.needsUpdate = true;
+          // vapor saindo das copas (em "soltariam no ar", 2,2 s)
+          vap.material.opacity = 0.55 * range(t, 2.1, 2.8) * (1 - 0.5 * range(t, 4.6, 5.4));
+          for (let i = 0; i < NV; i++) { const f = ((i * 0.618) % 1 + t * 0.32) % 1, x = XS[i % 3] + Math.sin(i * 7.1) * 1.2 * (1 + f) * (1 - f * 0.8);
+            pv[i * 3] = x * (1 - 0.6 * f); pv[i * 3 + 1] = 4.2 + f * 6; pv[i * 3 + 2] = 0.4 + Math.cos(i * 3.3) * 0.8 - f; }
+          vap.geometry.attributes.position.needsUpdate = true;
+          // nuvem cresce em "nuvens" (4,0 s) e escurece; chuva em "chuva" (4,7 s)
+          const ns = 0.05 + 1.15 * ease.outBack(range(t, 3.3, 4.3));
+          nuv.scale.setScalar(ns); nm.color.setRGB(1, 1, 1).multiplyScalar(lerp(1, 0.55, range(t, 4.2, 4.8)));
+          const ch = range(t, 4.55, 4.8);
+          RD.forEach((d, i) => { const f = (d[2] + t * 1.6) % 1, y = lerp(9.5, -0.2, f);
+            m4.makeTranslation(d[0], ch > 0 && i < NR * ch ? y : -80, d[1]); gota.setMatrixAt(i, m4); });
+          gota.instanceMatrix.needsUpdate = true;
+          // câmera: das raízes (sob o chão) sobe em grua até a nuvem
+          const a = ease.inOutCubic(range(t, 0.9, 3.9)), b = ease.inOutSine(range(t, 3.9, 5.6));
+          cam.position.lerpVectors(cam0, cam1, a).lerp(cam2, b); alvo.lerpVectors(al0, al1, a).lerp(al2, b); cam.lookAt(alvo);
+          st.bloom = 0.45;
+          st.draw();
+          const c = st.ctx;
+          DS.etq(c, "ÁGUA DO SOLO", new THREE.Vector3(pontas[2][1], pontas[2][2], 2.6), cam, range(t, 1.25, 1.55) * (1 - range(t, 2.8, 3.0)), { dy: -140 });
+          DS.etq(c, "VAPOR", new THREE.Vector3(0.4, 6.5, 0.2), cam, range(t, 3.35, 3.6) * (1 - range(t, 3.9, 4.0)), { dy: 0, dx: 160 });
+          DS.etq(c, "NUVENS", nuv.position, cam, range(t, 4.0, 4.2) * (1 - range(t, 4.6, 4.7)), { dy: 40 });
+          DS.etq(c, "CHUVA", new THREE.Vector3(2.5, 4.5, -1), cam, range(t, 4.7, 4.95), { dy: 60, dx: 120 });
         }
-        await K.bindSeek(canvas, render, { warm: [{ renderer, scene, camera: cam }], duration: 5.6 });
+
+        // DR foi lido na hora em que o script rodou (depois do inline o host pode mudar de atributos)
+        await K.bindSeek(canvas, (t) => { st.T = t * D / DR; st.D = D; render(st.T); }, { warm: [st.warm, ...(st.extraWarm || [])], duration: DR });
       });
     })();
   </script>

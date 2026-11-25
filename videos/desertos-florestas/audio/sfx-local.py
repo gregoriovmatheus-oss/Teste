@@ -1,6 +1,7 @@
-"""sfx-local.py: efeitos sintetizados localmente (sem API) para "pausar o tempo".
-Whoosh em cada corte; chuva e estalo de dedos (f01/f13), passos (f02), lâmpada (f03), ar (f04),
-tom que corta (f05), batidas do coração (f07), tiques dos dias (f08), areia (f09), bipes do GPS (f11). Saída: assets/audio/sfx.wav (mono 48 kHz)."""
+"""sfx-local.py: efeitos sintetizados localmente (sem API) para "E se todos os desertos virassem florestas?".
+Whoosh em cada corte; vento na duna e o verde chegando (f01/f13), desertos acendendo (f02), lago (f03),
+gotas, trovão e chuva (f04), moléculas puxadas (f05), pássaros e água (f06), raios de sol (f07), calor (f08),
+vento da poeira (f09), pó caindo (f10), bichos (f11), pás e faixa crescendo (f12). Saída: assets/audio/sfx.wav (mono 48 kHz)."""
 import json, numpy as np, wave
 SR = 48000
 v = json.load(open('video.json')); DUR = v['duracao']
@@ -69,59 +70,74 @@ def batida():  # tum-tum do coração
 def tique(f=2400):
     n = int(SR * 0.03); k = np.arange(n) / SR
     return np.sin(2 * np.pi * f * k) * np.exp(-k * 220)
-# f01: chuva caindo até o estalo; estalo + anel (whoosh reverso) e a chuva some em câmera lenta
-add(C['f01'], env(chuva(1.25), 0.05, 0.4), 0.35)
-add(C['f01'] + 0.83, estalar(), 0.9)
-add(C['f01'] + 0.85, shimmer(1.6, False), 0.35)
-add(C['f01'] + 0.86, thud(42, 1.4), 0.5)
-add(C['f01'] + 0.9, whoosh(0.9), 0.4)
-# f02: passos do protagonista no asfalto molhado (o único som)
-for i in range(7):
-    add(C['f02'] + 0.3 + i * 0.69, clique(0.08, 160), 0.22)
-for i in range(3):
-    add(C['f02'] + 2.95 + i * 1.0, tique(), 0.18)
-# f03: zumbido da lâmpada que para; escurecer com grave
-add(C['f03'] + 0.2, env(zumbido_cai(3.2), 0.3, 0.2), 0.35)
-add(C['f03'] + 3.1, shimmer(0.9, False), 0.25)
-add(C['f03'] + 4.2, env(thud(38, 2.0), 0.4, 1.4), 0.4)
-# f04: ar sibilando (moléculas) até travar; inspiração bloqueada
-add(C['f04'] + 0.2, env(agua(4.2, 0.5), 0.6, 0.3), 0.12)
-add(C['f04'] + 4.4, thud(60, 0.4), 0.4)
-add(C['f04'] + 5.6, env(agua(1.0, 0.08), 0.6, 0.2), 0.25)
-add(C['f04'] + 6.6, estalo(), 0.25)
-# f05: tom do alto-falante que corta seco em 2,2 s (silêncio)
-n = int(SR * 2.2); k = np.arange(n) / SR
-add(C['f05'] + 0.1, np.sin(2 * np.pi * 220 * k) * (0.6 + 0.4 * np.sin(2 * np.pi * 3 * k)) * np.minimum(1, k * 8), 0.22)
-# f06: luz voltando (brilho subindo) e respiração
-add(C['f06'] + 0.5, shimmer(2.2, True), 0.35)
-add(C['f06'] + 1.9, env(agua(1.3, 0.1), 0.5, 0.6), 0.22)
-# f07: batidas do coração (1,16/s) e células estalando
-for i in range(9):
-    add(C['f07'] + 0.05 + i / 1.16, batida(), 0.5)
-r = np.random.default_rng(3)
-for dt in np.sort(r.uniform(3.0, 7.8, 30)):
-    add(C['f07'] + dt, tique(3000 + r.uniform(0, 1500)), 0.05)
-# f08: dias acendendo (tiques acelerando)
-for dt in 0.25 + 5.3 * np.sqrt(np.linspace(0, 1, 40)):
-    add(C['f08'] + dt, tique(1800), 0.09)
-# f09: areia escorrendo, rajada de 1 ano
-add(C['f09'] + 0.1, env(agua(5.8, 0.3), 0.4, 0.6), 0.1)
-add(C['f09'] + 2.4, env(agua(1.0, 0.45), 0.1, 0.6), 0.3)
-# f10: grave ao envelhecer
-add(C['f10'] + 1.8, env(thud(36, 2.6), 0.6, 1.8), 0.35)
-# f11: bipes do satélite e correção
-for i in range(9):
-    add(C['f11'] + 0.8 + i * 0.9, tique(1200), 0.12)
-add(C['f11'] + 4.6, clique(0.12, 700), 0.25)
-add(C['f11'] + 7.4, shimmer(0.8, False), 0.25)
-# f12: o segundo luminoso
-add(C['f12'] + 0.2, shimmer(2.4, True), 0.3)
-add(C['f12'] + 1.4, tique(2200), 0.25)
-# f13: estalo, a chuva volta a cair
-add(C['f13'] + 0.98, estalar(), 0.9)
-add(C['f13'] + 1.0, whoosh(0.9), 0.45)
-add(C['f13'] + 1.0, thud(42, 1.2), 0.4)
-add(C['f13'] + 1.2, env(chuva(6.4), 0.8, 1.5), 0.4)
+def vento(d, a=0.04):  # vento na areia: ruído grave com rajadas
+    n = int(SR * d); k = np.arange(n) / SR
+    x = lp(rng.standard_normal(n), a) * (0.6 + 0.4 * np.sin(2 * np.pi * 0.23 * k) * np.sin(2 * np.pi * 0.11 * k + 1))
+    return x / (np.abs(x).max() + 1e-9)
+def piu(f0=3200, d=0.12):  # canto curto de pássaro
+    n = int(SR * d); k = np.linspace(0, 1, n)
+    f = f0 * (1 + 0.35 * np.sin(np.pi * k))
+    return np.sin(2 * np.pi * np.cumsum(f) / SR) * np.sin(np.pi * k) ** 2
+def gota(f=1400):
+    n = int(SR * 0.09); k = np.arange(n) / SR
+    return np.sin(2 * np.pi * np.cumsum(f * (1 + 2.5 * np.exp(-k * 60))) / SR) * np.exp(-k * 45)
+def ronco_baixo(d, f0=40):
+    n = int(SR * d); k = np.arange(n) / SR
+    return (np.sin(2 * np.pi * f0 * k + 2 * np.sin(2 * np.pi * 0.7 * k)) * 0.6 + lp(rng.standard_normal(n), 0.01) * 3) * np.sin(np.pi * k / d)
+
+# f01: vento na duna; o verde chega (brilho subindo + whoosh) e pássaros
+add(C['f01'], env(vento(5.8), 0.05, 0.6), 0.35)
+add(C['f01'] + 3.6, whoosh(1.2), 0.45)
+add(C['f01'] + 3.9, shimmer(2.0, True), 0.35)
+for i, dt in enumerate([4.9, 5.1, 5.35]): add(C['f01'] + dt, piu(2800 + 400 * i), 0.18)
+# f02: desertos acendem (tique) e viram floresta (brilho)
+add(C['f02'] + 0.3, env(thud(40, 1.8), 0.3, 1.2), 0.3)
+add(C['f02'] + 1.8, tique(1800), 0.3)
+add(C['f02'] + 4.25, shimmer(1.6, True), 0.35)
+# f03: rocha → vale: água do lago, pássaros, bufo do hipopótamo
+add(C['f03'] + 0.1, env(vento(2.8, 0.02), 0.2, 0.8), 0.15)
+add(C['f03'] + 2.7, env(agua(3.6, 0.08), 0.8, 0.6), 0.18)
+for dt in [3.2, 3.5, 4.1]: add(C['f03'] + dt, piu(3400), 0.15)
+add(C['f03'] + 5.3, thud(55, 0.7), 0.45)
+# f04: gotas subindo, vapor, trovão e chuva
+for i in range(10): add(C['f04'] + 1.2 + i * 0.17, gota(1100 + 90 * i), 0.18)
+add(C['f04'] + 2.2, env(agua(1.6, 0.5), 0.5, 0.6), 0.15)
+add(C['f04'] + 4.0, env(ronco_baixo(1.8, 34), 0.05, 1.0), 0.45)
+add(C['f04'] + 4.6, env(chuva(1.4), 0.2, 0.3), 0.35)
+# f05: mudas brotando; moléculas puxadas para as copas
+add(C['f05'] + 0.1, shimmer(1.8, True), 0.28)
+for i in range(6): add(C['f05'] + 2.0 + i * 0.22, whoosh(0.35), 0.18)
+add(C['f05'] + 3.9, tique(2000), 0.25)
+# f06: pássaros, risadinha de vento nas folhas e água
+add(C['f06'], env(vento(5.3, 0.12), 0.3, 0.6), 0.1)
+for dt in [0.4, 0.7, 1.5, 2.3, 3.8, 4.4]: add(C['f06'] + dt, piu(3000 + 300 * (dt % 1)), 0.15)
+add(C['f06'] + 2.9, env(agua(2.0, 0.12), 0.3, 0.8), 0.2)
+# f07: raios chegando (tom) e luz devolvida (brilho subindo)
+add(C['f07'] + 0.3, env(np.sin(2 * np.pi * 660 * np.arange(int(SR * 1.1)) / SR), 0.3, 0.6), 0.08)
+add(C['f07'] + 1.3, env(thud(45, 1.0), 0.1, 0.6), 0.25)
+add(C['f07'] + 3.3, shimmer(1.5, True), 0.35)
+# f08: calor subindo (ronco grave)
+add(C['f08'] + 1.4, env(ronco_baixo(4.4, 46), 0.6, 1.0), 0.35)
+# f09: vento longo da poeira atravessando o oceano
+add(C['f09'] + 0.8, env(vento(3.4, 0.08), 0.6, 1.0), 0.4)
+add(C['f09'] + 0.9, whoosh(1.6), 0.35)
+add(C['f09'] + 3.1, tique(1800), 0.25)
+# f10: pó caindo (tiques finos) que para; grave no fim
+for i in range(14): add(C['f10'] + 0.05 + i * 0.09, tique(3200 + 180 * (i % 4)), 0.08 * (1 - i / 14))
+add(C['f10'] + 3.1, env(thud(36, 2.0), 0.3, 1.4), 0.35)
+# f11: vento, passos do camelo, guincho do feneco, clique do escorpião, mata crescendo
+add(C['f11'], env(vento(5.3), 0.1, 0.6), 0.25)
+for i in range(6): add(C['f11'] + 0.2 + i * 0.6, thud(80, 0.2), 0.15)
+add(C['f11'] + 1.85, piu(1800, 0.18), 0.2)
+add(C['f11'] + 2.3, clique(0.1, 900), 0.35)
+add(C['f11'] + 2.8, shimmer(2.2, False), 0.25)
+# f12: pás cavando e faixa verde crescendo
+for i in range(8): add(C['f12'] + 0.3 + i * 0.6, estalo(), 0.2)
+add(C['f12'] + 2.0, shimmer(3.4, True), 0.3)
+add(C['f12'] + 4.3, tique(2000), 0.25)
+# f13: vento calmo de fim de tarde; acorde suave no fecho
+add(C['f13'], env(vento(7.4), 0.2, 1.5), 0.3)
+add(C['f13'] + 4.3, shimmer(2.6, True), 0.25)
 
 out = out[: int(SR * DUR)]
 out = np.tanh(out * 1.2) * 0.8
