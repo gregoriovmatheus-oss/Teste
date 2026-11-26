@@ -399,7 +399,7 @@ const EM = {
   raiva: { br: 0.45, by: 0.27, bo: [0.95, 0.9], ab: 0.72, ol: [0, 0], so: -0.5 },
   nojo: { br: 0.3, by: 0.29, bo: [0.9, 0.7], ab: 0.42, ol: [0.2, -0.05], so: -0.6, nj: 1 },
   duvida: { br: 0.1, by: 0.31, bo: [0.85, 0.3], ab: 0.6, ol: [0.25, 0.15], so: -0.2, as: 1 },
-  bocejo: { br: -0.15, by: 0.36, bo: [0.8, 4.4], ab: 0.08, ol: [0, 0], so: 0 },
+  bocejo: { br: -0.15, by: 0.36, bo: [0.78, 5.6], ab: 0.08, ol: [0, 0], so: 0 },
   vergonha: { br: -0.25, by: 0.33, bo: [0.9, 0.35], ab: 0.4, ol: [0.3, -0.35], so: 0.35, ru: 1 },
   choro: { br: -0.55, by: 0.36, bo: [1.15, 1.8], ab: 0.2, ol: [0, -0.1], so: -0.9, la: 0.7 },
   nervoso: { br: -0.3, by: 0.37, bo: [1.05, 0.5], ab: 0.8, ol: [0.2, 0], so: -0.2, su: 0.6, pu: 1.3 },
@@ -508,7 +508,7 @@ export function pessoa({ longo, seed = 1, pele = COR.pele, cabelo, jaqueta, cami
   const capuz = contorno(new THREE.Mesh(liso(facetado(2, (v) => { v.z *= 0.75; v.y *= 0.55; if (v.z > 0.2) v.z = 0.2 + (v.z - 0.2) * 0.2; }, seed + 70, 0.02)), jm), 0.025);
   capuz.scale.set(0.17, 0.12, 0.13); capuz.position.set(0, 1.43, -0.11); capuz.rotation.x = -0.35; tronco.add(capuz);
   const zip = new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.45, 0.006), mat(0x9a9aa0, 0.3, { metalness: 0.8 })); zip.position.set(0.0, 1.13, 0.162); zip.rotation.x = 0.05; tronco.add(zip);
-  E.bracos.forEach((b) => { b.om.rotation.z = b.s * 0.08; b.cot.rotation.x = -0.18; });
+  E.bracos.forEach((b) => { b.om.rotation.set(0.07, 0, b.s * 0.1); b.cot.rotation.set(-0.3, 0, -b.s * 0.06); });   // braço solto: cotovelo levemente dobrado, mão à frente da coxa
   // 4 braços: tronco largo e fundo (peito em V), braços grossos do mesmo tamanho, os dois pares abertos para os lados
   if (bracos === 4) { tor.scale.x *= 1.2; tor.scale.z *= 1.1; abas.forEach((a) => { a.scale.x *= 1.2; a.scale.z *= 1.1; });
     E.bracos.forEach((b, i) => { b.manga.forEach((m) => { m.scale.x *= 1.22; m.scale.z *= 1.22; }); b.mao.scale.multiplyScalar(1.12);
@@ -518,7 +518,8 @@ export function pessoa({ longo, seed = 1, pele = COR.pele, cabelo, jaqueta, cami
   const escondeJaqueta = () => { abas.forEach((a) => (a.visible = false)); tronco.children.forEach((o) => { if (o !== tor && o !== pesc && o !== E.pescoco && !o.isGroup) { if (o.geometry && (o.geometry.type === "ConeGeometry" || o.geometry.type === "BoxGeometry")) o.visible = false; } }); capuz.visible = false; zip.visible = false; };
   if (roupa === "camiseta" || roupa === "pijama") { escondeJaqueta(); E.bracos.forEach((b) => { b.manga[0].material = matTecido(roupa === "pijama" ? jaqueta : camisa); b.om.children.forEach((o) => { if (o.geometry && (o.geometry.type === "IcosahedronGeometry" || o.geometry.type === "SphereGeometry" || o.geometry.type === "PolyhedronGeometry")) o.material = b.manga[0].material; }); b.manga[1].material = matPele(pele); if (roupa === "pijama") b.manga[1].material = matTecido(jaqueta);
       else { b.manga[0].scale.set(1.04, 0.55, 1.04); b.manga[0].position.y = -0.105; const bc = contorno(new THREE.Mesh(geoMembro(0.18, (t) => 0.05 - 0.006 * t, { seg: 7, an: 2 }), matPele(pele)), 0.04); bc.position.y = -0.235; b.om.add(bc); } }); tor.material = matTecido(roupa === "pijama" ? jaqueta : camisa);
-    for (const s of [1, -1]) { const tp = contorno(new THREE.Mesh(liso(facetado(FAC() ? 1 : 2, (v) => { v.y -= 0.35 * v.x * v.x; }, seed + 140 + s, 0.01)), tor.material), 0.03); tp.scale.set(0.11, 0.05, 0.085); tp.position.set(s * 0.135, 1.33, -0.01); tp.rotation.z = -s * 0.32; tronco.add(tp); } }   // ponte do ombro: liga o tronco à manga (sem ombro de boneco)
+    for (const s of [1, -1]) { const tp = contorno(new THREE.Mesh(liso(facetado(FAC() ? 1 : 2, (v) => { v.y -= 0.35 * v.x * v.x; }, seed + 140 + s, 0.01)), tor.material), 0.03); tp.scale.set(0.11, 0.05, 0.085); tp.position.set(s * 0.135, 1.33, -0.01); tp.rotation.z = -s * 0.32; tronco.add(tp); }
+    const gr = contorno(new THREE.Mesh(new THREE.TorusGeometry(feminina ? 0.066 : 0.078, 0.02, 5, 14), tor.material), 0.03); gr.rotation.x = Math.PI / 2 - 0.18; gr.scale.set(1, 0.82, 1); gr.position.set(0, feminina ? 1.405 : 1.415, 0.008); tronco.add(gr); }   // gola redonda: encurta o pescoço aparente; ponte do ombro: liga o tronco à manga (sem ombro de boneco)
   if (R.userData.cinto && (feminina || roupa === "camiseta" || roupa === "pijama")) R.userData.cinto.visible = false;
   if (roupa === "jaleco") { abas.forEach((a) => { a.scale.y = 1.45; }); capuz.visible = false; zip.visible = false; }
   if (roupa === "uniforme") { zip.visible = false; tor.material = matTecido(jaqueta); abas.forEach((a) => (a.scale.x = 1.15)); }
