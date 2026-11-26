@@ -444,12 +444,12 @@ export function pessoa({ longo, seed = 1, pele = COR.pele, cabelo, jaqueta, cami
     for (const s of [1, -1]) { const m = contorno(new THREE.Mesh(liso(facetado(2, (v) => { v.y *= 2.6; v.x *= 0.6; if (v.y < 0) v.x *= 1 + v.y * 0.3; }, seed + 85 + s, 0.02)), lm), 0.03); m.scale.set(0.045, 0.06, 0.035); m.position.set(s * 0.112, -0.035, 0.02); m.rotation.z = s * 0.06; mechas.add(m); } }
   // tronco: camisa + jaqueta aberta com gola (as abas da jaqueta balançam no andar)
   const pesc = new THREE.Mesh(new THREE.CylinderGeometry(feminina ? 0.054 : 0.066, feminina ? 0.07 : 0.085, 0.15, 8), matPele(pele)); pesc.position.y = 1.45; tronco.add(pesc);
-  const tor = contorno(new THREE.Mesh(liso(facetado(FAC() ? 2 : 3, (v) => formaTronco(v, feminina), seed + 20, FAC() ? 0.018 : 0.01)), matTecido(camisa)), 0.02);
+  const tor = contorno(new THREE.Mesh(liso(facetado(3, (v) => formaTronco(v, feminina), seed + 20, FAC() ? 0.018 : 0.01)), matTecido(camisa)), 0.02);
   tor.scale.set(0.2, 0.245, 0.218); tor.position.set(0, 1.155, -0.004); tronco.add(tor);
   const jm = matTecido(jaqueta, 0.7), abas = [];
   for (const s of [1, -1]) {
     const piv = new THREE.Group(); piv.position.set(s * 0.035, 1.38, -0.005); tronco.add(piv);
-    const lado = contorno(new THREE.Mesh(liso(facetado(FAC() ? 2 : 3, (v) => { formaTronco(v, feminina); v.x *= 0.97; v.z *= 1.04; if (v.x * s < -0.25) v.x = -0.25 * s; }, seed + 30 + s, 0.01)), jm), 0.02);
+    const lado = contorno(new THREE.Mesh(liso(facetado(3, (v) => { formaTronco(v, feminina); v.x *= 0.97; v.z *= 1.04; if (v.x * s < -0.25) v.x = -0.25 * s; }, seed + 30 + s, 0.01)), jm), 0.02);
     lado.scale.set(0.198, 0.25, 0.198); lado.position.y = -0.235; piv.add(lado); abas.push(piv);
     const gola = contorno(new THREE.Mesh(new THREE.ConeGeometry(0.07, 0.17, 4), jm), 0.04);
     gola.position.set(s * 0.08, 1.395, 0.09); gola.rotation.set(0.2, 0, s * 0.6); gola.scale.set(0.85, 0.85, 0.4); tronco.add(gola);
