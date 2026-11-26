@@ -402,10 +402,12 @@ function formaTronco(v, fem = false) {
   if (y < -0.2) { const k = Math.min(1, (-y - 0.2) / 1.1); v.z *= 1 - 0.18 * k; }
   if (y < -1.15) v.y = -1.15 + (y + 1.15) * 0.25;                                                                        // barra reta (sem bico entre as pernas)
 }
+const PK = 0.93, QY = 0.92 - 0.88 * (1 - PK);   // pernas 7% mais curtas (proporção: perna ~51% da altura); QY = altura do quadril
 function esqueleto(R, { pele, jaqueta, calca, tenis = COR.tenis, seed, simples }) {
-  const quadril = new THREE.Group(); quadril.position.y = 0.92; R.add(quadril);
+  const quadril = new THREE.Group(); quadril.position.y = simples ? 0.92 : QY; R.add(quadril);
   const coluna = new THREE.Group(); quadril.add(coluna);
   const tronco = new THREE.Group(); tronco.position.y = -0.92; coluna.add(tronco);
+  const pk = simples ? 1 : PK;
   const pescoco = new THREE.Group(); pescoco.position.set(0, simples ? 1.47 : 1.445, 0); tronco.add(pescoco);
   const cab = new THREE.Group(); cab.position.y = 0.18; pescoco.add(cab);
   const seg = simples ? 5 : 10, jm = simples ? mat(jaqueta, 0.7) : matTecido(jaqueta, 0.75), pm = simples ? matPele(pele) : matPeleLiso(pele), ct = (m, k) => (simples ? m : contorno(m, k));
@@ -433,10 +435,10 @@ function esqueleto(R, { pele, jaqueta, calca, tenis = COR.tenis, seed, simples }
   });
   const pernas = [1, -1].map((s) => {
     const q = new THREE.Group(); q.position.set(s * 0.1, -0.02, 0); quadril.add(q);
-    const c = ct(new THREE.Mesh(simples ? new THREE.CylinderGeometry(0.085, 0.07, 0.46, seg) : geoMembro(0.5, (t) => 0.113 - 0.04 * t - 0.012 * t * t + 0.006 * gauss((t - 0.3) ** 2 * 15, 0.7), { zf: (t) => 1.08 - 0.1 * t }), matTecido(calca)), 0.03); c.position.y = -0.24; q.add(c);
-    const j = new THREE.Group(); j.position.y = -0.46; q.add(j);
-    const c2 = ct(new THREE.Mesh(simples ? new THREE.CylinderGeometry(0.07, 0.06, 0.42, seg) : geoMembro(0.44, (t) => 0.064 - 0.024 * t + 0.008 * gauss((t - 0.28) ** 2 * 25, 0.7), { zt: (t) => 1 + 0.3 * gauss((t - 0.28) ** 2 * 20, 0.7) }), matTecido(calca)), 0.03); c2.position.y = -0.21; j.add(c2);
-    const pe = new THREE.Group(); pe.position.y = -0.42; j.add(pe);
+    const c = ct(new THREE.Mesh(simples ? new THREE.CylinderGeometry(0.085, 0.07, 0.46, seg) : geoMembro(0.5, (t) => 0.113 - 0.04 * t - 0.012 * t * t + 0.006 * gauss((t - 0.3) ** 2 * 15, 0.7), { zf: (t) => 1.08 - 0.1 * t }), matTecido(calca)), 0.03); c.position.y = -0.24 * pk; c.scale.y = pk; q.add(c);
+    const j = new THREE.Group(); j.position.y = -0.46 * pk; q.add(j);
+    const c2 = ct(new THREE.Mesh(simples ? new THREE.CylinderGeometry(0.07, 0.06, 0.42, seg) : geoMembro(0.44, (t) => 0.064 - 0.024 * t + 0.008 * gauss((t - 0.28) ** 2 * 25, 0.7), { zt: (t) => 1 + 0.3 * gauss((t - 0.28) ** 2 * 20, 0.7), zf: (t) => 1 + 0.1 * gauss((t - 0.03) ** 2 * 150, 0.7) }), matTecido(calca)), 0.03); c2.position.y = -0.21 * pk; c2.scale.y = pk; j.add(c2);
+    const pe = new THREE.Group(); pe.position.y = -0.42 * pk; j.add(pe);
     const sap = ct(new THREE.Mesh(simples ? T_box(0.11, 0.08, 0.22) : liso(facetado(2, (v) => { v.x *= 0.058 * (v.z > 0 ? 1 : 0.9); v.y *= 0.045; v.z *= 0.12; if (v.y < -0.02) v.y = -0.02 - (v.y + 0.02) * 0.3; if (v.z < -0.03 && v.y > 0.02) v.y += 0.02; }, seed + 99 + s, 0.005)), mat(tenis, 0.6, { flatShading: false })), 0.04); sap.position.set(0, -0.03, 0.045); pe.add(sap);
     if (!simples) { const sola = new THREE.Mesh(T_box(0.118, 0.025, 0.232), mat(0xe8e4dc, 0.6)); sola.position.set(0, -0.065, 0.047); pe.add(sola); }
     return { q, j, pe, s };
@@ -474,8 +476,8 @@ export function pessoa({ longo, seed = 1, pele = COR.pele, cabelo, jaqueta, cami
   const jm = matTecido(jaqueta, 0.7), abas = [];
   for (const s of [1, -1]) {
     const piv = new THREE.Group(); piv.position.set(s * 0.035, 1.38, -0.005); tronco.add(piv);
-    const lado = contorno(new THREE.Mesh(liso(facetado(3, (v) => { formaTronco(v, feminina); v.x *= 0.97; v.z *= 1.04; if (v.x * s < -0.25) v.x = -0.25 * s; }, seed + 30 + s, 0.01)), jm), 0.02);
-    lado.scale.set(0.198, 0.25, 0.198); lado.position.y = -0.235; piv.add(lado); abas.push(piv);
+    const lado = contorno(new THREE.Mesh(liso(facetado(3, (v) => { formaTronco(v, feminina); v.x *= 0.97; v.z *= 1.04; const lim = v.z > 0.05 ? -0.25 : -0.2; if (v.x * s < lim) v.x = lim * s; } /* frente aberta, costas fechadas */, seed + 30 + s, 0.01)), jm), 0.02);
+    lado.scale.set(0.198, 0.25, 0.222); lado.position.y = -0.235; piv.add(lado); abas.push(piv);
     const gola = contorno(new THREE.Mesh(new THREE.ConeGeometry(0.07, 0.17, 4), jm), 0.04);
     gola.position.set(s * 0.08, 1.395, 0.09); gola.rotation.set(0.2, 0, s * 0.6); gola.scale.set(0.85, 0.85, 0.4); tronco.add(gola);
   }
@@ -541,7 +543,7 @@ export function figurante({ seed = 1, pele = COR.pele, cabelo = COR.cabelo, roup
   R.scale.setScalar(0.94 + rr() * 0.14);
   const p = { root: R, ...E, abas: [], mechas: null, peito: tor };
   p.emocao = (nome) => { const e = typeof nome === "object" ? nome : EM[nome] || EM.calmo; olhos.forEach((o) => (o.scale.y = 0.2 + 1.3 * Math.min(1, e.ab / 0.62))); };
-  p.emocaoMix = (a, b, k) => p.emocao(k < 0.5 ? a : b); p.estado = () => EM.calmo; p.olharAtual = () => null;
+  p.emocaoMix = (a, b, k) => p.emocao(k < 0.5 ? a : b); p._qy = 0.92; p.estado = () => EM.calmo; p.olharAtual = () => null;
   p.piscar = (b) => olhos.forEach((o) => (o.scale.y = Math.max(0.15, 1.3 * (1 - b))));
   p.respira = (k) => { tor.scale.z = 0.2 * (1 + 0.05 * k); };
   guardaDescanso(p);
@@ -626,8 +628,8 @@ export const antecipa = (x) => { const c = 1.6; x = Math.min(1, Math.max(0, x));
 export const passa = (x) => { const c = 1.5; x = Math.min(1, Math.max(0, x)) - 1; return 1 + (c + 1) * x * x * x + c * x * x; };   // passa do ponto e volta
 export function pose(p, nome, k = 1, { lado, curva } = {}) {
   const P = POSES[nome]; if (!P || k <= 0) return; k = curva === "mola" ? passa(k) : curva === "antecipa" ? antecipa(k) : sm(Math.min(1, k));
-  if (P.root) { _mix(p.root, P.root, k); p.quadril.position.y = L_(p.quadril.position.y, 0.92 + (P.rootY || 0), k); }
-  if (P.quadril) p.quadril.position.y = L_(p.quadril.position.y, 0.92 + P.quadril.y, k);
+  if (P.root) { _mix(p.root, P.root, k); p.quadril.position.y = L_(p.quadril.position.y, (p._qy ?? QY) + (P.rootY || 0), k); }
+  if (P.quadril) p.quadril.position.y = L_(p.quadril.position.y, (p._qy ?? QY) + P.quadril.y, k);
   if (P.coluna) _mix(p.coluna, P.coluna, k);
   if (P.cab) _mix(p.cab, P.cab, k);
   if (P.bracos) { const B = P.bracos, ld = lado ?? B.lado; p.bracos.forEach((b, i) => { if (ld !== undefined && ld !== "ambos" && ld !== i) return; const s = b.s;
@@ -1008,7 +1010,7 @@ export function correr(p, t, { vel = 1, amp = 1, fase = 0 } = {}) {
 // sentar/levantar com antecipação (inclina o tronco à frente no meio do movimento). k 0 = em pé, 1 = sentado.
 export function sentar(p, k) { pose(p, "sentado", k); const m = Math.sin(Math.PI * Math.min(1, Math.max(0, k))); p.coluna.rotation.x += 0.45 * m; p.cab.rotation.x -= 0.2 * m; p.bracos.forEach((b) => (b.om.rotation.x -= 0.4 * m)); }
 // deitar (0 em pé → 1 deitado de costas); acordar = deitar com k indo de 1 a 0, depois pose "espreguicar".
-export function deitar(p, k) { sentar(p, Math.min(1, k * 2)); const e = sm(Math.max(0, Math.min(1, k * 2 - 1))); p.root.rotation.x = -Math.PI / 2 * e; p.quadril.position.y = L_(p.quadril.position.y, 0.92 + 0.16, e); pose(p, "deitado", e); }
+export function deitar(p, k) { sentar(p, Math.min(1, k * 2)); const e = sm(Math.max(0, Math.min(1, k * 2 - 1))); p.root.rotation.x = -Math.PI / 2 * e; p.quadril.position.y = L_(p.quadril.position.y, (p._qy ?? QY) + 0.16, e); pose(p, "deitado", e); }
 // virar no lugar com passinhos: k 0..1 vai do ângulo de → para
 export function virar(p, k, de, para) { const e = sm(Math.min(1, Math.max(0, k))); p.root.rotation.y = L_(de, para, e); const st = Math.sin(Math.PI * e);
   p.pernas.forEach((l, i) => { const a = Math.max(0, Math.sin(e * Math.PI * 4 + (i ? Math.PI : 0))) * st; l.q.rotation.x -= 0.35 * a; l.j.rotation.x += 0.6 * a; }); p.cab.rotation.y += (para - de) * 0.25 * Math.sin(Math.PI * Math.min(1, e * 1.6)); }
