@@ -358,7 +358,8 @@ export const EXPRESSOES = Object.keys(EM);
 // membro: cilindro com perfil de raio r(t) (t 0 em cima .. 1 embaixo) e frente/trás (zf, zt); pontas planas que se sobrepõem na junta
 function geoMembro(h, rx, { zf = (t) => 1, zt = (t) => 1, seg = 8, an = 5 } = {}) {
   const g = new THREE.CylinderGeometry(1, 1, h, seg, an), p = g.attributes.position;
-  for (let i = 0; i < p.count; i++) { const y = p.getY(i), t = 0.5 - y / h, r = rx(t), z = p.getZ(i); p.setX(i, p.getX(i) * r); p.setZ(i, z * r * (z > 0 ? zf(t) : zt(t))); }
+  for (let i = 0; i < p.count; i++) { const y = p.getY(i), t = 0.5 - y / h, r = rx(t), z = p.getZ(i); p.setX(i, p.getX(i) * r); p.setZ(i, z * r * (z > 0 ? zf(t) : zt(t)));
+    if (Math.abs(p.getX(i)) + Math.abs(z) < 1e-6) p.setY(i, y + Math.sign(y) * r * 0.3); }   // pontas em cúpula (ombro/cotovelo/joelho redondos, sem tampa chata)
   g.computeVertexNormals(); return g;
 }
 // tronco v6: caixa arredondada (superelipse), ombros largos e caídos, peito, cintura e quadril; fem: cintura fina e quadril largo
@@ -372,6 +373,7 @@ function formaTronco(v, fem = false) {
   v.z *= 0.62; v.z += (v.z > 0 ? 1 : 0) * (fem ? 0.1 : 0.07) * gauss((y - 0.35) ** 2 * 5, 0.7);                           // peito
   if (y > 0.7) v.y = 0.7 + (y - 0.7) * 0.45 - 0.22 * Math.abs(v.x) ** 2;                                                  // ombros caídos (trapézio)
   if (y < -0.2) { const k = Math.min(1, (-y - 0.2) / 1.1); v.z *= 1 - 0.18 * k; }
+  if (y < -1.15) v.y = -1.15 + (y + 1.15) * 0.25;                                                                        // barra reta (sem bico entre as pernas)
 }
 function esqueleto(R, { pele, jaqueta, calca, tenis = COR.tenis, seed, simples }) {
   const quadril = new THREE.Group(); quadril.position.y = 0.92; R.add(quadril);
@@ -383,7 +385,7 @@ function esqueleto(R, { pele, jaqueta, calca, tenis = COR.tenis, seed, simples }
   const bracos = [1, -1].map((s) => {
     const om = new THREE.Group(); om.position.set(s * (simples ? 0.235 : 0.228), simples ? 1.36 : 1.335, 0); tronco.add(om);
     const sup = ct(new THREE.Mesh(simples ? new THREE.CylinderGeometry(0.062, 0.055, 0.32, seg) : geoMembro(0.34, (t) => 0.063 - 0.012 * t + 0.006 * gauss((t - 0.35) ** 2 * 20, 0.7), { seg: FAC() ? 7 : 10, an: 3 }), jm), 0.04); sup.position.y = -0.16; om.add(sup);
-    const omb = new THREE.Mesh(simples ? new THREE.IcosahedronGeometry(0.068, 0) : FAC() ? new THREE.IcosahedronGeometry(0.074, 1) : new THREE.SphereGeometry(0.074, 10, 8), jm); omb.scale.set(1.05, 0.85, 1); omb.position.y = -0.012; om.add(omb);
+    const omb = new THREE.Mesh(simples ? new THREE.IcosahedronGeometry(0.068, 0) : FAC() ? new THREE.IcosahedronGeometry(0.06, 1) : new THREE.SphereGeometry(0.06, 10, 8), jm); omb.scale.set(1.02, 0.8, 1); omb.position.y = -0.026; om.add(omb);
     const cot = new THREE.Group(); cot.position.y = -0.32; om.add(cot);
     const inf = ct(new THREE.Mesh(simples ? new THREE.CylinderGeometry(0.055, 0.048, 0.3, seg) : geoMembro(0.31, (t) => 0.056 - 0.018 * t * t + 0.004 * gauss((t - 0.2) ** 2 * 25, 0.7), { seg: FAC() ? 7 : 10, an: 3 }), jm), 0.04); inf.position.y = -0.15; cot.add(inf);
     const pulso = new THREE.Group(); pulso.position.y = -0.3; cot.add(pulso);
@@ -404,9 +406,9 @@ function esqueleto(R, { pele, jaqueta, calca, tenis = COR.tenis, seed, simples }
   });
   const pernas = [1, -1].map((s) => {
     const q = new THREE.Group(); q.position.set(s * 0.1, -0.02, 0); quadril.add(q);
-    const c = ct(new THREE.Mesh(simples ? new THREE.CylinderGeometry(0.085, 0.07, 0.46, seg) : geoMembro(0.5, (t) => 0.104 - 0.034 * t - 0.012 * t * t, { zf: (t) => 1.08 - 0.1 * t }), matTecido(calca)), 0.03); c.position.y = -0.24; q.add(c);
+    const c = ct(new THREE.Mesh(simples ? new THREE.CylinderGeometry(0.085, 0.07, 0.46, seg) : geoMembro(0.5, (t) => 0.113 - 0.04 * t - 0.012 * t * t + 0.006 * gauss((t - 0.3) ** 2 * 15, 0.7), { zf: (t) => 1.08 - 0.1 * t }), matTecido(calca)), 0.03); c.position.y = -0.24; q.add(c);
     const j = new THREE.Group(); j.position.y = -0.46; q.add(j);
-    const c2 = ct(new THREE.Mesh(simples ? new THREE.CylinderGeometry(0.07, 0.06, 0.42, seg) : geoMembro(0.44, (t) => 0.06 - 0.022 * t + 0.006 * gauss((t - 0.28) ** 2 * 25, 0.7), { zt: (t) => 1 + 0.3 * gauss((t - 0.28) ** 2 * 20, 0.7) }), matTecido(calca)), 0.03); c2.position.y = -0.21; j.add(c2);
+    const c2 = ct(new THREE.Mesh(simples ? new THREE.CylinderGeometry(0.07, 0.06, 0.42, seg) : geoMembro(0.44, (t) => 0.064 - 0.024 * t + 0.008 * gauss((t - 0.28) ** 2 * 25, 0.7), { zt: (t) => 1 + 0.3 * gauss((t - 0.28) ** 2 * 20, 0.7) }), matTecido(calca)), 0.03); c2.position.y = -0.21; j.add(c2);
     const pe = new THREE.Group(); pe.position.y = -0.42; j.add(pe);
     const sap = ct(new THREE.Mesh(simples ? T_box(0.11, 0.08, 0.22) : liso(facetado(2, (v) => { v.x *= 0.058 * (v.z > 0 ? 1 : 0.9); v.y *= 0.045; v.z *= 0.12; if (v.y < -0.02) v.y = -0.02 - (v.y + 0.02) * 0.3; if (v.z < -0.03 && v.y > 0.02) v.y += 0.02; }, seed + 99 + s, 0.005)), mat(tenis, 0.6, { flatShading: false })), 0.04); sap.position.set(0, -0.03, 0.045); pe.add(sap);
     if (!simples) { const sola = new THREE.Mesh(T_box(0.118, 0.025, 0.232), mat(0xe8e4dc, 0.6)); sola.position.set(0, -0.065, 0.047); pe.add(sola); }
@@ -440,7 +442,7 @@ export function pessoa({ longo, seed = 1, pele = COR.pele, cabelo, jaqueta, cami
     for (const s of [1, -1]) { const m = contorno(new THREE.Mesh(liso(facetado(2, (v) => { v.y *= 2.6; v.x *= 0.6; if (v.y < 0) v.x *= 1 + v.y * 0.3; }, seed + 85 + s, 0.02)), lm), 0.03); m.scale.set(0.045, 0.06, 0.035); m.position.set(s * 0.112, -0.035, 0.02); m.rotation.z = s * 0.06; mechas.add(m); } }
   // tronco: camisa + jaqueta aberta com gola (as abas da jaqueta balançam no andar)
   const pesc = new THREE.Mesh(new THREE.CylinderGeometry(feminina ? 0.054 : 0.066, feminina ? 0.07 : 0.085, 0.15, 8), matPele(pele)); pesc.position.y = 1.45; tronco.add(pesc);
-  const tor = contorno(new THREE.Mesh(liso(facetado(FAC() ? 2 : 3, (v) => formaTronco(v, feminina), seed + 20, FAC() ? 0.04 : 0.01)), matTecido(camisa)), 0.02);
+  const tor = contorno(new THREE.Mesh(liso(facetado(FAC() ? 2 : 3, (v) => formaTronco(v, feminina), seed + 20, FAC() ? 0.018 : 0.01)), matTecido(camisa)), 0.02);
   tor.scale.set(0.2, 0.245, 0.196); tor.position.set(0, 1.155, -0.004); tronco.add(tor);
   const jm = matTecido(jaqueta, 0.7), abas = [];
   for (const s of [1, -1]) {
@@ -458,9 +460,9 @@ export function pessoa({ longo, seed = 1, pele = COR.pele, cabelo, jaqueta, cami
   // roupas
   const escondeJaqueta = () => { abas.forEach((a) => (a.visible = false)); tronco.children.forEach((o) => { if (o !== tor && o !== pesc && o !== E.pescoco && !o.isGroup) { if (o.geometry && (o.geometry.type === "ConeGeometry" || o.geometry.type === "BoxGeometry")) o.visible = false; } }); capuz.visible = false; zip.visible = false; };
   if (roupa === "camiseta" || roupa === "pijama") { escondeJaqueta(); E.bracos.forEach((b) => { b.manga[0].material = matTecido(roupa === "pijama" ? jaqueta : camisa); b.om.children.forEach((o) => { if (o.geometry && (o.geometry.type === "IcosahedronGeometry" || o.geometry.type === "SphereGeometry" || o.geometry.type === "PolyhedronGeometry")) o.material = b.manga[0].material; }); b.manga[1].material = matPele(pele); if (roupa === "pijama") b.manga[1].material = matTecido(jaqueta);
-      else { b.manga[0].scale.set(1.12, 0.55, 1.12); b.manga[0].position.y = -0.09; const bc = contorno(new THREE.Mesh(geoMembro(0.18, (t) => 0.05 - 0.006 * t, { seg: 7, an: 2 }), matPele(pele)), 0.04); bc.position.y = -0.235; b.om.add(bc); } }); tor.material = matTecido(roupa === "pijama" ? jaqueta : camisa); }
+      else { b.manga[0].scale.set(1.12, 0.55, 1.12); b.manga[0].position.y = -0.105; const bc = contorno(new THREE.Mesh(geoMembro(0.18, (t) => 0.05 - 0.006 * t, { seg: 7, an: 2 }), matPele(pele)), 0.04); bc.position.y = -0.235; b.om.add(bc); } }); tor.material = matTecido(roupa === "pijama" ? jaqueta : camisa); }
   if (R.userData.cinto && (feminina || roupa === "camiseta" || roupa === "pijama")) R.userData.cinto.visible = false;
-  if (roupa === "jaleco") { abas.forEach((a) => { a.scale.y = 1.45; }); capuz.visible = false; }
+  if (roupa === "jaleco") { abas.forEach((a) => { a.scale.y = 1.45; }); capuz.visible = false; zip.visible = false; }
   if (roupa === "uniforme") { zip.visible = false; tor.material = matTecido(jaqueta); abas.forEach((a) => (a.scale.x = 1.15)); }
   if (roupa === "casaco") { abas.forEach((a) => a.scale.set(1.1, 1.15, 1.15)); E.bracos.forEach((b) => b.manga.forEach((m) => m.scale.set(1.2, 1, 1.2))); cachecol = true; }
   // acessórios
