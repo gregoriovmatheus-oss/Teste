@@ -1,0 +1,20 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#000}canvas{position:absolute;inset:0;width:1080px;height:1920px}</style></head><body><canvas id="c"></canvas>
+<script type="module">
+import * as THREE from "./assets/lib/three.module.js";
+const U = new URLSearchParams(location.search);
+const LP = await import("./assets/lib/blocks/" + (U.get("lib") || "lowpoly.js"));
+const CI = await import("./assets/lib/blocks/cinema.js");
+const P = LP.palco(null, { webgl: document.getElementById("c"), foco: 3, faixa: 1.5, desfoque: 14 }); const { S, cam } = P;
+LP.luz(P, "interior"); CI.cenario(S, "escritorio");
+const E = [{ seed: 4, jaqueta: 0x2f4f6f }, { seed: 31, feminina: true, roupa: "camiseta", camisa: 0xc84a6a }, { seed: 32, idade: "idoso", roupa: "casaco" }, { seed: 34, roupa: "jaleco", oculos: true, barba: false }];
+const ps = E.map((e, i) => { const p = LP.pessoa(e); p.root.position.x = (i - 1.5) * 0.7; S.add(p.root); return p; });
+cam.position.set(0.8, 1.4, 3.2); cam.lookAt(0, 1.2, 0);
+const gl = P.renderer || null;
+for (let f = 0; f < 3; f++) { ps.forEach((p, i) => { p.reset(); LP.ator(p, f / 30, { seed: i + 1, emocao: "alegre", fala: true }); }); P.T = 1; P.D = 10; P.draw(); }
+const t0 = performance.now(); const N = 12;
+for (let f = 0; f < N; f++) { ps.forEach((p, i) => { p.reset(); LP.ator(p, 1 + f / 30, { seed: i + 1, emocao: "alegre", fala: true, gestos: true }); }); P.T = 1; P.D = 10; P.draw(); document.getElementById("c").getContext && 0; }
+const c = document.getElementById("c"); const g = c.getContext("webgl2") || c.getContext("webgl"); const px = new Uint8Array(4); g && g.readPixels(0, 0, 1, 1, g.RGBA, g.UNSIGNED_BYTE, px);
+window.MS = (performance.now() - t0) / N; window.PRONTO = true;
+</script></body></html>
