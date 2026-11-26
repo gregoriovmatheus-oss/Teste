@@ -57,12 +57,12 @@ export function painel(ctx, x, y, w, h, a = 1, { borda = AZUL } = {}) {
 export function etq(ctx, s, v, cam, a = 1, { cor = AZUL, tam = 26, dy = -120, dx = 0 } = {}) {
   if (a <= 0.003) return;
   const [x, y, z] = proj(v, cam); if (z > 1) return;
-  const ly = clamp(y + dy, 660, 990), lx = clamp(x + dx, 120, 900);
+  ctx.save(); ctx.font = `600 ${tam}px "JetBrains Mono", monospace`; ctx.letterSpacing = `${(0.22 * tam).toFixed(1)}px`;
+  const w = ctx.measureText(s).width + 36; ctx.restore();
+  const ly = clamp(y + dy, 660, 990), lx = clamp(x + dx, w / 2 + 40, 940 - w / 2);
   ctx.save(); ctx.globalAlpha = Math.min(1, a) * 0.85; ctx.strokeStyle = cor; ctx.lineWidth = 2;
   ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(lx, ly + (ly < y ? 22 : -22)); ctx.stroke();
   ctx.fillStyle = cor; ctx.beginPath(); ctx.arc(x, y, 6, 0, 6.283); ctx.fill(); ctx.restore();
-  ctx.save(); ctx.font = `600 ${tam}px "JetBrains Mono", monospace`; ctx.letterSpacing = `${(0.22 * tam).toFixed(1)}px`;
-  const w = ctx.measureText(s).width + 36; ctx.restore();
   painel(ctx, lx - w / 2, ly - 24, w, 48, a, { borda: cor });
   txt(ctx, s, lx, ly + 1, { tam, cor: "#fff", a, esp: 0.22, sombra: false });
 }
@@ -122,7 +122,7 @@ export function raios2D(ctx, x, y, a, { n = 14, seed = 9, cor = "255,222,170", r
 const DENS = `
 float dens(float x){
   if (x < 0.0 || x > 1.0) return 0.0;
-  float b = 0.62 + 0.2 * sin(x * 57.0 + 0.4) + 0.12 * sin(x * 151.0 + 1.3) + 0.08 * sin(x * 311.0 + 2.1);
+  float b = 0.78 + 0.05 * sin(x * 57.0 + 0.4) + 0.05 * sin(x * 151.0 + 1.3) + 0.06 * sin(x * 311.0 + 2.1) + 0.06 * sin(x * 797.0) + 0.05 * sin(x * 1531.0);
   b *= smoothstep(0.0, 0.05, x) * (1.0 - smoothstep(0.9, 1.0, x));
   b *= 1.0 - 0.92 * exp(-pow((x - 0.73) / 0.02, 2.0));
   b *= mix(0.45, 1.0, smoothstep(0.08, 0.3, x));
@@ -141,7 +141,7 @@ function matAnel(u) {
       vec3 d = vW - uC; float r = length(d); float x = (r - uR1) / (uR2 - uR1); float b = dens(x);
       vec3 e1 = normalize(cross(uN, abs(uN.y) < 0.9 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0))); vec3 e2 = cross(uN, e1);
       float ang = atan(dot(d, e2), dot(d, e1)) / 6.2831853 + 0.5;
-      b *= smoothstep(uRev, uRev - 0.04, ang) * (0.92 + 0.08 * sin(ang * 900.0 + x * 40.0));
+      b *= smoothstep(uRev, uRev - 0.04, ang) * (0.97 + 0.03 * sin(ang * 900.0 + x * 40.0));
       if (b <= 0.001) discard;
       vec3 L = normalize(uL); float s = dot(d, L); float perp = length(d - s * L);
       float sh = 1.0 - (1.0 - smoothstep(uRe * 0.97, uRe * 1.03, perp)) * step(s, 0.0);
@@ -162,7 +162,7 @@ export function anel(o = {}) {
   const u = uAnel(o);
   const mesh = new THREE.Mesh(new THREE.RingGeometry(o.r1 * 0.995, o.r2 * 1.005, o.seg, 3), matAnel(u));
   mesh.frustumCulled = false; mesh.renderOrder = 2;
-  const sync = () => { mesh.updateMatrixWorld(true); mesh.getWorldPosition(u.uC.value); u.uN.value.set(0, 0, 1).transformDirection(mesh.matrixWorld); };
+  const sync = () => { mesh.updateWorldMatrix(true, false); mesh.getWorldPosition(u.uC.value); u.uN.value.set(0, 0, 1).transformDirection(mesh.matrixWorld); };
   return { mesh, u, sync };
 }
 // sombra do anel numa esfera (Terra/Saturno): casca escura por cima, desenhada onde o raio de sol cruza o anel
@@ -308,4 +308,15 @@ export function predioEscala(h = 1, { cor = 0x6c7480 } = {}) {
 export function numero(ctx, s, x, y, a = 1, { tam = 120, cor = "#fff", sub = "", subCor = AZUL } = {}) {
   txt(ctx, s, x, y, { tam, cor, a, peso: 600, esp: 0.02 });
   if (sub) txt(ctx, sub, x, y + tam * 0.72, { tam: Math.round(tam * 0.26), cor: subCor, a, esp: 0.3 });
+}
+// neve caindo (Points com halo): update(t)
+export function neve(S, { n = 900, area = [8, 5, 8], centro = [0, 0, 0], vel = 0.55, tam = 0.035, seed = 5, cor = 0xffffff } = {}) {
+  const r = mulberry32(seed), P = [], pos = new Float32Array(n * 3);
+  for (let i = 0; i < n; i++) P.push([(r() - 0.5) * area[0], r() * area[1], (r() - 0.5) * area[2], r() * 6.28, 0.6 + r() * 0.8]);
+  const geo = new THREE.BufferGeometry(); geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+  const pts = new THREE.Points(geo, new THREE.PointsMaterial({ map: glowTex(), color: cor, size: tam, transparent: true, opacity: 0.9, depthWrite: false }));
+  pts.position.set(...centro); pts.frustumCulled = false; S.add(pts);
+  const update = (t) => { P.forEach((p, i) => { const y = ((p[1] - t * vel * p[4]) % area[1] + area[1]) % area[1];
+    pos[i * 3] = p[0] + 0.15 * Math.sin(t * 0.9 + p[3]); pos[i * 3 + 1] = y; pos[i * 3 + 2] = p[2] + 0.1 * Math.cos(t * 0.7 + p[3]); }); geo.attributes.position.needsUpdate = true; };
+  update(0); return { pts, update };
 }

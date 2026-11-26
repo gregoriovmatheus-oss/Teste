@@ -1,57 +1,100 @@
-<!-- Modelo de cena 3D (R01). cenas.py --criar copia para compositions/fNN.html trocando os marcadores de id e duração.
-     Padrão: script clássico registra buildReady na hora; import dinâmico do kit e dos blocos;
-     K.bindSeek(canvas, render) dá o tempo LOCAL da cena (sem gambiarra de data-start). -->
+<!-- f02: cena 3D padrão documentário (R10 + doc). Lógica em cenas/f02.js (gerado por scripts/monta-cenas.py).
+     Tempos escritos para 5.77 s e esticados para a duração real do host (data-duration). -->
 <template>
   <style>
-    #root { position: absolute; inset: 0; overflow: hidden; background: #0b1018; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0b0a12; }
     #f02-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
-    #f02-titulo { position: absolute; left: 160px; right: 200px; top: 660px; text-align: center; }
-    #f02-titulo-in { display: block; font-family: "EB Garamond", serif; font-size: 84px; line-height: 1.05; color: #fff;
-      text-shadow: 0 4px 26px rgba(4, 10, 20, 0.75), 0 1px 4px rgba(4, 10, 20, 0.6); }
-    #f02-titulo-in .ice { color: #8fcbf2; }
+    /* rótulos 2D: y 680-980, acima da faixa da legenda (1005-1235) */
+    .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .rot-t { display: block; font-family: "Anton", sans-serif; font-weight: 400; font-size: 92px; line-height: 1.05; color: #fff; text-transform: uppercase;
+      -webkit-text-stroke: 5px #000; paint-order: stroke fill; text-shadow: 0 6px 0 #000, 0 10px 24px rgba(0,0,0,0.6); opacity: 0; }
+    .rot-t .y { color: #F5C518; } .rot-t .r { color: #E8463A; } .rot-t .p { font-size: 70px; }
+    .rot-t .k { display: inline-block; font-size: 34px; letter-spacing: 0.12em; color: #F05A4A; -webkit-text-stroke: 0; text-shadow: 0 3px 0 #000; margin-bottom: 10px; }
+    .rot-t .n { color: #F5C518; }
+.rot-t { font-family: "Inter", sans-serif; font-weight: 300; font-size: 80px; line-height: 1.1; color: #fff; text-transform: none; letter-spacing: -0.01em; -webkit-text-stroke: 0; text-shadow: 0 2px 30px rgba(0,0,0,0.75), 0 1px 3px rgba(0,0,0,0.6); }
+    .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }
+    .rot-t .o { font-weight: 800; color: #ff8a4c; } .rot-t .p { font-size: 60px; }
+    .rot-t .k { display: inline-block; font-family: "JetBrains Mono", monospace; font-weight: 600; font-size: 26px; letter-spacing: 0.32em; color: #7cc8ff; margin-bottom: 18px; text-shadow: 0 2px 12px rgba(0,0,0,0.8); }
+    .rot-t .n { font-family: "JetBrains Mono", monospace; font-weight: 600; color: #7cc8ff; }
+
   </style>
   <div id="root" data-composition-id="f02" data-width="1080" data-height="1920">
     <canvas id="f02-canvas" width="1080" height="1920"></canvas>
-    <div id="f02-titulo" class="clip" data-start="0.3" data-duration="2.2">
-      <span id="f02-titulo-in">Texto da <span class="ice">cena</span></span>
-    </div>
+    <div id="f02-r1" class="rot" style="top: 520px"><span id="f02-r1-in" class="rot-t"><span class="k">PLANO DO ANEL</span><br>sobre o <span class="y">equador</span></span></div>
+    <div id="f02-r2" class="rot" style="top: 520px"><span id="f02-r2-in" class="rot-t">a alguns <span class="y">milhares de km</span><br>de altura</span></div>
   </div>
   <script>
     (function () {
-      /* 2D por cima (GSAP). Título entre y 640 e 1000: o HUD ocupa 290-620 e a legenda 1045-1195. */
+      const D0 = 5.77;
+      // duração real = data-duration do host da cena (muda quando a narração muda)
+      const durReal = () => {
+        for (let n = document.getElementById("f02-canvas"); n; n = n.parentElement) {
+          if (n.getAttribute && n.getAttribute("data-composition-id") === "f02" && n.hasAttribute("data-duration")) return parseFloat(n.getAttribute("data-duration")) || D0;
+        }
+        return D0;
+      };
+      const DR = durReal(), K = DR / D0;
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f02-titulo-in", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 0.3);
-      tl.to("#f02-titulo-in", { opacity: 0, duration: 0.2, ease: "power2.in" }, 2.3);
-      tl.set({}, {}, 5.77);
+      tl.fromTo("#f02-r1-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 2.65 * K);
+      tl.to("#f02-r1-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 3.32 * K);
+      tl.fromTo("#f02-r2-in", { opacity: 0, y: 24, filter: "blur(8px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.5, ease: "power3.out" }, 3.65 * K);
+      tl.to("#f02-r2-in", { opacity: 0, y: -12, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 5.47 * K);
+      tl.set({}, {}, DR);
       window.__timelines = window.__timelines || {};
       window.__timelines["f02"] = tl;
 
-      /* 3D */
       window.__hf = window.__hf || {};
       window.__hf.buildReady = window.__hf.buildReady || {};
       window.__hf.buildReady["f02"] = Promise.all([
-        import("./assets/lib/kit.js"),
-        import("./assets/lib/blocks/city.js"),
-        // import("./assets/lib/blocks/globe.js"), import("./assets/lib/blocks/particles.js"),
-        // import("./assets/lib/blocks/shockwave.js"), import("./assets/lib/blocks/counter.js"),
-      ]).then(async ([K, { createCity }]) => {
-        const { THREE, ease, range, lerp, clamp } = K;
+        import("./assets/lib/kit.js"), import("./assets/lib/blocks/toy.js"), import("./assets/lib/blocks/animals.js"), import("./assets/lib/blocks/terra.js"), import("./assets/lib/blocks/aneis.js")
+      ]).then(async ([K_, T, A, TERRA, ANEIS]) => {
+        const K = K_;
+        const { THREE, ease, range, lerp, clamp, smoothstep, mulberry32 } = K;
+        const D = D0;   // o corpo trabalha no tempo de autoria
         const canvas = document.getElementById("f02-canvas");
-        const renderer = K.createRenderer(canvas);
-        const scene = new THREE.Scene();
-        const cam = new THREE.PerspectiveCamera(35, K.W / K.H, 1, 2000);
-        const city = createCity(scene, { seed: 7, geada: [5.77 * 0.6, 5.77 * 0.6 + 0.35], paraEm: 5.77 * 0.6 });
 
-        function render(t) {               // t = segundos locais da cena
-          const p = ease.outCubic(clamp(t / 5.77));
-          const h = lerp(300, 175, p), ang = lerp(-0.35, 0.05, p);
-          cam.position.set(Math.sin(ang) * 18, h, Math.cos(ang) * 18 + 10);
-          cam.up.set(Math.sin(ang), 0, -Math.cos(ang));
-          cam.lookAt(0, 0, 0);
-          city.update(t);
-          renderer.render(scene, cam);
+        const AN = ANEIS;
+        await AN.prepara();
+        const st = T.createToyStage(canvas, { fov: 34, ceu: "#000000", nevoa: null, nuvens: 0, exposicao: 1.0 });
+        const S = st.scene, cam = st.cam;
+        S.environment = null; st.hemi.intensity = 0.04; st.key.intensity = 0; st.rim.intensity = 0; st.key.castShadow = false;
+        S.add(TERRA.createCeu({ seed: 12, n: 4500, via: 0.55 }));
+        const eixo = new THREE.Group(); eixo.rotation.z = 0.41; S.add(eixo);   // eixo da Terra inclinado 23°
+        const E = await TERRA.createTerra({ raio: 1 }); eixo.add(E.group);
+        E.sol.set(0.85, 0.3, 1).normalize(); E.u.nuvens.value = 0.6; E.u.luzes.value = 0.5;
+        const R = AN.anel({ Re: 1, r1: 1.25, r2: 2.4, op: 0.7, br: 1.6, amb: 0.02, sombraA: 0.7 });
+        R.mesh.rotation.x = -Math.PI / 2; eixo.add(R.mesh);
+        const SH = AN.sombraAnel(1.012, R); eixo.add(SH);
+        const alvo = new THREE.Vector3(), up = new THREE.Vector3(), vd = new THREE.Vector3(), d = new THREE.Vector3(), a = new THREE.Vector3(), b = new THREE.Vector3(), q = new THREE.Vector3();
+        function render(t) {
+          E.earth.rotation.y = (-40 + 3 * t) * Math.PI / 180; E.nuv.rotation.y = t * 0.01;
+          // o anel se forma em volta da Terra (varredura) enquanto a câmera desce para o plano do equador
+          R.u.uRev.value = 0.02 + 1.02 * ease.inOutCubic(range(t, 0.15, 2.4));
+          const e = ease.inOutSine(range(t, 0, 5.77)), el = lerp(0.62, 0.16, ease.inOutCubic(range(t, 0.3, 4.2))), az = lerp(0.45, -0.2, e), r = lerp(9.6, 8.2, e);
+          cam.position.set(Math.sin(az) * Math.cos(el) * r, Math.sin(el) * r, Math.cos(az) * Math.cos(el) * r);
+          alvo.set(0, lerp(1.05, 0.85, e), 0); cam.lookAt(alvo);
+          R.u.uL.value.copy(E.sol); R.sync();
+          st.bloom = 0.7;
+          st.draw();
+          const c = st.ctx;
+          // equador (laranja) desenhado na face visível
+          const ka = range(t, 2.6, 3.0) * (1 - range(t, 5.3, 5.7));
+          if (ka > 0) { c.save(); c.strokeStyle = AN.LARANJA; c.lineWidth = 4; c.globalAlpha = ka; c.shadowColor = AN.LARANJA; c.shadowBlur = 12; c.beginPath(); let on = false;
+            for (let i = 0; i <= 180; i++) { q.copy(E.ponto(i * 2, 0, 1.004)); E.earth.localToWorld(q); const vis = q.dot(vd.copy(cam.position).sub(q)) > 0;
+              const [x, y] = AN.proj(q, cam); if (vis) { on ? c.lineTo(x, y) : c.moveTo(x, y); on = true; } else on = false; }
+            c.stroke(); c.restore(); }
+          // cota da superfície até a borda interna do anel, no limbo
+          const kb = range(t, 3.7, 4.1);
+          if (kb > 0) { up.set(0, 1, 0).applyQuaternion(eixo.quaternion); vd.copy(cam.position).normalize(); d.crossVectors(up, vd).normalize().negate();
+            a.copy(d).multiplyScalar(1.0); b.copy(d).multiplyScalar(lerp(1.0, 1.25, ease.outCubic(kb)));
+            const [x1, y1] = AN.proj(a, cam), [x2, y2] = AN.proj(b, cam);
+            c.save(); c.strokeStyle = AN.AZUL; c.fillStyle = AN.AZUL; c.lineWidth = 4; c.globalAlpha = kb; c.beginPath(); c.moveTo(x1, y1); c.lineTo(x2, y2); c.stroke();
+            [[x1, y1], [x2, y2]].forEach(([x, y]) => { c.beginPath(); c.arc(x, y, 7, 0, 6.283); c.fill(); }); c.restore();
+            AN.etq(c, "ALTITUDE DO ANEL", b, cam, kb, { dy: -150, dx: 220 }); }
         }
-        await K.bindSeek(canvas, render, { warm: [{ renderer, scene, camera: cam }], duration: 5.77 });
+
+        // DR foi lido na hora em que o script rodou (depois do inline o host pode mudar de atributos)
+        await K.bindSeek(canvas, (t) => { st.T = t * D / DR; st.D = D; render(st.T); }, { warm: [st.warm, ...(st.extraWarm || [])], duration: DR });
       });
     })();
   </script>

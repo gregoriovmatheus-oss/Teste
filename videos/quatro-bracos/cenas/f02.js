@@ -1,19 +1,19 @@
-/*META {"imports": ["quatro"], "rotulos": [{"de": 1.9, "ate": 3.3, "texto": "<span class=\"k\">CADA BRAÇO</span><br>≈ <span class=\"y\">5%</span> do corpo"}, {"de": 5.25, "ate": 7.24, "texto": "<span class=\"o\">+10%</span> o dia inteiro"}], "D0": 7.24, "css": "__CSS__"} */
+/*META {"imports": ["quatro"], "rotulos": [{"de": 1.9, "ate": 3.3, "texto": "<span class=\"k\">CADA BRAÇO</span><br>≈ <span class=\"y\">5%</span> do corpo"}, {"de": 5.25, "ate": 7.24, "texto": "<span class=\"o\">+10%</span> o dia inteiro"}], "D0": 7.24, "css": ".rot-t { font-family: \"Inter\", sans-serif; font-weight: 300; font-size: 80px; line-height: 1.1; color: #fff; text-transform: none; letter-spacing: -0.01em; -webkit-text-stroke: 0; text-shadow: 0 2px 30px rgba(0,0,0,0.75), 0 1px 3px rgba(0,0,0,0.6); }\n    .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }\n    .rot-t .o { font-weight: 800; color: #ff8a4c; } .rot-t .p { font-size: 60px; }\n    .rot-t .k { display: inline-block; font-family: \"JetBrains Mono\", monospace; font-weight: 600; font-size: 26px; letter-spacing: 0.32em; color: #7cc8ff; margin-bottom: 18px; text-shadow: 0 2px 12px rgba(0,0,0,0.8); }\n    .rot-t .n { font-family: \"JetBrains Mono\", monospace; font-weight: 600; color: #7cc8ff; }\n"} */
         const Q4 = QUATRO;
         await Q4.prepara();
         const st = Q4.palcoDoc(T, canvas, { fov: 34 });
         const S = st.scene, cam = st.cam;
         // 4 barras de vidro (5% cada): 2 azuis (os braços de hoje) e 2 laranja (o par novo)
-        const X = [-1.5, -0.5, 0.5, 1.5], H = 1.3, barras = X.map((x, i) => {
+        const X = [-0.9, -0.3, 0.3, 0.9], H = 1.0, barras = X.map((x, i) => {
           const nova = i === 0 || i === 3, cor = nova ? 0xff8a4c : 0x7cc8ff;
-          const m = new THREE.Mesh(new THREE.BoxGeometry(0.62, 1, 0.62), new THREE.MeshStandardMaterial({ color: cor, emissive: cor, emissiveIntensity: 0.35, roughness: 0.2, metalness: 0.1, transparent: true, opacity: 0.88 }));
+          const m = new THREE.Mesh(new THREE.BoxGeometry(0.42, 1, 0.42), new THREE.MeshStandardMaterial({ color: cor, emissive: cor, emissiveIntensity: 0.35, roughness: 0.2, metalness: 0.1, transparent: true, opacity: 0.88 }));
           m.position.set(x, 0, 0); m.castShadow = true; S.add(m);
-          const base = new THREE.Mesh(new THREE.BoxGeometry(0.74, 0.04, 0.74), T.M(0x1c2230, 0.4)); base.position.set(x, 0.02, 0); S.add(base);
+          const base = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.04, 0.5), T.M(0x1c2230, 0.4)); base.position.set(x, 0.02, 0); S.add(base);
           const halo = Q4.brilho(cor, 2.2, "suave", 0); halo.position.set(x, 0.2, 0.4); S.add(halo);
           return { m, nova, halo };
         });
         // linha "100% do corpo" ao fundo, para escala
-        const ref = new THREE.Mesh(new THREE.BoxGeometry(4.6, 0.015, 0.015), new THREE.MeshBasicMaterial({ color: 0x7cc8ff, transparent: true, opacity: 0.35 })); ref.position.set(0, H + 0.02, -0.4); S.add(ref);
+        const ref = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.015, 0.015), new THREE.MeshBasicMaterial({ color: 0x7cc8ff, transparent: true, opacity: 0.35 })); ref.position.set(0, H + 0.02, -0.4); S.add(ref);
         const al = new THREE.Vector3();
         function render(t) {
           barras.forEach((b, i) => {
@@ -24,7 +24,7 @@
           });
           // câmera: grua baixa → sobe e gira devagar
           const e = ease.inOutSine(range(t, 0, 7.24));
-          cam.position.set(lerp(-1.6, 1.8, e), lerp(0.9, 1.9, e), lerp(6.4, 6.0, e)); al.set(lerp(-0.2, 0.15, e), -0.55, 0); cam.lookAt(al);
+          cam.position.set(lerp(-1.4, 1.5, e), lerp(1.6, 2.4, e), lerp(8.6, 8.1, e)); al.set(lerp(-0.1, 0.1, e), -0.6, 0); cam.lookAt(al);
           st.bloom = 0.6; st.draw();
           const c = st.ctx;
           barras.forEach((b, i) => { const a = b.nova ? range(t, 4.1, 4.4) : range(t, 1.95, 2.2);

@@ -1,4 +1,4 @@
-/*META {"imports": ["quatro"], "rotulos": [{"de": 2.1, "ate": 3.2, "texto": "<span class=\"k\">CÓRTEX MOTOR</span><br>um <span class=\"y\">mapa</span> do corpo"}, {"de": 4.15, "ate": 6.36, "texto": "cada braço novo<br>ganha <span class=\"o\">o seu pedaço</span>"}], "D0": 6.36, "css": "__CSS__"} */
+/*META {"imports": ["quatro"], "rotulos": [{"de": 2.1, "ate": 3.2, "texto": "<span class=\"k\">CÓRTEX MOTOR</span><br>um <span class=\"y\">mapa</span> do corpo"}], "D0": 6.36, "css": ".rot-t { font-family: \"Inter\", sans-serif; font-weight: 300; font-size: 80px; line-height: 1.1; color: #fff; text-transform: none; letter-spacing: -0.01em; -webkit-text-stroke: 0; text-shadow: 0 2px 30px rgba(0,0,0,0.75), 0 1px 3px rgba(0,0,0,0.6); }\n    .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }\n    .rot-t .o { font-weight: 800; color: #ff8a4c; } .rot-t .p { font-size: 60px; }\n    .rot-t .k { display: inline-block; font-family: \"JetBrains Mono\", monospace; font-weight: 600; font-size: 26px; letter-spacing: 0.32em; color: #7cc8ff; margin-bottom: 18px; text-shadow: 0 2px 12px rgba(0,0,0,0.8); }\n    .rot-t .n { font-family: \"JetBrains Mono\", monospace; font-weight: 600; color: #7cc8ff; }\n"} */
         const Q4 = QUATRO;
         await Q4.prepara();
         const st = Q4.palcoDoc(T, canvas, { fov: 32, ceu: "#04060c" });
@@ -13,7 +13,7 @@
         [1, -1].forEach((s) => PEC.forEach(([n, w], i) => segs.push({ m: mkSeg(0x7cc8ff), n, w, s, novo: false, i })));
         [1, -1].forEach((s) => { segs.push({ m: mkSeg(0xff8a4c), n: "BRAÇO 3", w: 0.8, s, novo: true, i: 3.5 }); });
         // homúnculo: mãos e boca grandes (proporcional ao córtex); o 2º par de braços nasce em "cada braço novo"
-        const Hm = new THREE.Group(); Hm.position.set(0, 2.25, 0); S.add(Hm);
+        const Hm = new THREE.Group(); Hm.position.set(0, 1.9, 0); S.add(Hm);
         const pele = T.M(0xd9a084, 0.6), lar = new THREE.MeshStandardMaterial({ color: 0xff8a4c, emissive: 0xff6a2c, emissiveIntensity: 0.4, roughness: 0.5 });
         const tr = new THREE.Mesh(new THREE.CapsuleGeometry(0.1, 0.18, 3, 8), pele); Hm.add(tr);
         const cb = new THREE.Mesh(new THREE.IcosahedronGeometry(0.13, 1), pele); cb.position.y = 0.26; Hm.add(cb);
@@ -35,13 +35,14 @@
             g.m.rotation.z = -g.s * ang; g.m.scale.set(Math.max(0.001, g.w * (g.novo ? k : 1)) * 1.1, 1, 1);
             g.m.material.emissiveIntensity = g.novo ? 0.6 + 0.6 * Math.sin(t * 6) * k : 0.2 + 0.7 * luz; });
           NOVO.forEach((n) => n.scale.setScalar(Math.max(0.001, ease.outBack(range(t, 3.9, 4.6)))));
-          Hm.visible = t > 0.9; Hm.scale.setScalar(ease.outCubic(range(t, 0.9, 1.5)) * 0.95 + 0.001); Hm.rotation.y = 0.4 * Math.sin(t * 0.7);
+          Hm.visible = t > 0.9; Hm.scale.setScalar(ease.outCubic(range(t, 0.9, 1.5)) * 0.65 + 0.001); Hm.rotation.y = 0.4 * Math.sin(t * 0.7);
           B.rotation.y = lerp(-0.5, 0.35, ease.inOutSine(range(t, 0, 6.36)));
           const e = ease.inOutSine(range(t, 0, 6.36));
-          cam.position.set(lerp(0.6, -0.3, e), lerp(2.1, 2.3, e), lerp(3.6, 2.9, e)); al.set(0, 1.2, 0); cam.lookAt(al);
+          cam.position.set(lerp(0.8, -0.4, e), lerp(2.0, 2.2, e), lerp(6.2, 5.4, e)); al.set(0, 0.6, 0); cam.lookAt(al);
           st.bloom = 0.65; st.draw();
           const c = st.ctx;
           const s0 = segs.find((x) => x.n === "MÃO" && x.s === -1), s1 = segs.find((x) => x.novo && x.s === -1);
           Q4.tag(c, "MÃO", s0.m.getWorldPosition(tmp), cam, range(t, 2.6, 2.9) * (1 - range(t, 3.5, 3.7)), { dx: 140, dy: -40 });
+          Q4.txt(c, "CADA BRAÇO NOVO · O SEU PEDAÇO", 540, 1290, { tam: 24, cor: Q4.LARANJA, a: range(t, 4.2, 4.5), esp: 0.28 });
           Q4.tag(c, "BRAÇO NOVO", s1.m.getWorldPosition(tmp), cam, range(t, 4.4, 4.7), { cor: Q4.LARANJA, dx: 170, dy: -30 });
         }

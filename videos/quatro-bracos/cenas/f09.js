@@ -1,0 +1,60 @@
+/*META {"imports": ["lowpoly", "cinema", "quatro"], "rotulos": [], "D0": 5.61, "css": ".rot-t { font-family: \"Inter\", sans-serif; font-weight: 300; font-size: 80px; line-height: 1.1; color: #fff; text-transform: none; letter-spacing: -0.01em; -webkit-text-stroke: 0; text-shadow: 0 2px 30px rgba(0,0,0,0.75), 0 1px 3px rgba(0,0,0,0.6); }\n    .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }\n    .rot-t .o { font-weight: 800; color: #ff8a4c; } .rot-t .p { font-size: 60px; }\n    .rot-t .k { display: inline-block; font-family: \"JetBrains Mono\", monospace; font-weight: 600; font-size: 26px; letter-spacing: 0.32em; color: #7cc8ff; margin-bottom: 18px; text-shadow: 0 2px 12px rgba(0,0,0,0.8); }\n    .rot-t .n { font-family: \"JetBrains Mono\", monospace; font-weight: 600; color: #7cc8ff; }\n"} */
+        const LP = LOWPOLY, CI = CINEMA, Q4 = QUATRO;
+        await Q4.prepara();
+        const st = LP.palco(canvas, { foco: 3, faixa: 1.2, desfoque: 16, bloom: 0.9 });
+        const { S, cam } = st;
+        const v = new THREE.Vector3(), box = (w, h, d, c, x, y, z, r = 0.7, g = S) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), LP.mat(c, r)); m.position.set(x, y, z); g.add(m); return m; };
+        // ---- plano GA: cirurgião (0–2,4 s)
+        const GA = new THREE.Group(); S.add(GA); CI.cenario(GA, "hospital");
+        box(1.5, 0.08, 0.7, 0x9aa4aa, 0, 0.86, 0.62, 0.3, GA); box(1.6, 0.1, 0.78, 0x3f8a7a, 0, 0.94, 0.62, 0.9, GA);   // mesa + lençol
+        const campo = new THREE.Mesh(new THREE.CircleGeometry(0.12, 16), new THREE.MeshBasicMaterial({ color: new THREE.Color(0xffd8c8).multiplyScalar(1.3) })); campo.rotation.x = -Math.PI / 2; campo.position.set(0, 1.0, 0.55); GA.add(campo);
+        const lamp = Q4.brilho(0xffffff, 1.4, "suave", 0.9); lamp.position.set(0, 2.5, 0.6); GA.add(lamp);
+        const cir = LP.pessoa({ seed: 12, bracos: 4, roupa: "jaleco", jaqueta: 0x4f8f8a, camisa: 0x4f8f8a, pele: 0xd9a07e, cabelo: 0x3a2618, oculos: true, barba: false }); GA.add(cir.root);
+        const touca = new THREE.Mesh(new THREE.SphereGeometry(0.14, 12, 8, 0, Math.PI * 2, 0, 1.4), LP.mat(0x4f8f8a, 0.9)); touca.position.set(0, 0.04, -0.01); cir.cab.add(touca);
+        const ferro = () => new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.004, 0.16, 5), LP.mat(0xd8dde2, 0.2, { metalness: 0.8 }));
+        [0, 1, 2, 3].forEach((i) => { const f = ferro(); f.rotation.x = 1.3; LP.segurar(cir, i, f, { pos: [0, -0.09, 0.05] }); });
+        // ---- plano GB: baterista com duas baterias (2,4–5,61 s)
+        const GB = new THREE.Group(); GB.position.x = 20; S.add(GB);
+        box(8, 0.1, 8, 0x14141a, 0, -0.05, 0, 0.3, GB);
+        const tambor = (x, y, z, r, h, cor) => { const g = new THREE.Group(); g.position.set(x, y, z); GB.add(g);
+          const c = new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, 16), LP.mat(cor, 0.35)); g.add(c);
+          const pl = new THREE.Mesh(new THREE.CircleGeometry(r * 0.96, 16), LP.mat(0xeeeae0, 0.6)); pl.rotation.x = -Math.PI / 2; pl.position.y = h / 2 + 0.002; g.add(pl);
+          const pe = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, y, 5), LP.mat(0x888888, 0.3)); pe.position.y = -y / 2; g.add(pe); return g; };
+        const prato = (x, y, z) => { const g = new THREE.Group(); g.position.set(x, y, z); GB.add(g); const c = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.005, 0.02, 18), LP.mat(0xd8a838, 0.25, { metalness: 0.7 })); c.rotation.x = 0.2; g.add(c);
+          const pe = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, y, 5), LP.mat(0x888888, 0.3)); pe.position.y = -y / 2; g.add(pe); return c; };
+        const KIT = [-1, 1].map((s) => ({ s, cx: tambor(s * 0.3, 0.72, 0.42, 0.16, 0.14, s < 0 ? 0xb8322c : 0x2c5ab8), tom: tambor(s * 0.66, 0.92, 0.3, 0.13, 0.12, s < 0 ? 0xb8322c : 0x2c5ab8), pr: prato(s * 0.78, 1.38, 0.32),
+          bumbo: tambor(s * 0.62, 0.25, 0.75, 0.25, 0.3, s < 0 ? 0xb8322c : 0x2c5ab8) }));
+        KIT.forEach((k) => { k.bumbo.rotation.x = Math.PI / 2; });
+        const bat = Q4.heroi(LP, { roupa: "camiseta", camisa: 0x1e1e24, seed: 7 }); GB.add(bat.root);
+        const banco = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.45, 12), LP.mat(0x2a2a2e, 0.6)); banco.position.set(0, 0.22, -0.12); GB.add(banco);
+        [0, 1, 2, 3].forEach((i) => { const b = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.009, 0.38, 5), LP.mat(0xe0c89a, 0.5)); b.rotation.x = 1.0; LP.segurar(bat, i, b, { pos: [0, -0.09, 0.1] }); });
+        const luzes = [[0xff3a7a, -2, 3, -1.5], [0x3ac8ff, 2, 3, -1.5], [0xffa83a, 0, 3.4, 1.5]].map(([c, x, y, z]) => { const l = new THREE.PointLight(c, 0, 9, 1.4); l.position.set(x, y, z); GB.add(l); return l; });
+        LP.bokeh(GB, { n: 30, seed: 5, y: [1, 4], z: [-8, -4], cores: [0xff3a7a, 0x3ac8ff, 0xffa83a] });
+        const ALVO = [[0.62, 1.12, 0.36], [-0.62, 1.12, 0.36], [0.3, 0.9, 0.4], [-0.3, 0.9, 0.4]];
+        function render(t) {
+          const b = t >= 2.4; GA.visible = !b; GB.visible = b;
+          if (!b) {
+            LP.luz(st, "interior"); CI.clima(st, "hospital"); st.exposicao = 1.15;
+            LP.ator(cir, t, { seed: 12, emocao: "foco", olharPara: new THREE.Vector3(0, 0.98, 0.55), olharK: 0.9 });
+            const mx = (i) => 0.02 * Math.sin(t * 3.1 + i * 1.7);
+            [[0.32, 1.06, 0.5], [-0.32, 1.06, 0.5], [0.1, 1.02, 0.5], [-0.1, 1.02, 0.5]].forEach((p, i) => LP.alcancar(cir, i, v.set(p[0] + mx(i), p[1] + mx(i + 2) * 0.5, p[2]), 1, { polo: new THREE.Vector3(i % 2 ? -1 : 1, -0.5, -0.5) }));
+            [0, 1, 2, 3].forEach((i) => LP.punho(cir, 0.65, i));
+            CI.trilho(cam, t, [[0, [1.4, 2.0, 2.8], [0, 1.05, 0.3]], [2.4, [0.8, 1.9, 2.5], [0, 1.07, 0.3]]], { mao: 1, seed: 6 }); LP.focar(st, v.set(0, 1.4, 0.2));
+          } else {
+            const u = t - 2.4; LP.luz(st, "noite"); CI.clima(st, "neutro"); st.exposicao = 1.2;
+            luzes.forEach((l, i) => (l.intensity = 9 + 5 * Math.max(0, Math.sin(u * 8 + i * 2))));
+            LP.ator(bat, u, { seed: 7, emocao: ["foco", "alegre", range(u, 0.4, 1.0)], vida: { balanco: 0.3 } });
+            // 4 baquetas: batida rápida alternada (8 Hz), duas baterias ao mesmo tempo
+            ALVO.forEach((p, i) => { const h = Math.max(0, Math.sin(u * 2 * Math.PI * 2.2 + i * Math.PI / 2)) ** 2;
+              LP.alcancar(bat, i, GB.localToWorld(v.set(p[0], p[1] + 0.14 * h, p[2])), 1, { polo: new THREE.Vector3(i % 2 ? -1 : 1, -0.6, -0.4) }); });
+            [0, 1, 2, 3].forEach((i) => LP.punho(bat, 0.65, i));
+            bat.cab.rotation.x += 0.06 * Math.sin(u * 2 * Math.PI * 2.2);
+            KIT.forEach((k, i) => { k.pr.rotation.z = 0.06 * Math.sin(u * 13 + i); });
+            CI.trilho(cam, u, [[0, [21.6, 1.3, 3.0], [20, 1.05, 0.2]], [3.21, [18.6, 1.6, 3.4], [20, 1.05, 0.2]]], { mao: 1.5, seed: 8 }); LP.focar(st, v.set(20, 1.5, 0));
+          }
+          st.draw();
+          const c = st.ctx;
+          if (!b) Q4.tag(c, "SEM AJUDANTE", v.set(0, 1.0, 0.55), cam, range(t, 1.65, 1.9), { cor: Q4.LARANJA, dy: -330 });
+          else { Q4.tag(c, "BATERIA 1", GB.localToWorld(v.set(-0.66, 0.98, 0.3)), cam, range(t, 3.75, 4.0), { dy: -320, dx: -40 });
+            Q4.tag(c, "BATERIA 2", GB.localToWorld(v.set(0.66, 0.98, 0.3)), cam, range(t, 3.95, 4.2), { cor: Q4.LARANJA, dy: -320, dx: 40 }); }
+        }

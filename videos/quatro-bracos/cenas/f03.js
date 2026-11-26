@@ -1,4 +1,4 @@
-/*META {"imports": ["quatro"], "rotulos": [{"de": 3.0, "ate": 6.55, "texto": "<span class=\"k\">COSTAS</span><br>um <span class=\"y\">2º par</span> de escápulas"}], "D0": 6.55, "css": "__CSS__"} */
+/*META {"imports": ["quatro"], "rotulos": [{"de": 3.0, "ate": 6.55, "texto": "<span class=\"k\">COSTAS</span><br>um <span class=\"y\">2º par</span> de escápulas"}], "D0": 6.55, "css": ".rot-t { font-family: \"Inter\", sans-serif; font-weight: 300; font-size: 80px; line-height: 1.1; color: #fff; text-transform: none; letter-spacing: -0.01em; -webkit-text-stroke: 0; text-shadow: 0 2px 30px rgba(0,0,0,0.75), 0 1px 3px rgba(0,0,0,0.6); }\n    .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }\n    .rot-t .o { font-weight: 800; color: #ff8a4c; } .rot-t .p { font-size: 60px; }\n    .rot-t .k { display: inline-block; font-family: \"JetBrains Mono\", monospace; font-weight: 600; font-size: 26px; letter-spacing: 0.32em; color: #7cc8ff; margin-bottom: 18px; text-shadow: 0 2px 12px rgba(0,0,0,0.8); }\n    .rot-t .n { font-family: \"JetBrains Mono\", monospace; font-weight: 600; color: #7cc8ff; }\n"} */
         const Q4 = QUATRO;
         await Q4.prepara();
         const st = Q4.palcoDoc(T, canvas, { fov: 32 });
@@ -35,8 +35,8 @@
           FEIXES.forEach((m) => { m.scale.set(1, Math.max(0.001, km) * m.userData.L, 1); m.visible = km > 0.01; });
           halo.material.opacity = 0.7 * range(t, 3.1, 3.5) * (1 - 0.5 * range(t, 4.5, 6.5));
           // órbita lenta por trás, aproximando do ombro
-          const e = ease.inOutSine(range(t, 0, 6.55)), a = lerp(2.5, 3.6, e), d = lerp(2.6, 1.9, e);
-          cam.position.set(Math.sin(a) * d, lerp(1.95, 1.75, e), Math.cos(a) * d); al.set(0, lerp(1.08, 1.12, e), 0); cam.lookAt(al);
+          const e = ease.inOutSine(range(t, 0, 6.55)), a = lerp(2.6, 3.55, e), d = lerp(4.5, 4.0, e);
+          cam.position.set(Math.sin(a) * d, lerp(1.6, 1.5, e), Math.cos(a) * d); al.set(0, lerp(0.92, 0.96, e), 0); cam.lookAt(al);
           st.bloom = 0.55; st.draw();
           const c = st.ctx;
           Q4.tag(c, "COLUNA", new THREE.Vector3(0, 1.15, -0.05), cam, range(t, 1.25, 1.5) * (1 - range(t, 2.9, 3.1)), { dx: -170, dy: -40 });

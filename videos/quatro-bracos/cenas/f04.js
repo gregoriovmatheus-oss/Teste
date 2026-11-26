@@ -1,4 +1,4 @@
-/*META {"imports": ["quatro"], "rotulos": [{"de": 1.45, "ate": 2.95, "texto": "o coração bombearia<br><span class=\"y\">mais sangue</span>"}, {"de": 3.05, "ate": 4.88, "texto": "e você comeria <span class=\"o\">mais</span><br>todos os dias"}], "D0": 4.88, "css": "__CSS__"} */
+/*META {"imports": ["quatro"], "rotulos": [{"de": 1.45, "ate": 2.95, "texto": "o coração bombearia<br><span class=\"y\">mais sangue</span>"}, {"de": 3.05, "ate": 4.88, "texto": "e você comeria <span class=\"o\">mais</span><br>todos os dias"}], "D0": 4.88, "css": ".rot-t { font-family: \"Inter\", sans-serif; font-weight: 300; font-size: 80px; line-height: 1.1; color: #fff; text-transform: none; letter-spacing: -0.01em; -webkit-text-stroke: 0; text-shadow: 0 2px 30px rgba(0,0,0,0.75), 0 1px 3px rgba(0,0,0,0.6); }\n    .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }\n    .rot-t .o { font-weight: 800; color: #ff8a4c; } .rot-t .p { font-size: 60px; }\n    .rot-t .k { display: inline-block; font-family: \"JetBrains Mono\", monospace; font-weight: 600; font-size: 26px; letter-spacing: 0.32em; color: #7cc8ff; margin-bottom: 18px; text-shadow: 0 2px 12px rgba(0,0,0,0.8); }\n    .rot-t .n { font-family: \"JetBrains Mono\", monospace; font-weight: 600; color: #7cc8ff; }\n"} */
         const Q4 = QUATRO;
         await Q4.prepara();
         const st = Q4.palcoDoc(T, canvas, { fov: 34, ceu: "#0a0508", chao: 0x120c10 });
@@ -36,7 +36,7 @@
           pratos.forEach((p, i) => p.scale.setScalar(Math.max(0.001, ease.outBack(range(t, 3.1 + i * 0.22, 3.6 + i * 0.22)))));
           // câmera: push-in no coração → tilt para baixo até os pratos
           const a = ease.inOutCubic(range(t, 2.7, 4.2)), e = range(t, 0, 4.88);
-          cam.position.set(lerp(0.5, -0.3, e), lerp(1.9, 2.6, a), lerp(4.4, 3.6, e) + a * 0.6); al.set(0, lerp(1.0, 0.0, a), lerp(0, 0.6, a)); cam.lookAt(al);
+          cam.position.set(lerp(0.6, -0.4, e), lerp(1.9, 3.4, a), lerp(7.6, 6.6, e) + a * 0.4); al.set(0, lerp(0.62, -1.5, a), lerp(0, 0.6, a)); cam.lookAt(al);
           st.bloom = 0.75; st.draw();
           Q4.tag(st.ctx, "BRAÇOS NOVOS", new THREE.Vector3(1.2, 1.6 - 0.28, 0), cam, range(t, 2.0, 2.3) * (1 - range(t, 2.7, 2.9)), { cor: Q4.LARANJA, dy: -150, dx: -60 });
         }

@@ -53,7 +53,7 @@
         await Q4.prepara();
         const st = LP.palco(canvas, { foco: 1.0, faixa: 0.4, desfoque: 22, bloom: 0.9 });
         const { S, cam } = st;
-        LP.luz(st, "interior"); st.exposicao = 1.12;
+        LP.luz(st, "interior"); st.exposicao = 1.25; st.quente.intensity = 2.6; st.quente.position.set(1.6, 2.2, 3.2); st.hemi.intensity = 0.6;
         CI.cenario(S, "quarto"); st.sol(new THREE.Vector3(-2.94, 1.6, -0.8), 1.2);
         const poe = LP.poeira(S, { n: 160, centro: [-1.2, 1.7, -0.4], raio: [1.2, 0.9, 1.0] });
         LP.bokeh(S, { n: 26, seed: 4, y: [0.8, 2.6], z: [-6, -3], cores: [0xfff0d0, 0xffc88a] });
@@ -64,11 +64,11 @@
           LP.ator(p, t, { seed: 7, emocao: t < 2.7 ? ["sono", "bocejo", range(t, 0.2, 1.4)] : ["bocejo", "surpresa", range(t, 2.75, 3.3)], olhar: t > 3 ? [0.55, -0.1] : null });
           Q4.espreguica(p, ease.inOutCubic(range(t, 1.0, 2.4)), { baixoK: ease.outBack(range(t, 2.85, 3.6)) });
           if (t > 3) LP.olharPara(p, new THREE.Vector3(1.0, 1.2, 1.2), 0.5 * range(t, 3.1, 3.8));
-          CI.trilho(cam, t, [[0, [0.58, 1.66, 1.62], [0.22, 1.56, 0.6]], [1.6, [0.66, 1.68, 1.95], [0.22, 1.56, 0.6]], [3.2, [0.95, 1.62, 3.0], [0.2, 1.5, 0.6]], [4.67, [1.1, 1.6, 3.45], [0.2, 1.52, 0.6]]], { mao: 1, seed: 2 });
-          LP.focar(st, R); st.U.faixa.value = lerp(0.35, 1.0, range(t, 1.5, 3.2));
+          CI.trilho(cam, t, [[0, [0.62, 1.78, 2.75], [0.24, 1.22, 0.6]], [1.6, [0.68, 1.8, 3.0], [0.24, 1.3, 0.6]], [3.2, [0.95, 1.78, 3.7], [0.2, 1.55, 0.6]], [4.67, [1.15, 1.8, 4.25], [0.2, 1.6, 0.6]]], { mao: 1, seed: 2 });
+          LP.focar(st, R); CI.preenche(st, R, { forca: 2.5 }); st.U.faixa.value = lerp(0.35, 1.0, range(t, 1.5, 3.2));
           poe.update(t);
           st.draw();
-          Q4.titulo(st.ctx, "UM EXPERIMENTO MENTAL", ["E se você tivesse", "*quatro braços*?"], 1 - range(t, 1.9, 2.3), { y: 830, tam: 78 });
+          Q4.titulo(st.ctx, "UM EXPERIMENTO MENTAL", ["E se você tivesse", "*quatro braços*?"], 1 - range(t, 1.9, 2.3), { y: 880, tam: 74 });
         }
 
         // DR foi lido na hora em que o script rodou (depois do inline o host pode mudar de atributos)
