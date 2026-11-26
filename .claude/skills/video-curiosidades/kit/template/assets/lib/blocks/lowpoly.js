@@ -187,8 +187,8 @@ function olhoR11(r, cIris = COR.iris, cPele = COR.pele, cilios = 1) {
   // pálpebra de cima: casca lisa de pele, borda grossa (espessura da pálpebra), cílios e sombra que ela projeta no olho
   const pm = matPeleLiso(cPele), sup = new THREE.Group(); g.add(sup);
   sup.add(new THREE.Mesh(new THREE.SphereGeometry(r * 1.045, 20, 8, 0, Math.PI * 2, 0, Math.PI / 2), pm));
-  const borda = new THREE.Mesh(new THREE.TorusGeometry(r * 1.035, r * 0.06, 6, 20, Math.PI), pm); borda.rotation.x = Math.PI / 2; sup.add(borda);
-  const cil = new THREE.Mesh(new THREE.TorusGeometry(r * 1.075, r * 0.07 * cilios, 4, 20, Math.PI), new THREE.MeshBasicMaterial({ color: 0x120804 })); cil.rotation.x = Math.PI / 2; cil.position.y = r * 0.015; sup.add(cil);
+  const borda = new THREE.Mesh(new THREE.TorusGeometry(r * 1.03, r * 0.035, 6, 20, Math.PI), pm); borda.rotation.x = Math.PI / 2; sup.add(borda);
+  const cil = new THREE.Mesh(new THREE.TorusGeometry(r * 1.05, r * 0.05 * cilios, 4, 20, Math.PI), new THREE.MeshBasicMaterial({ color: 0x120804 })); cil.rotation.x = Math.PI / 2; cil.position.y = r * 0.01; cil.scale.z = 1.6; sup.add(cil);
   if (cilios > 1.2) { const cp = new THREE.Mesh(new THREE.TorusGeometry(r * 1.13, r * 0.05, 3, 12, Math.PI * 0.45), cil.material); cp.rotation.set(Math.PI / 2 - 0.35, 0, -0.05); cp.position.set(-r * 0.02, r * 0.04, 0); sup.add(cp); }   // ponta dos cílios para fora
   const somb = new THREE.Mesh(new THREE.SphereGeometry(r * 1.004, 20, 3, 0, Math.PI * 2, Math.PI / 2, Math.PI * 0.16), new THREE.MeshBasicMaterial({ color: 0x1a0c06, transparent: true, opacity: 0.38, depthWrite: false })); sup.add(somb);
   const inf = new THREE.Mesh(new THREE.SphereGeometry(r * 1.05, 20, 4, 0, Math.PI * 2, Math.PI * 0.62, Math.PI * 0.38), pm); const infP = new THREE.Group(); g.add(infP); infP.add(inf);
