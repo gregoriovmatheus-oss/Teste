@@ -56,19 +56,41 @@ export function facetado(detalhe, f, seed = 1, ruido = 0.025) {
 const gauss = (d2, s) => Math.exp(-d2 / (s * s));
 
 // ===== cabeça R11 (unidades da cabeça: raio ~1, rosto para +z) =====
-function geoCranio(seed) {
-  return facetado(2, (v) => {
-    const { x, y, z } = v;
-    v.x *= 0.83; v.y *= 1.16; v.z *= 0.98;
-    if (y < -0.1) { const k = Math.min(1, (-y - 0.1) / 0.9); v.x *= 1 - 0.42 * k ** 1.1; if (z < 0.2) v.z *= 1 - 0.45 * k; }
-    if (z > 0.55) v.z = 0.55 + (v.z - 0.55) * 0.6;                                           // rosto mais plano
+// crânio esculpido (v6): detalhe 3, mandíbula com ângulo, queixo, maçãs altas, arco das sobrancelhas, ponte do nariz, têmporas e
+// boca levemente projetada. fem: mandíbula e arco mais suaves. Variação por seed (largura da mandíbula, queixo, maçãs).
+const _crCache = new Map();
+function geoCranio(seed, fem = false) {
+  const key = seed + (fem ? "f" : "m"); if (_crCache.has(key)) return _crCache.get(key).clone();
+  const r = mulberry32(seed * 31 + 7), mand = (fem ? 0.6 : 1) * (0.85 + r() * 0.35), qx = 0.8 + r() * 0.4, mac = 0.8 + r() * 0.4, arco = fem ? 0.45 : 0.9 + r() * 0.3;
+  const g = facetado(3, (v) => {
+    const { x, y, z } = v, ax = Math.abs(x), sx = Math.sign(x) || 1, fr = Math.max(0, z);
+    v.x *= 0.82; v.y *= 1.2; v.z *= 0.98;
+    // perfil de largura: estreita até o queixo, mas segura a mandíbula (ângulo atrás-embaixo)
+    if (y < -0.1) { const k = Math.min(1, (-y - 0.1) / 0.9); v.x *= 1 - 0.46 * k ** 1.25; if (z < 0.2) v.z *= 1 - 0.5 * k; }
+    v.x += sx * 0.13 * mand * gauss((ax - 0.62) ** 2 * 7 + (y + 0.58) ** 2 * 14 + (z - 0.15) ** 2 * 5, 0.6);            // ângulo da mandíbula
+    if (z > 0.55) v.z = 0.55 + (v.z - 0.55) * 0.6;                                                                       // rosto mais plano
     if (z > 0) {
-      v.x += 0.07 * Math.sign(x) * gauss((Math.abs(x) - 0.62) ** 2 * 9 + (y + 0.12) ** 2 * 8, 0.6);   // maçãs
-      v.z -= 0.08 * gauss((Math.abs(x) - 0.33) ** 2 * 18 + (y - 0.1) ** 2 * 22, 0.6);                   // órbitas
-      v.z += 0.06 * gauss(x * x * 2 + (y - 0.33) ** 2 * 30, 0.6);                                       // testa/sobrancelha
-      if (y < -0.75) v.y -= 0.06 * z;                                                                   // queixo
+      v.x += sx * 0.12 * mac * gauss((ax - 0.64) ** 2 * 12 + (y + 0.02) ** 2 * 14, 0.6) * fr; v.z += 0.05 * mac * gauss((ax - 0.5) ** 2 * 14 + (y + 0.05) ** 2 * 16, 0.6);                            // maçãs altas
+      v.x -= sx * 0.08 * gauss((ax - 0.62) ** 2 * 10 + (y + 0.38) ** 2 * 16, 0.6) * fr; v.z -= 0.04 * gauss((ax - 0.45) ** 2 * 14 + (y + 0.36) ** 2 * 16, 0.6);                                   // sombra sob a maçã
+      v.z -= 0.12 * gauss((ax - 0.32) ** 2 * 18 + (y - 0.1) ** 2 * 22, 0.6);                                              // órbitas
+      v.z += 0.05 * gauss(x * x * 2 + (y - 0.45) ** 2 * 18, 0.6);                                                         // testa
+      v.z += 0.09 * arco * gauss(x * x * 1.6 + (y - 0.29) ** 2 * 55, 0.6) * (ax < 0.62 ? 1 : 0.4);                       // arco das sobrancelhas
+      v.z += 0.05 * gauss(x * x * 70, 0.6) * gauss((y - 0.08) ** 2 * 18, 0.7);                                           // ponte do nariz
+      v.z += 0.045 * gauss(x * x * 4 + (y + 0.5) ** 2 * 12, 0.6);                                                         // boca projetada
+      v.z += 0.13 * qx * gauss(x * x * 7 + (y + 0.86) ** 2 * 22, 0.6);                                                    // queixo
+      if (y < -0.75) v.y -= 0.06 * z;
+      if (y < -0.9) v.y = -0.96 - (v.y + 0.96) * 0.3;                                                                    // base do queixo reta
     }
-  }, seed, 0.035);
+    v.x -= sx * 0.05 * gauss((y - 0.38) ** 2 * 9 + (z - 0.3) ** 2 * 6, 0.6) * (ax > 0.45 ? 1 : 0);                        // têmporas
+    if (z < -0.2) v.y += 0.04 * gauss((y - 0.1) ** 2 * 6, 0.7);                                                         // nuca arredondada
+  }, seed, 0.018);
+  _crCache.set(key, g); return g.clone();
+}
+// nariz esculpido: ponte fina que alarga até a ponta arredondada
+function geoNariz(seed, fem) {
+  const r = mulberry32(seed * 53 + 2), lg = (fem ? 0.85 : 1) * (0.9 + r() * 0.25), bw = 0.8 + r() * 0.4;
+  return facetado(2, (v) => { const t = (1 - v.y) / 2;                                                                      // 0 em cima, 1 na ponta
+    v.x *= (0.055 + 0.075 * t ** 1.5) * bw; v.y *= 0.28 * lg; v.z = v.z * (0.08 + 0.05 * t) + 0.15 * t * t * lg; }, seed + 77, 0.015);
 }
 function recorte(geo, teste, escala = 1) {
   const p = geo.attributes.position, out = [];
@@ -97,14 +119,17 @@ function olhoR11(r, cIris = COR.iris, cPele = COR.pele, cilios = 1) {
 }
 function cabecaR11({ seed, pele, cabelo, barba, iris = COR.iris, fem = false }) {
   const H = new THREE.Group(), pm = matPele(pele);
-  const cr = new THREE.Mesh(geoCranio(seed), pm); contorno(cr, 0.012); H.add(cr);
+  const cr = new THREE.Mesh(geoCranio(seed, fem), pm); contorno(cr, 0.012); H.add(cr);
   // nariz: pirâmide com aresta para frente + asas
-  const nz = new THREE.Mesh(new THREE.ConeGeometry(0.17, 0.6, 4, 1), pm); nz.rotation.set(-0.3, Math.PI / 4, 0); nz.scale.set(0.85, 1, 1.4); nz.position.set(0, -0.1, 0.7); H.add(nz);
-  const vr = mulberry32(seed * 13 + 1); nz.scale.multiplyScalar((fem ? 0.78 : 0.88) + vr() * 0.3); cr.scale.set((fem ? 0.94 : 1) + (vr() - 0.5) * 0.1, 1 + (vr() - 0.5) * 0.08, 1);
-  for (const s of [1, -1]) { const a = new THREE.Mesh(facetado(1, () => {}, seed + s, 0.1), pm); a.scale.set(0.09, 0.07, 0.08); a.position.set(s * 0.11, -0.32, 0.74); H.add(a); }
-  const narina = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.02, 0.06), new THREE.MeshBasicMaterial({ color: 0x3a1a10 })); narina.position.set(0, -0.37, 0.76); H.add(narina);
+  const nz = new THREE.Mesh(geoNariz(seed, fem), pm); nz.position.set(0, -0.08, 0.74); H.add(nz);
+  const ponta = new THREE.Mesh(facetado(1, (v) => { v.y *= 0.8; }, seed + 78, 0.08), pm); ponta.scale.setScalar(fem ? 0.058 : 0.068); ponta.position.set(0, -0.3, 0.875); nz.userData.ponta = ponta; H.add(ponta);
+  const vr = mulberry32(seed * 13 + 1); const nzk = (fem ? 0.88 : 0.95) + vr() * 0.2; nz.scale.multiplyScalar(nzk); ponta.scale.multiplyScalar(nzk); cr.scale.set((fem ? 0.94 : 1) + (vr() - 0.5) * 0.1, 1 + (vr() - 0.5) * 0.08, 1);
+  const nm = new THREE.MeshBasicMaterial({ color: 0x2a120a });
+  for (const s of [1, -1]) { const a = new THREE.Mesh(facetado(1, (v) => { v.z *= 0.8; }, seed + s, 0.08), pm); a.scale.set(0.045, 0.045, 0.05); a.position.set(s * (fem ? 0.075 : 0.088), -0.32, 0.79); a.rotation.y = s * 0.4; H.add(a);
+    const n = new THREE.Mesh(new THREE.CircleGeometry(0.03, 6), nm); n.scale.set(1.3, 0.6, 1); n.position.set(s * 0.045, -0.365, 0.86); n.rotation.x = Math.PI / 2 + 0.5; H.add(n); }
   // orelhas
-  for (const s of [1, -1]) { const o = new THREE.Mesh(facetado(1, (v) => { v.x *= 0.35; v.y *= 1.35; v.z *= 0.9; }, seed + 9 + s), pm); contorno(o, 0.04); o.scale.setScalar(0.24); o.position.set(s * 0.83, 0.0, -0.08); o.rotation.y = s * 0.25; H.add(o); }
+  for (const s of [1, -1]) { const o = new THREE.Mesh(facetado(1, (v) => { v.x *= 0.35; v.y *= 1.35; v.z *= 0.9; }, seed + 9 + s), pm); contorno(o, 0.04); o.scale.setScalar(0.24); o.position.set(s * 0.8, 0.0, -0.08); o.rotation.y = s * 0.25; H.add(o);
+    const ci = new THREE.Mesh(facetado(1, (v) => { v.x *= 0.2; v.y *= 1.1; v.z *= 0.6; }, seed + 19 + s, 0.08), matPele(new THREE.Color(pele).multiplyScalar(0.72))); ci.scale.setScalar(0.16); ci.position.set(s * 0.885, -0.02, -0.04); ci.rotation.y = s * 0.25; H.add(ci); }
   // bochechas (sobem no sorriso e na dor) e rugas entre as sobrancelhas (raiva/dor)
   const boch = [1, -1].map((s) => { const b = new THREE.Mesh(facetado(1, (v) => { v.z *= 0.5; }, seed + 40 + s, 0.12), pm); b.scale.set(0.2, 0.13, 0.12); b.position.set(s * 0.38, -0.2, 0.6); H.add(b); return b; });
   const rugas = new THREE.Group(); rugas.position.set(0, 0.27, 0.79); H.add(rugas);
@@ -116,6 +141,9 @@ function cabecaR11({ seed, pele, cabelo, barba, iris = COR.iris, fem = false }) 
   const suor = new THREE.Mesh(new THREE.SphereGeometry(0.05, 8, 6), agua); suor.scale.set(0.8, 1.3, 0.6); H.add(suor);
   // olhos
   const olhos = [1, -1].map((s) => { const o = olhoR11(0.15 * (fem ? 1.06 : 1), iris, pele, fem ? 1.9 : 1); o.g.position.set(s * 0.32, 0.1, 0.62); o.g.rotation.y = s * 0.16; H.add(o.g); return o; });
+  const vincoM = new THREE.MeshBasicMaterial({ color: 0x3a1a10, transparent: true, opacity: 0.45, depthWrite: false });
+  for (const s of [1, -1]) { const v = new THREE.Mesh(new THREE.TorusGeometry(0.17, 0.008, 3, 10, Math.PI * 0.8), vincoM); v.position.set(s * 0.32, 0.12, 0.7); v.rotation.set(-0.35, s * 0.16, Math.PI * 0.1); H.add(v);
+    const ol = new THREE.Mesh(new THREE.TorusGeometry(0.15, 0.007, 3, 8, Math.PI * 0.6), vincoM); ol.position.set(s * 0.32, 0.05, 0.71); ol.rotation.set(0.3, s * 0.16, Math.PI * 1.2); H.add(ol); }
   // sobrancelhas grossas (2 prismas cada)
   const bm = mat(cabelo, 0.95), somb = [1, -1].map((s) => {
     const g = new THREE.Group(); g.position.set(s * 0.33, 0.36, 0.74); H.add(g);
@@ -124,7 +152,7 @@ function cabecaR11({ seed, pele, cabelo, barba, iris = COR.iris, fem = false }) 
     g.children.forEach((m) => contorno(m, 0.06)); return g;
   });
   // boca: lábios em metades (giram para sorrir/franzir), abertura que desce com o maxilar, dentes de cima e de baixo, língua
-  const boca = new THREE.Group(); boca.position.set(0, -0.53, 0.72); H.add(boca);
+  const boca = new THREE.Group(); boca.position.set(0, -0.53, 0.775); H.add(boca);
   const lm = mat(fem ? 0xc0504e : 0xb8705e, fem ? 0.35 : 0.5), labS = [], labI = [];
   for (const s of [1, -1]) {
     const ps = new THREE.Group(); boca.add(ps); const a = new THREE.Mesh(facetado(1, (v) => { v.x = (v.x + 1) * 0.5 * s; }, seed + 3 + s, 0.1), lm); a.scale.set(0.2, 0.042, 0.06); ps.add(a); labS.push(ps);
@@ -137,12 +165,12 @@ function cabecaR11({ seed, pele, cabelo, barba, iris = COR.iris, fem = false }) 
   // barba por fazer + bigode
   if (barba) {
     const bc = barba === true ? COR.barba : barba;
-    const st = new THREE.Mesh(recorte(geoCranio(seed), (x, y, z) => z > -0.15 && y < -0.28 - 0.25 * Math.max(0, z - 0.3) + 0.0 && !(Math.abs(x) < 0.2 && y > -0.5 && y < -0.38), 1.012), mat(bc, 0.95, { transparent: true, opacity: 0.72 })); H.add(st);
-    const big = new THREE.Mesh(facetado(1, (v) => { v.y *= 0.25; }, seed + 5, 0.2), mat(bc, 0.95, { transparent: true, opacity: 0.85 })); big.scale.set(0.24, 0.1, 0.06); big.position.set(0, -0.42, 0.75); H.add(big);
+    const st = new THREE.Mesh(recorte(geoCranio(seed, fem), (x, y, z) => z > -0.15 && y < -0.28 - 0.25 * Math.max(0, z - 0.3) + 0.0 && !(Math.abs(x) < 0.2 && y > -0.5 && y < -0.38), 1.012), mat(bc, 0.95, { transparent: true, opacity: 0.72 })); H.add(st);
+    const big = new THREE.Mesh(facetado(1, (v) => { v.y *= 0.25; }, seed + 5, 0.2), mat(bc, 0.95, { transparent: true, opacity: 0.85 })); big.scale.set(0.24, 0.1, 0.06); big.position.set(0, -0.42, 0.8); H.add(big);
   }
   // cabelo: casca acima da linha do cabelo + mechas facetadas
   const cm = mat(cabelo, 0.55);
-  const cap = new THREE.Mesh(recorte(geoCranio(seed), (x, y, z) => y > 0.36 + 0.24 * z - 0.12 * Math.abs(x) || (z < -0.3 && y > -0.45), 1.07), cm); contorno(cap, 0.015); H.add(cap);
+  const cap = new THREE.Mesh(recorte(geoCranio(seed, fem), (x, y, z) => y > 0.36 + 0.24 * z - 0.12 * Math.abs(x) || (z < -0.3 && y > -0.45), 1.07), cm); contorno(cap, 0.015); H.add(cap);
   const rr = mulberry32(seed * 7 + 3);
   const claro = new THREE.Color(cabelo).getHSL({}).l > 0.5;
   for (let i = 0; i < (claro ? 12 : 34); i++) {
@@ -204,6 +232,24 @@ const EM = {
   nervoso: { br: -0.3, by: 0.37, bo: [1.05, 0.5], ab: 0.8, ol: [0.2, 0], so: -0.2, su: 0.6, pu: 1.3 },
 };
 export const EXPRESSOES = Object.keys(EM);
+// membro: cilindro com perfil de raio r(t) (t 0 em cima .. 1 embaixo) e frente/trás (zf, zt); pontas planas que se sobrepõem na junta
+function geoMembro(h, rx, { zf = (t) => 1, zt = (t) => 1, seg = 8, an = 5 } = {}) {
+  const g = new THREE.CylinderGeometry(1, 1, h, seg, an), p = g.attributes.position;
+  for (let i = 0; i < p.count; i++) { const y = p.getY(i), t = 0.5 - y / h, r = rx(t), z = p.getZ(i); p.setX(i, p.getX(i) * r); p.setZ(i, z * r * (z > 0 ? zf(t) : zt(t))); }
+  g.computeVertexNormals(); return g;
+}
+// tronco v6: caixa arredondada (superelipse), ombros largos e caídos, peito, cintura e quadril; fem: cintura fina e quadril largo
+const _se = (c, e = 0.72) => Math.sign(c) * Math.abs(c) ** e;
+function formaTronco(v, fem = false) {
+  v.x = _se(v.x); v.z = _se(v.z, 0.8); v.y *= 1.5;
+  const y = v.y;
+  v.x *= 1.04 * (1 + (fem ? 0.04 : 0.12) * Math.max(-0.6, Math.min(0.8, y)));                                              // V: ombro > cintura
+  v.x *= 1 - (fem ? 0.16 : 0.1) * gauss((y + 0.45) ** 2 * 6, 0.7);                                                         // cintura
+  if (fem) v.x *= 1 + 0.12 * gauss((y + 1.1) ** 2 * 6, 0.7);                                                               // quadril
+  v.z *= 0.62; v.z += (v.z > 0 ? 1 : 0) * (fem ? 0.1 : 0.07) * gauss((y - 0.35) ** 2 * 5, 0.7);                           // peito
+  if (y > 0.7) v.y = 0.7 + (y - 0.7) * 0.45 - 0.22 * Math.abs(v.x) ** 2;                                                  // ombros caídos (trapézio)
+  if (y < -0.2) { const k = Math.min(1, (-y - 0.2) / 1.1); v.z *= 1 - 0.18 * k; }
+}
 function esqueleto(R, { pele, jaqueta, calca, tenis = COR.tenis, seed, simples }) {
   const quadril = new THREE.Group(); quadril.position.y = 0.92; R.add(quadril);
   const coluna = new THREE.Group(); quadril.add(coluna);
@@ -235,14 +281,16 @@ function esqueleto(R, { pele, jaqueta, calca, tenis = COR.tenis, seed, simples }
   });
   const pernas = [1, -1].map((s) => {
     const q = new THREE.Group(); q.position.set(s * 0.1, -0.02, 0); quadril.add(q);
-    const c = ct(new THREE.Mesh(new THREE.CylinderGeometry(0.085, 0.07, 0.46, seg), mat(calca)), 0.03); c.position.y = -0.23; q.add(c);
+    const c = ct(new THREE.Mesh(simples ? new THREE.CylinderGeometry(0.085, 0.07, 0.46, seg) : geoMembro(0.5, (t) => 0.094 - 0.03 * t - 0.012 * t * t, { zf: (t) => 1.08 - 0.1 * t }), matTecido(calca)), 0.03); c.position.y = -0.24; q.add(c);
     const j = new THREE.Group(); j.position.y = -0.46; q.add(j);
-    const c2 = ct(new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.06, 0.42, seg), mat(calca)), 0.03); c2.position.y = -0.21; j.add(c2);
+    const c2 = ct(new THREE.Mesh(simples ? new THREE.CylinderGeometry(0.07, 0.06, 0.42, seg) : geoMembro(0.44, (t) => 0.06 - 0.022 * t + 0.006 * gauss((t - 0.28) ** 2 * 25, 0.7), { zt: (t) => 1 + 0.3 * gauss((t - 0.28) ** 2 * 20, 0.7) }), matTecido(calca)), 0.03); c2.position.y = -0.21; j.add(c2);
     const pe = new THREE.Group(); pe.position.y = -0.42; j.add(pe);
-    const sap = ct(new THREE.Mesh(T_box(0.11, 0.08, 0.22), mat(tenis)), 0.04); sap.position.set(0, -0.02, 0.045); pe.add(sap);
+    const sap = ct(new THREE.Mesh(simples ? T_box(0.11, 0.08, 0.22) : facetado(1, (v) => { v.x *= 0.058 * (v.z > 0 ? 1 : 0.9); v.y *= 0.045; v.z *= 0.12; if (v.y < -0.02) v.y = -0.02 - (v.y + 0.02) * 0.3; if (v.z < -0.03 && v.y > 0.02) v.y += 0.02; }, seed + 99 + s, 0.03), mat(tenis)), 0.04); sap.position.set(0, -0.03, 0.045); pe.add(sap);
     if (!simples) { const sola = new THREE.Mesh(T_box(0.118, 0.025, 0.232), mat(0xe8e4dc, 0.6)); sola.position.set(0, -0.065, 0.047); pe.add(sola); }
     return { q, j, pe, s };
   });
+  if (!simples) { const pel = ct(new THREE.Mesh(facetado(2, (v) => { v.x = _se(v.x, 0.8) * 0.14; v.y *= 0.09; v.z *= 0.085; if (v.y > 0.05) v.y = 0.05; }, seed + 93, 0.03), matTecido(calca)), 0.02); pel.position.y = 0.03; quadril.add(pel);
+    const cinto = new THREE.Mesh(new THREE.CylinderGeometry(0.165, 0.165, 0.025, 10), mat(0x2a2018, 0.5)); cinto.scale.z = 0.72; cinto.position.y = 0.075; quadril.add(cinto); R.userData.cinto = cinto; }
   return { quadril, coluna, tronco, pescoco, cab, bracos, pernas };
 }
 // pose de descanso de cada osso (reset() volta para ela)
@@ -267,13 +315,13 @@ export function pessoa({ longo, seed = 1, pele = COR.pele, cabelo, jaqueta, cami
     const tras = contorno(new THREE.Mesh(facetado(2, (v) => { v.y *= 1.6; v.x *= 1.05; if (v.z > 0.3) v.z = 0.3; }, seed + 80, 0.12), lm), 0.02); tras.scale.set(0.15, 0.17, 0.13); tras.position.set(0, -0.06, -0.04); mechas.add(tras);
     for (const s of [1, -1]) { const m = contorno(new THREE.Mesh(facetado(1, (v) => { v.y *= 2.6; v.x *= 0.6; }, seed + 85 + s, 0.2), lm), 0.03); m.scale.setScalar(0.06); m.position.set(s * 0.118, -0.03, 0.03); m.rotation.z = s * 0.08; mechas.add(m); } }
   // tronco: camisa + jaqueta aberta com gola (as abas da jaqueta balançam no andar)
-  const pesc = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.065, 0.16, 7), matPele(pele)); pesc.position.y = 1.47; tronco.add(pesc);
-  const tor = contorno(new THREE.Mesh(facetado(2, (v) => { v.y *= 1.5; v.x *= 1.05 * (1 + 0.11 * v.y); v.z *= 0.62 * (1 + 0.06 * v.y); if (v.y > 0.6) { v.x *= 1 - (v.y - 0.6) * 0.5; } if (v.y < -0.2) { const k = Math.min(1, (-v.y - 0.2) / 1.1); v.x *= 1 - 0.2 * k; v.z *= 1 - 0.22 * k; } }, seed + 20, 0.08), mat(camisa)), 0.02);
+  const pesc = new THREE.Mesh(new THREE.CylinderGeometry(feminina ? 0.052 : 0.062, feminina ? 0.066 : 0.08, 0.17, 8), matPele(pele)); pesc.position.y = 1.47; tronco.add(pesc);
+  const tor = contorno(new THREE.Mesh(facetado(2, (v) => formaTronco(v, feminina), seed + 20, 0.05), mat(camisa)), 0.02);
   tor.scale.set(0.2, 0.235, 0.196); tor.position.set(0, 1.15, -0.004); tronco.add(tor);
   const jm = mat(jaqueta, 0.7), abas = [];
   for (const s of [1, -1]) {
     const piv = new THREE.Group(); piv.position.set(s * 0.035, 1.38, -0.005); tronco.add(piv);
-    const lado = contorno(new THREE.Mesh(facetado(2, (v) => { v.y *= 1.5; v.x *= 1 + 0.11 * v.y; v.z *= 0.62 * (1 + 0.06 * v.y); if (v.x * s < -0.25) v.x = -0.25 * s; if (v.y > 0.8) v.y = 0.8 + (v.y - 0.8) * 0.5 - 0.12 * Math.abs(v.x); if (v.y < -0.1) { const k = Math.min(1, (-v.y - 0.1) / 1.1); v.x *= 1 - 0.24 * k; v.z *= 1 - 0.3 * k; } }, seed + 30 + s, 0.09), jm), 0.02);
+    const lado = contorno(new THREE.Mesh(facetado(2, (v) => { formaTronco(v, feminina); v.x *= 0.97; v.z *= 1.04; if (v.x * s < -0.25) v.x = -0.25 * s; }, seed + 30 + s, 0.06), jm), 0.02);
     lado.scale.set(0.198, 0.25, 0.178); lado.position.y = -0.235; piv.add(lado); abas.push(piv);
     const gola = contorno(new THREE.Mesh(new THREE.ConeGeometry(0.07, 0.17, 4), jm), 0.04);
     gola.position.set(s * 0.085, 1.42, 0.08); gola.rotation.set(0.5, 0, s * 0.45); tronco.add(gola);
@@ -285,8 +333,10 @@ export function pessoa({ longo, seed = 1, pele = COR.pele, cabelo, jaqueta, cami
   if (!corpo) E.pernas.forEach((l) => (l.q.visible = false));
   // roupas
   const escondeJaqueta = () => { abas.forEach((a) => (a.visible = false)); tronco.children.forEach((o) => { if (o !== tor && o !== pesc && o !== E.pescoco && !o.isGroup) { if (o.geometry && (o.geometry.type === "ConeGeometry" || o.geometry.type === "BoxGeometry")) o.visible = false; } }); capuz.visible = false; zip.visible = false; };
-  if (roupa === "camiseta" || roupa === "pijama") { escondeJaqueta(); E.bracos.forEach((b) => { b.manga[1].material = matPele(pele); if (roupa === "pijama") b.manga[1].material = matTecido(jaqueta); }); tor.material = matTecido(roupa === "pijama" ? jaqueta : camisa); }
-  if (roupa === "jaleco") abas.forEach((a) => { a.scale.y = 1.45; });
+  if (roupa === "camiseta" || roupa === "pijama") { escondeJaqueta(); E.bracos.forEach((b) => { b.manga[0].material = matTecido(roupa === "pijama" ? jaqueta : camisa); b.om.children.forEach((o) => { if (o.geometry && o.geometry.type === "IcosahedronGeometry") o.material = b.manga[0].material; }); b.manga[1].material = matPele(pele); if (roupa === "pijama") b.manga[1].material = matTecido(jaqueta);
+      else { b.manga[0].scale.set(1.12, 0.55, 1.12); b.manga[0].position.y = -0.09; const bc = contorno(new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.047, 0.17, 7), matPele(pele)), 0.04); bc.position.y = -0.235; b.om.add(bc); } }); tor.material = matTecido(roupa === "pijama" ? jaqueta : camisa); }
+  if (R.userData.cinto && (feminina || roupa === "camiseta" || roupa === "pijama")) R.userData.cinto.visible = false;
+  if (roupa === "jaleco") { abas.forEach((a) => { a.scale.y = 1.45; }); capuz.visible = false; }
   if (roupa === "uniforme") { zip.visible = false; tor.material = matTecido(jaqueta); abas.forEach((a) => (a.scale.x = 1.15)); }
   if (roupa === "casaco") { abas.forEach((a) => a.scale.set(1.1, 1.15, 1.15)); E.bracos.forEach((b) => b.manga.forEach((m) => m.scale.set(1.2, 1, 1.2))); cachecol = true; }
   // acessórios
@@ -300,7 +350,7 @@ export function pessoa({ longo, seed = 1, pele = COR.pele, cabelo, jaqueta, cami
     for (const s of [1, -1]) { const al = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.42, 0.02), mm); al.position.set(s * 0.12, 1.2, 0.13); al.rotation.x = 0.12; tronco.add(al); } }
   if (cachecol) { const cc = contorno(new THREE.Mesh(new THREE.TorusGeometry(0.085, 0.04, 6, 12), matTecido(typeof cachecol === "number" ? cachecol : 0xb83a3a)), 0.03); cc.rotation.x = Math.PI / 2; cc.position.y = 1.44; tronco.add(cc);
     const ponta = contorno(new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.22, 0.03), cc.material), 0.04); ponta.position.set(0.05, 1.32, 0.12); ponta.rotation.z = 0.15; tronco.add(ponta); }
-  if (feminina) { tor.scale.x *= 0.92; abas.forEach((a) => (a.scale.x *= 0.92)); E.bracos.forEach((b) => (b.om.position.x *= 0.92)); }
+  if (feminina) { E.pescoco.position.y -= 0.025; pesc.scale.y = 0.85; pesc.position.y -= 0.012; tor.scale.x *= 0.92; abas.forEach((a) => (a.scale.x *= 0.92)); E.bracos.forEach((b) => (b.om.position.x *= 0.92)); }
   // idade: criança = corpo menor e cabeça proporcionalmente maior; idoso = costas curvadas
   if (idade === "crianca") { R.scale.setScalar(0.64); E.cab.scale.setScalar(1.32); E.pescoco.position.y -= 0.03; }
   if (idade === "idoso") { E.coluna.rotation.x = 0.13; E.pescoco.rotation.x = 0.12; }
