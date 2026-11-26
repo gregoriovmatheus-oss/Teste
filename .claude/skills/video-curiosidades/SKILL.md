@@ -30,7 +30,7 @@ O usuário pode mudar qualquer padrão para um vídeo; se disser que é permanen
 - Gosta de consequências **concretas para pessoas** (energia, comida, GPS, trabalho), não só física.
 - Quando pede "só a legenda", é o texto corrido, sem cena nem tempo.
 - Se o limite de uso acabar, **volte ao trabalho sozinho** quando liberar.
-- **A cada vídeo novo, melhore os personagens um pouco** (rodada curta no `lowpoly.js` do kit), **mantendo a essência do perfil**:
+- **A cada vídeo, anote o que melhorar nos personagens e aplique no kit para o PRÓXIMO vídeo.** Não refaça nem re-renderize o vídeo atual por causa disso: entregue, depois faça a rodada curta no `lowpoly.js` do kit, **mantendo a essência do perfil**:
   - Rosto `ROSTO="ref"`: o crânio facetado dos vídeos *sem dor* e *dois sóis*. Não troque o formato do rosto.
   - Estilo facetado, olhos com íris pintada, cabelo com franja, proporções da v12.
   - Melhore só o que o vídeo mostrar fraco: boca, mãos, roupa, animação, luz.
