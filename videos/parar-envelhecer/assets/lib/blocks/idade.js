@@ -162,13 +162,13 @@ export function bolo(LP, { num = "25" } = {}) {
   cil(0.21, 0.014, 0xf4f0ea, 0.007, 0.3); cil(0.15, 0.11, 0xf6dcc4, 0.07); cil(0.153, 0.022, 0xe2557a, 0.13, 0.35);
   for (let i = 0; i < 14; i++) { const b = new THREE.Mesh(new THREE.IcosahedronGeometry(0.014, 0), LP.mat([0xff8a4c, 0x7cc8ff, 0xffe066][i % 3], 0.4)); const a = (i / 14) * 6.283; b.position.set(Math.cos(a) * 0.13, 0.145, Math.sin(a) * 0.13); g.add(b); }
   const c = document.createElement("canvas"); c.width = 256; c.height = 200; const x = c.getContext("2d");
-  x.font = '800 190px "Inter", sans-serif'; x.textAlign = "center"; x.textBaseline = "middle"; x.lineWidth = 10; x.strokeStyle = "#fff8ee"; x.strokeText(num, 128, 108);
-  const gr = x.createLinearGradient(0, 20, 0, 190); gr.addColorStop(0, "#ffd36a"); gr.addColorStop(1, "#ff8a4c"); x.fillStyle = gr; x.fillText(num, 128, 108);
+  x.font = '800 190px "Inter", sans-serif'; x.textAlign = "center"; x.textBaseline = "middle"; x.lineWidth = 8; x.strokeStyle = "#7a2a10"; x.strokeText(num, 128, 108);
+  const gr = x.createLinearGradient(0, 20, 0, 190); gr.addColorStop(0, "#ffb347"); gr.addColorStop(1, "#e8582a"); x.fillStyle = gr; x.fillText(num, 128, 108);
   const tx = new THREE.CanvasTexture(c); tx.colorSpace = THREE.SRGBColorSpace;
-  const vela = new THREE.Mesh(new THREE.PlaneGeometry(0.16, 0.125), new THREE.MeshStandardMaterial({ map: tx, transparent: true, alphaTest: 0.3, side: THREE.DoubleSide, roughness: 0.5, emissive: 0xff9a50, emissiveMap: tx, emissiveIntensity: 0.05 }));
+  const vela = new THREE.Mesh(new THREE.PlaneGeometry(0.16, 0.125), new THREE.MeshStandardMaterial({ map: tx, transparent: true, alphaTest: 0.3, side: THREE.DoubleSide, roughness: 0.5, emissive: 0xff9a50, emissiveMap: tx, emissiveIntensity: 0 }));
   vela.position.y = 0.21; g.add(vela);
   const chamas = [-0.04, 0.04].map((dx) => { const f = brilho(0xffb050, 0.05, "suave", 0.8), n = brilho(0xfff2c0, 0.03, "suave", 1); f.position.set(dx, 0.3, 0.005); n.position.set(dx, 0.293, 0.01); g.add(f, n); return [f, n]; });
-  const luz = new THREE.PointLight(0xffa860, 0.7, 3, 2); luz.position.set(0, 0.36, 0.08); g.add(luz);
+  const luz = new THREE.PointLight(0xffa860, 0.7, 3, 2); luz.position.set(0, 0.45, -0.1); g.add(luz);
   return { g, vela, update(t, k = 1) { chamas.forEach(([f, n], i) => { const fl = 1 + 0.12 * Math.sin(t * 17 + i * 2) + 0.08 * Math.sin(t * 29 + i);
     f.scale.set(0.035 * fl * k, 0.06 * fl * k, 1); n.scale.set(0.025 * k, 0.04 * fl * k, 1); f.material.opacity = n.material.opacity = k; }); luz.intensity = 1.2 * k * (1 + 0.1 * Math.sin(t * 13)); } };
 }

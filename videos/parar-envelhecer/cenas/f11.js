@@ -13,12 +13,12 @@ const k = LP.pessoa({ seed: 52, idade: "crianca", roupa: "camiseta", camisa: 0xf
 const v = new THREE.Vector3(), T0 = [0.1, 0.4, 0.84];
 function render(t) {
   const dk = LP.ator(k, t, { seed: 52, andar: t < 3.6 ? { vel: 1.1 } : null, emocao: "alegre" });
-  k.root.position.set(1.4 - Math.min(dk * 0.55, 1.1), 0, 0.6); k.root.rotation.y = t < 3.6 ? -Math.PI / 2 : lerp(-Math.PI / 2, -0.2, range(t, 3.6, 4.0));
+  k.root.position.set(lerp(1.5, 0.3, ease.inOutSine(range(t, 2.3, 3.7))), 0, 0.6); k.root.rotation.y = t < 3.6 ? -Math.PI / 2 : lerp(-Math.PI / 2, -0.2, range(t, 3.6, 4.0));
   const kc = k.cab.getWorldPosition(new THREE.Vector3());
   F.forEach(({ p, x }, i) => { LP.ator(p, t, { seed: 20 + i, emocao: t < 2.6 ? "alegre" : ["alegre", "surpresa", range(t, 2.7, 3.1) * (1 - range(t, 3.9, 4.4))], olharPara: t > 2.6 ? kc : null, olharK: range(t, 2.6, 3.0) }); });
   ab.update(t);
   // câmera: passa pelos 3 rostos (avó → pai → neto), abre em "mesma cara", desce até a criança
-  CI.trilho(cam, t, [[0, [-0.55, 1.62, 1.1], [-0.55, 1.34, -0.28]], [0.45, [0.0, 1.62, 1.35], [0, 1.34, 0]], [0.95, [0.55, 1.62, 1.1], [0.55, 1.34, -0.28]], [2.1, [0.15, 1.5, 4.9], [0.05, 0.78, 0]], [3.0, [0.2, 1.45, 5.0], [0.15, 0.75, 0]], [5.0, [0.5, 1.35, 4.4], [0.3, 0.72, 0.2]]], { mao: 1, seed: 8 });
+  CI.trilho(cam, t, [[0, [-0.55, 1.62, 1.1], [-0.55, 1.34, -0.28]], [0.45, [0.0, 1.62, 1.35], [0, 1.34, 0]], [0.95, [0.55, 1.62, 1.1], [0.55, 1.34, -0.28]], [2.1, [0.1, 1.5, 6.0], [0.05, 0.85, 0]], [3.0, [0.2, 1.45, 6.1], [0.15, 0.8, 0]], [5.0, [0.45, 1.35, 5.3], [0.2, 0.75, 0.2]]], { mao: 1, seed: 8 });
   LP.focar(st, v.set(0.1, 1.5, 0));
   st.draw();
   const c = st.ctx;

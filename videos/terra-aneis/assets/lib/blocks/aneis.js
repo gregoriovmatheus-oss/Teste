@@ -185,7 +185,7 @@ export function sombraAnel(raio, A, { forca = 0.85, seg = 96 } = {}) {
 // Observador na origem, chão em y = 0, Terra de raio Re com centro em (0, -Re, 0). Unidade = 100 km (Re = 63.71).
 // lat: latitude do observador (negativa = sul). norte: ângulo (rad) do norte em volta do eixo y (0 = norte em -z).
 // dirSol(az°, el°) -> direção do Sol no mundo (az a partir do norte, para leste).
-export function ceuAnel(S, { lat = -23, norte = 0, Re = 63.71, r1 = 1.25, r2 = 2.4, op = 0.5, br = 2.2, amb = 0.02, cor = 0xf4e8d6, sombraA = 0.25 } = {}) {
+export function ceuAnel(S, { lat = -23, norte = 0, Re = 63.71, r1 = 1.25, r2 = 1.7, op = 0.5, br = 2.2, amb = 0.02, cor = 0xf4e8d6, sombraA = 0.25 } = {}) {
   const g = new THREE.Group(); g.rotation.y = norte; S.add(g);
   const A = anel({ Re, r1: r1 * Re, r2: r2 * Re, op, br, amb, cor, sombraA, seg: 384 });
   A.mesh.position.set(0, -Re, 0); g.add(A.mesh);

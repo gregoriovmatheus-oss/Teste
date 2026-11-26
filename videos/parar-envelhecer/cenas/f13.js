@@ -6,7 +6,7 @@ const { S, cam } = st;
 LP.luz(st, "interior"); st.exposicao = 1.12; st.quente.intensity = 2.0; st.quente.position.set(1.2, 2.2, 3.0); st.hemi.intensity = 0.8;
 CI.cenario(S, "cozinha"); st.sol(new THREE.Vector3(-2.94, 1.6, -1.2), 1.0);
 LP.bokeh(S, { n: 30, seed: 5, y: [0.8, 2.8], z: [-6, -3], cores: [0xffd08a, 0xff8a4c, 0x7cc8ff, 0xff6a9a] });
-const poe = LP.poeira(S, { n: 120, centro: [0, 1.6, 0.3], raio: [0.9, 0.6, 0.5], cor: 0xffd89a });
+const poe = LP.poeira(S, { n: 60, centro: [0, 1.6, 0.3], raio: [0.9, 0.6, 0.5], cor: 0xffd89a });
 const p = ID.heroi(LP, { camisa: 0x2f6f9a }); S.add(p.root);
 const B = ID.bolo(LP); S.add(B.g); B.g.position.set(0, 1.24, 0.34); B.g.scale.setScalar(0.75);
 const R = new THREE.Vector3(0, 1.62, 0.06), v = new THREE.Vector3();

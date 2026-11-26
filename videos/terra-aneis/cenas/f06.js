@@ -3,10 +3,10 @@
         await AN.prepara();
         const st = LP.palco(canvas, { fov: 58, foco: 60, faixa: 60, desfoque: 8, fundo: 0x2a2440, bloom: 1.4, raios: 0.9, flare: 0.8 });
         const { S, cam } = st;
-        LP.luz(st, "por-do-sol"); st.U.nevoa.value = 0.022; st.U.corNevoa.value.set(0.62, 0.42, 0.42); st.exposicao = 1.0;
+        LP.luz(st, "por-do-sol"); st.U.nevoa.value = 0.007; st.U.corNevoa.value.set(0.62, 0.42, 0.42); st.exposicao = 1.0;
         CI.ceu(S, { topo: 0x14204a, horizonte: 0xf08a4c, estrelas: 120, seed: 13 });
         // nascer do Sol no Brasil (23° S): Sol a leste (az 94°); o pé do anel nasce do horizonte a lés-nordeste (az 56–79°) e sobe em arco
-        const C = AN.ceuAnel(S, { lat: -23, br: 2.6, op: 0.55, amb: 0.02, cor: 0xffd6ae, sombraA: 0.3 });
+        const C = AN.ceuAnel(S, { lat: -23, br: 3.6, op: 0.85, amb: 0.06, cor: 0xffd6ae, sombraA: 0.3 });
         AN.chao(S, LP, { cor: 0x3a3a28, morro: 0x2a2630, seed: 12, tufos: 700, raioTufo: 7, morros: 10 });
         const SOLP = new THREE.Vector3(), SOLD = new THREE.Vector3();
         const disco = AN.brilho(0xfff2d0, 9, "suave", 1), halo = AN.brilho(0xff9a50, 110, "suave", 0.55), halo2 = AN.brilho(0xffc890, 34, "raios", 0.6);
@@ -26,7 +26,7 @@
           SOLP.copy(SOLD).multiplyScalar(150); disco.position.copy(SOLP); halo.position.copy(SOLP); halo2.position.copy(SOLP);
           const sobe = range(el, -1.2, 1.2);
           disco.material.opacity = 0.35 + 0.65 * sobe; halo2.material.opacity = 0.6 * sobe; halo.material.opacity = 0.35 + 0.35 * sobe;
-          C.u.uBr.value = lerp(1.4, 2.6, range(t, 0.8, 2.6));
+          C.u.uBr.value = lerp(2.2, 3.8, range(t, 0.8, 2.6));
           st.fria.position.copy(SOLD).multiplyScalar(8); st.fria.position.y = Math.max(0.4, st.fria.position.y); st.fria.intensity = lerp(1.2, 3.6, sobe);
           st.exposicao = lerp(0.9, 1.08, range(t, 0, 3));
           aves.forEach((b, i) => { const d = b.voar(t + i * 0.37, { vel: 0.8, planar: 0.4 }); b.root.position.copy(AN.dir(70 + i * 5 - d * 0.9, 6 + i * 1.5)).multiplyScalar(38 + i * 6); b.root.rotation.y = Math.PI * 0.5; });

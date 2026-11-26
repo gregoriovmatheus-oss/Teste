@@ -18,7 +18,7 @@ function render(t) {
   ponta.position.set(-W / 2 + ka * W, f1(Math.max(0.001, ka)), 0); const xb = 0.45 + 0.55 * kb; pontaB.position.set(-W / 2 + xb * W, f2(xb), 0); pontaB.material.opacity = range(t, 2.9, 3.1);
   CA.material.opacity = 1; CA.material.transparent = true; CA.material.opacity = 1 - 0.6 * range(t, 3.6, 4.2);
   const e = ease.inOutSine(range(t, 0, 4.9));
-  cam.position.set(lerp(-1.2, 0.9, e), lerp(1.2, 1.3, e), lerp(7.5, 8.2, e)); al.set(lerp(-0.1, 0.1, e), -0.1, 0); cam.lookAt(al);
+  cam.position.set(lerp(-1.2, 0.9, e), lerp(1.2, 1.3, e), lerp(5.4, 6.0, e)); al.set(lerp(-0.1, 0.1, e), -0.1, 0); cam.lookAt(al);
   st.bloom = 0.8; st.draw();
   const c = st.ctx;
   ID.tag(c, "POPULAÇÃO", ponta.position, cam, range(t, 0.3, 0.55) * (1 - range(t, 2.6, 2.8)), { dy: 160, dx: -150 });
