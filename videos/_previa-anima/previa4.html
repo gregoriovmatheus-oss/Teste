@@ -9,7 +9,7 @@ const U = new URLSearchParams(location.search), q = +(U.get("q") || 0), ang = +(
 const P = LP.palco(null, { webgl: document.getElementById("c"), foco: 1, faixa: 0.3, desfoque: 20 }); const { S, cam } = P;
 LP.luz(P, "dramatica"); P.fria.position.set(1.5, 2, 2); LP.bokeh(S, { n: 30, seed: 3, y: [1, 3], z: [-10, -4] });
 const elenco = [{ seed: 4, cabeloTipo: U.get("h") || null }, { seed: 31, feminina: true, pele: 0xd9a07e, cabelo: 0x2a1a10 }, { seed: 32, idade: "idoso", pele: 0xc89478 }, { seed: 6, pele: 0x7a4e36, barba: false }, { seed: 35, feminina: true, pele: 0x8a5a40 }, { seed: 33, idade: "crianca", pele: 0xe0b898 }];
-const p = LP.pessoa(elenco[q]); S.add(p.root); p.reset(); p.emocao(U.get("e") || "calmo", [0, 0]); LP.vida(p, 1, { seed: 4, piscar: false, olhos: false });
+const p = LP.pessoa(elenco[q]); S.add(p.root); p.reset(); p.emocao(U.get("e") || "calmo", [0, 0]); LP.vida(p, 1, { seed: 4, piscar: false, olhos: false }); if (U.get("w")) LP.falarPalavras(p, +(U.get("t") || 0.5), [{ text: U.get("w"), start: 0, end: 1 }]);
 p.root.updateMatrixWorld(true); const r = new THREE.Vector3(); p.cab.getWorldPosition(r); r.y += 0.06;
 CI.preenche(P, r, { forca: 0.5 });
 cam.position.set(r.x + Math.sin(ang) * dist, r.y + 0.03, r.z + Math.cos(ang) * dist); cam.lookAt(r.x, r.y - 0.06, r.z); LP.focar(P, r);

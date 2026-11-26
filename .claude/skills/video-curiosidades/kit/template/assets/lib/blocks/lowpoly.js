@@ -253,7 +253,7 @@ function cabecaR11({ seed, pele, cabelo, barba, iris = COR.iris, fem = false, ca
   // abertura desce o lábio de baixo com o maxilar. Interior (cavidade, dentes, língua) cabe sempre no vão entre os lábios.
   const boca = new THREE.Group(); boca.position.set(0, kid ? -0.5 : -0.53, kid ? 0.735 : 0.76); if (kid) boca.scale.setScalar(0.85); H.add(boca);
   const corL = new THREE.Color(pele).lerp(new THREE.Color(fem ? 0xc04a50 : 0xa85a52), fem ? 0.55 : 0.4);
-  const lm = new THREE.MeshStandardMaterial({ color: corL, roughness: fem ? 0.3 : 0.45, flatShading: FAC() }), lmI = new THREE.MeshStandardMaterial({ color: corL.clone().multiplyScalar(1.08), roughness: fem ? 0.25 : 0.4, flatShading: FAC() });
+  const lm = new THREE.MeshStandardMaterial({ color: corL, roughness: fem ? 0.42 : 0.55, flatShading: FAC() }), lmI = new THREE.MeshStandardMaterial({ color: corL.clone().multiplyScalar(1.08), roughness: fem ? 0.4 : 0.52, flatShading: FAC() });
   const LW = 0.225, ES = fem ? 0.038 : 0.032, EI = fem ? 0.05 : 0.044;
   const geoLabio = (sd, baixo) => facetado(2, (v) => { const u = Math.abs(v.x), esp = baixo ? 1 - 0.8 * u * u : 0.9 - 0.65 * u * u;
     v.y *= esp; if (!baixo && v.y > 0) v.y += 0.3 * gauss((u - 0.22) ** 2 * 60, 0.6) - 0.18 * gauss(u * u * 150, 0.6); if (baixo && v.y < 0) v.y *= 1.1;
@@ -332,10 +332,10 @@ function cabecaR11({ seed, pele, cabelo, barba, iris = COR.iris, fem = false, ca
     lag.visible = (e.la || 0) > 0.02; lag.position.set(0.36, 0.0 - 0.45 * (e.la || 0), 0.74 - 0.08 * (e.la || 0));
     suor.visible = (e.su || 0) > 0.02; suor.position.set(-0.5, 0.55 - 0.3 * (e.su || 0), 0.6);
     // lábios: x em -1..1 (canto a canto); so sobe/desce os cantos (curva), ab desce o lábio de baixo; nj levanta um lado do lábio de cima
-    const nj = e.nj || 0, sobeS = h * 0.22 + 0.02 * Math.max(0, so - 0.4), desceI = h * 1.25 + 0.016 * Math.max(0, so - 0.3), larg = LW * w * (1 + 0.1 * Math.max(0, so));
+    const pr = e.pr || 0, nj = e.nj || 0, sobeS = h * 0.22 + 0.02 * Math.max(0, so - 0.4), desceI = h * 1.25 + 0.016 * Math.max(0, so - 0.3), larg = LW * w * (1 + 0.1 * Math.max(0, so));
     const curva = (x) => so * (so > 0 ? 0.085 : 0.06) * x * x - (so < 0 ? 0 : 0.008 * so);
-    labS.userData.aplica((x, y, z) => [x * larg, 0.012 + y * ES + curva(x) + sobeS * (1 - 0.6 * x * x) + nj * 0.03 * Math.max(0, x), z * 0.06 + 0.035]);
-    labI.userData.aplica((x, y, z) => [x * larg * (0.9 + 0.04 * ab), -0.012 + y * EI + curva(x) * 1.1 - desceI * (1 - 0.5 * x * x), z * 0.065 + 0.03]);
+    labS.userData.aplica((x, y, z) => [x * larg, 0.012 + y * ES + curva(x) + sobeS * (1 - 0.6 * x * x) + nj * 0.03 * Math.max(0, x), z * 0.06 * (1 + 0.5 * pr) + 0.035 + 0.03 * pr * (1 - x * x)]);
+    labI.userData.aplica((x, y, z) => [x * larg * (0.9 + 0.04 * ab), -0.012 + y * EI + curva(x) * 1.1 - desceI * (1 - 0.5 * x * x), z * 0.065 * (1 + 0.5 * pr) + 0.03 + 0.028 * pr * (1 - x * x)]);
     boca.rotation.z = 0.08 * nj;
     // vão entre os lábios: de baixo do lábio de cima até o topo do de baixo
     const topo = 0.012 + sobeS - ES * 0.55, fundo = -0.012 - desceI + EI * 0.6, vao = Math.max(0, topo - fundo);
@@ -946,25 +946,42 @@ export function pontoCabeca(p, onde = "bochecha", lado = 0) {
   const s = p.bracos[lado].s, P = { boca: [0, -0.08, 0.13], bochecha: [s * 0.095, -0.075, 0.075], testa: [0, 0.07, 0.13], topo: [s * 0.05, 0.16, 0.0], nuca: [s * 0.04, 0.02, -0.13] }[onde];
   p.root.updateMatrixWorld(true); return p.cab.localToWorld(new THREE.Vector3(...P));
 }
-// fala procedural: a boca abre e fecha em sílabas (~5/s) com pausas; some à expressão atual. Use em cenas de diálogo.
+// formas de boca (visemas) por vogal: fa = abertura, l = largura, pr = bico (lábios para frente)
+const VIS = { a: { fa: 1, l: 1.05, pr: 0 }, e: { fa: 0.62, l: 1.18, pr: 0 }, i: { fa: 0.38, l: 1.25, pr: 0 }, o: { fa: 0.72, l: 0.7, pr: 0.55 }, u: { fa: 0.36, l: 0.56, pr: 1 }, _: { fa: 0, l: 1, pr: 0 } };
+const _vg = (c) => (/[aáâãà]/.test(c) ? "a" : /[eéê]/.test(c) ? "e" : /[ií]/.test(c) ? "i" : /[oóôõ]/.test(c) ? "o" : /[uú]/.test(c) ? "u" : "a");
+const _ss = (a, b, x) => { const k = Math.min(1, Math.max(0, (x - a) / (b - a))); return k * k * (3 - 2 * k); };
+// sil = [{v, c}] (vogal, consoantes antes); k = sílaba atual, f = 0..1 dentro dela. Entre vogais a boca não fecha toda:
+// m/b/p fecham os lábios, outras consoantes só diminuem, vogal seguida de vogal desliza. A forma (largura/bico) se mistura com a anterior.
+function _visema(sil, k, f, fim) {
+  const cur = VIS[sil[k].v], ant = k > 0 ? VIS[sil[k - 1].v] : VIS._, s = _ss(0, 0.4, f), c = sil[k].c;
+  const dip = /[mbp]/.test(c) ? 1 : c ? 0.5 : k === 0 ? 0 : 0.1, fe = fim ? 1 - _ss(0.7, 1, f) : 1;
+  const fa = (ant.fa + (cur.fa - ant.fa) * s) * (1 - dip * Math.exp(-(((f - 0.06) / 0.13) ** 2))) * fe;
+  return { fa, l: ant.l + (cur.l - ant.l) * s, pr: (ant.pr + (cur.pr - ant.pr) * s) * (0.4 + 0.6 * fe) };
+}
+const _silabas = (txt) => [...txt.toLowerCase().matchAll(/([^aeiouáéíóúâêôãõà]*)([aeiouáéíóúâêôãõà]+)/g)].map((m) => ({ c: m[1].replace(/[^a-zç]/g, ""), v: _vg(m[2][0]) }));
+function _aplicaVis(p, x, intens) {
+  const e = p.estado(); p.emocao({ ...e, bo: [e.bo[0] * x.l, e.bo[1]], fa: x.fa * intens, pr: x.pr * intens }, p.olharAtual());
+  p.cab.rotation.x += 0.015 * x.fa * intens;
+}
+// fala procedural: sílabas (~5/s) com vogais e consoantes sorteadas (A E I O U, m/b/p fecham), pausas entre frases.
 export function falar(p, t, { seed = 1, intens = 1 } = {}) {
-  const r = mulberry32(seed * 53 + 2); const ph = t * 5.2 * 2 * Math.PI;
-  const env = 0.6 + 0.4 * Math.sin(t * 1.7 + r() * 6) ; const pausa = Math.sin(t * 0.9 + r() * 6) > 0.85 ? 0 : 1;
-  const fa = Math.max(0, Math.sin(ph) * 0.7 + Math.sin(ph * 1.63 + 1.1) * 0.3) * env * pausa * intens;
-  p.emocao({ ...p.estado(), fa }, p.olharAtual());
-  p.cab.rotation.x += 0.02 * fa; p.cab.rotation.y += 0.015 * Math.sin(t * 2.3);
+  const r = mulberry32(seed * 53 + 2), o1 = r() * 6, o2 = r() * 6, u = t * 5.2, k = Math.floor(u), f = u - k;
+  const h = (n, m) => { const x = Math.sin((n + seed * 7.1) * 12.9898 + m * 78.233) * 43758.5453; return x - Math.floor(x); };
+  const sl = (n) => ({ v: "aeiouaeao"[Math.floor(h(n, 1) * 9)], c: h(n, 2) < 0.22 ? "m" : h(n, 2) < 0.75 ? "t" : "" });
+  const pausa = Math.sin(t * 0.9 + o2) > 0.85, env = 0.65 + 0.35 * Math.sin(t * 1.7 + o1);
+  const x = pausa ? VIS._ : _visema([sl(k - 1), sl(k)], 1, f, Math.sin((k + 1) / 5.2 * 0.9 + o2) > 0.85);
+  _aplicaVis(p, { ...x, fa: x.fa * env }, intens);
+  p.cab.rotation.y += 0.015 * Math.sin(t * 2.3);
 }
 
 // boca sincronizada com a narração: palavras = audio/palavras.json ([{text, start, end}]), t0 = início da cena no vídeo.
-// Cada sílaba (vogal) abre a boca; "o/u" arredondam (boca estreita), "a/e/i" abrem largo. Pausas fecham.
+// Cada sílaba vira um visema (A E I O U com bico no O/U); m/b/p fecham os lábios; a forma desliza de uma vogal para a outra.
 export function falarPalavras(p, t, palavras, t0 = 0, { intens = 1 } = {}) {
   const T = t + t0; const w = palavras.find((q) => T >= q.start - 0.03 && T <= q.end + 0.03);
-  let fa = 0, larg = 1;
-  if (w) { const sil = (w.text.toLowerCase().match(/[aeiouáéíóúâêôãõà]+/g) || ["a"]); const n = sil.length, u = Math.min(0.999, Math.max(0, (T - w.start) / Math.max(0.05, w.end - w.start)));
-    const k = Math.floor(u * n), f = u * n - k, v = sil[k][0];
-    fa = Math.sin(Math.PI * f) ** 0.7 * intens * (/[oóôõuú]/.test(v) ? 0.75 : /[ií]/.test(v) ? 0.55 : 1); larg = /[oóôõuú]/.test(v) ? 0.72 : /[ieíé]/.test(v) ? 1.15 : 1; }
-  const e = p.estado(); p.emocao({ ...e, bo: [e.bo[0] * larg, e.bo[1]], fa }, p.olharAtual());
-  p.cab.rotation.x += 0.015 * fa;
+  if (!w) return _aplicaVis(p, VIS._, intens);
+  const sil = _silabas(w.text); if (!sil.length) sil.push({ v: "a", c: "" });
+  const n = sil.length, u = Math.min(0.999, Math.max(0, (T - w.start) / Math.max(0.05, w.end - w.start))), k = Math.floor(u * n);
+  _aplicaVis(p, _visema(sil, k, u * n - k, k === n - 1), intens);
 }
 
 // ===== corpo: mais animações (17–27) =====
