@@ -1,7 +1,7 @@
 /*META {"imports": ["lowpoly", "cinema", "idade"], "rotulos": [], "D0": 5.21, "css": ".rot-t { font-family: \"Inter\", sans-serif; font-weight: 300; font-size: 80px; line-height: 1.1; color: #fff; text-transform: none; letter-spacing: -0.01em; -webkit-text-stroke: 0; text-shadow: 0 2px 30px rgba(0,0,0,0.75), 0 1px 3px rgba(0,0,0,0.6); }\n    .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }\n    .rot-t .o { font-weight: 800; color: #ff8a4c; } .rot-t .p { font-size: 60px; }\n    .rot-t .k { display: inline-block; font-family: \"JetBrains Mono\", monospace; font-weight: 600; font-size: 26px; letter-spacing: 0.32em; color: #7cc8ff; margin-bottom: 18px; text-shadow: 0 2px 12px rgba(0,0,0,0.8); }\n    .rot-t .n { font-family: \"JetBrains Mono\", monospace; font-weight: 600; color: #7cc8ff; }\n"} */
 const LP = LOWPOLY, CI = CINEMA, ID = IDADE;
 await ID.prepara();
-const st = LP.palco(canvas, { foco: 2.1, faixa: 0.9, desfoque: 22, bloom: 1.0 });
+const st = LP.palco(canvas, { foco: 2.1, faixa: 0.9, desfoque: 22, bloom: 0.55 });
 const { S, cam } = st;
 LP.luz(st, "interior"); st.exposicao = 1.12; st.quente.intensity = 2.0; st.quente.position.set(1.2, 2.2, 3.0); st.hemi.intensity = 0.8;
 CI.cenario(S, "cozinha"); st.sol(new THREE.Vector3(-2.94, 1.6, -1.2), 1.0);

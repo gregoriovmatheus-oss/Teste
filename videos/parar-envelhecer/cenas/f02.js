@@ -11,15 +11,15 @@ const mold = new THREE.Group(); S.add(mold); mold.position.set(0, 1.45, 0);
 const vidro = new THREE.Mesh(new THREE.PlaneGeometry(0.86, 1.28), new THREE.MeshStandardMaterial({ color: 0xcfe6ff, transparent: true, opacity: 0.1, roughness: 0.05, metalness: 0.6 })); mold.add(vidro);
 const p = ID.heroi(LP, { camisa: 0x2f6f9a }); p.root.position.set(0, 0, 0.55); p.root.rotation.y = Math.PI; S.add(p.root);
 const r = ID.heroi(LP, { camisa: 0x2f6f9a }); r.root.position.set(0, 0, -0.55); S.add(r.root);
-const R = new THREE.Vector3(0, 1.62, -0.49);
+const R = new THREE.Vector3(0, 1.56, -0.49);
 function render(t) {
-  CI.trilho(cam, t, [[0, [0.42, 1.78, 1.75], [0, 1.42, -0.5]], [3.71, [0.26, 1.74, 1.45], [0, 1.43, -0.5]]], { mao: 1, seed: 4 });
+  CI.trilho(cam, t, [[0, [0.85, 1.66, 1.75], [0.05, 1.2, -0.55]], [3.71, [0.62, 1.64, 1.5], [0.05, 1.22, -0.55]]], { mao: 1, seed: 4 });
   const em = ["duvida", "alegre", range(t, 1.9, 2.5)], k = ease.inOutCubic(range(t, 0.3, 0.9)) * (1 - ease.inOutCubic(range(t, 2.4, 3.0)));
   [[p, 0], [r, 1]].forEach(([q, lado]) => { LP.ator(q, t, { seed: 12, emocao: em });
     q.root.updateMatrixWorld(true); LP.alcancar(q, lado, LP.pontoCabeca(q, "bochecha", lado), k, { polo: new THREE.Vector3(lado ? -1 : 1, -0.3, -0.2) });
     q.cab.rotation.y += 0.25 * Math.sin(t * 1.4) * (lado ? 1 : -1) * k; });
   LP.focar(st, R); CI.preenche(st, R, { forca: 1.8 });
   st.draw();
-  ID.lista(st.ctx, [["RUGAS", 0.1, 2.25], ["CABELO BRANCO", 0.47, 2.4], ["DOR NAS COSTAS", 1.32, 2.55]], t, 540, 690, { w: 560 });
-  ID.txt(st.ctx, "NADA DISSO", 540, 920, { tam: 34, cor: ID.LARANJA, a: range(t, 2.25, 2.5), esp: 0.3 });
+  ID.lista(st.ctx, [["RUGAS", 0.1, 2.25], ["CABELO BRANCO", 0.47, 2.4], ["DOR NAS COSTAS", 1.32, 2.55]], t, 540, 770, { w: 520, lh: 66 });
+  ID.txt(st.ctx, "NADA DISSO", 540, 985, { tam: 34, cor: ID.LARANJA, a: range(t, 2.25, 2.5), esp: 0.3 });
 }

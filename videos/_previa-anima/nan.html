@@ -1,0 +1,9 @@
+<!doctype html><html><body><script type="module">
+import * as THREE from "./assets/lib/three.module.js";
+import * as LP from "./assets/lib/blocks/lowpoly.js";
+const out = [];
+const casos = [{ seed: 4 }, { seed: 31, feminina: true }, { seed: 32, idade: "idoso", roupa: "casaco" }, { seed: 33, idade: "crianca" }, { seed: 5, bracos: 4 }, { seed: 6, roupa: "camiseta" }, { seed: 7, roupa: "jaleco", oculos: true }];
+for (const c of casos) { const p = LP.pessoa(c); p.reset(); p.emocao("calmo"); LP.vida(p, 1, { seed: 1 });
+  p.root.traverse((o) => { const a = o.geometry?.attributes?.position; if (!a) return; let n = 0; for (const v of a.array) if (Number.isNaN(v)) n++; if (n) out.push(JSON.stringify(c) + " " + o.geometry.type + " n=" + n + " count=" + a.count + " par=" + (o.parent?.name || o.parent?.type)); }); }
+document.title = "PRONTO"; window.R = out; window.PRONTO = true;
+</script></body></html>

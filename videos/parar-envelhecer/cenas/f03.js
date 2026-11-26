@@ -7,11 +7,11 @@ LP.luz(st, "frio"); st.exposicao = 1.15; st.hemi.intensity = 0.7;
 const H = CI.cenario(S, "hospital"); CI.clima(st, "hospital");
 const trav = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.1, 0.35), LP.mat(0xf4f8fa, 0.9)); trav.position.set(0.5, 0.9, -2.2); S.add(trav);
 const p = ID.heroi(LP, { roupa: "pijama", camisa: 0x8ab0c8 }); p.root.position.set(0.5, 0.92, -0.45); S.add(p.root);
-const R = new THREE.Vector3(0.5, 1.05, -2.1);
+const R = new THREE.Vector3(0.5, 1.02, -2.3);
 function render(t) {
   LP.ator(p, t, { seed: 12, pose: "deitado", emocao: ["nervoso", "medo", range(t, 1.2, 1.8)], olhar: t > 2 ? [0.4, 0.2] : null });
   p.root.position.set(0.5, 0.92, -0.45); p.root.rotation.set(-Math.PI / 2, 0, 0);
-  CI.trilho(cam, t, [[0, [2.0, 2.1, 0.4], [0.4, 0.95, -1.7]], [2.0, [1.5, 1.9, -0.7], [0.45, 1.0, -1.95]], [5.97, [1.15, 1.75, -1.35], [0.5, 1.02, -2.1]]], { mao: 1, seed: 6 });
+  CI.trilho(cam, t, [[0, [2.0, 2.1, 0.4], [0.4, 0.95, -1.7]], [2.0, [1.5, 1.9, -0.8], [0.5, 0.95, -2.25]], [5.97, [1.2, 1.78, -1.45], [0.5, 0.95, -2.35]]], { mao: 1, seed: 6 });
   LP.focar(st, R);
   st.draw();
   ID.lista(st.ctx, [["ACIDENTES", 2.07, null], ["INFECÇÕES", 2.67, null], ["ALGUNS CÂNCERES", 3.82, null]], t, 540, 700, { w: 560 });

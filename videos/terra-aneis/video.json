@@ -110,7 +110,86 @@
   },
   "sfx": [],
   "doc": {
-    "capitulos": [],
-    "hud": []
+    "capitulos": [
+      [
+        0,
+        "O ARCO"
+      ],
+      [
+        16.39,
+        "O CÉU NOVO"
+      ],
+      [
+        31.88,
+        "A SOMBRA"
+      ],
+      [
+        41.83,
+        "O PERIGO NO ESPAÇO"
+      ],
+      [
+        54.04,
+        "O PASSADO"
+      ]
+    ],
+    "hud": [
+      {
+        "rotulo": "ANÉIS DE SATURNO",
+        "unid": "mil km",
+        "fmt": "int",
+        "keys": [
+          [
+            11.75,
+            0
+          ],
+          [
+            12.3,
+            280
+          ]
+        ],
+        "max": 280,
+        "de": 11.75
+      },
+      {
+        "rotulo": "ESTAÇÃO ESPACIAL",
+        "unid": "km",
+        "fmt": "int",
+        "keys": [
+          [
+            48.8,
+            0
+          ],
+          [
+            49.3,
+            400
+          ]
+        ],
+        "max": 400,
+        "de": 48.8
+      },
+      {
+        "rotulo": "ANEL ANTIGO HÁ",
+        "unid": "mi anos",
+        "fmt": "int",
+        "keys": [
+          [
+            59.8,
+            0
+          ],
+          [
+            60.9,
+            466
+          ]
+        ],
+        "max": 466,
+        "alerta": [
+          [
+            59.8,
+            61.5
+          ]
+        ],
+        "de": 59.8
+      }
+    ]
   }
 }

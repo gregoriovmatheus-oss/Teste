@@ -20,9 +20,9 @@ function render(t) {
   a.root.updateMatrixWorld(true); b.root.updateMatrixWorld(true);
   [-1, 1].forEach((s, i) => { const m = v.set(0, 1.0 + 0.01 * Math.sin(t * 2), s * 0.13); LP.alcancar(a, i ? 1 : 0, m, 1); LP.alcancar(b, i ? 0 : 1, m, 1); });
   ptl.update(t);
-  CI.plano(st, M, t, t / 5.55, "orbita", { lado: 1, seed: 5 }); st.cam.position.y -= 0.05;
+  CI.trilho(cam, t, [[0, [1.7, 1.6, 2.4], [0, 1.08, 0]], [5.55, [0.7, 1.55, 2.6], [0, 1.1, 0]]], { mao: 1, seed: 5 }); LP.focar(st, M);
   st.draw();
   const c = st.ctx;
-  ID.txt(c, "CASAR PARA SEMPRE", 540, 700, { tam: 32, cor: ID.AZUL, a: range(t, 1.97, 2.2), esp: 0.3 });
-  ID.txt(c, "≈ 1.000 ANOS", 540, 960, { tam: 72, cor: ID.LARANJA, peso: 800, fonte: "inter", a: range(t, 4.74, 4.95), esp: 0 });
+  ID.txt(c, "CASAR PARA SEMPRE", 540, 700, { tam: 32, cor: ID.AZUL, a: range(t, 1.97, 2.2) * (1 - range(t, 4.4, 4.6)), esp: 0.3 });
+  ID.txt(c, "≈ 1.000 ANOS", 540, 720, { tam: 72, cor: ID.LARANJA, peso: 800, fonte: "inter", a: range(t, 4.74, 4.95), esp: 0 });
 }

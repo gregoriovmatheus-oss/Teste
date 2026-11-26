@@ -21,7 +21,7 @@ function render(t) {
   cel.forEach((par, i) => { const k = ease.inOutCubic(range(t, 0.6 + i * 0.25, 1.8 + i * 0.25)); par.forEach((s, j) => { s.position.x = (j ? 1 : -1) * 0.2 * k; s.scale.set(1 - 0.25 * k + 0.25 * Math.sin(k * Math.PI) * 0.6, 1, 1); s.material.opacity = 0.4 * (1 - range(t, 2.6, 3.2)); }); });
   ERROS.forEach((i, n) => { const k = range(t, 3.31 + n * 0.22, 3.5 + n * 0.22), d = deg[i]; d.m.color.setRGB(lerp(0.87, 1, k), lerp(0.91, 0.54, k), lerp(1, 0.3, k)); d.m.emissive.setRGB(lerp(0.49, 1, k), lerp(0.78, 0.45, k), lerp(1, 0.2, k)); d.m.emissiveIntensity = 0.25 + 1.2 * k; d.r.scale.y = 1 - 0.3 * k * (n % 2); });
   const e = ease.inOutSine(range(t, 0, 5.84));
-  cam.position.set(lerp(-1.6, 1.2, e), lerp(1.9, 1.1, e), lerp(5.6, 2.6, e)); al.set(0, lerp(0.95, 0.85, e), 0); cam.lookAt(al);
+  cam.position.set(lerp(-2.4, 1.6, e), lerp(2.2, 1.3, e), lerp(9.0, 5.2, e)); al.set(0, lerp(0.95, 0.85, e), 0); cam.lookAt(al);
   st.bloom = 0.8; st.draw();
   const c = st.ctx;
   ID.tag(c, "CÉLULAS NOVAS", cel[0][1].getWorldPosition(v), cam, range(t, 1.3, 1.55) * (1 - range(t, 2.5, 2.7)), { dy: -40 });

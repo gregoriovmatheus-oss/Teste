@@ -5,7 +5,7 @@ const st = ID.palcoDoc(T, canvas, { fov: 34, ceu: "#02040a" });
 const S = st.scene, cam = st.cam;
 st.scene.children.filter((o) => o.geometry && o.geometry.type === "CircleGeometry").forEach((o) => (o.visible = false));
 // Terra facetada: continentes secos e cinzentos que esverdeiam a partir de um ponto em "cuidasse melhor"
-const geo = new THREE.IcosahedronGeometry(1, 4).toNonIndexed(), P = geo.attributes.position, cor = new Float32Array(P.count * 3), base = [];
+const geo = new THREE.IcosahedronGeometry(1, 4), P = geo.attributes.position, cor = new Float32Array(P.count * 3), base = [];
 const ruido = (x, y, z) => Math.sin(x * 3.1 + 1.3) * Math.cos(y * 2.7 - 0.4) + Math.sin(z * 3.7 + x * 1.9) * 0.7 + Math.sin(y * 5.3 + z * 4.1) * 0.35;
 const ORIG = new THREE.Vector3(0.3, 0.4, 0.86).normalize(), q = new THREE.Vector3();
 for (let i = 0; i < P.count; i += 3) { q.set(0, 0, 0); for (let j = 0; j < 3; j++) q.add(new THREE.Vector3().fromBufferAttribute(P, i + j)); q.normalize();
@@ -24,7 +24,7 @@ function render(t) {
   geo.attributes.color.needsUpdate = true;
   terra.rotation.y = -0.4 + t * 0.12; terra.rotation.x = 0.2;
   const e = ease.inOutSine(range(t, 0, 5.72));
-  cam.position.set(lerp(1.2, -0.4, e), lerp(1.6, 1.3, e), lerp(6.5, 4.2, e)); al.set(0, lerp(0.75, 0.7, e), 0); cam.lookAt(al);
+  cam.position.set(lerp(1.6, -0.6, e), lerp(1.7, 1.4, e), lerp(11, 8.5, e)); al.set(0, lerp(0.7, 0.75, e), 0); cam.lookAt(al);
   st.bloom = 0.7; st.draw();
   const c = st.ctx;
   ID.txt(c, "TANTO TEMPO PELA FRENTE", 540, 700, { tam: 30, cor: ID.AZUL, a: range(t, 0.48, 0.8) * (1 - range(t, 2.5, 2.7)), esp: 0.28 });

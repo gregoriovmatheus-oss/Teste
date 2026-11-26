@@ -143,7 +143,7 @@ function geoCranio(seed, fem = false, formaF = null) {
 // nariz esculpido: ponte fina que alarga até a ponta arredondada
 function geoNariz(seed, fem) {
   const r = mulberry32(seed * 53 + 2), lg = (fem ? 0.85 : 1) * (0.9 + r() * 0.25), bw = 0.8 + r() * 0.4;
-  return facetado(FAC() ? 1 : 2, (v) => { const t = (1 - v.y) / 2;                                                                      // 0 em cima, 1 na ponta
+  return facetado(FAC() ? 1 : 2, (v) => { const t = Math.min(1, Math.max(0, (1 - v.y) / 2));                                                                      // 0 em cima, 1 na ponta
     v.x *= (0.055 + 0.075 * t ** 1.5 + 0.05 * Math.max(0, t - 0.7) / 0.3 * (v.z < 0.3 ? 1 : 0.4)) * bw; v.y *= 0.28 * lg; v.z = v.z * (0.08 + 0.05 * t) + 0.15 * t * t * lg; }, seed + 77, 0.003);
 }
 function casca(geo, f, fora = 1.05, borda = 0.07, dentro = 0.94) {
