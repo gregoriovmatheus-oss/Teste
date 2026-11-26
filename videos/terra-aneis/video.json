@@ -1,0 +1,116 @@
+{
+  "slug": "terra-aneis",
+  "ref": "R10",
+  "duracao": 72.38,
+  "duracao_fixa": null,
+  "narracao": {
+    "arquivo": "assets/audio/narracao.mp3"
+  },
+  "cenas": [
+    {
+      "id": "f01",
+      "palavra": "Imagine olhar",
+      "inicio": 0,
+      "fim": 4.71
+    },
+    {
+      "id": "f02",
+      "palavra": "Se a",
+      "inicio": 4.71,
+      "fim": 10.48
+    },
+    {
+      "id": "f03",
+      "palavra": "Os de",
+      "inicio": 10.48,
+      "fim": 16.39
+    },
+    {
+      "id": "f04",
+      "palavra": "Do Brasil,",
+      "inicio": 16.39,
+      "fim": 21.91
+    },
+    {
+      "id": "f05",
+      "palavra": "À noite,",
+      "inicio": 21.91,
+      "fim": 27.35
+    },
+    {
+      "id": "f06",
+      "palavra": "E no",
+      "inicio": 27.35,
+      "fim": 31.88
+    },
+    {
+      "id": "f07",
+      "palavra": "Mas os",
+      "inicio": 31.88,
+      "fim": 37.21
+    },
+    {
+      "id": "f08",
+      "palavra": "Menos luz,",
+      "inicio": 37.21,
+      "fim": 41.83
+    },
+    {
+      "id": "f09",
+      "palavra": "No espaço,",
+      "inicio": 41.83,
+      "fim": 47.32
+    },
+    {
+      "id": "f10",
+      "palavra": "A estação",
+      "inicio": 47.32,
+      "fim": 54.04
+    },
+    {
+      "id": "f11",
+      "palavra": "E talvez",
+      "inicio": 54.04,
+      "fim": 61.52
+    },
+    {
+      "id": "f12",
+      "palavra": "As crateras",
+      "inicio": 61.52,
+      "fim": 65.93
+    },
+    {
+      "id": "f13",
+      "palavra": "Hoje o",
+      "inicio": 65.93,
+      "fim": 72.38
+    }
+  ],
+  "hud": {
+    "inicio": 0.5,
+    "fim": 6,
+    "rotulo": "O CALOR VOLTA EM",
+    "linha2": "AR −273 °C",
+    "contador": {
+      "de": 5,
+      "ate": 0,
+      "fim": 5.5,
+      "unidade": "s",
+      "casas": 2
+    }
+  },
+  "legendas": {
+    "juntar": [],
+    "numeros": {},
+    "ocultar": []
+  },
+  "trilha": {
+    "arquivo": "assets/audio/trilha.mp3",
+    "volume": 0.12
+  },
+  "sfx": [],
+  "doc": {
+    "capitulos": [],
+    "hud": []
+  }
+}

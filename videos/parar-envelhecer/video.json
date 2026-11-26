@@ -1,0 +1,116 @@
+{
+  "slug": "parar-envelhecer",
+  "ref": "R10",
+  "duracao": 70.47,
+  "duracao_fixa": null,
+  "narracao": {
+    "arquivo": "assets/audio/narracao.mp3"
+  },
+  "cenas": [
+    {
+      "id": "f01",
+      "palavra": "Imagine fazer",
+      "inicio": 0,
+      "fim": 5.21
+    },
+    {
+      "id": "f02",
+      "palavra": "Rugas, cabelo",
+      "inicio": 5.21,
+      "fim": 8.92
+    },
+    {
+      "id": "f03",
+      "palavra": "Mas você",
+      "inicio": 8.92,
+      "fim": 14.89
+    },
+    {
+      "id": "f04",
+      "palavra": "Hoje, o",
+      "inicio": 14.89,
+      "fim": 19.93
+    },
+    {
+      "id": "f05",
+      "palavra": "Se esse",
+      "inicio": 19.93,
+      "fim": 24.3
+    },
+    {
+      "id": "f06",
+      "palavra": "Na natureza",
+      "inicio": 24.3,
+      "fim": 29.78
+    },
+    {
+      "id": "f07",
+      "palavra": "O corpo",
+      "inicio": 29.78,
+      "fim": 35.62
+    },
+    {
+      "id": "f08",
+      "palavra": "A população",
+      "inicio": 35.62,
+      "fim": 40.52
+    },
+    {
+      "id": "f09",
+      "palavra": "Aposentadoria perderia",
+      "inicio": 40.52,
+      "fim": 46.35
+    },
+    {
+      "id": "f10",
+      "palavra": "Relacionamentos mudariam.",
+      "inicio": 46.35,
+      "fim": 51.9
+    },
+    {
+      "id": "f11",
+      "palavra": "Avós, pais",
+      "inicio": 51.9,
+      "fim": 56.9
+    },
+    {
+      "id": "f12",
+      "palavra": "E com",
+      "inicio": 56.9,
+      "fim": 62.62
+    },
+    {
+      "id": "f13",
+      "palavra": "Aos 25",
+      "inicio": 62.62,
+      "fim": 70.47
+    }
+  ],
+  "hud": {
+    "inicio": 0.5,
+    "fim": 6,
+    "rotulo": "O CALOR VOLTA EM",
+    "linha2": "AR −273 °C",
+    "contador": {
+      "de": 5,
+      "ate": 0,
+      "fim": 5.5,
+      "unidade": "s",
+      "casas": 2
+    }
+  },
+  "legendas": {
+    "juntar": [],
+    "numeros": {},
+    "ocultar": []
+  },
+  "trilha": {
+    "arquivo": "assets/audio/trilha.mp3",
+    "volume": 0.12
+  },
+  "sfx": [],
+  "doc": {
+    "capitulos": [],
+    "hud": []
+  }
+}

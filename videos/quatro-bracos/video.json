@@ -1,0 +1,116 @@
+{
+  "slug": "quatro-bracos",
+  "ref": "R10",
+  "duracao": 73.6,
+  "duracao_fixa": null,
+  "narracao": {
+    "arquivo": "assets/audio/narracao.mp3"
+  },
+  "cenas": [
+    {
+      "id": "f01",
+      "palavra": "Imagine acordar,",
+      "inicio": 0,
+      "fim": 4.67
+    },
+    {
+      "id": "f02",
+      "palavra": "Cada braço",
+      "inicio": 4.67,
+      "fim": 11.91
+    },
+    {
+      "id": "f03",
+      "palavra": "Para segurar",
+      "inicio": 11.91,
+      "fim": 18.46
+    },
+    {
+      "id": "f04",
+      "palavra": "O coração",
+      "inicio": 18.46,
+      "fim": 23.34
+    },
+    {
+      "id": "f05",
+      "palavra": "E o",
+      "inicio": 23.34,
+      "fim": 29.7
+    },
+    {
+      "id": "f06",
+      "palavra": "Isso não",
+      "inicio": 29.7,
+      "fim": 35.2
+    },
+    {
+      "id": "f07",
+      "palavra": "O polvo",
+      "inicio": 35.2,
+      "fim": 39.78
+    },
+    {
+      "id": "f08",
+      "palavra": "Com quatro",
+      "inicio": 39.78,
+      "fim": 44.8
+    },
+    {
+      "id": "f09",
+      "palavra": "Um cirurgião",
+      "inicio": 44.8,
+      "fim": 50.41
+    },
+    {
+      "id": "f10",
+      "palavra": "Mas viriam",
+      "inicio": 50.41,
+      "fim": 55.88
+    },
+    {
+      "id": "f11",
+      "palavra": "E fazer",
+      "inicio": 55.88,
+      "fim": 61.55
+    },
+    {
+      "id": "f12",
+      "palavra": "Talvez os",
+      "inicio": 61.55,
+      "fim": 67.37
+    },
+    {
+      "id": "f13",
+      "palavra": "E no",
+      "inicio": 67.37,
+      "fim": 73.6
+    }
+  ],
+  "hud": {
+    "inicio": 0.5,
+    "fim": 6,
+    "rotulo": "O CALOR VOLTA EM",
+    "linha2": "AR −273 °C",
+    "contador": {
+      "de": 5,
+      "ate": 0,
+      "fim": 5.5,
+      "unidade": "s",
+      "casas": 2
+    }
+  },
+  "legendas": {
+    "juntar": [],
+    "numeros": {},
+    "ocultar": []
+  },
+  "trilha": {
+    "arquivo": "assets/audio/trilha.mp3",
+    "volume": 0.12
+  },
+  "sfx": [],
+  "doc": {
+    "capitulos": [],
+    "hud": []
+  }
+}
