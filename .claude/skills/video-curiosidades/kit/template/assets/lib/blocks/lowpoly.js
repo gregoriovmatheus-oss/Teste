@@ -296,6 +296,7 @@ function cabecaR11({ seed, pele, cabelo, barba, iris = COR.iris, fem = false, ca
   const dentesI = new THREE.Mesh(arco(0.22, 0.04), mD); dentesI.position.z = 0.018; boca.add(dentesI);
   // sulco nasolabial (aparece no sorriso e na dor)
   const vm = new THREE.MeshBasicMaterial({ color: 0x3a1a10, transparent: true, opacity: 0, depthWrite: false });
+  const linhaM = new THREE.MeshBasicMaterial({ color: 0x2a0c08, transparent: true, opacity: 0.8, depthWrite: false }), linha = deformavel(new THREE.PlaneGeometry(2, 1, 16, 1).toNonIndexed(), linhaM); boca.add(linha);   // linha entre os lábios (boca fechada)
   const cant = [1, -1].map(() => { const c = new THREE.Mesh(new THREE.CircleGeometry(0.014, 8), new THREE.MeshBasicMaterial({ color: 0x2a100a, transparent: true, opacity: 0.5, depthWrite: false })); c.scale.y = 1; boca.add(c); return c; });
   for (const s of [1, -1]) { const sl = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.008, 3, 10, 0.9), vm); sl.position.set(s * 0.06, -0.3, 0.8); sl.rotation.set(0.2, s * 0.5, s > 0 ? -0.25 : Math.PI + 0.25 - 0.9); H.add(sl); }
   // barba por fazer + bigode
@@ -367,6 +368,8 @@ function cabecaR11({ seed, pele, cabelo, barba, iris = COR.iris, fem = false, ca
     dentes.visible = abre.visible && (vao > 0.012 || so > 0.4); dentes.scale.set(w * (0.9 + 0.1 * Math.max(0, so)), Math.min(1, vao / 0.03 + 0.4), 1); dentes.position.y = topo - 0.018;
     dentesI.visible = abre.visible && vao > 0.07; dentesI.scale.x = w * 0.95; dentesI.position.y = fundo + 0.016;
     lingua.visible = vao > 0.05; lingua.scale.set(larg * 0.55, Math.min(0.045, vao * 0.25), 0.04); lingua.position.y = fundo + Math.min(0.03, vao * 0.18);
+    { const mid = (Math.min(topo, fundo) + Math.max(topo, fundo)) / 2, op = Math.max(0, 1 - vao / 0.012); linha.visible = op > 0.02; linhaM.opacity = 0.75 * op;
+      if (linha.visible) linha.userData.aplica((x, y) => [x * larg * 0.96, mid + curva(x) * 1.05 + y * 0.008 * (1 - 0.6 * x * x), 0.098 - 0.06 * x * x + 0.03 * pr]); }
     cant.forEach((c, i) => { const sx = i ? -1 : 1; c.position.set(sx * larg * 0.98, curva(1) + 0.004 - 0.4 * desceI * 0.5 + sobeS * 0.4, 0.028); c.scale.set(1, 1 + 4 * vao, 1); c.material.opacity = 0.55 - 0.3 * Math.max(0, so); });   // cantos da boca (comissura)
     vm.opacity = 0.35 * Math.max(0, so - 0.2) + 0.25 * Math.max(0, Math.abs(e.br) - 0.4);
     const abK = e.ab * 0.84 + Math.max(0, e.ab - 0.9) * 0.4;   // pálpebra cobre o topo da íris no repouso (olhar natural, sem susto)
