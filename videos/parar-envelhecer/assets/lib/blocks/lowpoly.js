@@ -436,7 +436,7 @@ function esqueleto(R, { pele, jaqueta, calca, tenis = COR.tenis, seed, simples, 
   const seg = simples ? 5 : 10, jm = simples ? mat(jaqueta, 0.7) : matTecido(jaqueta, 0.75), pm = simples ? matPele(pele) : matPeleLiso(pele), ct = (m, k) => (simples ? m : contorno(m, k));
   // quatro: 2º par de braços (índices 2 e 3) preso no meio das costelas, um pouco à frente e menor
   const bracos = (quatro ? [[1, 0], [-1, 0], [1, 1], [-1, 1]] : [[1, 0], [-1, 0]]).map(([s, baixo]) => {
-    const om = new THREE.Group(); om.position.set(s * (simples ? 0.235 : baixo ? 0.205 : 0.228), (simples ? 1.36 : 1.335) - 0.19 * baixo, 0.025 * baixo); if (baixo) om.scale.setScalar(0.93); tronco.add(om);
+    const om = new THREE.Group(); om.position.set(s * (simples ? 0.235 : quatro ? (baixo ? 0.235 : 0.268) : 0.228), (simples ? 1.36 : 1.335) - 0.2 * baixo, 0.015 * baixo); tronco.add(om);
     const sup = ct(new THREE.Mesh(simples ? new THREE.CylinderGeometry(0.062, 0.055, 0.32, seg) : geoMembro(0.34, (t) => 0.063 - 0.012 * t + 0.006 * gauss((t - 0.35) ** 2 * 20, 0.7), { seg: FAC() ? 7 : 10, an: 3 }), jm), 0.04); sup.position.y = -0.16; om.add(sup);
     const omb = new THREE.Mesh(simples ? new THREE.IcosahedronGeometry(0.068, 0) : FAC() ? new THREE.IcosahedronGeometry(0.06, 1) : new THREE.SphereGeometry(0.06, 10, 8), jm); omb.scale.set(1.02, 0.8, 1); omb.position.y = -0.026; om.add(omb);
     const cot = new THREE.Group(); cot.position.y = -0.32; om.add(cot);
@@ -509,7 +509,10 @@ export function pessoa({ longo, seed = 1, pele = COR.pele, cabelo, jaqueta, cami
   capuz.scale.set(0.17, 0.12, 0.13); capuz.position.set(0, 1.43, -0.11); capuz.rotation.x = -0.35; tronco.add(capuz);
   const zip = new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.45, 0.006), mat(0x9a9aa0, 0.3, { metalness: 0.8 })); zip.position.set(0.0, 1.13, 0.162); zip.rotation.x = 0.05; tronco.add(zip);
   E.bracos.forEach((b) => { b.om.rotation.z = b.s * 0.08; b.cot.rotation.x = -0.18; });
-  if (bracos === 4) E.bracos.forEach((b, i) => { if (i < 2) b.om.rotation.z = b.s * 0.17; else { b.om.rotation.set(-0.3, 0, b.s * 0.12); b.cot.rotation.x = -1.05; } });   // 4 braços: de cima abertos, de baixo dobrados à frente
+  // 4 braços: tronco largo e fundo (peito em V), braços grossos do mesmo tamanho, os dois pares abertos para os lados
+  if (bracos === 4) { tor.scale.x *= 1.2; tor.scale.z *= 1.1; abas.forEach((a) => { a.scale.x *= 1.2; a.scale.z *= 1.1; });
+    E.bracos.forEach((b, i) => { b.manga.forEach((m) => { m.scale.x *= 1.22; m.scale.z *= 1.22; }); b.mao.scale.multiplyScalar(1.12);
+      if (i < 2) { b.om.rotation.set(0.05, 0, b.s * 0.45); b.cot.rotation.set(-0.35, 0, -b.s * 0.12); } else { b.om.rotation.set(-0.1, 0, b.s * 0.12); b.cot.rotation.set(-0.55, 0, b.s * 0.08); } }); }
   if (!corpo) E.pernas.forEach((l) => (l.q.visible = false));
   // roupas
   const escondeJaqueta = () => { abas.forEach((a) => (a.visible = false)); tronco.children.forEach((o) => { if (o !== tor && o !== pesc && o !== E.pescoco && !o.isGroup) { if (o.geometry && (o.geometry.type === "ConeGeometry" || o.geometry.type === "BoxGeometry")) o.visible = false; } }); capuz.visible = false; zip.visible = false; };
