@@ -102,7 +102,7 @@ function geoCranio(seed, fem = false) {
 function geoNariz(seed, fem) {
   const r = mulberry32(seed * 53 + 2), lg = (fem ? 0.85 : 1) * (0.9 + r() * 0.25), bw = 0.8 + r() * 0.4;
   return facetado(FAC() ? 1 : 2, (v) => { const t = (1 - v.y) / 2;                                                                      // 0 em cima, 1 na ponta
-    v.x *= (0.055 + 0.075 * t ** 1.5) * bw; v.y *= 0.28 * lg; v.z = v.z * (0.08 + 0.05 * t) + 0.15 * t * t * lg; }, seed + 77, 0.003);
+    v.x *= (0.055 + 0.075 * t ** 1.5 + 0.05 * Math.max(0, t - 0.7) / 0.3 * (v.z < 0.3 ? 1 : 0.4)) * bw; v.y *= 0.28 * lg; v.z = v.z * (0.08 + 0.05 * t) + 0.15 * t * t * lg; }, seed + 77, 0.003);
 }
 function casca(geo, f, fora = 1.05, borda = 0.07) {
   const p = geo.attributes.position;
@@ -170,7 +170,7 @@ function cabecaR11({ seed, pele, cabelo, barba, iris = COR.iris, fem = false, ca
   const ponta = new THREE.Mesh(liso(facetado(1, (v) => { v.y *= 0.8; }, seed + 78, 0.01)), pm); ponta.scale.set(fem ? 0.062 : 0.074, fem ? 0.05 : 0.058, fem ? 0.055 : 0.062); ponta.position.set(0, -0.3, 0.875); nz.userData.ponta = ponta; H.add(ponta);
   const vr = mulberry32(seed * 13 + 1); const nzk = (fem ? 0.88 : 0.95) + vr() * 0.2; nz.scale.multiplyScalar(nzk); ponta.scale.multiplyScalar(nzk); cr.scale.set((fem ? 0.94 : 1) + (vr() - 0.5) * 0.1, 1 + (vr() - 0.5) * 0.08, 1);
   const nm = new THREE.MeshBasicMaterial({ color: 0x2a120a });
-  for (const s of [1, -1]) { const a = new THREE.Mesh(liso(facetado(1, (v) => { v.z *= 0.8; }, seed + s, 0.01)), pm); a.scale.set(0.058, 0.042, 0.04); a.position.set(s * (fem ? 0.066 : 0.076), -0.31, 0.765); a.rotation.y = s * 0.4; H.add(a);
+  for (const s of [1, -1]) { const a = new THREE.Mesh(liso(facetado(1, (v) => { v.z *= 0.8; }, seed + s, 0.01)), pm); a.visible = !FAC(); a.scale.set(0.058, 0.042, 0.04); a.position.set(s * (fem ? 0.066 : 0.076), -0.31, 0.765); a.rotation.y = s * 0.4; H.add(a);
     const n = new THREE.Mesh(new THREE.CircleGeometry(0.03, 6), nm); n.scale.set(1.3, 0.6, 1); n.position.set(s * 0.045, -0.365, 0.86); n.rotation.x = Math.PI / 2 + 0.5; H.add(n); }
   // orelhas
   for (const s of [1, -1]) { const o = new THREE.Mesh(liso(facetado(2, (v) => { v.x *= 0.35; v.y *= 1.35; v.z *= 0.9; }, seed + 9 + s, 0.01)), pm); contorno(o, 0.04); o.scale.setScalar(0.2); o.position.set(s * 0.79, -0.02, -0.1); o.rotation.y = s * 0.25; H.add(o);
@@ -340,7 +340,7 @@ function esqueleto(R, { pele, jaqueta, calca, tenis = COR.tenis, seed, simples }
   const quadril = new THREE.Group(); quadril.position.y = 0.92; R.add(quadril);
   const coluna = new THREE.Group(); quadril.add(coluna);
   const tronco = new THREE.Group(); tronco.position.y = -0.92; coluna.add(tronco);
-  const pescoco = new THREE.Group(); pescoco.position.set(0, 1.47, 0); tronco.add(pescoco);
+  const pescoco = new THREE.Group(); pescoco.position.set(0, simples ? 1.47 : 1.445, 0); tronco.add(pescoco);
   const cab = new THREE.Group(); cab.position.y = 0.18; pescoco.add(cab);
   const seg = simples ? 5 : 10, jm = simples ? mat(jaqueta, 0.7) : matTecido(jaqueta, 0.75), pm = simples ? matPele(pele) : matPeleLiso(pele), ct = (m, k) => (simples ? m : contorno(m, k));
   const bracos = [1, -1].map((s) => {
@@ -392,6 +392,7 @@ export function pessoa({ longo, seed = 1, pele = COR.pele, cabelo, jaqueta, cami
   cabelo = cabelo ?? (idade === "idoso" ? 0xb8b2aa : COR.cabelo);
   jaqueta = jaqueta ?? { jaleco: 0xeef0f2, pijama: 0x6f8fb8, casaco: 0x7a3a2a, uniforme: 0x2f3f5a }[roupa] ?? COR.jaqueta;
   calca = calca ?? { jaleco: 0x2c3442, pijama: 0x6f8fb8 }[roupa] ?? COR.jeans;
+  if (roupa === "jaleco" && camisa === COR.camisa) camisa = 0x8fb0c8;
   const R = new THREE.Group();
   const E = esqueleto(R, { pele, jaqueta, calca, seed, simples: false });
   const { cab, tronco } = E;
@@ -401,13 +402,13 @@ export function pessoa({ longo, seed = 1, pele = COR.pele, cabelo, jaqueta, cami
     const tras = contorno(new THREE.Mesh(liso(facetado(3, (v) => { v.y *= 1.6; v.x *= 1.05; if (v.z > 0.3) v.z = 0.3; if (v.y < -0.8) v.x *= 1 - (-v.y - 0.8) * 0.4; }, seed + 80, 0.015)), lm), 0.02); tras.scale.set(0.15, 0.17, 0.13); tras.position.set(0, -0.06, -0.04); mechas.add(tras);
     for (const s of [1, -1]) { const m = contorno(new THREE.Mesh(liso(facetado(2, (v) => { v.y *= 2.6; v.x *= 0.6; if (v.y < 0) v.x *= 1 + v.y * 0.3; }, seed + 85 + s, 0.02)), lm), 0.03); m.scale.set(0.045, 0.06, 0.035); m.position.set(s * 0.112, -0.035, 0.02); m.rotation.z = s * 0.06; mechas.add(m); } }
   // tronco: camisa + jaqueta aberta com gola (as abas da jaqueta balançam no andar)
-  const pesc = new THREE.Mesh(new THREE.CylinderGeometry(feminina ? 0.052 : 0.062, feminina ? 0.066 : 0.08, 0.17, 8), matPele(pele)); pesc.position.y = 1.47; tronco.add(pesc);
-  const tor = contorno(new THREE.Mesh(liso(facetado(3, (v) => formaTronco(v, feminina), seed + 20, 0.01)), matTecido(camisa)), 0.02);
+  const pesc = new THREE.Mesh(new THREE.CylinderGeometry(feminina ? 0.054 : 0.066, feminina ? 0.07 : 0.085, 0.15, 8), matPele(pele)); pesc.position.y = 1.45; tronco.add(pesc);
+  const tor = contorno(new THREE.Mesh(liso(facetado(FAC() ? 2 : 3, (v) => formaTronco(v, feminina), seed + 20, FAC() ? 0.04 : 0.01)), matTecido(camisa)), 0.02);
   tor.scale.set(0.2, 0.235, 0.196); tor.position.set(0, 1.15, -0.004); tronco.add(tor);
   const jm = matTecido(jaqueta, 0.7), abas = [];
   for (const s of [1, -1]) {
     const piv = new THREE.Group(); piv.position.set(s * 0.035, 1.38, -0.005); tronco.add(piv);
-    const lado = contorno(new THREE.Mesh(liso(facetado(3, (v) => { formaTronco(v, feminina); v.x *= 0.97; v.z *= 1.04; if (v.x * s < -0.25) v.x = -0.25 * s; }, seed + 30 + s, 0.01)), jm), 0.02);
+    const lado = contorno(new THREE.Mesh(liso(facetado(FAC() ? 2 : 3, (v) => { formaTronco(v, feminina); v.x *= 0.97; v.z *= 1.04; if (v.x * s < -0.25) v.x = -0.25 * s; }, seed + 30 + s, 0.01)), jm), 0.02);
     lado.scale.set(0.198, 0.25, 0.178); lado.position.y = -0.235; piv.add(lado); abas.push(piv);
     const gola = contorno(new THREE.Mesh(new THREE.ConeGeometry(0.07, 0.17, 4), jm), 0.04);
     gola.position.set(s * 0.085, 1.42, 0.08); gola.rotation.set(0.5, 0, s * 0.45); tronco.add(gola);
