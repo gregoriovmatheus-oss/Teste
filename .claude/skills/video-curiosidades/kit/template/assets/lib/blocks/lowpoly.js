@@ -395,14 +395,14 @@ function esqueleto(R, { pele, jaqueta, calca, tenis = COR.tenis, seed, simples }
     mao.scale.set(simples ? 0.05 : 0.048, simples ? 0.05 : 0.052, simples ? 0.045 : 0.05); mao.position.y = -0.045; pulso.add(mao);
     const dedos = [];
     if (!simples) {
-      const fal = (w, h) => { const g = new THREE.BoxGeometry(w, h, w * 1.05); g.translate(0, -h / 2, 0); return g; };
+      const fal = (w, h) => { const g = new THREE.CylinderGeometry(w * 0.46, w * 0.55, h, 6, 1), q = g.attributes.position; for (let i = 0; i < q.count; i++) { if (Math.abs(q.getX(i)) + Math.abs(q.getZ(i)) < 1e-6 && q.getY(i) < 0) q.setY(i, q.getY(i) - w * 0.4); q.setZ(i, q.getZ(i) * 0.9); } g.translate(0, -h / 2, 0); g.computeVertexNormals(); return g; };   // falange afilada com ponta redonda
       for (let f = 0; f < 4; f++) { const L = [0.036, 0.042, 0.04, 0.032][f];
         const g = new THREE.Group(); g.position.set((f - 1.5) * 0.021 * s, -0.088, 0.004); g.rotation.z = (f - 1.5) * 0.06; pulso.add(g);
-        g.add(contorno(new THREE.Mesh(fal(0.017, L), pm), 0.1));
-        const g2 = new THREE.Group(); g2.position.y = -L; g.add(g2); g2.add(contorno(new THREE.Mesh(fal(0.015, L * 0.8), pm), 0.1));
+        g.add(new THREE.Mesh(fal(0.017, L), pm));
+        const g2 = new THREE.Group(); g2.position.y = -L; g.add(g2); g2.add(new THREE.Mesh(fal(0.015, L * 0.8), pm));
         g.userData.f2 = g2; g.rotation.x = 0.2; g2.rotation.x = 0.25; dedos.push(g); }
       const p1 = new THREE.Group(); p1.position.set(-s * 0.04, -0.035, 0.018); p1.rotation.set(0.3, 0, s * 0.75); pulso.add(p1);
-      p1.add(contorno(new THREE.Mesh(fal(0.019, 0.034), pm), 0.1)); const p2 = new THREE.Group(); p2.position.y = -0.034; p2.rotation.z = s * -0.25; p1.add(p2); p2.add(contorno(new THREE.Mesh(fal(0.017, 0.028), pm), 0.1));
+      p1.add(new THREE.Mesh(fal(0.019, 0.034), pm)); const p2 = new THREE.Group(); p2.position.y = -0.034; p2.rotation.z = s * -0.25; p1.add(p2); p2.add(new THREE.Mesh(fal(0.017, 0.028), pm));
     }
     return { om, cot, pulso, mao, dedos, s, manga: [sup, inf] };
   });
