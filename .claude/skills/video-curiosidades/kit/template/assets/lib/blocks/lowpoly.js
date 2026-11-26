@@ -119,7 +119,7 @@ function geoCranio(seed, fem = false, formaF = null) {
     }
     v.x -= sx * 0.05 * gauss((y - 0.38) ** 2 * 9 + (z - 0.3) ** 2 * 6, 0.6) * (ax > 0.45 ? 1 : 0);                        // têmporas
     if (z < -0.2) v.y += 0.04 * gauss((y - 0.1) ** 2 * 6, 0.7);                                                         // nuca arredondada
-  }, seed, FAC() ? 0.02 : 0.004, FAC() ? (m) => m.y < 0.12 && m.z > -0.15 : null);   // facetas menores da maçã ao queixo
+  }, seed, FAC() ? 0.01 : 0.004, FAC() ? (m) => m.y < 0.12 && m.z > -0.15 : null);   // facetas menores da maçã ao queixo
   liso(g); _crCache.set(key, g); return g.clone();
 }
 // nariz esculpido: ponte fina que alarga até a ponta arredondada
@@ -345,7 +345,8 @@ function cabecaR11({ seed, pele, cabelo, barba, iris = COR.iris, fem = false, ca
     lingua.visible = vao > 0.05; lingua.scale.set(larg * 0.55, Math.min(0.045, vao * 0.25), 0.04); lingua.position.y = fundo + Math.min(0.03, vao * 0.18);
     vm.opacity = 0.35 * Math.max(0, so - 0.2) + 0.25 * Math.max(0, Math.abs(e.br) - 0.4);
     const abK = e.ab * 0.84 + Math.max(0, e.ab - 0.9) * 0.4;   // pálpebra cobre o topo da íris no repouso (olhar natural, sem susto)
-    olhos.forEach((o) => { o.abrir(abK * (1 - (e._pisc || 0))); o.olhar(...(olhar || e.ol)); });
+    const ol = olhar || e.ol, cv = e.cv ?? 0.018;   // convergência: os dois olhos miram o mesmo ponto (perto = mais vesgo, longe = paralelo)
+    olhos.forEach((o, i) => { o.abrir(abK * (1 - (e._pisc || 0))); o.olhar(ol[0] - (i ? -1 : 1) * cv, ol[1]); });
   }
   return { H, rosto };
 }
@@ -573,9 +574,10 @@ export function vida(p, t, { seed = 1, resp = 1, balanco = 1, piscar = true, olh
     const rs = mulberry32(seed * 71 + 3); let ts = 0, dx = 0, dy = 0;
     while (ts < t) { const n = ts + 0.6 + rs() * 1.2; if (n > t) break; ts = n; dx = (rs() - 0.5) * 0.22; dy = (rs() - 0.5) * 0.1; }
     const e = p.estado(), o0 = p.olharAtual() || e.ol, ox = p._olho || [0, 0], o = [o0[0] + ox[0], o0[1] + ox[1]], mi = Math.max(0, Math.sin(t * 1.6 + ph * 3) - 0.92) * 12;
-    p.emocao({ ...e, br: e.br + 0.06 * mi, by: e.by + 0.01 * mi }, [o[0] + dx, o[1] + dy]);
+    const hm = (n) => { const x = Math.sin(n * 91.7 + seed * 3.3) * 43758.5453; return x - Math.floor(x) - 0.5; }, nm = Math.floor(t * 4.3);   // microssacadas: tremor fino entre as sacadas
+    p.emocao({ ...e, br: e.br + 0.06 * mi, by: e.by + 0.01 * mi, cv: p._cv ?? 0.018 }, [o[0] + dx + 0.025 * hm(nm), o[1] + dy + 0.015 * hm(nm + 0.5)]);
   }
-  p._olho = null;
+  p._olho = null; p._cv = null;
   if (b > 0) p.piscar(b);
   return b;
 }
@@ -637,6 +639,7 @@ export function olharPara(p, alvo, k = 1) {
   p.root.getWorldQuaternion(_q); _b.applyQuaternion(_q.invert());
   const yaw = Math.max(-1.2, Math.min(1.2, Math.atan2(_b.x, _b.z))), pit = Math.max(-0.6, Math.min(0.6, -Math.atan2(_b.y, Math.hypot(_b.x, _b.z))));
   p.cab.rotation.y += yaw * 0.65 * k; p.coluna.rotation.y += yaw * 0.25 * k; p.cab.rotation.x += pit * 0.8 * k;
+  p._cv = Math.min(0.09, Math.atan(0.045 * (p.root.scale.x || 1) / Math.max(0.3, _b.length())));   // distância do alvo -> convergência dos olhos
   // olhos lideram: completam o ângulo que a cabeça ainda não virou (lidos pelo vida(), chame olharPara antes dele)
   const ke = Math.min(1, k * 2.2); p._olho = [Math.max(-0.5, Math.min(0.5, yaw * (0.55 * ke - 0.3 * k))), Math.max(-0.3, Math.min(0.3, -pit * (0.4 * ke - 0.2 * k)))];
 }
