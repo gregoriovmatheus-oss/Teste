@@ -120,7 +120,8 @@ function casca(geo, f, fora = 1.05, borda = 0.07, dentro = 0.94) {
 function cascaAberta(geo, f, fora = 1.06, borda = 0.12, base = 1.025) {
   const p = geo.attributes.position, out = [];
   for (let i = 0; i < p.count; i += 3) { let c = 0; for (let j = 0; j < 3; j++) c += f(p.getX(i + j), p.getY(i + j), p.getZ(i + j)); if (c / 3 <= 0) continue;
-    for (let j = 0; j < 3; j++) { const x = p.getX(i + j), y = p.getY(i + j), z = p.getZ(i + j), k = Math.min(1, Math.max(0, f(x, y, z) / borda)), sc = base + (fora - base) * k * k * (3 - 2 * k); out.push(x * sc, y * sc, z * sc); } }
+    for (let j = 0; j < 3; j++) { const x = p.getX(i + j), z = p.getZ(i + j); let y = p.getY(i + j); for (let it = 0; it < 4; it++) { const fv = f(x, y, z); if (fv >= 0) break; y -= fv; }   // borda: sobe o vértice até a linha (contorno liso)
+      const k = Math.min(1, Math.max(0, f(x, y, z) / borda)), sc = base + (fora - base) * k * k * (3 - 2 * k); out.push(x * sc, y * sc, z * sc); } }
   const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(out, 3)); return liso(g);
 }
 // pinta cada vértice com um multiplicador de cor f(x,y,z) -> [r,g,b] (maquiagem natural: rubor, olheira, sombra). Custo zero no render.
