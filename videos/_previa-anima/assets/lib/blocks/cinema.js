@@ -35,6 +35,26 @@ export function enquadrar(cam, alvo, { terco = "cima", lado = 0 } = {}) {
   cam.rotateX(-off * v * 0.5); cam.rotateY(lado * v * 0.28);
 }
 
+// plano: enquadramento pronto em 1 linha. alvo = rosto (vec3); k = progresso da cena (t / D). Inclui movimento lento, câmera na mão e foco.
+// tipo: "close" (push-in no rosto) | "extremo" (olhos) | "medio" (cintura pra cima) | "aberto" (corpo e cenário) | "ombro" (por cima do ombro, passe de: vec3 do outro)
+//       | "baixo" (contra-plongée, herói/ameaça) | "alto" (plongée, pequeno/sozinho) | "orbita" (gira 40° em volta)
+// lado: -1/1 escolhe o lado do rosto. Rosto fica no terço de cima, longe da zona do título.
+const _p = new THREE.Vector3(), _l = new THREE.Vector3();
+const PLANOS = { extremo: [0.5, 0.42, 0, -0.03], close: [1.0, 0.82, 0.02, -0.02], medio: [1.9, 1.6, -0.05, 0.05], aberto: [3.6, 3.1, 0.3, 0.25],
+  baixo: [1.5, 1.3, -0.6, -0.05], alto: [2.4, 2.1, 1.7, 0.1], ombro: [1.3, 1.15, 0.05, 0], orbita: [1.3, 1.3, 0.05, 0] };
+export function plano(st, alvo, t, k, tipo = "close", { lado = 1, de = null, mao = 1, seed = 1, desfoque = true } = {}) {
+  const [d0, d1, h, dy] = PLANOS[tipo] || PLANOS.close, e = sm(k), d = L(d0, d1, e);
+  let ang = lado * 0.42;
+  if (tipo === "orbita") ang = lado * L(-0.35, 0.35, e);
+  if (tipo === "ombro" && de) { _p.copy(de).sub(alvo).setY(0).normalize(); ang = Math.atan2(_p.x, _p.z) + lado * 0.2; }
+  _p.set(alvo.x + Math.sin(ang) * d, alvo.y + h * (tipo === "baixo" ? 1 : Math.min(1, d)), alvo.z + Math.cos(ang) * d);
+  st.cam.position.copy(_p); _l.copy(alvo); _l.y -= dy + d * 0.1; st.cam.lookAt(_l);
+  if (mao) { const r = mulberry32(seed * 17 + 5), a = [r() * 6, r() * 6, r() * 6];
+    st.cam.rotation.x += mao * (0.0045 * Math.sin(t * 1.3 + a[0]) + 0.002 * Math.sin(t * 3.7 + a[1]));
+    st.cam.rotation.y += mao * (0.0045 * Math.sin(t * 1.1 + a[1]) + 0.002 * Math.sin(t * 4.1 + a[2])); }
+  if (desfoque) { st.U.foco.value = st.cam.position.distanceTo(alvo); st.U.faixa.value = Math.max(0.25, d * 0.45); }
+}
+
 // ===================== LUZ (73–77) =====================
 // luz prática: "abajur" | "celular" | "vela" | "tv" | "poste" — objeto que brilha + luz pontual; devolve {g, luz, update(t)}
 export function luzPratica(S, tipo, pos, { cor, forca = 1 } = {}) {

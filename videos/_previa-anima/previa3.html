@@ -1,0 +1,33 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:Anton;src:url(assets/fonts/anton-latin-400-normal.woff2)}
+@font-face{font-family:Montserrat;font-weight:600;src:url(assets/fonts/montserrat-latin-600-normal.woff2)}
+html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#000}
+canvas{position:absolute;inset:0;width:1080px;height:1920px}
+.tag{position:absolute;left:0;right:0;top:1560px;text-align:center;font:400 92px Anton;color:#fff;text-transform:uppercase;-webkit-text-stroke:5px #000;paint-order:stroke fill}
+.tag small{display:block;font:600 40px Montserrat;color:#F5C518;-webkit-text-stroke:0;letter-spacing:.12em;margin-top:8px}
+</style></head><body><canvas id="c"></canvas><div id="ui"></div>
+<script type="module">
+import * as THREE from "./assets/lib/three.module.js";
+import * as LP from "./assets/lib/blocks/lowpoly.js";
+import * as CI from "./assets/lib/blocks/cinema.js";
+const U = new URLSearchParams(location.search), c = U.get("c"), t = +(U.get("t") || 1), k = +(U.get("k") || 0.5);
+const P = LP.palco(null, { webgl: document.getElementById("c"), foco: 3, faixa: 1.4, desfoque: 18 }); const { S } = P;
+const v3 = (x, y, z) => new THREE.Vector3(x, y, z);
+LP.luz(P, "interior"); CI.cenario(S, "escritorio");
+const a = LP.pessoa({ seed: 6, jaqueta: 0x2f6f8f }); S.add(a.root);
+const b = LP.pessoa({ seed: 31, feminina: true, roupa: "camiseta", camisa: 0xc84a6a, pele: 0xd9a07e, cabelo: 0x2a1a10 }); S.add(b.root);
+b.root.position.set(0.9, 0, -0.9); b.root.rotation.y = -0.9;
+const rostoA = v3(0, 1.66, 0), rostoB = v3(0.9, 1.6, -0.9);
+let tag = c, sub = "";
+if (c === "close") { LP.ator(a, t, { emocao: "surpresa", olharPara: v3(1.5, 1.7, 1.5), olharK: 0.4 }); LP.ator(b, t, { seed: 2, emocao: "alegre", fala: true }); CI.plano(P, rostoA, t, k, "close", { lado: 1 }); sub = "plano close · olhos lideram"; }
+if (c === "medio") { LP.ator(a, t, { emocao: "duvida", gestos: true }); LP.ator(b, t, { seed: 2, emocao: "calmo" }); CI.plano(P, rostoA, t, k, "medio"); sub = "mão relaxada · gestos"; }
+if (c === "ombro") { LP.ator(a, t, { emocao: "foco", olharPara: rostoB }); LP.ator(b, t, { seed: 2, emocao: ["calmo", "alegre", k], fala: true, olharPara: rostoA }); CI.plano(P, rostoB, t, k, "ombro", { de: rostoA }); sub = "por cima do ombro"; }
+if (c === "andar") { const d = LP.ator(a, t, { andar: true, emocao: "calmo" }); a.root.position.z = 1.2 - d * 0.5; a.root.rotation.y = Math.PI; b.root.visible = false;
+  CI.plano(P, v3(0, 1.66, a.root.position.z), t, k, "aberto", { lado: 1 }); sub = "braço com atraso · cabeça estável"; }
+if (c === "baixo") { LP.ator(a, t, { emocao: "raiva", pose: [["apontar", 1, { lado: 1 }]] }); b.root.visible = false; CI.plano(P, rostoA, t, k, "baixo"); sub = "contra-plongée"; }
+if (c === "alto") { LP.ator(a, t, { emocao: "triste", pose: "encolhido" }); b.root.visible = false; CI.plano(P, rostoA, t, k, "alto"); sub = "plongée"; }
+P.T = 1; P.D = 10; P.draw();
+document.getElementById("ui").innerHTML = `<div class="tag">${tag}<small>${sub}</small></div>`; window.PRONTO = true;
+</script></body></html>

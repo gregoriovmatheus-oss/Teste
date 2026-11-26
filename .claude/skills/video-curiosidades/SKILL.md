@@ -59,6 +59,10 @@ setsid nohup bash ../../.claude/skills/video-curiosidades/kit/scripts/fila-rende
     - Outros: `olharPara(p, vec3, k)`, `punho(p, k)`, que fecha as 2 falanges.
     - Cinema (pós e luz): `palco(...)` agora traz oclusão de ambiente, névoa, raios, bloom, aberração, bokeh oval, split-tone e curva S. Para ligar, use `luz(st, "noite|por-do-sol|interior|dramatica|dia|frio")`, `st.sol(vec3, força)` para os raios, `focar(st, vec3)`, `camMao(cam, t)` e `poeira(S, {...}).update(t)` (poeira ou neve).
     - Lip-sync: `falarPalavras(p, t, palavras, t0)`, onde `t0` é o início da cena.
+    - **Atalhos (26/11, use por padrão: menos código e menos tokens por cena, render igual):**
+      - `LP.ator(p, t, {seed, pose, andar, correr, gestos, tremer, olharPara, emocao: "medo"|["calmo","alegre",k], olhar, fala: [palavras, t0]|true})` faz `reset`, poses, olhar, emoção, fala e `vida` na ordem certa, numa linha. Devolve a distância andada.
+      - `CINEMA.plano(st, rosto, t, t/D, "close|extremo|medio|aberto|ombro|baixo|alto|orbita", {lado, de})` dá o enquadramento pronto, com push-in lento, câmera na mão e foco. O rosto fica acima da zona do título. Prévia: `videos/_previa-anima/folha-anima-v5-ator.jpg`.
+      - Já automático no `vida`/`andar`: mão relaxada (dedos em leque), peso alternando nos joelhos, ombros na respiração, olhos que chegam antes da cabeça no `olharPara`, antebraço atrasado no andar e cabeça estável.
     - **`cinema.js`** (META `"imports": ["lowpoly", "cinema"]`, global `CINEMA`): câmera (`trilho`, `dollyZoom`, `focoEntre`), luz prática (abajur, celular, vela, TV, poste), `piscar`, `gobo`, `chaoMolhado`, `clima` (sépia, pesadelo, sonho, memória, hospital, alerta), `ceu`, `chuva`, `fumaca`, `fogo`, `agua`, `vento`, `cenario(...)` e bichos.
     - Lista completa dos 100 ganhos e da API: `GANHOS-3D.md`. Leia só a seção "Onde está cada coisa". Prévia: `videos/_previa-anima/folha-anima-v3-cinema.jpg`.
     - Multidão: `figurante({seed, roupa, pele})`, com o mesmo esqueleto e as mesmas animações e cerca de 10× menos triângulos. Não use mais o `humano` de `animals.js`.

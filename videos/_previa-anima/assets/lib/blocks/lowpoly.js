@@ -249,7 +249,8 @@ function esqueleto(R, { pele, jaqueta, calca, tenis = COR.tenis, seed, simples }
 function guardaDescanso(p) {
   const ossos = [p.root, p.quadril, p.coluna, p.pescoco, p.cab, ...p.bracos.flatMap((b) => [b.om, b.cot, b.pulso, ...b.dedos, ...b.dedos.map((d) => d.userData.f2).filter(Boolean)]), ...p.pernas.flatMap((l) => [l.q, l.j, l.pe]), ...(p.abas || []), ...(p.mechas ? [p.mechas] : [])];
   const base = ossos.map((o) => [o.position.clone(), o.rotation.clone()]);
-  p.reset = () => { ossos.forEach((o, i) => { if (o === p.root) return; o.position.copy(base[i][0]); o.rotation.copy(base[i][1]); }); p.respira(0); p.piscar(0); };
+  p.bracos.forEach((b) => b.dedos.forEach((d) => (d.userData.r0 = d.rotation.x)));
+  p.reset = () => { ossos.forEach((o, i) => { if (o === p.root) return; o.position.copy(base[i][0]); o.rotation.copy(base[i][1]); }); p.bracos.forEach((b) => (b._fix = false)); p.respira(0); p.piscar(0); };
 }
 // Opções extras: feminina, idade "crianca|adulto|idoso", roupa "jaqueta|camiseta|jaleco|pijama|casaco|uniforme", oculos, bone, mochila, cachecol.
 export function pessoa({ longo, seed = 1, pele = COR.pele, cabelo, jaqueta, camisa = COR.camisa, calca, barba, corpo = true, iris, feminina = false, idade = "adulto", roupa = "jaqueta", oculos = false, bone = false, mochila = false, cachecol = false } = {}) {
@@ -356,6 +357,13 @@ export function vida(p, t, { seed = 1, resp = 1, balanco = 1, piscar = true, olh
   p.quadril.rotation.z -= 0.01 * balanco * Math.sin(t * 0.55 * f0 + ph);
   p.cab.rotation.y += 0.04 * balanco * Math.sin(t * 0.37 + ph * 2) + 0.015 * Math.sin(t * 1.3 + ph);
   p.cab.rotation.z += 0.025 * balanco * Math.sin(t * 0.29 + ph);
+  // peso: um joelho cede um pouco, alternando devagar; ombros sobem na inspiração
+  const pw = Math.sin(t * 0.21 * f0 + ph * 1.7);
+  p.pernas.forEach((l, i) => { l.j.rotation.x += 0.035 * balanco * Math.max(0, i ? pw : -pw); l.q.rotation.x -= 0.015 * balanco * Math.max(0, i ? pw : -pw); });
+  p.bracos.forEach((b, i) => { b.om.position.y += 0.006 * br * resp;
+    // mão relaxada: dedos parados (no descanso) curvam em leque, do indicador ao mínimo
+    if (!b._fix) b.dedos.forEach((d, j) => { if (d.userData.r0 !== undefined && Math.abs(d.rotation.x - d.userData.r0) < 1e-3) { const c = 0.18 + 0.07 * j + 0.03 * Math.sin(t * 0.7 + i + j);
+      d.rotation.x += c; if (d.userData.f2) d.userData.f2.rotation.x += c * 1.2; } }); });
   if (p.mechas) p.mechas.rotation.x = 0.03 * Math.sin(t * 1.1 + ph);
   let b = 0;
   if (piscar) { // piscadas a cada 2–4,5 s (às vezes dupla), 0,16 s cada
@@ -365,9 +373,10 @@ export function vida(p, t, { seed = 1, resp = 1, balanco = 1, piscar = true, olh
   if (olhos && p.estado) { // sacadas: o olhar pula para um ponto próximo e segura 0,6–1,8 s; microexpressões a cada ~4 s
     const rs = mulberry32(seed * 71 + 3); let ts = 0, dx = 0, dy = 0;
     while (ts < t) { const n = ts + 0.6 + rs() * 1.2; if (n > t) break; ts = n; dx = (rs() - 0.5) * 0.22; dy = (rs() - 0.5) * 0.1; }
-    const e = p.estado(), o = p.olharAtual() || e.ol, mi = Math.max(0, Math.sin(t * 1.6 + ph * 3) - 0.92) * 12;
+    const e = p.estado(), o0 = p.olharAtual() || e.ol, ox = p._olho || [0, 0], o = [o0[0] + ox[0], o0[1] + ox[1]], mi = Math.max(0, Math.sin(t * 1.6 + ph * 3) - 0.92) * 12;
     p.emocao({ ...e, br: e.br + 0.06 * mi, by: e.by + 0.01 * mi }, [o[0] + dx, o[1] + dy]);
   }
+  p._olho = null;
   if (b > 0) p.piscar(b);
   return b;
 }
@@ -382,11 +391,12 @@ export function andar(p, t, { vel = 1, amp = 1, fase = 0 } = {}) {
     l.pe.rotation.x += amp * (0.25 * Math.max(0, -Math.cos(a)) * Math.max(0, -fw) - 0.2 * Math.max(0, fw) * (1 - sw));
   });
   p.bracos.forEach((b, i) => { const a = ph + (i ? 0 : Math.PI), fw = Math.sin(a);
-    b.om.rotation.x += -0.38 * amp * fw; b.cot.rotation.x += -0.22 * amp * Math.max(0, fw) - 0.08 * amp; });
+    b.om.rotation.x += -0.38 * amp * fw; b.cot.rotation.x += -0.22 * amp * Math.max(0, Math.sin(a - 0.45)) - 0.08 * amp;
+    b.pulso.rotation.x += 0.12 * amp * Math.sin(a - 0.9); b.om.rotation.z += b.s * 0.04 * amp; });
   p.quadril.position.y += amp * (0.028 * Math.abs(Math.cos(ph)) - 0.022);
   p.quadril.rotation.y += 0.07 * amp * Math.sin(ph); p.coluna.rotation.y -= 0.12 * amp * Math.sin(ph);
   p.quadril.rotation.z += 0.035 * amp * Math.sin(ph); p.coluna.rotation.x += 0.05 * amp;
-  p.cab.rotation.y += 0.05 * amp * Math.sin(ph); p.cab.rotation.x += 0.015 * Math.sin(ph * 2);
+  p.cab.rotation.y -= 0.03 * amp * Math.sin(ph); p.cab.rotation.x -= 0.02 * amp * Math.cos(ph * 2) + 0.03 * amp;   // cabeça compensa o tronco (olhar estável)
   p.abas.forEach((a, i) => { a.rotation.x += -0.08 * amp * Math.abs(Math.sin(ph)) - 0.04; a.rotation.z += (i ? 1 : -1) * 0.05 * amp * Math.sin(ph * 2 + 0.6); });
   if (p.mechas) p.mechas.rotation.x += 0.06 * amp * Math.sin(ph * 2 - 0.8);
   return t * vel * 0.72;
@@ -416,11 +426,11 @@ export function pose(p, nome, k = 1, { lado, curva } = {}) {
   if (P.cab) _mix(p.cab, P.cab, k);
   if (P.bracos) { const B = P.bracos, ld = lado ?? B.lado; p.bracos.forEach((b, i) => { if (ld !== undefined && ld !== "ambos" && ld !== i) return; const s = b.s;
     for (const n of ["om", "cot", "pulso"]) if (B[n]) _mix(b[n], [B[n][0], B[n][1] * s, B[n][2] * s], k);
-    if (B.dedos) b.dedos.forEach((d) => _mix(d, B.dedos, k)); }); }
+    if (B.dedos) { b._fix = true; b.dedos.forEach((d) => _mix(d, B.dedos, k)); } }); }
   if (P.pernas) p.pernas.forEach((l) => { for (const n of ["q", "j", "pe"]) if (P.pernas[n]) _mix(l[n], P.pernas[n], k); });
 }
 // mão fechada (k=1) ou aberta (0)
-export function punho(p, k = 1, lado = "ambos") { p.bracos.forEach((b, i) => { if (lado !== "ambos" && lado !== i) return; b.dedos.forEach((d) => { d.rotation.x = L_(d.rotation.x, 1.5, k); if (d.userData.f2) d.userData.f2.rotation.x = L_(d.userData.f2.rotation.x, 1.7, k); }); }); }
+export function punho(p, k = 1, lado = "ambos") { p.bracos.forEach((b, i) => { if (lado !== "ambos" && lado !== i) return; b._fix = true; b.dedos.forEach((d) => { d.rotation.x = L_(d.rotation.x, 1.5, k); if (d.userData.f2) d.userData.f2.rotation.x = L_(d.userData.f2.rotation.x, 1.7, k); }); }); }
 // virar cabeça (e um pouco o tronco) para um ponto do mundo
 const _a = new THREE.Vector3(), _b = new THREE.Vector3(), _q = new THREE.Quaternion();
 export function olharPara(p, alvo, k = 1) {
@@ -428,6 +438,8 @@ export function olharPara(p, alvo, k = 1) {
   p.root.getWorldQuaternion(_q); _b.applyQuaternion(_q.invert());
   const yaw = Math.max(-1.2, Math.min(1.2, Math.atan2(_b.x, _b.z))), pit = Math.max(-0.6, Math.min(0.6, -Math.atan2(_b.y, Math.hypot(_b.x, _b.z))));
   p.cab.rotation.y += yaw * 0.65 * k; p.coluna.rotation.y += yaw * 0.25 * k; p.cab.rotation.x += pit * 0.8 * k;
+  // olhos lideram: completam o ângulo que a cabeça ainda não virou (lidos pelo vida(), chame olharPara antes dele)
+  const ke = Math.min(1, k * 2.2); p._olho = [Math.max(-0.5, Math.min(0.5, yaw * (0.55 * ke - 0.3 * k))), Math.max(-0.3, Math.min(0.3, -pit * (0.4 * ke - 0.2 * k)))];
 }
 
 function T_box(w, h, d) { return new THREE.BoxGeometry(w, h, d, 1, 1, 1); }
@@ -816,3 +828,21 @@ export function apertoMao(a, b, t, k = 1) { if (k <= 0) return; a.root.updateMat
 
 // olho R11 avulso (bichos do cinema.js)
 export const olhoDe = (r, iris, pele) => olhoR11(r, iris, pele);
+
+// ator: tudo de um personagem num quadro, na ordem certa (reset → pose/andar → olharPara → emoção → fala → vida). Menos código por cena.
+// ator(p, t, { seed, pose: "sentado"|[["susto",k],["maoRosto",k2]], andar: {vel}, correr: {vel}, emocao: "medo"|["calmo","alegre",k], olhar: [x,y],
+//   olharPara: vec3, fala: [palavras, t0] | true, gestos: true, tremer: 0.5 }) -> distância andada (para mover o root)
+export function ator(p, t, o = {}) {
+  const seed = o.seed ?? 1; let dist = 0;
+  p.reset();
+  if (o.pose) (typeof o.pose === "string" ? [[o.pose, 1]] : o.pose).forEach(([n, k, op]) => pose(p, n, k, op));
+  if (o.andar) dist = andar(p, t, o.andar === true ? {} : o.andar);
+  if (o.correr) dist = correr(p, t, o.correr === true ? {} : o.correr);
+  if (o.gestos) gesticular(p, t, { seed, ...(o.gestos === true ? {} : o.gestos) });
+  if (o.tremer) tremer(p, t, o.tremer);
+  if (o.olharPara) olharPara(p, o.olharPara, o.olharK ?? 1);
+  if (Array.isArray(o.emocao)) p.emocaoMix(o.emocao[0], o.emocao[1], o.emocao[2], o.olhar); else p.emocao(o.emocao || "calmo", o.olhar);
+  if (o.fala === true) falar(p, t, { seed }); else if (o.fala) falarPalavras(p, t, o.fala[0], o.fala[1] || 0);
+  vida(p, t, { seed, ...(o.vida || {}) });
+  return dist;
+}

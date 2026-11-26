@@ -24,7 +24,7 @@ Leia antes, nesta ordem e rápido: `BRIEF-BUILD.md`, `BRIEF-ESTILO-DOC.md` `BRIE
   - Tipografia doc nos rótulos: kicker azul `#7cc8ff`, palavra-chave `.y` e acento laranja `#ff8a4c` (copie o `css` do META das cenas do lote 3).
 - **Toda cena com gente (cerca de 5–6): R11 v4** (`lowpoly.js` + `cinema.js`, META `"imports": ["lowpoly","cinema"]`).
   - É o foco deste lote: o usuário pediu personagens mais vivos. Use o novo: `vida`, expressões (`choro`, `nervoso`, `surpresa`, `alegre`...), `emocaoMix`, `alcancar`/`pontoCabeca`, `andar`/`correr`/`sentar`/`tremer`, `falarPalavras`, `figurante` para multidão, `luzPratica`, `clima`, `trilho`/`focar`/`camMao`, `poeira`/`chuva`/`fumaca`/`fogo`/`ceu` quando couber.
-  - Ordem em cada `render(t)`: `p.reset()` → poses/andar/IK → `p.emocao` → `vida` → `st.draw()`.
+  - Em cada `render(t)`: `LP.ator(p, t, {...})` (já faz reset → poses → emoção → fala → vida) e `CINEMA.plano(st, rosto, t, t/D, "close")` para a câmera; IK (`alcancar`) vai entre o `ator` e o `st.draw()`. Escreva pouco código por cena.
   - Nada de silhueta (`animals.js → humano`): pessoas sempre R11.
   - A f01 é R11 (frame 0 = miniatura: rosto expressivo e premissa) e a f13 volta à mesma imagem.
   - Use os dois renderizadores compartilhados (`toy.js` e `lowpoly.js`). Não crie outros contextos WebGL.
