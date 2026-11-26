@@ -116,6 +116,13 @@ function casca(geo, f, fora = 1.05, borda = 0.07, dentro = 0.94) {
     p.setXYZ(i, x * sc, y * sc, z * sc); }
   return liso(geo);
 }
+// casca aberta: só os triângulos com f > 0, afastada do crânio (fora) e descendo até "base" na borda. A borda segue a malha fina (linha limpa, sem serrilhado).
+function cascaAberta(geo, f, fora = 1.06, borda = 0.12, base = 1.025) {
+  const p = geo.attributes.position, out = [];
+  for (let i = 0; i < p.count; i += 3) { let c = 0; for (let j = 0; j < 3; j++) c += f(p.getX(i + j), p.getY(i + j), p.getZ(i + j)); if (c / 3 <= 0) continue;
+    for (let j = 0; j < 3; j++) { const x = p.getX(i + j), y = p.getY(i + j), z = p.getZ(i + j), k = Math.min(1, Math.max(0, f(x, y, z) / borda)), sc = base + (fora - base) * k * k * (3 - 2 * k); out.push(x * sc, y * sc, z * sc); } }
+  const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(out, 3)); return liso(g);
+}
 // pinta cada vértice com um multiplicador de cor f(x,y,z) -> [r,g,b] (maquiagem natural: rubor, olheira, sombra). Custo zero no render.
 function colorir(geo, f) {
   const p = geo.attributes.position, c = new Float32Array(p.count * 3);
@@ -199,8 +206,8 @@ function cabecaR11({ seed, pele, cabelo, barba, iris = COR.iris, fem = false, ca
   for (const s of [1, -1]) { const a = new THREE.Mesh(liso(facetado(1, (v) => { v.z *= 0.8; }, seed + s, 0.01)), pm); a.visible = !FAC(); a.scale.set(0.058, 0.042, 0.04); a.position.set(s * (fem ? 0.066 : 0.076), -0.31, 0.765); a.rotation.y = s * 0.4; H.add(a);
     const n = new THREE.Mesh(new THREE.CircleGeometry(0.03, 6), nm); n.scale.set(1.3, 0.6, 1); n.position.set(s * 0.045, -0.365, 0.86); n.rotation.x = Math.PI / 2 + 0.5; H.add(n); }
   // orelhas
-  for (const s of [1, -1]) { const o = new THREE.Mesh(liso(facetado(2, (v) => { v.x *= 0.35; v.y *= 1.35; v.z *= 0.9; }, seed + 9 + s, 0.01)), pm); contorno(o, 0.04); o.scale.setScalar(0.2); o.position.set(s * 0.79, -0.02, -0.1); o.rotation.y = s * 0.25; H.add(o);
-    const ci = new THREE.Mesh(liso(facetado(2, (v) => { v.x *= 0.2; v.y *= 1.1; v.z *= 0.6; }, seed + 19 + s, 0.01)), matPeleLiso(new THREE.Color(pele).multiplyScalar(0.72))); ci.scale.setScalar(0.135); ci.position.set(s * 0.862, -0.04, -0.065); ci.rotation.y = s * 0.25; H.add(ci); }
+  for (const s of [1, -1]) { const o = new THREE.Mesh(liso(facetado(2, (v) => { v.x *= 0.35; v.y *= 1.4; v.z *= 0.68; v.z -= 0.25 * Math.max(0, v.y); }, seed + 9 + s, 0.01)), pm); contorno(o, 0.04); o.scale.setScalar(0.2); o.position.set(s * 0.79, -0.02, -0.1); o.rotation.y = s * 0.25; H.add(o);
+    const ci = new THREE.Mesh(liso(facetado(2, (v) => { v.x *= 0.2; v.y *= 1.1; v.z *= 0.45; }, seed + 19 + s, 0.01)), matPeleLiso(new THREE.Color(pele).multiplyScalar(0.72))); ci.scale.setScalar(0.135); ci.position.set(s * 0.862, -0.04, -0.065); ci.rotation.y = s * 0.25; H.add(ci); }
   // bochechas (sobem no sorriso e na dor) e rugas entre as sobrancelhas (raiva/dor)
   const boch = [1, -1].map((s) => { const b = new THREE.Mesh(liso(facetado(2, (v) => { v.z *= 0.5; }, seed + 40 + s, 0.01)), pm); b.scale.set(0.2, 0.13, 0.12); b.position.set(s * 0.38, -0.2, 0.6); H.add(b); return b; });
   const rugas = new THREE.Group(); rugas.position.set(0, 0.27, 0.79); H.add(rugas);
@@ -223,7 +230,7 @@ function cabecaR11({ seed, pele, cabelo, barba, iris = COR.iris, fem = false, ca
   });
   // boca v8: lábios contínuos (uma peça cada) que se deformam por vértice a cada quadro: sorriso sobe os cantos, tristeza desce,
   // abertura desce o lábio de baixo com o maxilar. Interior (cavidade, dentes, língua) cabe sempre no vão entre os lábios.
-  const boca = new THREE.Group(); boca.position.set(0, -0.53, 0.775); H.add(boca);
+  const boca = new THREE.Group(); boca.position.set(0, -0.53, 0.76); H.add(boca);
   const corL = new THREE.Color(pele).lerp(new THREE.Color(fem ? 0xc04a50 : 0xa85a52), fem ? 0.55 : 0.4);
   const lm = new THREE.MeshStandardMaterial({ color: corL, roughness: fem ? 0.3 : 0.45, flatShading: FAC() }), lmI = new THREE.MeshStandardMaterial({ color: corL.clone().multiplyScalar(1.08), roughness: fem ? 0.25 : 0.4, flatShading: FAC() });
   const LW = 0.225, ES = fem ? 0.038 : 0.032, EI = fem ? 0.05 : 0.044;
@@ -262,11 +269,11 @@ function cabecaR11({ seed, pele, cabelo, barba, iris = COR.iris, fem = false, ca
   // cabelo v7: casca lisa colada ao crânio + mechas afiladas e curvas que saem do topo e seguem a cabeça (liso, com brilho)
   // tipo: "curto" | "topete" | "cacheado" | "liso" (feminino). Mechas: raiz na casca, ponta afinando, deitadas na direção do penteado.
   const cm = matCabelo(cabelo), rr = mulberry32(seed * 7 + 3), tipo = cabeloTipo || (fem ? "liso" : ["curto", "topete", "cacheado"][seed % 3]);
-  const fCab = (x, y, z) => Math.max(y - (0.36 + 0.24 * z - 0.14 * Math.abs(x) + 0.05 * Math.cos(x * 9)), Math.min(-0.25 - z, y + 0.55));
+  const fCab = (x, y, z) => Math.max(y - (0.46 + 0.22 * z - 0.12 * Math.abs(x) - 0.015 * Math.exp(-x * x * 30)), Math.min(-0.25 - z, y + 0.55));   // linha do cabelo: testa = 1/3 do rosto, bico suave no meio
   const capBase = (() => { const e0 = ESTILO; ESTILO = "liso"; const g = geoCranio(seed, fem); ESTILO = e0; return g; })();   // crânio fino (detalhe 3) só para o cabelo
   { const p = capBase.attributes.position, rh = mulberry32(seed * 3 + 1); const memo = new Map(); for (let i = 0; i < p.count; i++) { const k = `${p.getX(i).toFixed(3)},${p.getY(i).toFixed(3)},${p.getZ(i).toFixed(3)}`; if (!memo.has(k)) memo.set(k, 1 + (rh() - 0.5) * 0.05); const n = memo.get(k); p.setXYZ(i, p.getX(i) * n, p.getY(i) * n, p.getZ(i) * n); } }
-  const cmC = matCabelo(cabelo); cmC.vertexColors = true;
-  const cap = new THREE.Mesh(colorir(casca(capBase, fCab, tipo === "cacheado" ? 1.09 : 1.06, 0.11, 0.84), (x, y, z) => { const t = Math.min(1, Math.max(0, (y - 0.2) / 0.9)); const k = 0.72 + 0.4 * t; return [k, k, k * 1.02]; }), cmC); H.add(cap);
+  const cmC = matCabelo(cabelo); cmC.vertexColors = true; cmC.side = THREE.DoubleSide;
+  const cap = new THREE.Mesh(colorir(cascaAberta(capBase, fCab, tipo === "cacheado" ? 1.09 : 1.06, 0.12), (x, y, z) => { const t = Math.min(1, Math.max(0, (y - 0.2) / 0.9)); const k = 0.72 + 0.4 * t; return [k, k, k * 1.02]; }), cmC); H.add(cap);
   const geoMecha = (sd, lg, larg, curva) => { const g = facetado(2, (v) => { const t = (v.y + 1) / 2; v.x *= larg * (1 - 0.85 * t ** 1.4); v.z *= larg * 0.35 * (1 - 0.6 * t); v.y = t * lg; v.z += curva * t * t * lg; }, sd, 0.004); return liso(g); };
   const P = new THREE.Vector3(), D = new THREE.Vector3(), N = new THREE.Vector3(), X = new THREE.Vector3(), M = new THREE.Matrix4();
   const ponto = (az, ph) => { P.set(0.82 * Math.sin(ph) * Math.sin(az), 1.2 * Math.cos(ph), 0.98 * Math.sin(ph) * Math.cos(az)).multiplyScalar(1.04);
@@ -304,8 +311,8 @@ function cabecaR11({ seed, pele, cabelo, barba, iris = COR.iris, fem = false, ca
     lag.visible = (e.la || 0) > 0.02; lag.position.set(0.36, 0.0 - 0.45 * (e.la || 0), 0.74 - 0.08 * (e.la || 0));
     suor.visible = (e.su || 0) > 0.02; suor.position.set(-0.5, 0.55 - 0.3 * (e.su || 0), 0.6);
     // lábios: x em -1..1 (canto a canto); so sobe/desce os cantos (curva), ab desce o lábio de baixo; nj levanta um lado do lábio de cima
-    const nj = e.nj || 0, sobeS = h * 0.22 + 0.014 * Math.max(0, so - 0.4), desceI = h * 1.25, larg = LW * w * (1 + 0.06 * Math.max(0, so));
-    const curva = (x) => so * 0.06 * x * x - (so < 0 ? 0 : 0.008 * so);
+    const nj = e.nj || 0, sobeS = h * 0.22 + 0.02 * Math.max(0, so - 0.4), desceI = h * 1.25 + 0.016 * Math.max(0, so - 0.3), larg = LW * w * (1 + 0.1 * Math.max(0, so));
+    const curva = (x) => so * (so > 0 ? 0.085 : 0.06) * x * x - (so < 0 ? 0 : 0.008 * so);
     labS.userData.aplica((x, y, z) => [x * larg, 0.012 + y * ES + curva(x) + sobeS * (1 - 0.6 * x * x) + nj * 0.03 * Math.max(0, x), z * 0.06 + 0.035]);
     labI.userData.aplica((x, y, z) => [x * larg * (0.9 + 0.04 * ab), -0.012 + y * EI + curva(x) * 1.1 - desceI * (1 - 0.5 * x * x), z * 0.065 + 0.03]);
     boca.rotation.z = 0.08 * nj;
