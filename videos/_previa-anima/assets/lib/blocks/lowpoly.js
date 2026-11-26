@@ -316,7 +316,8 @@ function cabecaR11({ seed, pele, cabelo, barba, iris = COR.iris, fem = false, ca
     dentesI.visible = abre.visible && vao > 0.07; dentesI.scale.x = w * 0.95; dentesI.position.y = fundo + 0.016;
     lingua.visible = vao > 0.05; lingua.scale.set(larg * 0.55, Math.min(0.045, vao * 0.25), 0.04); lingua.position.y = fundo + Math.min(0.03, vao * 0.18);
     vm.opacity = 0.35 * Math.max(0, so - 0.2) + 0.25 * Math.max(0, Math.abs(e.br) - 0.4);
-    olhos.forEach((o) => { o.abrir(e.ab * (1 - (e._pisc || 0))); o.olhar(...(olhar || e.ol)); });
+    const abK = e.ab * 0.84 + Math.max(0, e.ab - 0.9) * 0.4;   // pálpebra cobre o topo da íris no repouso (olhar natural, sem susto)
+    olhos.forEach((o) => { o.abrir(abK * (1 - (e._pisc || 0))); o.olhar(...(olhar || e.ol)); });
   }
   return { H, rosto };
 }
