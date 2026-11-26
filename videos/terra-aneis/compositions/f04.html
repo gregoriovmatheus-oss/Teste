@@ -67,6 +67,7 @@
         const fil = LP.pessoa({ seed: 33, idade: "crianca", pele: 0x8a5a40, cabelo: 0x1a120c, jaqueta: 0xf0b030, camisa: 0x2c4a6a });
         S.add(pai.root, fil.root); pai.root.rotation.y = Math.PI - 0.1; fil.root.position.set(0.62, 0, 0.12); fil.root.rotation.y = Math.PI + 0.15;
         const olho = new THREE.Vector3(), alvo = new THREE.Vector3(), cab = new THREE.Vector3(), mao = new THREE.Vector3();
+        AN.semNaN(S);
         function render(t) {
           // a latitude "viaja" do Brasil (23° S) ao equador: o arco sobe e afina até virar uma linha no alto
           const kl = ease.inOutCubic(range(t, 2.9, 4.6));

@@ -320,3 +320,10 @@ export function neve(S, { n = 900, area = [8, 5, 8], centro = [0, 0, 0], vel = 0
     pos[i * 3] = p[0] + 0.15 * Math.sin(t * 0.9 + p[3]); pos[i * 3 + 1] = y; pos[i * 3 + 2] = p[2] + 0.1 * Math.cos(t * 0.7 + p[3]); }); geo.attributes.position.needsUpdate = true; };
   update(0); return { pts, update };
 }
+// conserta vértices NaN de alguma peça do personagem (bug do kit: aparece como erro de bounding sphere no check)
+export function semNaN(root) {
+  root.traverse((o) => { const p = o.geometry && o.geometry.attributes && o.geometry.attributes.position; if (!p) return; let n = 0;
+    for (let i = 0; i < p.array.length; i++) if (Number.isNaN(p.array[i])) { p.array[i] = 0; n++; }
+    if (n) { p.needsUpdate = true; o.geometry.boundingSphere = null; console.warn("aneis.semNaN:", o.geometry.type, o.parent && o.parent.type, n); } });
+  return root;
+}

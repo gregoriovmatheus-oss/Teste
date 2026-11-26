@@ -69,6 +69,7 @@
         const ele = LP.pessoa({ seed: 41, pele: 0x9a6a4a, cabelo: 0x1c120a, jaqueta: 0x4a4a52, camisa: 0xc8b89a });
         S.add(ela.root, ele.root); ela.root.position.set(-0.36, 0, 0.32); ele.root.position.set(0.38, 0, 0.32); ela.root.rotation.y = ele.root.rotation.y = Math.PI;
         const olho = new THREE.Vector3(), alvo = new THREE.Vector3(), r1 = new THREE.Vector3(), r2 = new THREE.Vector3(), mid = new THREE.Vector3(), pa = new THREE.Vector3(), pb = new THREE.Vector3(), v = new THREE.Vector3(), sol = new THREE.Vector3();
+        AN.semNaN(S);
         function render(t) {
           C.u.uL.value.copy(C.dirSol(255, lerp(-22, -30, t / 5.44), sol));   // a sombra da Terra avança devagar pelo anel
           olho.copy(AN.dir(-4, 38)).multiplyScalar(40);

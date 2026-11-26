@@ -16,6 +16,7 @@
         const NV = AN.neve(S, { n: 900, area: [9, 5, 9], centro: [0, 0, -1], vel: 0.6, tam: 0.05 });
         st.fria.position.copy(AN.dir(15, 30)).multiplyScalar(6); st.fria.color.set(0xd0dcf0); st.fria.intensity = 1.4;
         const rosto = new THREE.Vector3(), corpo = new THREE.Vector3();
+        AN.semNaN(S);
         function render(t) {
           NV.update(t);
           cao.andar(t * 0.15, 0.3); cao.cab.rotation.y = 0.3 * Math.sin(t * 1.3);

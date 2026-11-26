@@ -110,7 +110,73 @@
   },
   "sfx": [],
   "doc": {
-    "capitulos": [],
-    "hud": []
+    "capitulos": [
+      [
+        0,
+        "O DESPERTAR"
+      ],
+      [
+        4.67,
+        "O CORPO"
+      ],
+      [
+        23.34,
+        "O CÉREBRO"
+      ],
+      [
+        39.78,
+        "QUATRO MÃOS"
+      ],
+      [
+        61.55,
+        "O NOVO NORMAL"
+      ]
+    ],
+    "hud": [
+      {
+        "rotulo": "MASSA DOS BRAÇOS",
+        "unid": "% do corpo",
+        "fmt": "int",
+        "keys": [
+          [
+            5.0,
+            0
+          ],
+          [
+            6.65,
+            10
+          ],
+          [
+            10.0,
+            20
+          ]
+        ],
+        "max": 25,
+        "alerta": [
+          [
+            10.0,
+            11.9
+          ]
+        ],
+        "de": 5.0
+      },
+      {
+        "rotulo": "NEURÔNIOS NOS BRAÇOS (POLVO)",
+        "unid": "%",
+        "fmt": "int",
+        "keys": [
+          [
+            35.6,
+            0
+          ],
+          [
+            36.6,
+            67
+          ]
+        ],
+        "max": 100,
+        "de": 35.3
+      }
+    ]
   }
 }

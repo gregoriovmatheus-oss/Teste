@@ -68,6 +68,7 @@
         const PO = LP.poeira(S, { n: 90, centro: [1.2, 1.4, 0.2], raio: [2.5, 1.0, 2.5], cor: 0xffc890, seed: 6, tam: 0.004 });
         const aves = [0, 1, 2].map((i) => { const b = CI.passaro({ seed: 31 + i, cor: 0x1a1418, corB: 0x2a2028 }); b.root.scale.setScalar(2.2); S.add(b.root); return b; });
         const cab = new THREE.Vector3(), olho = new THREE.Vector3(), pa = new THREE.Vector3(), pb = new THREE.Vector3(), la = new THREE.Vector3(), lb = new THREE.Vector3(), alvo = new THREE.Vector3();
+        AN.semNaN(S);
         function render(t) {
           // o Sol sobe; com ele o pé do anel acende como uma ponte saindo do horizonte
           const el = lerp(-1.6, 3.4, ease.inOutSine(range(t, 0, 4.53)));

@@ -16,6 +16,7 @@
         st.quente.position.copy(AN.dir(100, 10, NO)).multiplyScalar(6); st.quente.color.set(0x9aa8ff); st.quente.intensity = 0.7;
         st.rim2.intensity = 0.6; st.hemi.intensity = 0.4;
         const rosto = new THREE.Vector3(), olho = new THREE.Vector3(), alvo = new THREE.Vector3(), pa = new THREE.Vector3(), pb = new THREE.Vector3(), v = new THREE.Vector3();
+        AN.semNaN(S);
         function render(t) {
           st.T = Math.max(t, 0.17);                     // quadro 0 = miniatura (sem dip)
           p.cab.getWorldPosition(rosto);
