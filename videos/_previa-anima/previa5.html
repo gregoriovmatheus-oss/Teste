@@ -9,7 +9,7 @@ const U = new URLSearchParams(location.search), q = +(U.get("q") || 0), ang = +(
 const P = LP.palco(null, { webgl: document.getElementById("c"), foco: 3, faixa: 1.5, desfoque: 14 }); const { S, cam } = P;
 LP.luz(P, "interior"); CI.cenario(S, "escritorio");
 const E = [{ seed: 4, jaqueta: 0x2f4f6f }, { seed: 31, feminina: true, roupa: "camiseta", camisa: 0xc84a6a, pele: 0xd9a07e, cabelo: 0x2a1a10 }, { seed: 32, idade: "idoso", roupa: "casaco", pele: 0xc89478 }, { seed: 34, roupa: "jaleco", oculos: true, pele: 0xe0b898, barba: false, cabelo: 0x6a4a2a }];
-const p = LP.pessoa(E[q]); S.add(p.root);
+if (U.get("b")) E[q].bracos = +U.get("b"); const p = LP.pessoa(E[q]); S.add(p.root);
 const op = { seed: q + 1, emocao: "calmo" }; if (U.get("m") === "andar") op.andar = true; if (U.get("m") === "gestos") op.gestos = true;
 LP.ator(p, t, op);
 cam.position.set(Math.sin(ang) * 3.4, 1.2, Math.cos(ang) * 3.4); cam.lookAt(0, 0.95, 0); LP.focar(P, new THREE.Vector3(0, 1.2, 0));
