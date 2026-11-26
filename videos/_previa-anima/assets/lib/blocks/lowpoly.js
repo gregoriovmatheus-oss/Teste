@@ -92,8 +92,26 @@ export function liso(g) {
 // crânio esculpido (v6): detalhe 3, mandíbula com ângulo, queixo, maçãs altas, arco das sobrancelhas, ponte do nariz, têmporas e
 // boca levemente projetada. fem: mandíbula e arco mais suaves. Variação por seed (largura da mandíbula, queixo, maçãs).
 const _crCache = new Map();
+// ROSTO "ref" (padrão): o crânio facetado dos vídeos de referência (sem dor / dois sóis), escolhido pelo usuário.
+// ROSTO "v10": escultura com mandíbula/maçã por seed e facetas refinadas no queixo. Troque com LOWPOLY.rosto("v10").
+let ROSTO = "ref"; export const rosto = (r) => { ROSTO = r; };
 function geoCranio(seed, fem = false, formaF = null) {
-  const key = seed + (fem ? "f" : "m") + ESTILO + (formaF || ""); if (_crCache.has(key)) return _crCache.get(key).clone();
+  const key = seed + (fem ? "f" : "m") + ESTILO + (formaF || "") + ROSTO; if (_crCache.has(key)) return _crCache.get(key).clone();
+  if (ROSTO === "ref") {
+    const g = facetado(FAC() ? 2 : 3, (v) => {
+      const { x, y, z } = v;
+      v.x *= 0.83; v.y *= 1.16; v.z *= 0.98;
+      if (y < -0.1) { const k = Math.min(1, (-y - 0.1) / 0.9); v.x *= 1 - 0.42 * k ** 1.1; if (z < 0.2) v.z *= 1 - 0.45 * k; }
+      if (z > 0.55) v.z = 0.55 + (v.z - 0.55) * 0.6;
+      if (z > 0) {
+        v.x += 0.07 * Math.sign(x) * gauss((Math.abs(x) - 0.62) ** 2 * 9 + (y + 0.12) ** 2 * 8, 0.6);
+        v.z -= 0.08 * gauss((Math.abs(x) - 0.33) ** 2 * 18 + (y - 0.1) ** 2 * 22, 0.6);
+        v.z += 0.06 * gauss(x * x * 2 + (y - 0.33) ** 2 * 30, 0.6);
+        if (y < -0.75) v.y -= 0.06 * z;
+      }
+    }, seed, FAC() ? 0.035 : 0.004);
+    liso(g); _crCache.set(key, g); return g.clone();
+  }
   // formato do rosto por seed: quadrado (mandíbula larga), redondo (bochecha cheia), oval, coração (queixo fino, maçã alta)
   const forma = formaF || (fem ? (seed % 2 ? "coracao" : "oval") : ["quadrado", "redondo", "oval"][seed % 3]), FM = { quadrado: [0.36, 1.5, 1], redondo: [0.4, 0.85, 1.05], oval: [0.46, 1, 1], coracao: [0.53, 0.6, 1.02] }[forma];
   const r = mulberry32(seed * 31 + 7), mand = FM[1] * (fem ? 0.6 : 1) * (0.85 + r() * 0.35), qx = 0.8 + r() * 0.4, mac = 0.8 + r() * 0.4, arco = fem ? 0.45 : 0.9 + r() * 0.3;
@@ -216,7 +234,7 @@ function olhoR11(r, cIris = COR.iris, cPele = COR.pele, cilios = 1) {
 }
 function cabecaR11({ seed, pele, cabelo, barba, iris = COR.iris, fem = false, cabeloTipo = null, kid = false }) {
   const FR = kid ? "redondo" : null;
-  const H = new THREE.Group(), pm = matPeleLiso(pele), pmC = matPeleLiso(pele); pmC.vertexColors = true;
+  const H = new THREE.Group(), pm = matPeleLiso(pele), pmC = ROSTO === "ref" && FAC() ? mat(pele, 0.72) : matPeleLiso(pele); pmC.vertexColors = true;   // ref: pele do crânio como nos vídeos de referência
   const cr = new THREE.Mesh(colorir(geoCranio(seed, fem, FR), tonsPele(fem, barba)), pmC); contornoNormal(cr, 0.014); H.add(cr);
   // nariz: pirâmide com aresta para frente + asas
   const nz = new THREE.Mesh(colorir(liso(geoNariz(seed, fem)), (x, y, z) => _mix3([1, 1, 1], [1.1, 0.88, 0.86], Math.min(1, Math.max(0, -y * 3 + 0.2)))), pmC); nz.position.set(0, -0.08, 0.74); H.add(nz);
@@ -251,8 +269,8 @@ function cabecaR11({ seed, pele, cabelo, barba, iris = COR.iris, fem = false, ca
   });
   // boca v8: lábios contínuos (uma peça cada) que se deformam por vértice a cada quadro: sorriso sobe os cantos, tristeza desce,
   // abertura desce o lábio de baixo com o maxilar. Interior (cavidade, dentes, língua) cabe sempre no vão entre os lábios.
-  const boca = new THREE.Group(); boca.position.set(0, kid ? -0.5 : -0.53, kid ? 0.735 : 0.76); if (kid) boca.scale.setScalar(0.85); H.add(boca);
-  const corL = new THREE.Color(pele).lerp(new THREE.Color(fem ? 0xc04a50 : 0xa85a52), fem ? 0.55 : 0.4);
+  const boca = new THREE.Group(); boca.position.set(0, kid ? -0.5 : -0.53, (kid ? 0.735 : 0.76) - (ROSTO === "ref" ? 0.06 : 0)); if (kid) boca.scale.setScalar(0.85); H.add(boca);
+  const corL = new THREE.Color(pele).lerp(new THREE.Color(fem ? 0xc04a50 : 0xa85a52), fem ? 0.5 : 0.28);
   const lm = new THREE.MeshStandardMaterial({ color: corL, roughness: fem ? 0.42 : 0.55, flatShading: FAC() }), lmI = new THREE.MeshStandardMaterial({ color: corL.clone().multiplyScalar(1.08), roughness: fem ? 0.4 : 0.52, flatShading: FAC() });
   const LW = 0.225, ES = fem ? 0.038 : 0.032, EI = fem ? 0.05 : 0.044;
   const geoLabio = (sd, baixo) => facetado(2, (v) => { const u = Math.abs(v.x), esp = baixo ? 1 - 0.8 * u * u : 0.9 - 0.65 * u * u;
@@ -278,6 +296,7 @@ function cabecaR11({ seed, pele, cabelo, barba, iris = COR.iris, fem = false, ca
   const dentesI = new THREE.Mesh(arco(0.22, 0.04), mD); dentesI.position.z = 0.018; boca.add(dentesI);
   // sulco nasolabial (aparece no sorriso e na dor)
   const vm = new THREE.MeshBasicMaterial({ color: 0x3a1a10, transparent: true, opacity: 0, depthWrite: false });
+  const cant = [1, -1].map(() => { const c = new THREE.Mesh(new THREE.CircleGeometry(0.014, 8), new THREE.MeshBasicMaterial({ color: 0x2a100a, transparent: true, opacity: 0.5, depthWrite: false })); c.scale.y = 1; boca.add(c); return c; });
   for (const s of [1, -1]) { const sl = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.008, 3, 10, 0.9), vm); sl.position.set(s * 0.06, -0.3, 0.8); sl.rotation.set(0.2, s * 0.5, s > 0 ? -0.25 : Math.PI + 0.25 - 0.9); H.add(sl); }
   // barba por fazer + bigode
   if (barba) {
@@ -348,6 +367,7 @@ function cabecaR11({ seed, pele, cabelo, barba, iris = COR.iris, fem = false, ca
     dentes.visible = abre.visible && (vao > 0.012 || so > 0.4); dentes.scale.set(w * (0.9 + 0.1 * Math.max(0, so)), Math.min(1, vao / 0.03 + 0.4), 1); dentes.position.y = topo - 0.018;
     dentesI.visible = abre.visible && vao > 0.07; dentesI.scale.x = w * 0.95; dentesI.position.y = fundo + 0.016;
     lingua.visible = vao > 0.05; lingua.scale.set(larg * 0.55, Math.min(0.045, vao * 0.25), 0.04); lingua.position.y = fundo + Math.min(0.03, vao * 0.18);
+    cant.forEach((c, i) => { const sx = i ? -1 : 1; c.position.set(sx * larg * 0.98, curva(1) + 0.004 - 0.4 * desceI * 0.5 + sobeS * 0.4, 0.028); c.scale.set(1, 1 + 4 * vao, 1); c.material.opacity = 0.55 - 0.3 * Math.max(0, so); });   // cantos da boca (comissura)
     vm.opacity = 0.35 * Math.max(0, so - 0.2) + 0.25 * Math.max(0, Math.abs(e.br) - 0.4);
     const abK = e.ab * 0.84 + Math.max(0, e.ab - 0.9) * 0.4;   // pálpebra cobre o topo da íris no repouso (olhar natural, sem susto)
     const ol = olhar || e.ol, cv = e.cv ?? 0.018;   // convergência: os dois olhos miram o mesmo ponto (perto = mais vesgo, longe = paralelo)
