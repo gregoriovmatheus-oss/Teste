@@ -263,7 +263,7 @@ function cabecaR11({ seed, pele, cabelo, barba, iris = COR.iris, fem = false, ca
   // barba por fazer + bigode
   if (barba) {
     const bc = barba === true ? COR.barba : barba;
-    const fB = (x, y, z) => Math.min(z + 0.15, -0.3 - 0.25 * Math.max(0, z - 0.3) - y, -Math.min(0.24 - Math.abs(x), y + 0.52, -0.36 - y));
+    const fB = (x, y, z) => Math.min(z + 0.15, -0.3 - 0.25 * Math.max(0, z - 0.3) - y, -Math.min(0.24 - Math.abs(x) - Math.max(0, -0.52 - y) * 1.3, y + 0.63, -0.36 - y));   // vão da boca desce até o queixo (a barba não aparece dentro da boca aberta)
     const st = new THREE.Mesh(casca(geoCranio(seed, fem), fB, 1.03, 0.05), new THREE.MeshStandardMaterial({ color: bc, roughness: 0.95, transparent: true, opacity: 0.93, flatShading: FAC() })); H.add(st);
     const big = new THREE.Mesh(liso(facetado(2, (v) => { v.y *= 0.25; v.y -= 0.12 * v.x * v.x; }, seed + 5, 0.02)), new THREE.MeshStandardMaterial({ color: bc, roughness: 0.95, transparent: true, opacity: 0.85, flatShading: FAC() })); big.scale.set(0.22, 0.065, 0.05); big.position.set(0, -0.445, 0.81); H.add(big);
   }
