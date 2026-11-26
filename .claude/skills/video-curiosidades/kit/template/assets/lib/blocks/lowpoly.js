@@ -316,6 +316,11 @@ function cabecaR11({ seed, pele, cabelo, barba, iris = COR.iris, fem = false, ca
       mecha(az, ph, lg, 0.3 + rr() * 0.08, tipo === "topete" ? -0.12 * frente : -0.22, giro);
     }
     if (tipo === "topete") for (let i = 0; i < 4; i++) mecha(-0.3 + i * 0.25, 0.25, 0.7, 0.3, -0.35, -0.9 - i * 0.1);   // topete varrido para o lado
+    // franja: mechas curtas que nascem acima da linha e caem sobre ela (quebra a borda do "capacete")
+    const nf = tipo === "liso" ? 8 : 7, lgF = tipo === "liso" ? 0.42 : tipo === "topete" ? 0.24 : 0.3;
+    for (let i = 0; i < nf; i++) { const u = i / (nf - 1) - 0.5, az = u * 1.9 + (rr() - 0.5) * 0.08;
+      if (tipo === "topete" && Math.abs(u) < 0.2) continue;
+      mecha(az, 0.7 + rr() * 0.06 + Math.abs(u) * 0.12, lgF * (0.8 + rr() * 0.35) * (1 - 0.3 * Math.abs(u)), 0.24 + rr() * 0.06, -0.16, (tipo === "liso" ? 0.5 : 0.25) * Math.sign(u || 1) + (rr() - 0.5) * 0.3); }
   }
   function rosto(e, olhar) {
     somb.forEach((g, i) => { const s = i ? -1 : 1; g.rotation.z = s * e.br * (e.br > 0 ? 1.3 : 0.95); g.position.y = e.by - 0.03 * Math.max(0, e.br); g.position.x = s * (0.33 - 0.05 * Math.max(0, Math.abs(e.br) - 0.2)); });
