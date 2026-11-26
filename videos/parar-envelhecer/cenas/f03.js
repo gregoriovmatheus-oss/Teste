@@ -14,6 +14,5 @@ function render(t) {
   CI.trilho(cam, t, [[0, [2.0, 2.1, 0.4], [0.4, 0.95, -1.7]], [2.0, [1.5, 1.9, -0.8], [0.5, 0.95, -2.25]], [5.97, [1.2, 1.78, -1.45], [0.5, 0.95, -2.35]]], { mao: 1, seed: 6 }); cam.rotateX(-0.15);
   LP.focar(st, R);
   st.draw();
-  ID.lista(st.ctx, [["ACIDENTES", 2.07, null], ["INFECÇÕES", 2.67, null], ["ALGUNS CÂNCERES", 3.82, null]], t, 540, 700, { w: 560 });
-  ID.txt(st.ctx, "AINDA EXISTIRIAM", 540, 925, { tam: 30, cor: ID.LARANJA, a: range(t, 4.4, 4.7), esp: 0.3 });
+  ID.lista(st.ctx, [["ACIDENTES", 2.07, null], ["INFECÇÕES", 2.67, null], ["ALGUNS CÂNCERES", 3.82, null]], t, 540, 830, { w: 520, lh: 66 });
 }

@@ -170,7 +170,7 @@ export function bolo(LP, { num = "25" } = {}) {
   const chamas = [-0.04, 0.04].map((dx) => { const f = brilho(0xffb050, 0.05, "suave", 0.8), n = brilho(0xfff2c0, 0.03, "suave", 1); f.position.set(dx, 0.3, 0.005); n.position.set(dx, 0.293, 0.01); g.add(f, n); return [f, n]; });
   const luz = new THREE.PointLight(0xffa860, 0.7, 3, 2); luz.position.set(0, 0.45, -0.1); g.add(luz);
   return { g, vela, update(t, k = 1) { chamas.forEach(([f, n], i) => { const fl = 1 + 0.12 * Math.sin(t * 17 + i * 2) + 0.08 * Math.sin(t * 29 + i);
-    f.scale.set(0.035 * fl * k, 0.06 * fl * k, 1); n.scale.set(0.025 * k, 0.04 * fl * k, 1); f.material.opacity = n.material.opacity = k; }); luz.intensity = 1.2 * k * (1 + 0.1 * Math.sin(t * 13)); } };
+    f.scale.set(0.035 * fl * k, 0.06 * fl * k, 1); n.scale.set(0.025 * k, 0.04 * fl * k, 1); f.material.opacity = n.material.opacity = k; }); luz.intensity = 0.5 * k * (1 + 0.1 * Math.sin(t * 13)); } };
 }
 
 /* ---------- hidra: pé, corpo-tubo e 6 tentáculos finos que ondulam ---------- */
@@ -195,10 +195,10 @@ export function rato(LP, { cor = 0xe9a89a } = {}) {
   const cab = new THREE.Group(); cab.position.set(0, 0.085, 0.215); root.add(cab);
   const cabM = new THREE.Mesh(LP.facetado(2, (v) => { v.z *= 1.35; v.y *= 0.8; if (v.z > 0.6) v.y -= 0.1 * (v.z - 0.6); }, 4, 0.05), m); cabM.scale.setScalar(0.072); cab.add(cabM);
   const nariz = new THREE.Mesh(new THREE.IcosahedronGeometry(0.016, 0), LP.mat(0xd98a80, 0.5)); nariz.position.set(0, 0.0, 0.098); cab.add(nariz);
-  const olhos = [1, -1].map((s) => { const o = new THREE.Mesh(new THREE.IcosahedronGeometry(0.006, 1), LP.mat(0x120808, 0.2)); o.position.set(s * 0.04, 0.022, 0.058); cab.add(o); return o; });
+  const olhos = [1, -1].map((s) => { const o = new THREE.Mesh(new THREE.IcosahedronGeometry(0.009, 1), LP.mat(0x120808, 0.2)); o.position.set(s * 0.04, 0.022, 0.058); cab.add(o); return o; });
   const dm = LP.mat(0xf2e2b0, 0.3);
   [[0.009, -0.03, 0.1, 0.05, 0.35], [-0.009, -0.03, 0.1, 0.05, 0.35], [0.007, -0.052, 0.095, 0.042, -0.5], [-0.007, -0.052, 0.095, 0.042, -0.5]].forEach(([x, y, z, h, r]) => {
-    const d = new THREE.Mesh(new THREE.BoxGeometry(0.009, h, 0.006), dm); d.position.set(x, y, z); d.rotation.x = r + 1.2; cab.add(d); });
+    const d = new THREE.Mesh(new THREE.BoxGeometry(0.014, h * 1.3, 0.009), dm); d.position.set(x, y, z); d.rotation.x = r + 1.2; cab.add(d); });
   const patas = [[1, 1], [-1, 1], [1, -1], [-1, -1]].map(([sx, sz]) => { const p = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.012, 0.05, 5), m); p.position.set(sx * 0.07, 0.025, sz * 0.13); root.add(p);
     const pe = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.01, 0.04), LP.mat(0xf0b8b0, 0.6)); pe.position.set(sx * 0.07, 0.005, sz * 0.13 + 0.01); root.add(pe); return [p, pe]; });
   const rabo = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.014, 0.12, 5), m); rabo.position.set(0, 0.06, -0.27); rabo.rotation.x = -1.2; root.add(rabo);

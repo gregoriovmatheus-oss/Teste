@@ -110,7 +110,71 @@
   },
   "sfx": [],
   "doc": {
-    "capitulos": [],
-    "hud": []
+    "capitulos": [
+      [
+        0,
+        "OS 25"
+      ],
+      [
+        8.92,
+        "O RISCO"
+      ],
+      [
+        24.3,
+        "A NATUREZA"
+      ],
+      [
+        35.62,
+        "O MUNDO NOVO"
+      ],
+      [
+        62.62,
+        "O QUE FAZER"
+      ]
+    ],
+    "hud": [
+      {
+        "rotulo": "RISCO DE MORTE · ANO",
+        "fmt": "texto",
+        "keys": [
+          [
+            18.58,
+            "1 EM 1.000"
+          ]
+        ],
+        "de": 14.89,
+        "ate": 24.3
+      },
+      {
+        "rotulo": "EXPECTATIVA MÉDIA",
+        "unid": " anos",
+        "fmt": "int",
+        "keys": [
+          [
+            21.66,
+            0
+          ],
+          [
+            23.52,
+            1000
+          ]
+        ],
+        "max": 1000,
+        "de": 19.93,
+        "ate": 29.78
+      },
+      {
+        "rotulo": "IDADE DO CORPO",
+        "fmt": "texto",
+        "keys": [
+          [
+            52.0,
+            "25 ANOS"
+          ]
+        ],
+        "de": 51.9,
+        "ate": 56.9
+      }
+    ]
   }
 }
