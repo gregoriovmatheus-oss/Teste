@@ -253,10 +253,10 @@ function cabecaR11({ seed, pele, cabelo, barba, iris = COR.iris, fem = false, ca
   const cg = document.createElement("canvas"); cg.width = cg.height = 64; { const x = cg.getContext("2d"), r = x.createRadialGradient(32, 40, 2, 32, 32, 32); r.addColorStop(0, "#4a1412"); r.addColorStop(0.6, "#22080a"); r.addColorStop(1, "#100304"); x.fillStyle = r; x.fillRect(0, 0, 64, 64); }
   const abre = new THREE.Mesh(new THREE.CircleGeometry(1, 28), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(cg) })); abre.position.z = 0.012; boca.add(abre);
   const lingua = new THREE.Mesh(liso(facetado(2, (v) => { v.z *= 0.35; if (v.y > 0.2) v.y = 0.2 + (v.y - 0.2) * 0.3; }, seed + 8, 0.003)), new THREE.MeshStandardMaterial({ color: 0xa8444a, roughness: 0.35 })); lingua.position.z = 0.016; boca.add(lingua);
-  const arco = (w, h) => { const g = new THREE.BoxGeometry(w, h, 0.016, 12, 2, 1), p = g.attributes.position; for (let i = 0; i < p.count; i++) { const x = p.getX(i) / (w / 2); p.setZ(i, p.getZ(i) - 0.06 * x * x); p.setY(i, p.getY(i) * (1 - 0.35 * x * x)); } g.computeVertexNormals(); return g; };
+  const arco = (w, h) => { const g = new THREE.BoxGeometry(w, h, 0.016, 12, 2, 1), p = g.attributes.position; for (let i = 0; i < p.count; i++) { const x = p.getX(i) / (w / 2); p.setZ(i, p.getZ(i) - 0.008 * x * x); p.setY(i, p.getY(i) * (1 - 0.3 * x * x)); } g.computeVertexNormals(); return g; };
   const mD = new THREE.MeshStandardMaterial({ color: 0xece6da, roughness: 0.3 });
-  const dentes = new THREE.Mesh(arco(0.24, 0.05), mD); dentes.position.z = 0.022; boca.add(dentes);
-  const dentesI = new THREE.Mesh(arco(0.2, 0.04), mD); dentesI.position.z = 0.018; boca.add(dentesI);
+  const dentes = new THREE.Mesh(arco(0.27, 0.05), mD); dentes.position.z = 0.022; boca.add(dentes);
+  const dentesI = new THREE.Mesh(arco(0.22, 0.04), mD); dentesI.position.z = 0.018; boca.add(dentesI);
   // sulco nasolabial (aparece no sorriso e na dor)
   const vm = new THREE.MeshBasicMaterial({ color: 0x3a1a10, transparent: true, opacity: 0, depthWrite: false });
   for (const s of [1, -1]) { const sl = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.008, 3, 10, 0.9), vm); sl.position.set(s * 0.06, -0.3, 0.8); sl.rotation.set(0.2, s * 0.5, s > 0 ? -0.25 : Math.PI + 0.25 - 0.9); H.add(sl); }
@@ -274,8 +274,8 @@ function cabecaR11({ seed, pele, cabelo, barba, iris = COR.iris, fem = false, ca
   const fCab = (x, y, z) => Math.max(y - (0.46 + 0.22 * z - 0.12 * Math.abs(x) - 0.015 * Math.exp(-x * x * 30)), Math.min(-0.25 - z, y + 0.55));   // linha do cabelo: testa = 1/3 do rosto, bico suave no meio
   const capBase = (() => { const e0 = ESTILO; ESTILO = "liso"; const g = geoCranio(seed, fem); ESTILO = e0; return g; })();   // crânio fino (detalhe 3) só para o cabelo
   { const p = capBase.attributes.position, rh = mulberry32(seed * 3 + 1); const memo = new Map(); for (let i = 0; i < p.count; i++) { const k = `${p.getX(i).toFixed(3)},${p.getY(i).toFixed(3)},${p.getZ(i).toFixed(3)}`; if (!memo.has(k)) memo.set(k, 1 + (rh() - 0.5) * 0.05); const n = memo.get(k); p.setXYZ(i, p.getX(i) * n, p.getY(i) * n, p.getZ(i) * n); } }
-  const cmC = matCabelo(cabelo); cmC.vertexColors = true; cmC.side = THREE.DoubleSide;
-  const cap = new THREE.Mesh(colorir(cascaAberta(capBase, fCab, tipo === "cacheado" ? 1.09 : 1.06, 0.12), (x, y, z) => { const t = Math.min(1, Math.max(0, (y - 0.2) / 0.9)); const k = 0.72 + 0.4 * t; return [k, k, k * 1.02]; }), cmC); H.add(cap);
+  const cmC = matCabelo(cabelo); cmC.vertexColors = true; cmC.side = THREE.DoubleSide; cmC.roughness = 0.75;   // couro cabeludo fosco: sem faixa cinza de brilho; o brilho fica nas mechas
+  const cap = new THREE.Mesh(colorir(cascaAberta(capBase, fCab, tipo === "cacheado" ? 1.09 : 1.06, 0.12), (x, y, z) => { const t = Math.min(1, Math.max(0, (y - 0.2) / 0.9)); const k = 0.6 + 0.3 * t; return [k, k, k * 1.02]; }), cmC); H.add(cap);
   const geoMecha = (sd, lg, larg, curva) => { const g = facetado(2, (v) => { const t = (v.y + 1) / 2; v.x *= larg * (1 - 0.85 * t ** 1.4); v.z *= larg * 0.35 * (1 - 0.6 * t); v.y = t * lg; v.z += curva * t * t * lg; }, sd, 0.004); return liso(g); };
   const P = new THREE.Vector3(), D = new THREE.Vector3(), N = new THREE.Vector3(), X = new THREE.Vector3(), M = new THREE.Matrix4();
   const ponto = (az, ph) => { P.set(0.82 * Math.sin(ph) * Math.sin(az), 1.2 * Math.cos(ph), 0.98 * Math.sin(ph) * Math.cos(az)).multiplyScalar(1.04);
@@ -479,6 +479,7 @@ export function pessoa({ longo, seed = 1, pele = COR.pele, cabelo, jaqueta, cami
   if (cachecol) { const cc = contorno(new THREE.Mesh(new THREE.TorusGeometry(0.085, 0.04, 6, 12), matTecido(typeof cachecol === "number" ? cachecol : 0xb83a3a)), 0.03); cc.rotation.x = Math.PI / 2; cc.position.y = 1.44; tronco.add(cc);
     const ponta = contorno(new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.22, 0.03), cc.material), 0.04); ponta.position.set(0.05, 1.32, 0.12); ponta.rotation.z = 0.15; tronco.add(ponta); }
   if (feminina) { E.pescoco.position.y -= 0.04; pesc.scale.y = 0.75; pesc.position.y -= 0.02; tor.scale.x *= 0.92; abas.forEach((a) => (a.scale.x *= 0.92)); E.bracos.forEach((b) => (b.om.position.x *= 0.92)); }
+  else { E.pescoco.position.y -= 0.02; pesc.scale.y = 0.88; pesc.position.y -= 0.01; }   // pescoço masculino mais curto (no close parecia girafa)
   // idade: criança = corpo menor e cabeça proporcionalmente maior; idoso = costas curvadas
   if (idade === "crianca") { R.scale.setScalar(0.64); E.cab.scale.setScalar(1.32); E.pescoco.position.y -= 0.03; tronco.children.forEach((o) => { if (o.geometry && o.geometry.type === "ConeGeometry") { o.scale.multiplyScalar(0.72); o.position.y -= 0.035; o.position.x *= 0.9; } }); }   // gola menor: não encosta no queixo
   if (idade === "idoso") { E.coluna.rotation.x = 0.13; E.pescoco.rotation.x = 0.12; }
