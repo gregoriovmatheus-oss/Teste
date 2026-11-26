@@ -30,6 +30,12 @@ O usuário pode mudar qualquer padrão para um vídeo; se disser que é permanen
 - Gosta de consequências **concretas para pessoas** (energia, comida, GPS, trabalho), não só física.
 - Quando pede "só a legenda", é o texto corrido, sem cena nem tempo.
 - Se o limite de uso acabar, **volte ao trabalho sozinho** quando liberar.
+- **A cada vídeo novo, melhore os personagens um pouco** (rodada curta no `lowpoly.js` do kit), **mantendo a essência do perfil**:
+  - Rosto `ROSTO="ref"`: o crânio facetado dos vídeos *sem dor* e *dois sóis*. Não troque o formato do rosto.
+  - Estilo facetado, olhos com íris pintada, cabelo com franja, proporções da v12.
+  - Melhore só o que o vídeo mostrar fraco: boca, mãos, roupa, animação, luz.
+  - Custo de render igual: confira com `videos/_previa-anima/bench.html`.
+  - Anote a melhoria na nota de versão (v12, v13…) e cite em 1 linha na entrega.
 
 ## Fluxo 2.0 (comandos)
 
