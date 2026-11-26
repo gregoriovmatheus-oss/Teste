@@ -445,18 +445,18 @@ export function pessoa({ longo, seed = 1, pele = COR.pele, cabelo, jaqueta, cami
   // tronco: camisa + jaqueta aberta com gola (as abas da jaqueta balançam no andar)
   const pesc = new THREE.Mesh(new THREE.CylinderGeometry(feminina ? 0.054 : 0.066, feminina ? 0.07 : 0.085, 0.15, 8), matPele(pele)); pesc.position.y = 1.45; tronco.add(pesc);
   const tor = contorno(new THREE.Mesh(liso(facetado(FAC() ? 2 : 3, (v) => formaTronco(v, feminina), seed + 20, FAC() ? 0.018 : 0.01)), matTecido(camisa)), 0.02);
-  tor.scale.set(0.2, 0.245, 0.196); tor.position.set(0, 1.155, -0.004); tronco.add(tor);
+  tor.scale.set(0.2, 0.245, 0.218); tor.position.set(0, 1.155, -0.004); tronco.add(tor);
   const jm = matTecido(jaqueta, 0.7), abas = [];
   for (const s of [1, -1]) {
     const piv = new THREE.Group(); piv.position.set(s * 0.035, 1.38, -0.005); tronco.add(piv);
     const lado = contorno(new THREE.Mesh(liso(facetado(FAC() ? 2 : 3, (v) => { formaTronco(v, feminina); v.x *= 0.97; v.z *= 1.04; if (v.x * s < -0.25) v.x = -0.25 * s; }, seed + 30 + s, 0.01)), jm), 0.02);
-    lado.scale.set(0.198, 0.25, 0.178); lado.position.y = -0.235; piv.add(lado); abas.push(piv);
+    lado.scale.set(0.198, 0.25, 0.198); lado.position.y = -0.235; piv.add(lado); abas.push(piv);
     const gola = contorno(new THREE.Mesh(new THREE.ConeGeometry(0.07, 0.17, 4), jm), 0.04);
     gola.position.set(s * 0.08, 1.395, 0.09); gola.rotation.set(0.2, 0, s * 0.6); gola.scale.set(0.85, 0.85, 0.4); tronco.add(gola);
   }
   const capuz = contorno(new THREE.Mesh(liso(facetado(2, (v) => { v.z *= 0.75; v.y *= 0.55; if (v.z > 0.2) v.z = 0.2 + (v.z - 0.2) * 0.2; }, seed + 70, 0.02)), jm), 0.025);
-  capuz.scale.set(0.2, 0.16, 0.16); capuz.position.set(0, 1.45, -0.1); capuz.rotation.x = -0.35; tronco.add(capuz);
-  const zip = new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.45, 0.006), mat(0x9a9aa0, 0.3, { metalness: 0.8 })); zip.position.set(0.0, 1.13, 0.148); zip.rotation.x = 0.05; tronco.add(zip);
+  capuz.scale.set(0.17, 0.12, 0.13); capuz.position.set(0, 1.43, -0.11); capuz.rotation.x = -0.35; tronco.add(capuz);
+  const zip = new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.45, 0.006), mat(0x9a9aa0, 0.3, { metalness: 0.8 })); zip.position.set(0.0, 1.13, 0.162); zip.rotation.x = 0.05; tronco.add(zip);
   E.bracos.forEach((b) => { b.om.rotation.z = b.s * 0.08; b.cot.rotation.x = -0.18; });
   if (!corpo) E.pernas.forEach((l) => (l.q.visible = false));
   // roupas
