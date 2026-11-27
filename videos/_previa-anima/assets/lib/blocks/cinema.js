@@ -48,7 +48,7 @@ export function plano(st, alvo, t, k, tipo = "close", { lado = 1, de = null, mao
   if (tipo === "orbita") ang = lado * L(-0.35, 0.35, e);
   if (tipo === "ombro" && de) { _p.copy(de).sub(alvo).setY(0).normalize(); ang = Math.atan2(_p.x, _p.z) + lado * 0.2; }
   _p.set(alvo.x + Math.sin(ang) * d, alvo.y + h * (tipo === "baixo" ? 1 : Math.min(1, d)), alvo.z + Math.cos(ang) * d);
-  st.cam.position.copy(_p); _l.copy(alvo); _l.y -= dy + d * 0.1; st.cam.lookAt(_l);
+  st.cam.position.copy(_p); _l.copy(alvo); _l.y -= dy + d * 0.1; st.cam.lookAt(_l); st.cam.rotateX(-0.08);   // rosto acima da faixa do título (y 640–1000)
   if (mao) { const r = mulberry32(seed * 17 + 5), a = [r() * 6, r() * 6, r() * 6];
     st.cam.rotation.x += mao * (0.0045 * Math.sin(t * 1.3 + a[0]) + 0.002 * Math.sin(t * 3.7 + a[1]));
     st.cam.rotation.y += mao * (0.0045 * Math.sin(t * 1.1 + a[1]) + 0.002 * Math.sin(t * 4.1 + a[2])); }
