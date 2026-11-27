@@ -1,0 +1,116 @@
+{
+  "slug": "relogio-da-vida",
+  "ref": "R10",
+  "duracao": 72.76,
+  "duracao_fixa": null,
+  "narracao": {
+    "arquivo": "assets/audio/narracao.mp3"
+  },
+  "cenas": [
+    {
+      "id": "f01",
+      "palavra": "Imagine olhar",
+      "inicio": 0,
+      "fim": 5.91
+    },
+    {
+      "id": "f02",
+      "palavra": "O bebê",
+      "inicio": 5.91,
+      "fim": 13.13
+    },
+    {
+      "id": "f03",
+      "palavra": "Você tentaria",
+      "inicio": 13.13,
+      "fim": 18.22
+    },
+    {
+      "id": "f04",
+      "palavra": "Todo dia,",
+      "inicio": 18.22,
+      "fim": 24.78
+    },
+    {
+      "id": "f05",
+      "palavra": "Hoje, a",
+      "inicio": 24.78,
+      "fim": 31.59
+    },
+    {
+      "id": "f06",
+      "palavra": "Mas uma",
+      "inicio": 31.59,
+      "fim": 36.33
+    },
+    {
+      "id": "f07",
+      "palavra": "Aí vem",
+      "inicio": 36.33,
+      "fim": 40.77
+    },
+    {
+      "id": "f08",
+      "palavra": "Se mudar,",
+      "inicio": 40.77,
+      "fim": 45.79
+    },
+    {
+      "id": "f09",
+      "palavra": "Se não",
+      "inicio": 45.79,
+      "fim": 49.59
+    },
+    {
+      "id": "f10",
+      "palavra": "Empresas, seguradoras",
+      "inicio": 49.59,
+      "fim": 55.02
+    },
+    {
+      "id": "f11",
+      "palavra": "E o",
+      "inicio": 55.02,
+      "fim": 59.3
+    },
+    {
+      "id": "f12",
+      "palavra": "Talvez quem",
+      "inicio": 59.3,
+      "fim": 65.72
+    },
+    {
+      "id": "f13",
+      "palavra": "No fim,",
+      "inicio": 65.72,
+      "fim": 72.76
+    }
+  ],
+  "hud": {
+    "inicio": 0.5,
+    "fim": 6,
+    "rotulo": "O CALOR VOLTA EM",
+    "linha2": "AR −273 °C",
+    "contador": {
+      "de": 5,
+      "ate": 0,
+      "fim": 5.5,
+      "unidade": "s",
+      "casas": 2
+    }
+  },
+  "legendas": {
+    "juntar": [],
+    "numeros": {},
+    "ocultar": []
+  },
+  "trilha": {
+    "arquivo": "assets/audio/trilha.mp3",
+    "volume": 0.12
+  },
+  "sfx": [],
+  "doc": {
+    "capitulos": [],
+    "hud": []
+  }
+}

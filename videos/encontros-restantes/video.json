@@ -1,0 +1,116 @@
+{
+  "slug": "encontros-restantes",
+  "ref": "R10",
+  "duracao": 66.05,
+  "duracao_fixa": null,
+  "narracao": {
+    "arquivo": "assets/audio/narracao.mp3"
+  },
+  "cenas": [
+    {
+      "id": "f01",
+      "palavra": "Imagine olhar",
+      "inicio": 0,
+      "fim": 3.83
+    },
+    {
+      "id": "f02",
+      "palavra": "É quantas",
+      "inicio": 3.83,
+      "fim": 7.32
+    },
+    {
+      "id": "f03",
+      "palavra": "Seu melhor",
+      "inicio": 7.32,
+      "fim": 14.22
+    },
+    {
+      "id": "f04",
+      "palavra": "Faça a",
+      "inicio": 14.22,
+      "fim": 20.82
+    },
+    {
+      "id": "f05",
+      "palavra": "Para muita",
+      "inicio": 20.82,
+      "fim": 25.36
+    },
+    {
+      "id": "f06",
+      "palavra": "O cérebro",
+      "inicio": 25.36,
+      "fim": 30.79
+    },
+    {
+      "id": "f07",
+      "palavra": "Com o",
+      "inicio": 30.79,
+      "fim": 34.34
+    },
+    {
+      "id": "f08",
+      "palavra": "Despedidas virariam",
+      "inicio": 34.34,
+      "fim": 40.57
+    },
+    {
+      "id": "f09",
+      "palavra": "Mas também",
+      "inicio": 40.57,
+      "fim": 45.07
+    },
+    {
+      "id": "f10",
+      "palavra": "Talvez tentasse",
+      "inicio": 45.07,
+      "fim": 50.84
+    },
+    {
+      "id": "f11",
+      "palavra": "E o",
+      "inicio": 50.84,
+      "fim": 54.88
+    },
+    {
+      "id": "f12",
+      "palavra": "A verdade",
+      "inicio": 54.88,
+      "fim": 59.42
+    },
+    {
+      "id": "f13",
+      "palavra": "Então, da",
+      "inicio": 59.42,
+      "fim": 66.05
+    }
+  ],
+  "hud": {
+    "inicio": 0.5,
+    "fim": 6,
+    "rotulo": "O CALOR VOLTA EM",
+    "linha2": "AR −273 °C",
+    "contador": {
+      "de": 5,
+      "ate": 0,
+      "fim": 5.5,
+      "unidade": "s",
+      "casas": 2
+    }
+  },
+  "legendas": {
+    "juntar": [],
+    "numeros": {},
+    "ocultar": []
+  },
+  "trilha": {
+    "arquivo": "assets/audio/trilha.mp3",
+    "volume": 0.12
+  },
+  "sfx": [],
+  "doc": {
+    "capitulos": [],
+    "hud": []
+  }
+}

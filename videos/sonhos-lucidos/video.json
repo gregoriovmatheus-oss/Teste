@@ -1,0 +1,116 @@
+{
+  "slug": "sonhos-lucidos",
+  "ref": "R10",
+  "duracao": 65.57,
+  "duracao_fixa": null,
+  "narracao": {
+    "arquivo": "assets/audio/narracao.mp3"
+  },
+  "cenas": [
+    {
+      "id": "f01",
+      "palavra": "Imagine dormir",
+      "inicio": 0,
+      "fim": 3.76
+    },
+    {
+      "id": "f02",
+      "palavra": "Você escolheria",
+      "inicio": 3.76,
+      "fim": 9.1
+    },
+    {
+      "id": "f03",
+      "palavra": "E isso",
+      "inicio": 9.1,
+      "fim": 15.06
+    },
+    {
+      "id": "f04",
+      "palavra": "Ele acontece",
+      "inicio": 15.06,
+      "fim": 20.18
+    },
+    {
+      "id": "f05",
+      "palavra": "Agora imagine",
+      "inicio": 20.18,
+      "fim": 25.39
+    },
+    {
+      "id": "f06",
+      "palavra": "Você voaria",
+      "inicio": 25.39,
+      "fim": 30.88
+    },
+    {
+      "id": "f07",
+      "palavra": "Músicos compondo",
+      "inicio": 30.88,
+      "fim": 35.79
+    },
+    {
+      "id": "f08",
+      "palavra": "Mas aí",
+      "inicio": 35.79,
+      "fim": 39.29
+    },
+    {
+      "id": "f09",
+      "palavra": "Tem gente",
+      "inicio": 39.29,
+      "fim": 44.36
+    },
+    {
+      "id": "f10",
+      "palavra": "E depois",
+      "inicio": 44.36,
+      "fim": 49.2
+    },
+    {
+      "id": "f11",
+      "palavra": "Quem tem",
+      "inicio": 49.2,
+      "fim": 55.52
+    },
+    {
+      "id": "f12",
+      "palavra": "Talvez todo",
+      "inicio": 55.52,
+      "fim": 59.92
+    },
+    {
+      "id": "f13",
+      "palavra": "E agora,",
+      "inicio": 59.92,
+      "fim": 65.57
+    }
+  ],
+  "hud": {
+    "inicio": 0.5,
+    "fim": 6,
+    "rotulo": "O CALOR VOLTA EM",
+    "linha2": "AR −273 °C",
+    "contador": {
+      "de": 5,
+      "ate": 0,
+      "fim": 5.5,
+      "unidade": "s",
+      "casas": 2
+    }
+  },
+  "legendas": {
+    "juntar": [],
+    "numeros": {},
+    "ocultar": []
+  },
+  "trilha": {
+    "arquivo": "assets/audio/trilha.mp3",
+    "volume": 0.12
+  },
+  "sfx": [],
+  "doc": {
+    "capitulos": [],
+    "hud": []
+  }
+}
