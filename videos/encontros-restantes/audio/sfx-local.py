@@ -1,6 +1,7 @@
-"""sfx-local.py: efeitos sintetizados localmente (sem API) para "pausar o tempo".
-Whoosh em cada corte; chuva e estalo de dedos (f01/f13), passos (f02), lâmpada (f03), ar (f04),
-tom que corta (f05), batidas do coração (f07), tiques dos dias (f08), areia (f09), bipes do GPS (f11). Saída: assets/audio/sfx.wav (mono 48 kHz)."""
+"""sfx-local.py: efeitos sintetizados localmente (sem API) para "encontros restantes".
+Whoosh em cada corte; brilho do número (f01/f13), tiques do contador (f02/f03/f09/f10), contas caindo (f04),
+barras subindo (f05), pedras e o brilho raro (f06), xícara (f07), coração no abraço (f08), queda 1→0 (f11), números somindo (f12).
+Saída: assets/audio/sfx.wav (mono 48 kHz)."""
 import json, numpy as np, wave
 SR = 48000
 v = json.load(open('video.json')); DUR = v['duracao']
@@ -69,59 +70,46 @@ def batida():  # tum-tum do coração
 def tique(f=2400):
     n = int(SR * 0.03); k = np.arange(n) / SR
     return np.sin(2 * np.pi * f * k) * np.exp(-k * 220)
-# f01: chuva caindo até o estalo; estalo + anel (whoosh reverso) e a chuva some em câmera lenta
-add(C['f01'], env(chuva(1.25), 0.05, 0.4), 0.35)
-add(C['f01'] + 0.83, estalar(), 0.9)
-add(C['f01'] + 0.85, shimmer(1.6, False), 0.35)
-add(C['f01'] + 0.86, thud(42, 1.4), 0.5)
-add(C['f01'] + 0.9, whoosh(0.9), 0.4)
-# f02: passos do protagonista no asfalto molhado (o único som)
-for i in range(7):
-    add(C['f02'] + 0.3 + i * 0.69, clique(0.08, 160), 0.22)
-for i in range(3):
-    add(C['f02'] + 2.95 + i * 1.0, tique(), 0.18)
-# f03: zumbido da lâmpada que para; escurecer com grave
-add(C['f03'] + 0.2, env(zumbido_cai(3.2), 0.3, 0.2), 0.35)
-add(C['f03'] + 3.1, shimmer(0.9, False), 0.25)
-add(C['f03'] + 4.2, env(thud(38, 2.0), 0.4, 1.4), 0.4)
-# f04: ar sibilando (moléculas) até travar; inspiração bloqueada
-add(C['f04'] + 0.2, env(agua(4.2, 0.5), 0.6, 0.3), 0.12)
-add(C['f04'] + 4.4, thud(60, 0.4), 0.4)
-add(C['f04'] + 5.6, env(agua(1.0, 0.08), 0.6, 0.2), 0.25)
-add(C['f04'] + 6.6, estalo(), 0.25)
-# f05: tom do alto-falante que corta seco em 2,2 s (silêncio)
-n = int(SR * 2.2); k = np.arange(n) / SR
-add(C['f05'] + 0.1, np.sin(2 * np.pi * 220 * k) * (0.6 + 0.4 * np.sin(2 * np.pi * 3 * k)) * np.minimum(1, k * 8), 0.22)
-# f06: luz voltando (brilho subindo) e respiração
-add(C['f06'] + 0.5, shimmer(2.2, True), 0.35)
-add(C['f06'] + 1.9, env(agua(1.3, 0.1), 0.5, 0.6), 0.22)
-# f07: batidas do coração (1,16/s) e células estalando
-for i in range(9):
-    add(C['f07'] + 0.05 + i / 1.16, batida(), 0.5)
-r = np.random.default_rng(3)
-for dt in np.sort(r.uniform(3.0, 7.8, 30)):
-    add(C['f07'] + dt, tique(3000 + r.uniform(0, 1500)), 0.05)
-# f08: dias acendendo (tiques acelerando)
-for dt in 0.25 + 5.3 * np.sqrt(np.linspace(0, 1, 40)):
-    add(C['f08'] + dt, tique(1800), 0.09)
-# f09: areia escorrendo, rajada de 1 ano
-add(C['f09'] + 0.1, env(agua(5.8, 0.3), 0.4, 0.6), 0.1)
-add(C['f09'] + 2.4, env(agua(1.0, 0.45), 0.1, 0.6), 0.3)
-# f10: grave ao envelhecer
-add(C['f10'] + 1.8, env(thud(36, 2.6), 0.6, 1.8), 0.35)
-# f11: bipes do satélite e correção
-for i in range(9):
-    add(C['f11'] + 0.8 + i * 0.9, tique(1200), 0.12)
-add(C['f11'] + 4.6, clique(0.12, 700), 0.25)
-add(C['f11'] + 7.4, shimmer(0.8, False), 0.25)
-# f12: o segundo luminoso
-add(C['f12'] + 0.2, shimmer(2.4, True), 0.3)
-add(C['f12'] + 1.4, tique(2200), 0.25)
-# f13: estalo, a chuva volta a cair
-add(C['f13'] + 0.98, estalar(), 0.9)
-add(C['f13'] + 1.0, whoosh(0.9), 0.45)
-add(C['f13'] + 1.0, thud(42, 1.2), 0.4)
-add(C['f13'] + 1.2, env(chuva(6.4), 0.8, 1.5), 0.4)
+# f01: o número brilha e "pula" em "número"
+add(C['f01'] + 0.05, shimmer(1.4, True), 0.25)
+for k in range(8): add(C['f01'] + 0.1 + k * 0.28, tique(2600 - k * 80), 0.08)
+add(C['f01'] + 1.89, tique(1800), 0.3); add(C['f01'] + 1.9, shimmer(0.8, True), 0.3)
+# f02: números acendendo sobre cada desconhecido
+for k in range(6): add(C['f02'] + 0.15 + k * 0.2, tique(1500 + k * 180), 0.2)
+add(C['f02'] + 2.18, shimmer(1.0, True), 0.2)
+# f03: contadores (3.000, 27) e o número borrado da mãe (ruído trêmulo)
+for k in range(10): add(C['f03'] + 0.9 + k * 0.07, tique(2200), 0.1)
+add(C['f03'] + 1.6, clique(0.1, 900), 0.25)
+for k in range(8): add(C['f03'] + 2.8 + k * 0.08, tique(1900), 0.1)
+add(C['f03'] + 3.4, clique(0.1, 900), 0.25)
+add(C['f03'] + 4.6, env(agua(2.0, 0.6), 0.3, 0.8), 0.08); add(C['f03'] + 4.7, env(thud(45, 1.6), 0.2, 1.0), 0.3)
+# f04: 10 contas caem; depois as 190 em onda; o 200
+for k in range(10): add(C['f04'] + 1.95 + k * 0.05, tique(2400 + k * 60), 0.12)
+for k in range(40): add(C['f04'] + 3.6 + k * 0.035, tique(2000 + (k % 7) * 150), 0.05)
+add(C['f04'] + 5.36, thud(60, 0.5), 0.4); add(C['f04'] + 5.38, shimmer(1.2, True), 0.25)
+# f05: barras subindo; o passado apaga
+add(C['f05'] + 0.2, shimmer(1.8, True), 0.18)
+add(C['f05'] + 2.6, whoosh(0.8), 0.25); add(C['f05'] + 3.82, tique(1400), 0.2)
+# f06: pedras afundando e a única que sobe e brilha
+add(C['f06'] + 3.6, env(agua(1.2, 0.2), 0.2, 0.6), 0.2); add(C['f06'] + 3.95, shimmer(1.4, True), 0.4)
+# f07: xícara no pires; risco do "cancelar"
+add(C['f07'] + 0.6, clique(0.08, 2600), 0.25); add(C['f07'] + 2.65, whoosh(0.3), 0.3)
+# f08: coração calmo durante o abraço; toque de chamada
+for k in range(3): add(C['f08'] + 0.6 + k * 1.0, batida(), 0.35)
+for k in range(2): add(C['f08'] + 4.0 + k * 0.9, np.sin(2 * np.pi * 880 * np.arange(int(SR * 0.35)) / SR) * np.exp(-np.arange(int(SR * 0.35)) / SR * 6), 0.12)
+# f09: grave frio; contagem regressiva até 1
+add(C['f09'] + 0.3, env(thud(38, 2.4), 0.6, 1.5), 0.3)
+for k in range(11): add(C['f09'] + 2.6 + k * 0.135, tique(1600 - k * 40), 0.12)
+add(C['f09'] + 4.09, thud(50, 0.8), 0.45)
+# f10: cada encontro marcado na agenda
+for dt in [1.95, 2.79, 3.67, 4.0, 4.2, 4.4, 4.6]: add(C['f10'] + dt, clique(0.1, 1200), 0.3); add(C['f10'] + dt + 0.02, tique(2400), 0.12)
+# f11: 1 vira 0 sem alarde (um tique seco) e silêncio
+add(C['f11'] + 1.29, tique(900), 0.25)
+# f12: números aparecem e depois apagam
+add(C['f12'] + 1.3, shimmer(1.2, True), 0.25); add(C['f12'] + 3.25, shimmer(1.2, False), 0.25)
+# f13: o número volta; abraço quente
+add(C['f13'] + 2.4, shimmer(1.0, True), 0.28)
+add(C['f13'] + 4.3, env(thud(48, 1.8), 0.3, 1.2), 0.35); add(C['f13'] + 4.4, shimmer(2.0, True), 0.3)
 
 out = out[: int(SR * DUR)]
 out = np.tanh(out * 1.2) * 0.8

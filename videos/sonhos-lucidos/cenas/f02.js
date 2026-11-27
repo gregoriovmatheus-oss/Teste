@@ -1,0 +1,60 @@
+/*META {"imports": ["lowpoly", "cinema", "sonho"], "rotulos": [], "D0": 5.34, "css": ".rot-t { font-family: \"Inter\", sans-serif; font-weight: 300; font-size: 80px; line-height: 1.1; color: #fff; text-transform: none; letter-spacing: -0.01em; -webkit-text-stroke: 0; text-shadow: 0 2px 30px rgba(0,0,0,0.75), 0 1px 3px rgba(0,0,0,0.6); }\n    .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }\n    .rot-t .o { font-weight: 800; color: #ff8a4c; } .rot-t .p { font-size: 60px; }\n    .rot-t .k { display: inline-block; font-family: \"JetBrains Mono\", monospace; font-weight: 600; font-size: 26px; letter-spacing: 0.32em; color: #7cc8ff; margin-bottom: 18px; text-shadow: 0 2px 12px rgba(0,0,0,0.8); }\n    .rot-t .n { font-family: \"JetBrains Mono\", monospace; font-weight: 600; color: #7cc8ff; }\n"} */
+const LP = LOWPOLY, CI = CINEMA, SN = SONHO;
+await SN.prepara();
+const st = LP.palco(canvas, { fundo: 0x140a30, foco: 2.0, faixa: 0.8, desfoque: 20, bloom: 1.0 });
+const { S, cam } = st;
+const r = mulberry32(21), G = [0, 1, 2, 3].map((i) => { const g = new THREE.Group(); g.position.x = i * 60; S.add(g); return g; });
+const facet = (w, d, cor, amp, seed) => { const geo = new THREE.PlaneGeometry(w, d, 40, 40); geo.rotateX(-Math.PI / 2); const q = geo.attributes.position, rr = mulberry32(seed);
+  for (let i = 0; i < q.count; i++) q.setY(i, amp * (Math.sin(q.getX(i) * 0.9 + 1) * Math.cos(q.getZ(i) * 0.7) + rr() * 0.4)); geo.computeVertexNormals(); return new THREE.Mesh(geo, LP.mat(cor, 0.95)); };
+// 0: escolha — o sonhador numa nuvem diante de 3 portais de luz
+const c0 = SN.ilhaSonho(G[0], LP, CI, { seed: 6, zMax: -5 });
+const n0 = SN.nuvem(LP, { seed: 3, n: 7, emis: 0.3 }); n0.scale.set(1.6, 0.5, 1.6); n0.position.y = -0.25; G[0].add(n0);
+const PORT = [[0xff6a3a, -1.1], [0xff9ad8, 0], [0xffc070, 1.1]].map(([cor, x]) => { const g = new THREE.Group(); g.position.set(x, 1.4, -2.2); G[0].add(g);
+  const a = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.035, 8, 40), new THREE.MeshBasicMaterial({ color: new THREE.Color(cor).multiplyScalar(2.2) })); g.add(a);
+  const d = new THREE.Mesh(new THREE.CircleGeometry(0.4, 32), new THREE.MeshBasicMaterial({ color: new THREE.Color(cor).multiplyScalar(0.9), transparent: true, opacity: 0.55 })); g.add(d);
+  const h = SN.brilho(cor, 2.0, "suave", 0.6); g.add(h); return g; });
+// 1: praia em Marte — chão vermelho, mar escuro, duas luas
+const g1 = G[1]; CI.ceu(g1, { topo: 0x1a0610, horizonte: 0xd8703a, estrelas: 200, seed: 2 });
+const m1 = facet(40, 40, 0xa8442a, 0.12, 3); m1.position.z = -6; g1.add(m1);
+const mar = CI.agua(g1, { tam: 30, seg: 30, cor: 0x3a2a4a, altura: 0.04, pos: [0, 0.02, -22] });
+for (let i = 0; i < 9; i++) { const pd = new THREE.Mesh(LP.facetado(1, () => {}, 40 + i, 0.25), LP.mat(0x6a2a1a, 0.9)); pd.position.set((r() - 0.5) * 7, 0.05, -1 - r() * 6); pd.scale.setScalar(0.15 + r() * 0.35); g1.add(pd); }
+const L1 = SN.lua(0xffe6c8, 1.6), L2 = SN.lua(0xd8c8ff, 0.8); L1.position.set(-6, 9, -30); L2.position.set(5, 13, -34); g1.add(L1, L2);
+// 2: cidade nas nuvens — torres que saem de um mar de nuvens rosa
+const g2 = G[2]; CI.ceu(g2, { topo: 0x2a3a8a, horizonte: 0xffa8c8, estrelas: 0, seed: 5 });
+for (let i = 0; i < 26; i++) { const c = SN.nuvem(LP, { seed: 60 + i, n: 5, cor: [0xffe8f4, 0xf2e0ff, 0xffd8e0][i % 3], emis: 0.22 }); { const sx = r() < 0.5 ? -1 : 1; c.position.set(sx * (1.8 + r() * 7), -0.25 + r() * 0.2, -2 - r() * 20); } c.scale.setScalar(1.1 + r() * 1.3); g2.add(c); }
+for (let i = 0; i < 9; i++) { const h = 2 + r() * 6, x = (i % 2 ? 1 : -1) * (2.2 + r() * 4), z = -5 - r() * 14;
+  const tw = new THREE.Mesh(new THREE.CylinderGeometry(0.35 + r() * 0.3, 0.45 + r() * 0.3, h, 6), LP.mat(0xf4eef8, 0.5, { emissive: 0xffd0a0, emissiveIntensity: 0.12 })); tw.position.set(x, h / 2 - 0.3, z); g2.add(tw);
+  const tp = new THREE.Mesh(new THREE.ConeGeometry(0.5, 0.9, 6), LP.mat(0xffb0c8, 0.5, { emissive: 0xff8ab0, emissiveIntensity: 0.4 })); tp.position.set(x, h - 0.3 + 0.45, z); g2.add(tp); }
+const ch2 = SN.nuvem(LP, { seed: 90, n: 7, emis: 0.3 }); ch2.scale.set(1.3, 0.45, 2.4); ch2.position.set(0, -0.22, -0.5); g2.add(ch2);
+// 3: casa da infância — quarto quente e desfocado, brinquedos; a criança é o mesmo rosto
+const g3 = G[3]; CI.cenario(g3, "quarto", { seed: 2 });
+const cub = [0xff6a4a, 0x4a9aff, 0xffd04a, 0x5ac87a]; for (let i = 0; i < 8; i++) { const b = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.12, 0.12), LP.mat(cub[i % 4], 0.6)); b.position.set(-0.8 + (i % 4) * 0.14 + (i > 3 ? 0.07 : 0), 0.06 + (i > 3 ? 0.12 : 0), 0.1 + (i % 2) * 0.05); b.rotation.y = i * 0.4; g3.add(b); }
+CI.luzPratica(g3, "abajur", [-0.3, 0.5, -2.6], { forca: 1.3 });
+const P = [SN.heroi(LP), SN.heroi(LP), SN.heroi(LP), SN.heroi(LP, { idade: "crianca", roupa: "camiseta", camisa: 0x3a8ad8, calca: 0x2a3a5a })];
+P.forEach((p, i) => { G[i].add(p.root); });
+P[1].root.position.set(0.2, 0.05, 0); P[2].root.position.set(0, 0.0, 0); P[3].root.position.set(-0.1, 0, 0.3);
+const poe = LP.poeira(g3, { n: 60, centro: [0, 1.2, 0], raio: [1.2, 0.8, 1], cor: 0xffd89a, seed: 4 });
+const SEG = [0, 1.62, 2.48, 3.72], v = new THREE.Vector3(), R = new THREE.Vector3();
+let seg0 = -1;
+function render(t) {
+  let i = 0; SEG.forEach((s, j) => { if (t >= s) i = j; });
+  const t0 = SEG[i], t1 = i < 3 ? SEG[i + 1] : 5.34, u = t - t0, k = u / (t1 - t0);
+  G.forEach((g, j) => (g.visible = j === i));
+  if (i !== seg0) { seg0 = i; LP.luz(st, ["noite", "por-do-sol", "dia", "interior"][i]); CI.clima(st, i === 3 ? "memoria" : "neutro"); }
+  st.U.bloom.value = 1.1; st.U.desf.value = i === 3 ? 34 : 20; st.exposicao = [1.0, 1.0, 1.1, 1.15][i];
+  const p = P[i];
+  if (i === 0) { c0.update(t); PORT.forEach((g, j) => { const a = ease.outBack(range(t, 0.3 + j * 0.15, 0.8 + j * 0.15)); g.scale.setScalar(Math.max(0.001, a)); g.rotation.z = t * 0.6 * (j - 1); g.children[1].material.opacity = 0.45 + 0.2 * Math.sin(t * 4 + j); });
+    LP.ator(p, t, { seed: 7, emocao: ["calmo", "alegre", range(t, 0.6, 1.2)], olharPara: PORT[Math.min(2, Math.floor(t / 0.5))].getWorldPosition(v), olharK: 0.6 });
+    CI.trilho(cam, t, [[0, [0.75, 1.9, 2.4], [-0.1, 1.45, -2]], [1.62, [0.55, 1.75, 1.8], [0.1, 1.4, -2.2]]], { mao: 1, seed: 3 }); LP.focar(st, v.set(0, 1.4, -2.2)); }
+  if (i === 1) { mar.update(t); LP.ator(p, u, { seed: 7, emocao: ["surpresa", "alegre", range(u, 0.3, 0.7)], olharPara: v.set(60, 9, -30), olharK: 0.5 });
+    R.set(60.2, 1.62, 0.05); CI.trilho(cam, u, [[0, [1.4, 0.45, 2.6], [0.2, 1.6, -1]], [0.86, [0.9, 0.4, 2.2], [0.1, 1.9, -1]]], { mao: 1, seed: 4 }); cam.position.x += 60; LP.focar(st, R); }
+  if (i === 2) { const d = LP.ator(p, u, { seed: 7, andar: { vel: 0.8 }, emocao: "alegre" }); p.root.position.z = -d * 0.6 + 0.3; p.root.rotation.y = 0.5;
+    p.root.updateMatrixWorld(true); R.copy(LP.pontoCabeca(p, "testa")); CI.plano(st, R, u, k, "aberto", { lado: -1, seed: 5 }); }
+  if (i === 3) { poe.update(t); LP.ator(p, u, { seed: 9, emocao: ["surpresa", "alegre", range(u, 0.2, 0.6)], olharPara: v.set(180 - 0.8, 0.3, 0.1), olharK: 0.5 });
+    p.root.getWorldPosition(R); R.y += 1.15; CI.plano(st, R, u, k, "medio", { lado: -1, seed: 6 }); }
+  st.draw();
+  const c = st.ctx;
+  SN.txt(c, "ESCOLHA O LUGAR", 540, 975, { tam: 32, cor: SN.AZUL, a: range(t, 1.11, 1.3) * (i === 0 ? 1 : 0), esp: 0.3 });
+  const NOMES = [null, ["PRAIA EM", "MARTE", "#ff8a4c"], ["CIDADE NAS", "NUVENS", "#ffb0d8"], ["CASA DA", "INFÂNCIA", "#ffd27a"]];
+  if (NOMES[i]) { const a = range(u, 0.05, 0.25); SN.txt(c, NOMES[i][0], 540, 900, { tam: 30, cor: "#fff", a, esp: 0.3 }); SN.titulo(c, "", ["*" + NOMES[i][1] + "*"], a, { y: 965, tam: 72 }); }
+}

@@ -1,57 +1,87 @@
-<!-- Modelo de cena 3D (R01). cenas.py --criar copia para compositions/fNN.html trocando os marcadores de id e duração.
-     Padrão: script clássico registra buildReady na hora; import dinâmico do kit e dos blocos;
-     K.bindSeek(canvas, render) dá o tempo LOCAL da cena (sem gambiarra de data-start). -->
+<!-- f12: cena 3D padrão documentário (R10 + doc). Lógica em cenas/f12.js (gerado por scripts/monta-cenas.py).
+     Tempos escritos para 4.4 s e esticados para a duração real do host (data-duration). -->
 <template>
   <style>
-    #root { position: absolute; inset: 0; overflow: hidden; background: #0b1018; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0b0a12; }
     #f12-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
-    #f12-titulo { position: absolute; left: 160px; right: 200px; top: 660px; text-align: center; }
-    #f12-titulo-in { display: block; font-family: "EB Garamond", serif; font-size: 84px; line-height: 1.05; color: #fff;
-      text-shadow: 0 4px 26px rgba(4, 10, 20, 0.75), 0 1px 4px rgba(4, 10, 20, 0.6); }
-    #f12-titulo-in .ice { color: #8fcbf2; }
+    /* rótulos 2D: y 680-980, acima da faixa da legenda (1005-1235) */
+    .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .rot-t { display: block; font-family: "Anton", sans-serif; font-weight: 400; font-size: 92px; line-height: 1.05; color: #fff; text-transform: uppercase;
+      -webkit-text-stroke: 5px #000; paint-order: stroke fill; text-shadow: 0 6px 0 #000, 0 10px 24px rgba(0,0,0,0.6); opacity: 0; }
+    .rot-t .y { color: #F5C518; } .rot-t .r { color: #E8463A; } .rot-t .p { font-size: 70px; }
+    .rot-t .k { display: inline-block; font-size: 34px; letter-spacing: 0.12em; color: #F05A4A; -webkit-text-stroke: 0; text-shadow: 0 3px 0 #000; margin-bottom: 10px; }
+    .rot-t .n { color: #F5C518; }
+.rot-t { font-family: "Inter", sans-serif; font-weight: 300; font-size: 80px; line-height: 1.1; color: #fff; text-transform: none; letter-spacing: -0.01em; -webkit-text-stroke: 0; text-shadow: 0 2px 30px rgba(0,0,0,0.75), 0 1px 3px rgba(0,0,0,0.6); }
+    .rot-t .y { font-weight: 800; background: linear-gradient(90deg, #ffffff, #9fd6ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }
+    .rot-t .o { font-weight: 800; color: #ff8a4c; } .rot-t .p { font-size: 60px; }
+    .rot-t .k { display: inline-block; font-family: "JetBrains Mono", monospace; font-weight: 600; font-size: 26px; letter-spacing: 0.32em; color: #7cc8ff; margin-bottom: 18px; text-shadow: 0 2px 12px rgba(0,0,0,0.8); }
+    .rot-t .n { font-family: "JetBrains Mono", monospace; font-weight: 600; color: #7cc8ff; }
+
   </style>
   <div id="root" data-composition-id="f12" data-width="1080" data-height="1920">
     <canvas id="f12-canvas" width="1080" height="1920"></canvas>
-    <div id="f12-titulo" class="clip" data-start="0.3" data-duration="2.2">
-      <span id="f12-titulo-in">Texto da <span class="ice">cena</span></span>
-    </div>
+
   </div>
   <script>
     (function () {
-      /* 2D por cima (GSAP). Título entre y 640 e 1000: o HUD ocupa 290-620 e a legenda 1045-1195. */
+      const D0 = 4.4;
+      // duração real = data-duration do host da cena (muda quando a narração muda)
+      const durReal = () => {
+        for (let n = document.getElementById("f12-canvas"); n; n = n.parentElement) {
+          if (n.getAttribute && n.getAttribute("data-composition-id") === "f12" && n.hasAttribute("data-duration")) return parseFloat(n.getAttribute("data-duration")) || D0;
+        }
+        return D0;
+      };
+      const DR = durReal(), K = DR / D0;
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f12-titulo-in", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 0.3);
-      tl.to("#f12-titulo-in", { opacity: 0, duration: 0.2, ease: "power2.in" }, 2.3);
-      tl.set({}, {}, 4.4);
+
+      tl.set({}, {}, DR);
       window.__timelines = window.__timelines || {};
       window.__timelines["f12"] = tl;
 
-      /* 3D */
       window.__hf = window.__hf || {};
       window.__hf.buildReady = window.__hf.buildReady || {};
       window.__hf.buildReady["f12"] = Promise.all([
-        import("./assets/lib/kit.js"),
-        import("./assets/lib/blocks/city.js"),
-        // import("./assets/lib/blocks/globe.js"), import("./assets/lib/blocks/particles.js"),
-        // import("./assets/lib/blocks/shockwave.js"), import("./assets/lib/blocks/counter.js"),
-      ]).then(async ([K, { createCity }]) => {
-        const { THREE, ease, range, lerp, clamp } = K;
+        import("./assets/lib/kit.js"), import("./assets/lib/blocks/toy.js"), import("./assets/lib/blocks/animals.js"), import("./assets/lib/blocks/lowpoly.js"), import("./assets/lib/blocks/cinema.js"), import("./assets/lib/blocks/sonho.js")
+      ]).then(async ([K_, T, A, LOWPOLY, CINEMA, SONHO]) => {
+        const K = K_;
+        const { THREE, ease, range, lerp, clamp, smoothstep, mulberry32 } = K;
+        const D = D0;   // o corpo trabalha no tempo de autoria
         const canvas = document.getElementById("f12-canvas");
-        const renderer = K.createRenderer(canvas);
-        const scene = new THREE.Scene();
-        const cam = new THREE.PerspectiveCamera(35, K.W / K.H, 1, 2000);
-        const city = createCity(scene, { seed: 7, geada: [4.4 * 0.6, 4.4 * 0.6 + 0.35], paraEm: 4.4 * 0.6 });
 
-        function render(t) {               // t = segundos locais da cena
-          const p = ease.outCubic(clamp(t / 4.4));
-          const h = lerp(300, 175, p), ang = lerp(-0.35, 0.05, p);
-          cam.position.set(Math.sin(ang) * 18, h, Math.cos(ang) * 18 + 10);
-          cam.up.set(Math.sin(ang), 0, -Math.cos(ang));
-          cam.lookAt(0, 0, 0);
-          city.update(t);
-          renderer.render(scene, cam);
-        }
-        await K.bindSeek(canvas, render, { warm: [{ renderer, scene, camera: cam }], duration: 4.4 });
+const LP = LOWPOLY, CI = CINEMA, SN = SONHO;
+await SN.prepara();
+const st = LP.palco(canvas, { foco: 2.0, faixa: 1.0, desfoque: 18, bloom: 0.8 });
+const { S, cam } = st;
+LP.luz(st, "dia"); st.exposicao = 1.1;
+CI.cenario(S, "rua", { seed: 3 }); CI.ceu(S, { topo: 0x5a8ad8, horizonte: 0xd8e8ff, nuvens: 5, seed: 7 });
+// a rua inteira olhando para as próprias mãos: 2 pessoas na frente contando, figurantes atrás com a mão erguida
+const PA = LP.pessoa({ seed: 81, feminina: true, roupa: "casaco", camisa: 0xe8e0d0, jaqueta: 0xb84a3a, pele: 0xe0b090, cabelo: 0x5a3018 });
+const PB = LP.pessoa({ seed: 91, roupa: "jaqueta", camisa: 0xf2f0ea, jaqueta: 0x2f4a6a, pele: 0x8a5a3a, cabelo: 0x120a06, oculos: true });
+PA.root.position.set(-0.45, 0, 0.2); PA.root.rotation.y = 0.35; PB.root.position.set(0.75, 0, -1.3); PB.root.rotation.y = -0.4; S.add(PA.root, PB.root);
+const F = [], r = mulberry32(12);
+for (let i = 0; i < 12; i++) { const f = LP.figurante({ seed: 100 + i, roupa: [0x3d5a80, 0x8a3a3a, 0x4a6a3a, 0x6a5a8a, 0xb08a3a][i % 5], pele: [0xd8a07a, 0x8a5a3a, 0xc08060, 0xf0c8a0][i % 4] });
+  f.root.position.set((r() - 0.5) * 6, 0, -3 - r() * 12); f.root.rotation.y = r() < 0.5 ? 0 : Math.PI; S.add(f.root); F.push([f, r() * 3, r() < 0.6, f.root.position.z]); }
+const v = new THREE.Vector3(), R = new THREE.Vector3(), H = new THREE.Vector3();
+const mao = (p, lado, k, n) => { const b = LP.pontoCabeca(p, "boca", lado); p.root.updateMatrixWorld(true); H.set(lado ? -0.12 : 0.12, -0.12, 0.3).applyQuaternion(p.root.quaternion).add(b);
+  LP.alcancar(p, lado, H, k, { polo: new THREE.Vector3(lado ? 1 : -1, -1, 0), maoGira: lado ? 1.2 : -1.2 }); if (n !== null) SN.contarDedos(p, lado, n, k); };
+function render(t) {
+  const nA = Math.min(4, Math.floor(range(t, 0.4, 3.6) * 5)), nB = Math.min(4, Math.floor(range(t, 0.9, 3.9) * 5));
+  LP.ator(PA, t, { seed: 81, emocao: ["foco", "duvida", range(t, 2.6, 3.2)] }); mao(PA, 0, 1, nA); LP.olharPara(PA, H, 0.8);
+  LP.ator(PB, t, { seed: 91, emocao: "foco" }); mao(PB, 1, 1, nB); LP.olharPara(PB, H, 0.8);
+  F.forEach(([f, ph, ergue, z0], i) => { const d = LP.ator(f, t + ph, { seed: 100 + i, andar: { vel: 0.7 } }); f.root.position.z = z0 + (f.root.rotation.y ? -1 : 1) * (d - 0) * 0.5; if (ergue) { f.root.updateMatrixWorld(true); const c = f.cab.getWorldPosition(v); LP.alcancar(f, 0, v.set(c.x + 0.05, c.y - 0.1, c.z + (f.root.rotation.y ? -0.3 : 0.3)), 1); } });
+  PA.root.updateMatrixWorld(true); R.copy(LP.pontoCabeca(PA, "testa"));
+  CI.plano(st, R, t, t / 4.4, "medio", { lado: 1, seed: 9 }); st.U.faixa.value = 1.2;
+  LP.focar(st, R);
+  st.draw();
+  const c = st.ctx, n = Math.max(1, nA + 1);
+  SN.numero(c, String(n), 540, 760, range(t, 0.4, 0.55) * (1 - range(t, 3.9, 4.1)), { tam: 110, cor: n === 5 ? "#ffd27a" : null });
+  SN.txt(c, "CONTANDO OS DEDOS", 540, 880, { tam: 30, cor: SN.AZUL, a: range(t, 1.98, 2.2), esp: 0.3 });
+  SN.txt(c, "SÓ PARA TER CERTEZA", 540, 975, { tam: 30, cor: SN.LARANJA, a: range(t, 3.47, 3.7), esp: 0.24 });
+}
+
+        // DR foi lido na hora em que o script rodou (depois do inline o host pode mudar de atributos)
+        await K.bindSeek(canvas, (t) => { st.T = t * D / DR; st.D = D; render(st.T); }, { warm: [st.warm, ...(st.extraWarm || [])], duration: DR });
       });
     })();
   </script>

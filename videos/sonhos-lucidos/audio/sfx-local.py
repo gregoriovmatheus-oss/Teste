@@ -1,6 +1,7 @@
-"""sfx-local.py: efeitos sintetizados localmente (sem API) para "pausar o tempo".
-Whoosh em cada corte; chuva e estalo de dedos (f01/f13), passos (f02), lâmpada (f03), ar (f04),
-tom que corta (f05), batidas do coração (f07), tiques dos dias (f08), areia (f09), bipes do GPS (f11). Saída: assets/audio/sfx.wav (mono 48 kHz)."""
+"""sfx-local.py: efeitos sintetizados localmente (sem API) para "e se você pudesse controlar seus sonhos?".
+Whoosh em cada corte; brilho ao acordar no sonho (f01/f13), portais e lugares (f02), peças do anel (f03), gráfico e cérebro (f04),
+orbes em anel e relógio (f05), vento/mar, abraço e conversa (f06), caixinha de música e passos (f07), coro subindo (f08), despertador (f09),
+ondulação (f10), glitch do texto e sexto dedo (f11), tiques da contagem (f12). Saída: assets/audio/sfx.wav (mono 48 kHz)."""
 import json, numpy as np, wave
 SR = 48000
 v = json.load(open('video.json')); DUR = v['duracao']
@@ -55,73 +56,58 @@ def env(sig, a=0.3, r=0.6):
     n = len(sig); e = np.ones(n); na, nr = int(SR * a), int(SR * r)
     e[:na] = np.linspace(0, 1, na); e[n - nr:] = np.linspace(1, 0, nr); return sig * e
 
-# cortes
-for c in v['cenas'][1:]:
-    add(c['inicio'] - 0.38, whoosh(), 0.5)
-def chuva(d, a=0.35):  # chiado de chuva (ruído rosado claro)
-    n = int(SR * d); x = lp(rng.standard_normal(n), a) - lp(rng.standard_normal(n), 0.02) * 0.5
-    return x / (np.abs(x).max() + 1e-9)
-def estalar():  # estalo de dedos: clique seco + corpo curto
-    n = int(SR * 0.09); k = np.arange(n) / SR
-    return rng.standard_normal(n) * np.exp(-k * 160) + np.sin(2 * np.pi * 1900 * k) * np.exp(-k * 90) * 0.6
-def batida():  # tum-tum do coração
-    return np.concatenate([thud(55, 0.18), np.zeros(int(SR * 0.05)), thud(48, 0.25) * 0.7])
 def tique(f=2400):
     n = int(SR * 0.03); k = np.arange(n) / SR
     return np.sin(2 * np.pi * f * k) * np.exp(-k * 220)
-# f01: chuva caindo até o estalo; estalo + anel (whoosh reverso) e a chuva some em câmera lenta
-add(C['f01'], env(chuva(1.25), 0.05, 0.4), 0.35)
-add(C['f01'] + 0.83, estalar(), 0.9)
-add(C['f01'] + 0.85, shimmer(1.6, False), 0.35)
-add(C['f01'] + 0.86, thud(42, 1.4), 0.5)
-add(C['f01'] + 0.9, whoosh(0.9), 0.4)
-# f02: passos do protagonista no asfalto molhado (o único som)
-for i in range(7):
-    add(C['f02'] + 0.3 + i * 0.69, clique(0.08, 160), 0.22)
-for i in range(3):
-    add(C['f02'] + 2.95 + i * 1.0, tique(), 0.18)
-# f03: zumbido da lâmpada que para; escurecer com grave
-add(C['f03'] + 0.2, env(zumbido_cai(3.2), 0.3, 0.2), 0.35)
-add(C['f03'] + 3.1, shimmer(0.9, False), 0.25)
-add(C['f03'] + 4.2, env(thud(38, 2.0), 0.4, 1.4), 0.4)
-# f04: ar sibilando (moléculas) até travar; inspiração bloqueada
-add(C['f04'] + 0.2, env(agua(4.2, 0.5), 0.6, 0.3), 0.12)
-add(C['f04'] + 4.4, thud(60, 0.4), 0.4)
-add(C['f04'] + 5.6, env(agua(1.0, 0.08), 0.6, 0.2), 0.25)
-add(C['f04'] + 6.6, estalo(), 0.25)
-# f05: tom do alto-falante que corta seco em 2,2 s (silêncio)
-n = int(SR * 2.2); k = np.arange(n) / SR
-add(C['f05'] + 0.1, np.sin(2 * np.pi * 220 * k) * (0.6 + 0.4 * np.sin(2 * np.pi * 3 * k)) * np.minimum(1, k * 8), 0.22)
-# f06: luz voltando (brilho subindo) e respiração
-add(C['f06'] + 0.5, shimmer(2.2, True), 0.35)
-add(C['f06'] + 1.9, env(agua(1.3, 0.1), 0.5, 0.6), 0.22)
-# f07: batidas do coração (1,16/s) e células estalando
-for i in range(9):
-    add(C['f07'] + 0.05 + i / 1.16, batida(), 0.5)
-r = np.random.default_rng(3)
-for dt in np.sort(r.uniform(3.0, 7.8, 30)):
-    add(C['f07'] + dt, tique(3000 + r.uniform(0, 1500)), 0.05)
-# f08: dias acendendo (tiques acelerando)
-for dt in 0.25 + 5.3 * np.sqrt(np.linspace(0, 1, 40)):
-    add(C['f08'] + dt, tique(1800), 0.09)
-# f09: areia escorrendo, rajada de 1 ano
-add(C['f09'] + 0.1, env(agua(5.8, 0.3), 0.4, 0.6), 0.1)
-add(C['f09'] + 2.4, env(agua(1.0, 0.45), 0.1, 0.6), 0.3)
-# f10: grave ao envelhecer
-add(C['f10'] + 1.8, env(thud(36, 2.6), 0.6, 1.8), 0.35)
-# f11: bipes do satélite e correção
-for i in range(9):
-    add(C['f11'] + 0.8 + i * 0.9, tique(1200), 0.12)
-add(C['f11'] + 4.6, clique(0.12, 700), 0.25)
-add(C['f11'] + 7.4, shimmer(0.8, False), 0.25)
-# f12: o segundo luminoso
-add(C['f12'] + 0.2, shimmer(2.4, True), 0.3)
-add(C['f12'] + 1.4, tique(2200), 0.25)
-# f13: estalo, a chuva volta a cair
-add(C['f13'] + 0.98, estalar(), 0.9)
-add(C['f13'] + 1.0, whoosh(0.9), 0.45)
-add(C['f13'] + 1.0, thud(42, 1.2), 0.4)
-add(C['f13'] + 1.2, env(chuva(6.4), 0.8, 1.5), 0.4)
+def bolha(f=500):
+    n = int(SR * 0.08); k = np.arange(n) / SR
+    return np.sin(2 * np.pi * np.cumsum(f * (1 + 3 * k * 10)) / SR) * np.exp(-k * 50)
+def ping(f=1320):
+    n = int(SR * 0.35); k = np.arange(n) / SR
+    return (np.sin(2 * np.pi * f * k) + 0.5 * np.sin(2 * np.pi * f * 1.5 * k)) * np.exp(-k * 9) * 0.5
+def sino(f=880, d=2.0):
+    n = int(SR * d); k = np.arange(n) / SR
+    return sum(np.sin(2 * np.pi * f * m * k) * np.exp(-k * (2 + m)) / m for m in [1, 2.76, 5.4]) * 0.5
+# cortes
+for c in v['cenas'][1:]:
+    add(c['inicio'] - 0.38, whoosh(), 0.5)
+PENTA = [523, 587, 659, 784, 880, 1047]
+# f01: ar de sonho + brilho ao "acordar dentro de um sonho"
+add(C['f01'], env(agua(3.8, 0.04), 0.1, 0.6), 0.05); add(C['f01'] + 0.9, shimmer(1.6, True), 0.22)
+# f02: 3 portais acendem; cortes internos; mar em Marte; vento nas nuvens; caixinha na infância
+for j, dt in enumerate([0.3, 0.45, 0.6]): add(C['f02'] + dt, ping(PENTA[j * 2]), 0.18)
+for dt in [1.62, 2.48, 3.72]: add(C['f02'] + dt - 0.25, whoosh(0.4), 0.3)
+add(C['f02'] + 1.62, env(agua(0.9, 0.1), 0.1, 0.3), 0.12); add(C['f02'] + 2.48, env(agua(1.2, 0.3), 0.2, 0.4), 0.08)
+for k, f in enumerate([1047, 880, 784, 659]): add(C['f02'] + 3.8 + k * 0.32, ping(f), 0.12)
+# f03: peças do anel surgindo; acendem em "metade"
+for i in range(0, 100, 5): add(C['f03'] + 0.2 + i * 0.012, tique(1800 + i * 8), 0.06)
+add(C['f03'] + 3.3, shimmer(1.2, True), 0.2)
+# f04: gráfico se desenhando; REM acende; cérebro liga
+for i in range(10): add(C['f04'] + 0.3 + i * 0.13, tique(1200), 0.07)
+add(C['f04'] + 1.38, ping(1320), 0.18); add(C['f04'] + 2.18, thud(55, 0.8), 0.35); add(C['f04'] + 2.96, shimmer(1.6, True), 0.16)
+# f05: orbes entram em ordem; relógio das 2 h
+add(C['f05'] + 1.05, shimmer(1.0, True), 0.18); add(C['f05'] + 3.3, sino(660, 1.8), 0.16)
+# f06: vento e mar no voo; abraço quente; conversa
+add(C['f06'], env(agua(1.6, 0.25), 0.2, 0.4), 0.16); add(C['f06'] + 1.7, sino(523, 1.8), 0.14); add(C['f06'] + 3.3, ping(660), 0.12)
+# f07: melodia da musicista; passos do atleta do sonho
+for k, f in enumerate([659, 784, 880, 784, 1047, 880]): add(C['f07'] + 0.25 + k * 0.26, ping(f), 0.13)
+for k in range(10): add(C['f07'] + 2.0 + k * 0.28, thud(90, 0.18), 0.12)
+# f08: coro/brilho subindo até a cama gigante
+add(C['f08'] + 1.4, shimmer(2.0, True), 0.24); add(C['f08'] + 0.9, thud(48, 0.9), 0.25)
+# f09: despertador (bipes) e depois o brilho quente da cama
+for k in range(8): add(C['f09'] + 0.05 + k * 0.3, tique(2600), 0.22); add(C['f09'] + 0.15 + k * 0.3, tique(2600), 0.22)
+add(C['f09'] + 2.65, shimmer(1.8, False), 0.18)
+# f10: o quarto ondula
+add(C['f10'] + 1.7, uivo(2.4), 0.12)
+# f11: texto embaralha (2ª leitura e no sonho) + sexto dedo
+for k in range(6): add(C['f11'] + 4.02 + k * 0.05, estalo(), 0.08)
+for k in range(12): add(C['f11'] + 4.85 + k * 0.06, estalo(), 0.1)
+add(C['f11'] + 5.45, ping(1568), 0.2)
+# f12: tique a cada dedo contado
+for k in range(5): add(C['f12'] + 0.4 + k * 0.64, tique(1500 + k * 120), 0.2)
+add(C['f12'], env(agua(4.4, 0.06), 0.3, 0.6), 0.04)
+# f13: mãos, sexto dedo e pergunta final
+add(C['f13'] + 1.5, ping(1568), 0.16); add(C['f13'] + 2.6, shimmer(2.0, False), 0.18); add(C['f13'] + 3.7, sino(440, 2.0), 0.12)
 
 out = out[: int(SR * DUR)]
 out = np.tanh(out * 1.2) * 0.8
