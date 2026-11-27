@@ -67,7 +67,7 @@ function render(t) {
   LP.ator(eu, t, { seed: 18, emocao: t < 3.6 ? "surpresa" : ["surpresa", "foco", range(t, 3.6, 4.4)], olharPara: hP, olharK: 0.75 });
   eu.cab.getWorldPosition(hE);
   const e = ease.inOutSine(range(t, 0, 5.91));
-  R.mira(cam, new THREE.Vector3(lerp(-0.05, 0.08, e), 1.66, lerp(2.45, 2.0, e)), hE, 790, lerp(760, 735, e)); LP.camMao(cam, t, { seed: 3 });
+  R.mira(cam, new THREE.Vector3(lerp(-0.05, 0.08, e), 1.66, lerp(2.45, 2.0, e)), hE, 720, lerp(760, 740, e)); LP.camMao(cam, t, { seed: 3 });
   LP.focar(st, hE); CI.preenche(st, hE, { forca: 1.4 }); poe.update(t);
   st.draw();
   const c = st.ctx;

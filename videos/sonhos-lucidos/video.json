@@ -110,7 +110,63 @@
   },
   "sfx": [],
   "doc": {
-    "capitulos": [],
-    "hud": []
+    "capitulos": [
+      [
+        0,
+        "O SONHO"
+      ],
+      [
+        9.1,
+        "A CIÊNCIA"
+      ],
+      [
+        20.18,
+        "O CONTROLE"
+      ],
+      [
+        35.79,
+        "BOM DEMAIS"
+      ],
+      [
+        49.2,
+        "O TESTE"
+      ]
+    ],
+    "hud": [
+      {
+        "rotulo": "JÁ TIVERAM UM SONHO LÚCIDO",
+        "unid": "%",
+        "fmt": "int",
+        "keys": [
+          [
+            12.42,
+            0
+          ],
+          [
+            13.4,
+            55
+          ]
+        ],
+        "max": 100,
+        "de": 12.42
+      },
+      {
+        "rotulo": "REM POR NOITE",
+        "unid": "h",
+        "fmt": "f1",
+        "keys": [
+          [
+            23.48,
+            0
+          ],
+          [
+            24.4,
+            2
+          ]
+        ],
+        "max": 8,
+        "de": 23.48
+      }
+    ]
   }
 }

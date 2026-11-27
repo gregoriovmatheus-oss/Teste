@@ -16,10 +16,10 @@ const p = SN.heroi(LP); S.add(p.root);
 const v = new THREE.Vector3(), R = new THREE.Vector3();
 function render(t) {
   const d = LP.ator(p, t, { seed: 7, andar: { vel: 0.8 }, emocao: ["surpresa", "alegre", range(t, 1.3, 2.0)], olharPara: v.set(0, 3, -8), olharK: 0.4 });
-  p.root.position.set(-0.45, 0, 1.0 - d * 0.55); p.root.rotation.y = Math.PI;
+  p.root.position.set(0.35, 0, 1.4 - d * 0.4); p.root.rotation.y = Math.PI;
   ceu.update(t); raios.material.rotation = t * 0.15; halo.material.opacity = 0.5 + 0.08 * Math.sin(t * 2);
   C.coberta.material.emissiveIntensity = 0.8 + 0.25 * Math.sin(t * 2.5);
-  CI.trilho(cam, t, [[0, [1.2, 1.3, 3.2], [-0.5, 1.5, -1]], [1.8, [2.2, 2.4, 4.6], [-0.3, 1.6, -4]], [3.5, [3.2, 4.2, 6.4], [0, 1.6, -7]]], { mao: 1, seed: 6 });
+  CI.trilho(cam, t, [[0, [1.0, 1.4, 3.6], [0.2, 1.35, -1]], [1.8, [1.6, 2.2, 4.8], [0.1, 1.4, -4]], [3.5, [2.4, 3.6, 6.6], [0, 1.4, -7]]], { mao: 1, seed: 6 });
   p.root.getWorldPosition(R); R.y += 1.5; LP.focar(st, R);
   st.draw();
   const c = st.ctx;

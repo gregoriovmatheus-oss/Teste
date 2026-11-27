@@ -25,7 +25,7 @@ function render(t) {
   const i = t >= SEG[1] ? 1 : 0, u = t - SEG[i]; G.forEach((g, j) => (g.visible = j === i));
   if (i === 0) { SN.deitado(LP, mus, t, [0, 0.59, 0.86], { seed: 51, emocao: "dormindo", ergue: 0.3 });
     NT.update(t, range(t, 0.15, 0.5)); R.copy(LP.pontoCabeca(mus, "testa"));
-    CI.trilho(cam, t, [[0, [-1.35, 1.45, 0.45], [0, 0.55, -0.45]], [1.92, [-1.0, 1.35, 0.15], [0, 0.6, -0.55]]], { mao: 1, seed: 2 }); LP.focar(st, R); abA.update && abA.update(t); }
+    CI.trilho(cam, t, [[0, [-1.35, 1.45, 0.45], [0, 0.72, -0.5]], [1.92, [-1.0, 1.35, 0.15], [0, 0.76, -0.6]]], { mao: 1, seed: 2 }); LP.focar(st, R); abA.update && abA.update(t); }
   else { SN.deitado(LP, atl, u, [0, 0.59, 0.86], { seed: 61, emocao: "dormindo", tremer: 0.15 });
     LP.ator(fan, u, { seed: 61, correr: { vel: 1.2 }, emocao: "foco" }); fan.root.position.set(0, 1.05 + 0.05 * Math.sin(u * 9), -0.35); fan.root.rotation.y = Math.PI / 2;
     rastro.update(u * 3); R.copy(LP.pontoCabeca(atl, "testa")); cam.position.set(0, 0, 0);

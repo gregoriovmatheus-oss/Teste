@@ -16,9 +16,9 @@ const mt = R.moto(LP); mt.g.rotation.y = Math.PI / 2; S.add(mt.g);
 const mb = R.motoboy(LP); mb.root.position.set(0, 0.26, -0.22); mt.g.add(mb.root);
 const C1 = 2.35, C2 = 4.4, v = new THREE.Vector3(), h = new THREE.Vector3();
 function render(t) {
-  const A = t < C1, B = !A && t < C2, Cc = t >= C2;
-  ma.root.visible = bb.root.visible = A; se.root.visible = bc.visible = B; mt.g.visible = Cc;
-  if (A) {
+  const sA = t < C1, sB = !sA && t < C2, Cc = t >= C2;
+  ma.root.visible = bb.root.visible = sA; se.root.visible = bc.visible = sB; mt.g.visible = Cc;
+  if (sA) {
     LP.ator(ma, t, { seed: 33, emocao: "alegre", olharPara: bb.cab.getWorldPosition(v), olharK: 0.8 });
     ma.root.updateMatrixWorld(true); bb.root.position.copy(ma.root.localToWorld(v.set(0.06, 0.78, 0.24))); bb.root.rotation.y = ma.root.rotation.y + 0.5;
     LP.ator(bb, t, { seed: 5, pose: "sentado", emocao: ["calmo", "alegre", range(t, 0.6, 1.4)], olharPara: cam.position, olharK: 0.5 });
@@ -28,7 +28,7 @@ function render(t) {
     bb.cab.getWorldPosition(h);
     const e = ease.inOutSine(range(t, 0, C1));
     R.mira(cam, v.set(h.x + lerp(0.55, 0.35, e), h.y + 0.1, h.z + lerp(1.35, 1.1, e)), h, 800); LP.camMao(cam, t, { seed: 2 });
-  } else if (B) {
+  } else if (sB) {
     const u = t - C1;
     LP.ator(se, t, { seed: 44, pose: "sentado", emocao: ["calmo", "alegre", range(u, 0.5, 1.4)], olharPara: cam.position, olharK: 0.4 });
     se.cab.getWorldPosition(h);
@@ -44,8 +44,8 @@ function render(t) {
   LP.focar(st, h); CI.preenche(st, h, { forca: 1.2 });
   st.draw();
   const c = st.ctx;
-  if (A) R.relogio(c, 84 * Y * ease.outCubic(range(t, 1.0, 1.97)) + 9.7e6 * range(t, 1.0, 1.97) - (t - 1.97), bb, cam, range(t, 0.3, 0.55), { rotulo: "BEBÊ", tam: 60, sobe: 0.17, pulso: LP.mola(t, 1.97, 1, 2.2, 5) });
-  if (B) R.relogio(c, 6 * Y * ease.outCubic(range(t, 3.4, 3.99)) + 3.1e6 * range(t, 3.4, 3.99) - (t - 3.99), se, cam, range(t, 2.6, 2.85), { rotulo: "SENHOR NA PRAÇA", tam: 60, sobe: 0.26, pulso: LP.mola(t, 3.99, 1, 2.2, 5) });
+  if (sA) R.relogio(c, 84 * Y * ease.outCubic(range(t, 1.0, 1.97)) + 9.7e6 * range(t, 1.0, 1.97) - (t - 1.97), bb, cam, range(t, 0.3, 0.55), { rotulo: "BEBÊ", tam: 60, sobe: 0.17, pulso: LP.mola(t, 1.97, 1, 2.2, 5) });
+  if (sB) R.relogio(c, 6 * Y * ease.outCubic(range(t, 3.4, 3.99)) + 3.1e6 * range(t, 3.4, 3.99) - (t - 3.99), se, cam, range(t, 2.6, 2.85), { rotulo: "SENHOR NA PRAÇA", tam: 60, sobe: 0.26, pulso: LP.mola(t, 3.99, 1, 2.2, 5) });
   if (Cc) { const k = range(t, 6.1, 6.4);
     R.relogio(c, 3 * 3600 - Math.max(0, t - 6.4), mb, cam, range(t, 4.6, 4.85), { rotulo: "MOTOBOY", tam: 60, sobe: 0.32, cor: k > 0.5 ? R.LARANJA : R.AZUL, borrado: 1 - k, t, pulso: LP.mola(t, 6.4, 1, 2.2, 5) }); }
 }

@@ -7,7 +7,7 @@ LP.luz(st, "dramatica"); st.exposicao = 1.05;
 const chao = new THREE.Mesh(new THREE.CircleGeometry(14, 40), LP.mat(0x1a1c22, 0.4)); chao.rotation.x = -Math.PI / 2; S.add(chao);
 CI.ceu(S, { topo: 0x05070c, horizonte: 0x1a2030 });
 // uma fileira de pessoas iguais sob a mesma "média"; a luz escolhe uma só e o relógio dela fica exato
-const F = R.multidao(LP, S, [[-1.5, -0.4, 91, 0x4a5058], [-0.95, -0.9, 92, 0x5a4a44], [-0.5, -0.2, 93, 0x3e4a5a], [0.5, -0.25, 94, 0x52525a], [0.95, -0.85, 95, 0x4a4450], [1.5, -0.45, 96, 0x445048]]);
+const F = R.multidao(LP, S, [[-0.95, -0.45, 91, 0x4a5058], [-0.62, -0.95, 92, 0x5a4a44], [-0.32, -0.35, 93, 0x3e4a5a], [0.32, -0.4, 94, 0x52525a], [0.62, -0.95, 95, 0x4a4450], [0.95, -0.45, 96, 0x445048]]);
 F.forEach((f) => (f.root.rotation.y = 0));
 const eu = LP.pessoa({ seed: 77, feminina: true, roupa: "casaco", jaqueta: 0xb05a3a, pele: 0xc89070, cabelo: 0x2a1408, iris: 0x4a2c14 }); eu.root.position.set(0, 0, 0.15); S.add(eu.root);
 const spot = new THREE.SpotLight(0xffe2c0, 0, 9, 0.32, 0.6, 1.2); spot.position.set(0, 4.5, 1.2); spot.target = eu.root; S.add(spot);

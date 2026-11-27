@@ -62,7 +62,7 @@ function render(t) {
   const dens = 0.35 + 0.65 * range(t, 1.1, 2.6);
   P.forEach(([s, ph, f], i) => { const c = ((t * f + ph) % 3) / 3, on = i / N < dens ? Math.max(0, 1 - Math.abs(c - 0.15) / 0.15) : 0; s.material.opacity = on; s.scale.setScalar(0.03 + 0.06 * on); });
   const e = ease.inOutSine(range(t, 0, 6.56));
-  cam.position.set(lerp(0.4, -0.2, e), lerp(0.55, 0.35, e), lerp(3.6, 2.7, e)); al.set(0, lerp(-0.45, -0.35, e), 0); cam.lookAt(al);
+  cam.position.set(lerp(0.4, -0.2, e), lerp(0.55, 0.35, e), lerp(4.4, 3.6, e)); al.set(0, lerp(-0.85, -0.7, e), 0); cam.lookAt(al);
   st.bloom = 0.8; st.draw();
   const c = st.ctx;
   R.txt(c, "TODO DIA", 540, 790, { tam: 28, cor: R.AZUL, a: range(t, 0.3, 0.6), esp: 0.34 });
