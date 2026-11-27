@@ -16,7 +16,7 @@ function render(t) {
   R.andaMultidao(LP, F, t);
   const k = ease.inOutCubic(range(t, 2.2, 2.8));
   LP.ator(eu, t, { seed: 77, emocao: ["calmo", "surpresa", range(t, 2.4, 3.0)], olharPara: t > 3.2 ? cam.position : undefined, olharK: 0.6 });
-  spot.intensity = 30 * k; st.fria.intensity = lerp(st.fria.intensity, 0.2, 0);
+  spot.intensity = 30 * k;
   eu.cab.getWorldPosition(h);
   const e = ease.inOutSine(range(t, 0, 4.74));
   R.mira(cam, v.set(lerp(0.3, 0.05, e), lerp(1.75, 1.6, e), lerp(5.2, 2.6, e)), h, lerp(720, 790, e)); LP.camMao(cam, t, { seed: 8 });
