@@ -78,7 +78,7 @@ function render(t) {
     LP.ator(se, t, { seed: 44, pose: "sentado", emocao: ["calmo", "alegre", range(u, 0.5, 1.4)], olharPara: cam.position, olharK: 0.4 });
     se.cab.getWorldPosition(h);
     const e = ease.inOutSine(range(u, 0, C2 - C1));
-    R.mira(cam, v.set(h.x - lerp(1.5, 1.2, e), h.y + 0.15, h.z + lerp(1.4, 1.2, e)), h, 800, 560); LP.camMao(cam, t, { seed: 5 });
+    R.mira(cam, v.set(h.x - lerp(1.9, 1.6, e), h.y + 0.2, h.z + lerp(1.8, 1.6, e)), h, 820, 560); LP.camMao(cam, t, { seed: 5 });
   } else {
     const u = t - C2;
     mt.g.position.set(-4.2 + u * 2.6, 0, -0.6); mt.update(u, 2.6);

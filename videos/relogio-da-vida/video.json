@@ -110,7 +110,62 @@
   },
   "sfx": [],
   "doc": {
-    "capitulos": [],
-    "hud": []
+    "capitulos": [
+      [
+        0,
+        "OS RELÓGIOS"
+      ],
+      [
+        18.22,
+        "A ESTATÍSTICA"
+      ],
+      [
+        36.33,
+        "O PARADOXO"
+      ],
+      [
+        49.59,
+        "O PODER EM JOGO"
+      ],
+      [
+        59.3,
+        "O TEMPO QUE RESTA"
+      ]
+    ],
+    "hud": [
+      {
+        "rotulo": "MORTES POR DIA NO MUNDO",
+        "fmt": "int",
+        "keys": [
+          [
+            19.33,
+            0
+          ],
+          [
+            20.21,
+            170000
+          ]
+        ],
+        "max": 170000,
+        "de": 18.22
+      },
+      {
+        "rotulo": "EXPECTATIVA BRASIL",
+        "unid": "anos",
+        "fmt": "int",
+        "keys": [
+          [
+            30.1,
+            0
+          ],
+          [
+            30.6,
+            76
+          ]
+        ],
+        "max": 100,
+        "de": 24.78
+      }
+    ]
   }
 }

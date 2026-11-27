@@ -62,17 +62,17 @@ const hP = new THREE.Vector3(), hE = new THREE.Vector3();
 function render(t) {
   if (t < 0.17) st.T = 0.17;   // quadro 0 = miniatura: sem o dip escuro de entrada
   R.andaMultidao(LP, F, t);
-  LP.ator(pa, t, { seed: 61, andar: { vel: 0.45 }, emocao: "calmo" }); pa.root.position.set(-0.95 + 0.11 * t, 0, -2.7 + 0.03 * t);
+  LP.ator(pa, t, { seed: 61, andar: { vel: 0.45 }, emocao: "calmo" }); pa.root.position.set(-0.8 + 0.08 * t, 0, -2.7 + 0.03 * t);
   pa.cab.getWorldPosition(hP);
   LP.ator(eu, t, { seed: 18, emocao: t < 3.6 ? "surpresa" : ["surpresa", "foco", range(t, 3.6, 4.4)], olharPara: hP, olharK: 0.75 });
   eu.cab.getWorldPosition(hE);
   const e = ease.inOutSine(range(t, 0, 5.91));
-  R.mira(cam, new THREE.Vector3(lerp(-0.05, 0.08, e), 1.66, lerp(2.45, 2.0, e)), hE, 720, lerp(760, 740, e)); LP.camMao(cam, t, { seed: 3 });
+  R.mira(cam, new THREE.Vector3(lerp(0.05, 0.15, e), 1.66, lerp(3.1, 2.7, e)), hE, 720, lerp(800, 780, e)); LP.camMao(cam, t, { seed: 3 });
   LP.focar(st, hE); CI.preenche(st, hE, { forca: 1.4 }); poe.update(t);
   st.draw();
   const c = st.ctx;
   R.relogio(c, 41 * Y + 207 * 86400 + 22492 - t, pa, cam, 1, { rotulo: "TEMPO RESTANTE", tam: 54, sobe: 0.24, pulso: LP.mola(t, 2.37, 1, 2.2, 5) });
-  F.forEach((f, i) => R.relogio(c, SF[i] - t, f, cam, range(t, T0[i], T0[i] + 0.3), { tam: 26, sobe: 0.3, ymin: 560 }));
+  F.forEach((f, i) => R.relogio(c, SF[i] - t, f, cam, range(t, T0[i], T0[i] + 0.3), { tam: 26, sobe: 0.3, ymin: 620 }));
   R.titulo(c, "", ["E se você visse", "*o tempo que resta*?"], 1 - range(t, 2.0, 2.4), { y: 968, tam: 52 });
   R.txt(c, "SOBRE A CABEÇA", 540, 975, { tam: 30, cor: R.AZUL, a: range(t, 3.24, 3.5), esp: 0.3 });
 }
