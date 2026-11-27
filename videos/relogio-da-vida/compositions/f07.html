@@ -1,57 +1,79 @@
-<!-- Modelo de cena 3D (R01). cenas.py --criar copia para compositions/fNN.html trocando os marcadores de id e duração.
-     Padrão: script clássico registra buildReady na hora; import dinâmico do kit e dos blocos;
-     K.bindSeek(canvas, render) dá o tempo LOCAL da cena (sem gambiarra de data-start). -->
+<!-- f07: cena 3D padrão documentário (R10 + doc). Lógica em cenas/f07.js (gerado por scripts/monta-cenas.py).
+     Tempos escritos para 4.44 s e esticados para a duração real do host (data-duration). -->
 <template>
   <style>
-    #root { position: absolute; inset: 0; overflow: hidden; background: #0b1018; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0b0a12; }
     #f07-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
-    #f07-titulo { position: absolute; left: 160px; right: 200px; top: 660px; text-align: center; }
-    #f07-titulo-in { display: block; font-family: "EB Garamond", serif; font-size: 84px; line-height: 1.05; color: #fff;
-      text-shadow: 0 4px 26px rgba(4, 10, 20, 0.75), 0 1px 4px rgba(4, 10, 20, 0.6); }
-    #f07-titulo-in .ice { color: #8fcbf2; }
+    /* rótulos 2D: y 680-980, acima da faixa da legenda (1005-1235) */
+    .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .rot-t { display: block; font-family: "Anton", sans-serif; font-weight: 400; font-size: 92px; line-height: 1.05; color: #fff; text-transform: uppercase;
+      -webkit-text-stroke: 5px #000; paint-order: stroke fill; text-shadow: 0 6px 0 #000, 0 10px 24px rgba(0,0,0,0.6); opacity: 0; }
+    .rot-t .y { color: #F5C518; } .rot-t .r { color: #E8463A; } .rot-t .p { font-size: 70px; }
+    .rot-t .k { display: inline-block; font-size: 34px; letter-spacing: 0.12em; color: #F05A4A; -webkit-text-stroke: 0; text-shadow: 0 3px 0 #000; margin-bottom: 10px; }
+    .rot-t .n { color: #F5C518; }
+
   </style>
   <div id="root" data-composition-id="f07" data-width="1080" data-height="1920">
     <canvas id="f07-canvas" width="1080" height="1920"></canvas>
-    <div id="f07-titulo" class="clip" data-start="0.3" data-duration="2.2">
-      <span id="f07-titulo-in">Texto da <span class="ice">cena</span></span>
-    </div>
+
   </div>
   <script>
     (function () {
-      /* 2D por cima (GSAP). Título entre y 640 e 1000: o HUD ocupa 290-620 e a legenda 1045-1195. */
+      const D0 = 4.44;
+      // duração real = data-duration do host da cena (muda quando a narração muda)
+      const durReal = () => {
+        for (let n = document.getElementById("f07-canvas"); n; n = n.parentElement) {
+          if (n.getAttribute && n.getAttribute("data-composition-id") === "f07" && n.hasAttribute("data-duration")) return parseFloat(n.getAttribute("data-duration")) || D0;
+        }
+        return D0;
+      };
+      const DR = durReal(), K = DR / D0;
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f07-titulo-in", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 0.3);
-      tl.to("#f07-titulo-in", { opacity: 0, duration: 0.2, ease: "power2.in" }, 2.3);
-      tl.set({}, {}, 4.44);
+
+      tl.set({}, {}, DR);
       window.__timelines = window.__timelines || {};
       window.__timelines["f07"] = tl;
 
-      /* 3D */
       window.__hf = window.__hf || {};
       window.__hf.buildReady = window.__hf.buildReady || {};
       window.__hf.buildReady["f07"] = Promise.all([
-        import("./assets/lib/kit.js"),
-        import("./assets/lib/blocks/city.js"),
-        // import("./assets/lib/blocks/globe.js"), import("./assets/lib/blocks/particles.js"),
-        // import("./assets/lib/blocks/shockwave.js"), import("./assets/lib/blocks/counter.js"),
-      ]).then(async ([K, { createCity }]) => {
-        const { THREE, ease, range, lerp, clamp } = K;
+        import("./assets/lib/kit.js"), import("./assets/lib/blocks/toy.js"), import("./assets/lib/blocks/animals.js"), import("./assets/lib/blocks/lowpoly.js"), import("./assets/lib/blocks/cinema.js"), import("./assets/lib/blocks/relogio.js")
+      ]).then(async ([K_, T, A, LOWPOLY, CINEMA, RELOGIO]) => {
+        const K = K_;
+        const { THREE, ease, range, lerp, clamp, smoothstep, mulberry32 } = K;
+        const D = D0;   // o corpo trabalha no tempo de autoria
         const canvas = document.getElementById("f07-canvas");
-        const renderer = K.createRenderer(canvas);
-        const scene = new THREE.Scene();
-        const cam = new THREE.PerspectiveCamera(35, K.W / K.H, 1, 2000);
-        const city = createCity(scene, { seed: 7, geada: [4.44 * 0.6, 4.44 * 0.6 + 0.35], paraEm: 4.44 * 0.6 });
 
-        function render(t) {               // t = segundos locais da cena
-          const p = ease.outCubic(clamp(t / 4.44));
-          const h = lerp(300, 175, p), ang = lerp(-0.35, 0.05, p);
-          cam.position.set(Math.sin(ang) * 18, h, Math.cos(ang) * 18 + 10);
-          cam.up.set(Math.sin(ang), 0, -Math.cos(ang));
-          cam.lookAt(0, 0, 0);
-          city.update(t);
-          renderer.render(scene, cam);
-        }
-        await K.bindSeek(canvas, render, { warm: [{ renderer, scene, camera: cam }], duration: 4.44 });
+const LP = LOWPOLY, CI = CINEMA, R = RELOGIO, Y = R.ANOS;
+await R.prepara();
+const st = LP.palco(canvas, { foco: 1.6, faixa: 0.5, desfoque: 24, bloom: 0.9 });
+const { S, cam } = st;
+LP.luz(st, "interior"); st.exposicao = 1.1;
+const Q = CI.cenario(S, "quarto", { seed: 4 });
+const lamp = CI.luzPratica(S, "abajur", [-0.3, 0.5, -2.6], { forca: 0.9 });
+// o motoboy avisado fica em casa, sentado na cama, capacete ao lado; o relógio dele não sabe o que mostrar
+const mb = R.motoboy(LP); mb.capacete.visible = false; mb.root.position.set(0.6, 0, -0.85); mb.root.rotation.y = 0.15; S.add(mb.root);
+const cap = new THREE.Group(); R.capacete(LP, { cab: cap }); cap.position.set(1.25, 0.72, -1.1); cap.rotation.set(0.3, 0.8, 0); S.add(cap);
+const h = new THREE.Vector3(), v = new THREE.Vector3();
+function render(t) {
+  LP.ator(mb, t, { seed: 52, pose: [["sentado", 1], ["pensativo", range(t, 0.2, 0.9)]], emocao: t < 2.6 ? "duvida" : ["duvida", "nervoso", range(t, 2.6, 3.4)], olhar: [-0.2, 0.1] });
+  lamp.update(t);
+  mb.cab.getWorldPosition(h);
+  const e = ease.inOutSine(range(t, 0, 4.44));
+  R.mira(cam, v.set(lerp(-0.9, -0.6, e), lerp(1.5, 1.4, e), lerp(1.6, 1.0, e)), h, 800, 560); LP.camMao(cam, t, { seed: 9 });
+  LP.focar(st, h); CI.preenche(st, h, { forca: 1.2 });
+  st.draw();
+  const c = st.ctx;
+  // em "muda?" (3,91 s) o relógio pisca entre as 3 horas e uma vida inteira
+  const gl = range(t, 3.3, 3.6), alt = t > 3.91 && Math.floor(t * 7) % 2 === 0;
+  R.relogio(c, alt ? 47 * Y + 3e6 - t : 2 * 3600 + 41 * 60 + 10 - t, mb, cam, range(t, 0.3, 0.55), { rotulo: t > 3.91 ? "MUDA?" : "MOTOBOY", tam: 58, sobe: 0.26, cor: alt ? R.AZUL : R.LARANJA, glitch: gl, t });
+  R.txt(c, "PARADOXO", 540, 985, { tam: 40, cor: R.LARANJA, a: range(t, 0.64, 0.9) * (1 - range(t, 1.9, 2.05)), esp: 0.34 });
+  R.txt(c, "FICA EM CASA", 540, 985, { tam: 34, cor: "#fff", a: range(t, 2.6, 2.85) * (1 - range(t, 3.35, 3.5)), esp: 0.24 });
+  R.txt(c, "O RELÓGIO MUDA?", 540, 985, { tam: 34, cor: R.AZUL, a: range(t, 3.47, 3.7), esp: 0.22 });
+}
+
+        // DR foi lido na hora em que o script rodou (depois do inline o host pode mudar de atributos)
+        await K.bindSeek(canvas, (t) => { st.T = t * D / DR; st.D = D; render(st.T); }, { warm: [st.warm, ...(st.extraWarm || [])], duration: DR });
       });
     })();
   </script>

@@ -1,57 +1,83 @@
-<!-- Modelo de cena 3D (R01). cenas.py --criar copia para compositions/fNN.html trocando os marcadores de id e duração.
-     Padrão: script clássico registra buildReady na hora; import dinâmico do kit e dos blocos;
-     K.bindSeek(canvas, render) dá o tempo LOCAL da cena (sem gambiarra de data-start). -->
+<!-- f08: cena 3D padrão documentário (R10 + doc). Lógica em cenas/f08.js (gerado por scripts/monta-cenas.py).
+     Tempos escritos para 5.02 s e esticados para a duração real do host (data-duration). -->
 <template>
   <style>
-    #root { position: absolute; inset: 0; overflow: hidden; background: #0b1018; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0b0a12; }
     #f08-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
-    #f08-titulo { position: absolute; left: 160px; right: 200px; top: 660px; text-align: center; }
-    #f08-titulo-in { display: block; font-family: "EB Garamond", serif; font-size: 84px; line-height: 1.05; color: #fff;
-      text-shadow: 0 4px 26px rgba(4, 10, 20, 0.75), 0 1px 4px rgba(4, 10, 20, 0.6); }
-    #f08-titulo-in .ice { color: #8fcbf2; }
+    /* rótulos 2D: y 680-980, acima da faixa da legenda (1005-1235) */
+    .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .rot-t { display: block; font-family: "Anton", sans-serif; font-weight: 400; font-size: 92px; line-height: 1.05; color: #fff; text-transform: uppercase;
+      -webkit-text-stroke: 5px #000; paint-order: stroke fill; text-shadow: 0 6px 0 #000, 0 10px 24px rgba(0,0,0,0.6); opacity: 0; }
+    .rot-t .y { color: #F5C518; } .rot-t .r { color: #E8463A; } .rot-t .p { font-size: 70px; }
+    .rot-t .k { display: inline-block; font-size: 34px; letter-spacing: 0.12em; color: #F05A4A; -webkit-text-stroke: 0; text-shadow: 0 3px 0 #000; margin-bottom: 10px; }
+    .rot-t .n { color: #F5C518; }
+
   </style>
   <div id="root" data-composition-id="f08" data-width="1080" data-height="1920">
     <canvas id="f08-canvas" width="1080" height="1920"></canvas>
-    <div id="f08-titulo" class="clip" data-start="0.3" data-duration="2.2">
-      <span id="f08-titulo-in">Texto da <span class="ice">cena</span></span>
-    </div>
+
   </div>
   <script>
     (function () {
-      /* 2D por cima (GSAP). Título entre y 640 e 1000: o HUD ocupa 290-620 e a legenda 1045-1195. */
+      const D0 = 5.02;
+      // duração real = data-duration do host da cena (muda quando a narração muda)
+      const durReal = () => {
+        for (let n = document.getElementById("f08-canvas"); n; n = n.parentElement) {
+          if (n.getAttribute && n.getAttribute("data-composition-id") === "f08" && n.hasAttribute("data-duration")) return parseFloat(n.getAttribute("data-duration")) || D0;
+        }
+        return D0;
+      };
+      const DR = durReal(), K = DR / D0;
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f08-titulo-in", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 0.3);
-      tl.to("#f08-titulo-in", { opacity: 0, duration: 0.2, ease: "power2.in" }, 2.3);
-      tl.set({}, {}, 5.02);
+
+      tl.set({}, {}, DR);
       window.__timelines = window.__timelines || {};
       window.__timelines["f08"] = tl;
 
-      /* 3D */
       window.__hf = window.__hf || {};
       window.__hf.buildReady = window.__hf.buildReady || {};
       window.__hf.buildReady["f08"] = Promise.all([
-        import("./assets/lib/kit.js"),
-        import("./assets/lib/blocks/city.js"),
-        // import("./assets/lib/blocks/globe.js"), import("./assets/lib/blocks/particles.js"),
-        // import("./assets/lib/blocks/shockwave.js"), import("./assets/lib/blocks/counter.js"),
-      ]).then(async ([K, { createCity }]) => {
-        const { THREE, ease, range, lerp, clamp } = K;
+        import("./assets/lib/kit.js"), import("./assets/lib/blocks/toy.js"), import("./assets/lib/blocks/animals.js"), import("./assets/lib/blocks/lowpoly.js"), import("./assets/lib/blocks/cinema.js"), import("./assets/lib/blocks/relogio.js")
+      ]).then(async ([K_, T, A, LOWPOLY, CINEMA, RELOGIO]) => {
+        const K = K_;
+        const { THREE, ease, range, lerp, clamp, smoothstep, mulberry32 } = K;
+        const D = D0;   // o corpo trabalha no tempo de autoria
         const canvas = document.getElementById("f08-canvas");
-        const renderer = K.createRenderer(canvas);
-        const scene = new THREE.Scene();
-        const cam = new THREE.PerspectiveCamera(35, K.W / K.H, 1, 2000);
-        const city = createCity(scene, { seed: 7, geada: [5.02 * 0.6, 5.02 * 0.6 + 0.35], paraEm: 5.02 * 0.6 });
 
-        function render(t) {               // t = segundos locais da cena
-          const p = ease.outCubic(clamp(t / 5.02));
-          const h = lerp(300, 175, p), ang = lerp(-0.35, 0.05, p);
-          cam.position.set(Math.sin(ang) * 18, h, Math.cos(ang) * 18 + 10);
-          cam.up.set(Math.sin(ang), 0, -Math.cos(ang));
-          cam.lookAt(0, 0, 0);
-          city.update(t);
-          renderer.render(scene, cam);
-        }
-        await K.bindSeek(canvas, render, { warm: [{ renderer, scene, camera: cam }], duration: 5.02 });
+const LP = LOWPOLY, CI = CINEMA, R = RELOGIO, Y = R.ANOS;
+await R.prepara();
+const st = LP.palco(canvas, { foco: 2.4, faixa: 0.8, desfoque: 20, bloom: 1.0, raios: 0.4 });
+const { S, cam } = st;
+LP.luz(st, "noite"); st.exposicao = 1.15;
+CI.cenario(S, "rua", { seed: 21 }); CI.ceu(S, { topo: 0x0a1030, horizonte: 0x3a2a5a, estrelas: 200 });
+LP.bokeh(S, { n: 40, seed: 12, y: [0.6, 4], z: [-24, -12], cores: [0xffc07a, 0x7cc8ff, 0xff8a4c, 0xfff0d0] });
+[-6, -11].forEach((z) => CI.luzPratica(S, "poste", [-4.2, 0.11, z], { forca: 0.8 }));
+// herói secreto: corre pela calçada à noite; ao passar, o relógio de um estranho sai do laranja (minutos) para o azul (anos)
+const eu = R.heroi(LP); eu.root.rotation.y = Math.PI; S.add(eu.root);
+const zS = 3.6 - 2.6 * 3.9;   // onde você estará em 3,9 s
+const st1 = LP.pessoa({ seed: 66, roupa: "camiseta", camisa: 0x6a8a3a, pele: 0x8a5a3e, cabelo: 0x140c08, barba: false }); st1.root.position.set(-3.95, 0.11, zS - 0.4); st1.root.rotation.y = 0.9; S.add(st1.root);
+const F = R.multidao(LP, S, [[-2.6, -14, 101, 0x3d5a80, 0], [-4.4, -18, 102, 0x7a3b3b, 0], [3.4, -12, 103, 0x4a6b4a, 0.5, 1]]);
+F.forEach((f) => (f.root.position.y = 0.11));
+const h = new THREE.Vector3(), v = new THREE.Vector3(), hs = new THREE.Vector3();
+function render(t) {
+  R.andaMultidao(LP, F, t); F.forEach((f) => (f.root.position.y = 0.11));
+  const d = LP.ator(eu, t, { seed: 18, correr: { vel: 1 }, emocao: ["foco", "alegre", range(t, 3.9, 4.4)] });
+  eu.root.position.set(-3.1, 0.11, 3.6 - d);
+  LP.ator(st1, t, { seed: 66, emocao: t < 3.8 ? "calmo" : ["calmo", "surpresa", range(t, 3.8, 4.2)], olharPara: t > 3.4 ? eu.cab.getWorldPosition(v) : undefined, olharK: 0.7 });
+  eu.cab.getWorldPosition(h);
+  const e = ease.inOutSine(range(t, 0, 5.02));
+  R.mira(cam, v.set(h.x + lerp(1.1, 1.5, e), lerp(0.85, 1.2, e), h.z - lerp(2.3, 3.0, e)), h, 790, lerp(560, 640, e)); LP.camMao(cam, t, { seed: 11, intens: 1.6 });
+  LP.focar(st, h); CI.preenche(st, h, { forca: 1.5, cor: 0xd8e6ff }); CI.movimento(st, 0, 0.002);
+  st.draw();
+  const c = st.ctx;
+  const salvo = range(t, 3.82, 4.05);
+  R.relogio(c, salvo > 0.5 ? 52 * Y + 7e6 - t : 4 * 60 + 12 - t, st1, cam, range(t, 2.4, 2.7), { tam: 44, sobe: 0.26, cor: salvo > 0.5 ? R.AZUL : R.LARANJA, glitch: salvo * (1 - range(t, 4.05, 4.3)), t, pulso: LP.mola(t, 4.05, 1, 2.2, 5), rotulo: salvo > 0.5 ? "SALVO" : "ESTRANHO" });
+  R.titulo(c, "SE O RELÓGIO MUDAR", ["um *herói secreto*"], range(t, 1.55, 1.85) * (1 - range(t, 3.4, 3.6)), { y: 975, tam: 56, kTam: 24 });
+  R.txt(c, "SALVANDO ESTRANHOS", 540, 985, { tam: 32, cor: R.LARANJA, a: range(t, 3.82, 4.05), esp: 0.22 });
+}
+
+        // DR foi lido na hora em que o script rodou (depois do inline o host pode mudar de atributos)
+        await K.bindSeek(canvas, (t) => { st.T = t * D / DR; st.D = D; render(st.T); }, { warm: [st.warm, ...(st.extraWarm || [])], duration: DR });
       });
     })();
   </script>

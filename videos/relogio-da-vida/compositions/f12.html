@@ -1,57 +1,89 @@
-<!-- Modelo de cena 3D (R01). cenas.py --criar copia para compositions/fNN.html trocando os marcadores de id e duração.
-     Padrão: script clássico registra buildReady na hora; import dinâmico do kit e dos blocos;
-     K.bindSeek(canvas, render) dá o tempo LOCAL da cena (sem gambiarra de data-start). -->
+<!-- f12: cena 3D padrão documentário (R10 + doc). Lógica em cenas/f12.js (gerado por scripts/monta-cenas.py).
+     Tempos escritos para 6.42 s e esticados para a duração real do host (data-duration). -->
 <template>
   <style>
-    #root { position: absolute; inset: 0; overflow: hidden; background: #0b1018; }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0b0a12; }
     #f12-canvas { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
-    #f12-titulo { position: absolute; left: 160px; right: 200px; top: 660px; text-align: center; }
-    #f12-titulo-in { display: block; font-family: "EB Garamond", serif; font-size: 84px; line-height: 1.05; color: #fff;
-      text-shadow: 0 4px 26px rgba(4, 10, 20, 0.75), 0 1px 4px rgba(4, 10, 20, 0.6); }
-    #f12-titulo-in .ice { color: #8fcbf2; }
+    /* rótulos 2D: y 680-980, acima da faixa da legenda (1005-1235) */
+    .rot { position: absolute; left: 100px; right: 260px; top: 700px; height: 280px; display: flex; align-items: center; justify-content: center; text-align: center; }
+    .rot-t { display: block; font-family: "Anton", sans-serif; font-weight: 400; font-size: 92px; line-height: 1.05; color: #fff; text-transform: uppercase;
+      -webkit-text-stroke: 5px #000; paint-order: stroke fill; text-shadow: 0 6px 0 #000, 0 10px 24px rgba(0,0,0,0.6); opacity: 0; }
+    .rot-t .y { color: #F5C518; } .rot-t .r { color: #E8463A; } .rot-t .p { font-size: 70px; }
+    .rot-t .k { display: inline-block; font-size: 34px; letter-spacing: 0.12em; color: #F05A4A; -webkit-text-stroke: 0; text-shadow: 0 3px 0 #000; margin-bottom: 10px; }
+    .rot-t .n { color: #F5C518; }
+
   </style>
   <div id="root" data-composition-id="f12" data-width="1080" data-height="1920">
     <canvas id="f12-canvas" width="1080" height="1920"></canvas>
-    <div id="f12-titulo" class="clip" data-start="0.3" data-duration="2.2">
-      <span id="f12-titulo-in">Texto da <span class="ice">cena</span></span>
-    </div>
+
   </div>
   <script>
     (function () {
-      /* 2D por cima (GSAP). Título entre y 640 e 1000: o HUD ocupa 290-620 e a legenda 1045-1195. */
+      const D0 = 6.42;
+      // duração real = data-duration do host da cena (muda quando a narração muda)
+      const durReal = () => {
+        for (let n = document.getElementById("f12-canvas"); n; n = n.parentElement) {
+          if (n.getAttribute && n.getAttribute("data-composition-id") === "f12" && n.hasAttribute("data-duration")) return parseFloat(n.getAttribute("data-duration")) || D0;
+        }
+        return D0;
+      };
+      const DR = durReal(), K = DR / D0;
       const tl = gsap.timeline({ paused: true });
-      tl.fromTo("#f12-titulo-in", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 0.3);
-      tl.to("#f12-titulo-in", { opacity: 0, duration: 0.2, ease: "power2.in" }, 2.3);
-      tl.set({}, {}, 6.42);
+
+      tl.set({}, {}, DR);
       window.__timelines = window.__timelines || {};
       window.__timelines["f12"] = tl;
 
-      /* 3D */
       window.__hf = window.__hf || {};
       window.__hf.buildReady = window.__hf.buildReady || {};
       window.__hf.buildReady["f12"] = Promise.all([
-        import("./assets/lib/kit.js"),
-        import("./assets/lib/blocks/city.js"),
-        // import("./assets/lib/blocks/globe.js"), import("./assets/lib/blocks/particles.js"),
-        // import("./assets/lib/blocks/shockwave.js"), import("./assets/lib/blocks/counter.js"),
-      ]).then(async ([K, { createCity }]) => {
-        const { THREE, ease, range, lerp, clamp } = K;
+        import("./assets/lib/kit.js"), import("./assets/lib/blocks/toy.js"), import("./assets/lib/blocks/animals.js"), import("./assets/lib/blocks/lowpoly.js"), import("./assets/lib/blocks/cinema.js"), import("./assets/lib/blocks/relogio.js")
+      ]).then(async ([K_, T, A, LOWPOLY, CINEMA, RELOGIO]) => {
+        const K = K_;
+        const { THREE, ease, range, lerp, clamp, smoothstep, mulberry32 } = K;
+        const D = D0;   // o corpo trabalha no tempo de autoria
         const canvas = document.getElementById("f12-canvas");
-        const renderer = K.createRenderer(canvas);
-        const scene = new THREE.Scene();
-        const cam = new THREE.PerspectiveCamera(35, K.W / K.H, 1, 2000);
-        const city = createCity(scene, { seed: 7, geada: [6.42 * 0.6, 6.42 * 0.6 + 0.35], paraEm: 6.42 * 0.6 });
 
-        function render(t) {               // t = segundos locais da cena
-          const p = ease.outCubic(clamp(t / 6.42));
-          const h = lerp(300, 175, p), ang = lerp(-0.35, 0.05, p);
-          cam.position.set(Math.sin(ang) * 18, h, Math.cos(ang) * 18 + 10);
-          cam.up.set(Math.sin(ang), 0, -Math.cos(ang));
-          cam.lookAt(0, 0, 0);
-          city.update(t);
-          renderer.render(scene, cam);
-        }
-        await K.bindSeek(canvas, render, { warm: [{ renderer, scene, camera: cam }], duration: 6.42 });
+const LP = LOWPOLY, CI = CINEMA, R = RELOGIO, Y = R.ANOS;
+await R.prepara();
+const st = LP.palco(canvas, { foco: 3.6, faixa: 1.4, desfoque: 14, bloom: 0.9, raios: 0.6 });
+const { S, cam } = st;
+LP.luz(st, "por-do-sol"); st.exposicao = 1.1;
+CI.ceu(S, { topo: 0x2a3466, horizonte: 0xffa070 });
+st.sol(new THREE.Vector3(6, 1.5, -30), 1.0);
+// tela dividida por uma parede: à esquerda, décadas pela frente no sofá, na luz da TV; à direita, poucas horas no pôr do sol
+const cx = (w, h, d, c, x, y, z, r = 0.8) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), LP.mat(c, r)); m.position.set(x, y, z); S.add(m); return m; };
+cx(0.04, 3.2, 8, 0x0a0a0c, 0, 1.6, -2.5);                     // a divisória (vista de topo = linha)
+cx(3, 3.2, 0.1, 0x3a4250, -1.5, 1.6, -1.6); cx(3, 0.1, 6, 0x4a4a52, -1.5, -0.05, -0.5, 0.6);   // sala cinza
+cx(1.0, 0.42, 0.55, 0x4a5a6a, -0.42, 0.21, -0.9); cx(1.0, 0.45, 0.12, 0x4a5a6a, -0.42, 0.62, -1.15);   // sofá
+const tv = CI.luzPratica(S, "tv", [-0.42, 1.1, 1.9], { forca: 0.8 }); tv.g.rotation.y = Math.PI;
+cx(3, 0.1, 6, 0x6a5a3a, 1.5, -0.05, -0.5, 0.9);                // gramado ao pôr do sol
+LP.bokeh(S, { n: 24, seed: 5, x: [0.4, 6], y: [0.5, 3], z: [-14, -6], cores: [0xffc07a, 0xff8a4c, 0xfff0d0] });
+const A = LP.pessoa({ seed: 83, roupa: "camiseta", camisa: 0x6a7a8a, pele: 0xd9a07e, cabelo: 0x3a2a1a, barba: false }); A.root.position.set(-0.42, 0, -0.75); S.add(A.root);
+const B = LP.pessoa({ seed: 37, feminina: true, roupa: "casaco", jaqueta: 0xd86a3a, pele: 0x8a5a3e, cabelo: 0x140c08, iris: 0x2a180c }); B.root.position.set(0.42, 0, -0.75); S.add(B.root);
+const poe = LP.poeira(S, { n: 50, centro: [0.6, 1.6, -0.6], raio: [0.6, 0.8, 0.6], cor: 0xffd8a0 });
+const hA = new THREE.Vector3(), hB = new THREE.Vector3(), al = new THREE.Vector3();
+function render(t) {
+  LP.ator(A, t, { seed: 83, pose: "sentado", emocao: t < 2.6 ? "sono" : ["sono", "bocejo", range(t, 2.6, 3.0) * (1 - range(t, 3.6, 4.0))], olhar: [0, -0.1] });
+  LP.ator(B, t, { seed: 37, pose: t > 4.5 ? [["comemorar", ease.outBack(range(t, 4.6, 5.2))]] : undefined, emocao: ["calmo", "alegre", range(t, 3.9, 4.6)], olharPara: t > 4.6 ? st.cam.position : undefined, olharK: 0.4, gestos: t < 4.5 ? { intens: 0.4 } : undefined });
+  tv.update(t); poe.update(t);
+  A.cab.getWorldPosition(hA); B.cab.getWorldPosition(hB);
+  const e = ease.inOutSine(range(t, 0, 6.42));
+  cam.position.set(0, lerp(1.35, 1.45, e), lerp(4.3, 3.7, e)); al.set(0, lerp(1.0, 1.08, e), -0.75); cam.lookAt(al); LP.camMao(cam, t, { seed: 17, intens: 0.5 });
+  LP.focar(st, hB);
+  st.draw();
+  const c = st.ctx;
+  c.save(); c.globalAlpha = 0.85; c.fillStyle = "#ffffff"; c.fillRect(538, 230, 4, 1100 - 230); c.restore();
+  R.relogio(c, 52 * Y + 8e6 - t, A, cam, range(t, 0.98, 1.25), { tam: 40, sobe: 0.24, cor: "#9aa4b0", numCor: "#c8d0da", ymin: 470, pulso: 0 });
+  R.relogio(c, 5 * 3600 + 12 * 60 + 40 - t * 30, B, cam, range(t, 3.89, 4.15), { tam: 40, sobe: 0.24, cor: R.LARANJA, ymin: 470, pulso: LP.mola(t, 4.15, 1, 2.2, 5) });
+  R.txt(c, "DÉCADAS", 270, 960, { tam: 34, cor: "#c8d0da", a: range(t, 0.98, 1.25), esp: 0.24 });
+  R.txt(c, "DESPERDIÇADAS", 270, 1005, { tam: 22, cor: "#9aa4b0", a: range(t, 2.07, 2.3), esp: 0.24 });
+  R.txt(c, "HORAS", 810, 960, { tam: 34, cor: R.LARANJA, a: range(t, 3.89, 4.15), esp: 0.24 });
+  R.txt(c, "O DIA MAIS INTENSO", 810, 1005, { tam: 22, cor: "#ffd0b0", a: range(t, 5.29, 5.5), esp: 0.16 });
+}
+
+        // DR foi lido na hora em que o script rodou (depois do inline o host pode mudar de atributos)
+        await K.bindSeek(canvas, (t) => { st.T = t * D / DR; st.D = D; render(st.T); }, { warm: [st.warm, ...(st.extraWarm || [])], duration: DR });
       });
     })();
   </script>

@@ -27,6 +27,6 @@ function render(t) {
   const c = st.ctx;
   const salvo = range(t, 3.82, 4.05);
   R.relogio(c, salvo > 0.5 ? 52 * Y + 7e6 - t : 4 * 60 + 12 - t, st1, cam, range(t, 2.4, 2.7), { tam: 44, sobe: 0.26, cor: salvo > 0.5 ? R.AZUL : R.LARANJA, glitch: salvo * (1 - range(t, 4.05, 4.3)), t, pulso: LP.mola(t, 4.05, 1, 2.2, 5), rotulo: salvo > 0.5 ? "SALVO" : "ESTRANHO" });
-  R.titulo(c, R.AZUL ? "SE O RELÓGIO MUDAR" : "", ["um *herói secreto*"], range(t, 1.55, 1.85) * (1 - range(t, 3.4, 3.6)), { y: 975, tam: 56, kTam: 24 });
+  R.titulo(c, "SE O RELÓGIO MUDAR", ["um *herói secreto*"], range(t, 1.55, 1.85) * (1 - range(t, 3.4, 3.6)), { y: 975, tam: 56, kTam: 24 });
   R.txt(c, "SALVANDO ESTRANHOS", 540, 985, { tam: 32, cor: R.LARANJA, a: range(t, 3.82, 4.05), esp: 0.22 });
 }
