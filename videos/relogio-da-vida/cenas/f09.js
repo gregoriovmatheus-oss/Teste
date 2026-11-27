@@ -5,7 +5,7 @@ const st = LP.palco(canvas, { foco: 2.4, faixa: 0.7, desfoque: 22, bloom: 0.85 }
 const { S, cam } = st;
 LP.luz(st, "frio"); st.exposicao = 0.95; CI.clima(st, "pesadelo"); st.U.sat.value = 0.55;
 CI.cenario(S, "rua", { seed: 13 }); CI.ceu(S, { topo: 0x10141e, horizonte: 0x2a3444 });
-CI.chaoMolhado(S, new THREE.Vector3(-3.2, 0.12, -1));
+const mol = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 12), new THREE.MeshStandardMaterial({ color: 0x0e1016, roughness: 0.12, metalness: 0.5, transparent: true, opacity: 0.6 })); mol.rotation.x = -Math.PI / 2; mol.position.set(-3.2, 0.113, -3); S.add(mol);   // calçada molhada
 const poste = CI.luzPratica(S, "poste", [-4.1, 0.11, -1.4], { forca: 1.1 });
 const ch = CI.chuva(S, { n: 380, area: [2.5, 4, 3], centro: [-3.2, 0, -1.2], vel: 8 });
 // se não mudar: você, sozinho no banco, sob a chuva; ninguém sabe o que você sabe
